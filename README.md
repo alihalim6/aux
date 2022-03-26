@@ -1,4 +1,4 @@
-# aux
+# Aux
 
 ## Build Setup
 

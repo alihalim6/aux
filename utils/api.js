@@ -3,7 +3,7 @@ import {storageGet} from './storage';
 import axios from 'axios';
 
 const httpClient = axios.create({
-    baseURL: 'http://localhost:3000/v1/'///TODO
+    baseURL: window.location.host///TODO
 });
 
 httpClient.interceptors.request.use(async (config) => {

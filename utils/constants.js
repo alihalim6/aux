@@ -11,7 +11,7 @@ export const AUTH = {
     URL: {
         TOKEN: 'https://accounts.spotify.com/api/token',
         AUTHORIZE: 'https://accounts.spotify.com/authorize',
-        REDIRECT: 'http://localhost:3000'//TODO
+        REDIRECT: window.location.host
     }
 };
 

@@ -1,20 +1,16 @@
-import axios from 'axios';
 import {DATA} from '~/utils/constants';
+import {httpClient} from '~/utils/api';
 
 export const state = () => {
     return {
-        accessToken: '',
         discover: {
-            data: {},
+            data: [],
             lastDataFetch: 0
         }
     };
 };
 
 export const getters = {
-    accessToken: (state) => {
-        return state.accessToken;
-    },
     dataFetchNeeded: (state) => (category) => {
         return !state[category].lastDataFetch || ((state[category].lastDataFetch + DATA.REFRESH_TIME) < Date.now());
     },
@@ -24,28 +20,27 @@ export const getters = {
 };
 
 export const actions = {
-    fetchDiscoverData({commit, getters}, params){
+    fetchDiscoverData: async ({commit, getters}) => {
         if(getters.dataFetchNeeded('discover')){
-            return new Promise((resolve) => {
-                axios.get('http://localhost:3000/v1/discover', {headers: {'access-token':  params.accessToken}}).then(response => {
-                    commit('saveData', {category: 'discover', response});
-                    commit('setLastDataFetch', 'discover');
-                    resolve(response);
-                }, () => {
-                    resolve({});
-                });
-            });
+            console.log('fetching fresh discover data');
+
+            const response = await httpClient.get('/discover');
+
+            if(!response.data.error){
+                commit('saveData', {category: 'discover', response});
+                commit('setLastDataFetch', 'discover');
+            }
+
+            //TODO error - put handler in httpClient config interceptor
         }
         else{
+            console.log('using cached discover data');
             return Promise.resolve(getters.data('discover'));
         }
     }
 };
 
 export const mutations = {
-    saveAccessToken(state, token){
-        state.accessToken = token;
-    },
     setLastDataFetch(state, category){
       state[category].lastDataFetch = Date.now();
     },

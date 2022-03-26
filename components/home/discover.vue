@@ -1,40 +1,55 @@
 <template>
   <section>
-    <div class="title-container max-inner-width">
-      <div class="title">
-        <div class="title-border">
-          Discover
-          <div class="secondary-title-border"></div>
-        </div>
+    <div class="content-container">
+      <div class="section-title">
+        New & Recommended
         
         <div class="clickable see-all">
-          <div class="sub-title-label">See All</div><v-icon class="see-all-icon" color="red">mdi-arrow-right</v-icon>
+          <div class="sub-title-label">See All</div><v-icon class="see-all-icon">mdi-arrow-right</v-icon>
         </div>
       </div>
 
       <div class="sub-title">Lorem ipsum dolor sit amet, consectetur adipiscing elit, consectetur adipiscing.</div>
+      <div class="secondary-title-border"></div>
     </div>
+
+    <ContentItems :data="data"/>
   </section>
 </template>
 
 <script>
-  import {Component, Vue} from 'nuxt-property-decorator';
-  import {storageGet} from '~/utils/storage';
-  import {AUTH} from '~/utils/constants';
+  import {Component, Vue, Getter, Action} from 'nuxt-property-decorator';
+  import {setItemDisplayData} from '~/utils/helpers';
   
   @Component
-  export default class Discover extends Vue {
-      data = {};
+  export default class NewAndRecommendedPreview extends Vue {
+      data = [];
 
-      //getting token relies on window object which isn't avaialable until beforeMount
-      async beforeMount(){
-        await this.$store.dispatch('fetchDiscoverData', {accessToken: storageGet(AUTH.ACCESS_TOKEN)});
-        const {allData} = this.$store.getters.data('discover');
-        //thls.data = allData;
+      @Action('fetchDiscoverData')
+      fetchDiscoverData;
+
+      @Getter('data')
+      getData;
+
+      @Getter('currentlyPlayingItemUri', {namespace: 'spotify'})
+      currentlyPlayingItemUri;
+
+      @Getter('spotifyPlayer', {namespace: 'spotify'})
+      spotifyPlayer;
+      
+      preProcessData(){
+        this.data.forEach(setItemDisplayData);
       }
+
+      async beforeMount(){
+        await this.fetchDiscoverData();
+        const {previewData} = this.getData('discover');
+        this.data = previewData;
+
+        if(this.data){
+          this.preProcessData();
+        }
+      }
+
   }
 </script>
-
-<style lang="scss">
-
-</style>

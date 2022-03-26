@@ -1,0 +1,21 @@
+.clickable {
+    cursor: pointer;
+}
+
+.circle-separator {
+    padding: 4px;
+    color: $primary-theme-color !important;
+    font-size: 8px !important;
+}
+
+.no-visiblity {
+    visibility: hidden;
+}
+
+.no-wrap {
+    white-space: nowrap;
+}
+
+.flex-end-justify {
+    justify-content: flex-end !important;
+}

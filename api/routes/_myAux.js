@@ -8,14 +8,14 @@ router.get('/', async (req, res) => {
     const accessToken = req.get('access-token');
     const topArtists = await topItems('artists', headers(accessToken));
     const topTracks = await topItems('tracks', headers(accessToken));
-    
+
     res.json({
       ...topArtists.data,
       ...topTracks.data
     });
   }
   catch(error){
-    res.json({});
+    res.json({error});
   }
 });
 

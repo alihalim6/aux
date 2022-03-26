@@ -1,0 +1,14 @@
+.v-application {
+    font-family: 'Work Sans', sans-serif !important;
+}
+
+.v-dialog {
+    padding-top: 0px !important;
+    margin-top: $app-header-height !important;
+    background-color: rgba(0, 0, 0, 0.2);
+    box-shadow: none;
+}
+
+.v-dialog--fullscreen {
+    overflow-y: hidden !important;
+}

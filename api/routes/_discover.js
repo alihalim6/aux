@@ -1,6 +1,6 @@
 import express from 'express';
 import axios from 'axios';
-import {config, topItems, shuffleArray, API_URL, getRecommendationSeeds} from '../_utils';
+import {config, topItems, shuffleArray, API_URL, getRecommendationSeeds, getATopArtist} from '../_utils';
 
 const router = express.Router();
 let accessToken;
@@ -16,13 +16,13 @@ const getRecommendedTracks = async (topArtists) => {
 
     return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
         await axios.get(`${API_URL}/recommendations?limit=100&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`, config(accessToken)) :
-        {data: {tracks: []}};
+        Promise.resolve({data: {tracks: []}});
 };
 
 const getRecommendedArtists = async (topArtists) => {
     if(topArtists.items.length){
         const topArtist = await getATopArtist(topArtists);
-
+        console.log(`top artist seed for related artists: ${topArtist.name}`);
         return await axios.get(`${API_URL}/artists/${topArtist.id}/related-artists`, config(accessToken));
     }
 
@@ -32,6 +32,8 @@ const getRecommendedArtists = async (topArtists) => {
 };
 
 router.get('/', async (req, res) => {
+    //TODO don't recommend if already follow an artist/like a track etc.
+
     try{
         accessToken = req.get('access-token');
         const newReleases = await getNewReleases();
@@ -55,11 +57,11 @@ router.get('/', async (req, res) => {
 
         res.json({
             newReleases: newReleases.data.albums.items,//kept separate to use for New Releases page
-            allData
+            allData,
+            previewData: [...Array.from(allData)].splice(0, 30)
         });
-    }
-    catch(error){
-        res.json({});
+    }catch(error){
+        res.json({error});
     }
 });
 

@@ -7,3 +7,7 @@ export const storageGet = (item) => {
 export const storageSet = (item, value) => {
     window.localStorage.setItem((AUX_NAMESPACE + item), value);
 };
+
+export const clearStorage = () => {
+    window.localStorage.clear();
+};

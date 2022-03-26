@@ -1,7 +1,7 @@
 import {storageGet, storageSet} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
 
-const setTokenData = (response) => {
+const setTokenData = (response, context) => {
     storageSet(AUTH.ACCESS_TOKEN, response.data.access_token);
     storageSet(AUTH.REFRESH_TOKEN, response.data.refresh_token);
     storageSet(AUTH.TOKEN_EXPIRES_IN, (response.data.expires_in * 1000));//convert seconds to ms
@@ -12,19 +12,19 @@ export const initToken = async (context) => {
     await context.$axios.post(AUTH.URL.TOKEN, 
         `grant_type=authorization_code&code=${context.$route.query.code}&redirect_uri=${AUTH.URL.REDIRECT}&client_id=${AUTH.CLIENT_ID}&code_verifier=${storageGet(AUTH.CODE_VERIFIER)}`, 
         {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-        .then(setTokenData);
+        .then(response => setTokenData(response, context));
 };
 
-export const accessTokenExpired = () => {
+export const accessTokenExpiring = () => {
     const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
-    console.log(`token set at: ${parseInt(storageGet(AUTH.TOKEN_SET_AT))}; token expires at: ${tokenExpirationTime}; time now is ${Date.now()}`);
-    return tokenExpirationTime < Date.now();
+    console.log(`token set at: ${parseInt(storageGet(AUTH.TOKEN_SET_AT))}; token expires ${tokenExpirationTime - Date.now()}ms from now`);
+    return (tokenExpirationTime < (Date.now() - 300000));//refresh 5 mins before expire
 };
 
 export const refreshToken = async (context) => {
     await context.$axios.post(AUTH.URL.TOKEN, 
         `grant_type=refresh_token&refresh_token=${storageGet(AUTH.REFRESH_TOKEN)}&client_id=${AUTH.CLIENT_ID}`, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-        .then(setTokenData);
+        .then(response => setTokenData(response, context));
 };
 
 const pkceVerifier = () => {

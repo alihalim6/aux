@@ -1,47 +1,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@200;300;400&display=swap');
+@import './vue-vuetify.scss';
+@import './simple-styles.scss';
 
-body {
-    font-family: 'Work Sans', sans-serif;
-}
-
-.max-inner-width {
-    max-width: 768px;
-}
-
-.clickable {
-    cursor: pointer;
-}
-
-.title-container {
+.content-container {
     display: flex;
     flex-direction: column;
+    margin: 0 auto;
+    max-width: $max-inner-width;
 
-    .title {
-        font-size: 40px;
+    .section-title {
+        font-size: 32px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        color: rgba(0, 0, 0, 0.9);
+        color: rgba(0, 0, 0, 0.8);
         font-weight: 600;
-
-        .title-border {
-            border-bottom: 3px solid purple;
-        }
+        line-height: 1.1;
+        padding: 8px $sub-padding 0px;
     }
 
     .secondary-title-border {
-        width: 100%;
-        border-bottom: 4px solid aqua;
-        margin-top: -8px;
-    }
-    
-    .sub-text {
-        font-size: 16px;
+        width: 96%;
+        height: 7px;
+        border: 2px solid $primary-theme-color;
+        background-color: $secondary-theme-color;
+        margin: 0 auto;
     }
     
     .sub-title {
         @extend .sub-text;
-        padding-top: 10px;
+        padding: 10px 16px;
         color: rgba(0,0,0,0.6);
     }
 
@@ -49,19 +37,101 @@ body {
         display: flex;
         justify-content: space-evenly;
         align-items: center;
-        bottom: -8px;
+        bottom: -5px;
         position: relative;
+        white-space: nowrap;
 
         .sub-title-label {
             color: rgba(0,0,0,0.6);
             font-size: 16px;
             margin-right: 6px;
-            padding-top: 2px;
         }
         
         .see-all-icon {
-            color: purple;
             font-size: 22px;
+            color: $primary-theme-color;
         }
     }
 }
+
+$content-img-size: 275px;
+
+.content-carousel {
+    display: flex;
+    overflow: scroll;
+    margin-top: 20px;
+    $label-left-padding: 6px;
+
+    .content-hover {
+        border: 2px solid;
+    }
+
+    .content-img {
+        min-width: $content-img-size;
+        min-height: $content-img-size;
+        max-height: $content-img-size;
+    }
+
+    .playback-button {
+        position: absolute !important;
+        bottom: -31px;
+        right: 8px;
+    }
+
+    .last-item-playback-button {
+        left: $content-img-size - 40px;
+    }    
+
+    $sub-text-font-size: 12px;
+    $primary-text-font-size: 14px;
+
+    .sub-text {
+        font-size: $sub-text-font-size;
+        color: rgba(0,0,0,0.8);
+        padding: 10px 8px 4px $label-left-padding;
+        width: 150px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .artist-sub-label {
+        text-overflow: unset;
+        white-space: unset;
+        overflow: auto;
+        font-weight: 600;
+        font-size: $primary-text-font-size;
+    }
+
+    .primary-text {
+        font-size: $primary-text-font-size;
+        font-weight: 600;
+        padding: 0px $label-left-padding;
+    }
+
+    .artist-primary-text {
+        @extend .primary-text;
+        @extend .artist-sub-label;
+        font-weight: normal;
+        font-size: $sub-text-font-size;
+    }
+
+    .bottom-label {
+        padding-top: 6px;
+        padding-left: 6px;
+        display: flex;
+        align-items: center;
+
+        .record-icon {
+            padding-right: 4px;
+        }
+    }
+  }
+
+  .sub-title-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      padding: 0px $sub-padding;
+  }

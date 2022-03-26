@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-//BASE CONFIG
 export const API_URL = 'https://api.spotify.com/v1';
 
 export const config = (accessToken) => {
@@ -8,11 +7,10 @@ export const config = (accessToken) => {
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
-        }
+        },
+        timeout: 60000//1 min
     };
 };
-
-//SPECIFIC ENDPOINTS
 
 export const topItems = async (topType, config) => {
     return await axios.get(`${API_URL}/me/top/${topType}?limit=50`, config);
@@ -26,38 +24,24 @@ export const shuffleArray = (array) => {
     }
 }
 
-const getSeedGenres = (artists, tracks) => {
+//note: the artist objects in the top tracks response don't have genres; would need to use the href in there to make API call to get artist(s)
+const getSeedGenres = (artists) => {
     //genres associated with artists don't seem to align with the available seed genres (/recommendations/available-genre-seeds), but we'll use them for /recommendations anyway in case there's overlap
-    const genres = [];
-    let seedGenres = '';
+    
+    shuffleArray(artists.items);
 
-    //gather all genres from artists and tracks
-
-    artists.items.forEach(artist => {
-        genres.push.apply(genres, artist.genres);
-    });
-
-    tracks.items.forEach(track => {
-        track.artists.forEach(artist => {
-            genres.push.apply(genres, artist.genres);
-        });
-    });
-
-    //shuffle them
-    shuffleArray(genres);
-
-    //get up to five allowable by API
-    const sliceEndIndex = genres.length < 5 ? genres.length : 5;
-    seedGenres = genres.slice(0, sliceEndIndex).join(',');
-
-    return seedGenres;
+    return artists.items.length ? artists.items[0].genres[0] : '';
 };
 
 export const getRecommendationSeeds = (artists, tracks) => {
     let seedArtists = '';
     let seedTracks = '';
 
-    console.log(tracks.items);
+    console.log('top tracks');
+
+    tracks.items.forEach(track => {
+        console.log(`${track.name}/${track.id}`);
+    });
 
     //randomize seeds
     shuffleArray(artists.items);
@@ -69,13 +53,12 @@ export const getRecommendationSeeds = (artists, tracks) => {
         let i = 0;
 
         seedObject.items.forEach(item => {
-            //API allows up to five seeds
-            if(i === 5){
+            //API allows up to five seeds, so we'll do up to two for tracks/artists, and one genre
+            if(i === 2){
                 return;
             }
         
-            seed += item.id + ',';//TODO: may need to nix comma at end for 5th seed
-            console.log(`seed ${seed}`);
+            seed += item.id + ',';
             i++;
         });
 
@@ -94,5 +77,5 @@ export const getRecommendationSeeds = (artists, tracks) => {
 
 export const getATopArtist = (artists) => {
     shuffleArray(artists.items);
-    return artists[0];
+    return artists.items[0];
 };

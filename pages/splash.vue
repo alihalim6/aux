@@ -1,8 +1,8 @@
 <template>
-    <section>
+    <v-app>
         <h1>SPLASH</h1>
-        <b-button @click="loginClicked()">Login with Spotify</b-button>
-    </section>
+        <v-btn @click="loginClicked()">Login with Spotify</v-btn>
+    </v-app>
 </template>
 
 <script lang="ts">

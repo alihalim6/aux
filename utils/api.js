@@ -1,9 +1,9 @@
-import {AUTH} from './constants';
+import {AUTH, BASE_URL} from './constants';
 import {storageGet} from './storage';
 import axios from 'axios';
 
 const httpClient = axios.create({
-    baseURL: window.location.host///TODO
+    baseURL: `${BASE_URL}/v1/`///TODO
 });
 
 httpClient.interceptors.request.use(async (config) => {

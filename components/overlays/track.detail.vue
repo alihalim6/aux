@@ -9,7 +9,7 @@
                 {{new Date(track.album ? track.album.release_date : track.release_date).getFullYear()}}
             </div>
 
-            <div class="no-wrap">
+            <div class="sub-pad-left no-wrap">
                 <span v-show="duration">{{duration}}</span>
             </div>
         </div>

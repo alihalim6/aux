@@ -9,7 +9,7 @@
                 {{new Date(album.release_date).getFullYear()}}
             </div>
 
-            <div class="no-wrap">
+            <div class="sub-pad-left no-wrap">
                 <span v-show="album.bottomLabel">{{album.bottomLabel}}</span>
                 <v-icon v-show="album.bottomLabel && duration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
                 <span v-show="duration">{{duration}}</span>

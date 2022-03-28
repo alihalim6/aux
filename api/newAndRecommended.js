@@ -31,7 +31,7 @@ const getRecommendedArtists = async (topArtists) => {
     }});
 };
 
-async function discover(req, res){
+async function newAndRecommended(req, res){
     //TODO don't recommend if already follow an artist/like a track etc.
 
     try{
@@ -65,10 +65,10 @@ async function discover(req, res){
     }
 };
 
-router.get('/', discover);
+router.get('/', newAndRecommended);
 
 if(process.env.NODE_ENV === 'development'){
     module.exports = router;
 }    
 
-export default discover;
+export default newAndRecommended;

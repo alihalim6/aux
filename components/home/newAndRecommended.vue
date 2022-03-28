@@ -25,8 +25,8 @@
   export default class NewAndRecommended extends Vue {
       data = [];
 
-      @Action('fetchDiscoverData')
-      fetchDiscoverData;
+      @Action('fetchNewAndRecommendedData')
+      fetchNewAndRecommendedData;
 
       @Getter('data')
       getData;
@@ -42,8 +42,8 @@
       }
 
       async beforeMount(){
-        await this.fetchDiscoverData();
-        const {previewData} = this.getData('discover');
+        await this.fetchNewAndRecommendedData();
+        const {previewData} = this.getData('newAndRecommended');
         this.data = previewData;
 
         if(this.data){

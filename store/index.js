@@ -3,7 +3,7 @@ import {httpClient} from '~/utils/api';
 
 export const state = () => {
     return {
-        discover: {
+        newAndRecommended: {
             data: [],
             lastDataFetch: 0
         }
@@ -20,22 +20,20 @@ export const getters = {
 };
 
 export const actions = {
-    fetchDiscoverData: async ({commit, getters}) => {
-        if(getters.dataFetchNeeded('discover')){
-            console.log('fetching fresh discover data');
+    fetchNewAndRecommendedData: async ({commit, getters}) => {
+        if(getters.dataFetchNeeded('newAndRecommended')){
+            console.log('fetching fresh newAndRecommended data');
 
-            const response = await httpClient.get('/discover');
+            const response = await httpClient.get('/newAndRecommended');
 
             if(!response.data.error){
-                commit('saveData', {category: 'discover', response});
-                commit('setLastDataFetch', 'discover');
+                commit('saveData', {category: 'newAndRecommended', response});
+                commit('setLastDataFetch', 'newAndRecommended');
             }
-
-            //TODO error - put handler in httpClient config interceptor
         }
         else{
-            console.log('using cached discover data');
-            return Promise.resolve(getters.data('discover'));
+            console.log('using cached newAndRecommended data');
+            return Promise.resolve(getters.data('newAndRecommended'));
         }
     }
 };

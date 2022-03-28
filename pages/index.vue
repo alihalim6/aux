@@ -87,8 +87,8 @@
 
     handleAuthError(error){
       console.log(`${error}.  Sending back to Splash page.`);
-      this.$router.push('splash');
       this.setToast({display: true, text: 'Spotify needs you to log in again lorem ipsum...'});
+      this.$router.push('splash');
 
       this.closeDetailOverlay();
       this.stopPlayback();

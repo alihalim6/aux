@@ -10,10 +10,8 @@
 </template>
 
 <script>
-import {Component, Vue, Mutation} from 'nuxt-property-decorator';
+import {Component, Vue, Mutation, Action} from 'nuxt-property-decorator';
 import {httpClient} from '~/utils/api';
-import {storageGet} from '~/utils/storage';
-import {AUTH} from '~/utils/constants';
 
 @Component
 export default class App extends Vue {
@@ -22,15 +20,19 @@ export default class App extends Vue {
     @Mutation('setToast', {namespace: 'ui'})
     setToast;
 
+    @Action('stopPlayback', {namespace: 'spotify'})
+    stopPlayback;
+
     handleApiError(error){
-        console.log(error);
+        this.stopPlayback();
         this.setToast({display: true, text: 'Something went wrong lorem ipsum...'});
+        console.log(error);
     }
 
     initApiErrorHandling(){
         httpClient.interceptors.response.use(response => {
             if(response.data.error && response.data.error.message){
-            this.handleApiError(response.data.error.message);
+                this.handleApiError(response.data.error.message);
             }
 
             return response;

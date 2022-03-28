@@ -38,7 +38,7 @@ async function newAndRecommended(req, res){
         accessToken = req.get('access-token');
         const newReleases = await getNewReleases();
         const topArtists = await topItems('artists', config(accessToken));
-        console.log(`top artists: ${JSON.stringify(topArtists.data)}`);
+        //console.log(`top artists: ${JSON.stringify(topArtists.data)}`);
         const recommendedTracks = await getRecommendedTracks(topArtists.data);
         const recommendedArtists = await getRecommendedArtists(topArtists.data);
 

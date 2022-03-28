@@ -37,11 +37,11 @@ export const getRecommendationSeeds = (artists, tracks) => {
     let seedArtists = '';
     let seedTracks = '';
 
-    console.log('top tracks');
+    /* console.log('top tracks');
 
     tracks.items.forEach(track => {
         console.log(`${track.name}/${track.id}`);
-    });
+    }); */
 
     //randomize seeds
     shuffleArray(artists.items);

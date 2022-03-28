@@ -144,10 +144,12 @@ export const mutations = {
         state.devicePlaybackTransferNeeded = needed;
     },
     setItemPlaybackIcon(state, payload){
-        payload.item.playbackIcon = payload.icon;
+        payload.item ? payload.item.playbackIcon = payload.icon : null;
     },
     setAudioPlaying(state, playing){
         console.log(`setting audioPlaying to ${playing}`);
         state.audioPlaying = playing;
     }
 };
+
+//TODO try to handle external pausing (e.g. from headphone) - player_state_changed - compare if prev playing and now paused and vice versa

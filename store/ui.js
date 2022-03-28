@@ -29,7 +29,7 @@ export const actions = {
         commit('displayDetailOverlay', item);
     },
     displayArtistDetail: async ({dispatch}, artist) =>{
-        const response = await httpClient.post('/detail/artist', {itemId: artist.id});
+        const response = await httpClient.post('/artist', {itemId: artist.id});
         artist.images = response.data.artist.images;
         artist.genres = response.data.artist.genres;
         

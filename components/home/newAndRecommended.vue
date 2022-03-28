@@ -22,7 +22,7 @@
   import {setItemDisplayData} from '~/utils/helpers';
   
   @Component
-  export default class NewAndRecommendedPreview extends Vue {
+  export default class NewAndRecommended extends Vue {
       data = [];
 
       @Action('fetchDiscoverData')

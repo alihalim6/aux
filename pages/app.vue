@@ -2,7 +2,7 @@
     <v-app>
         <v-app-bar elevation="2" color="white" class="app-bar"></v-app-bar>
         
-        <Discover/>
+        <NewAndRecommended/>
         
         <DetailOverlay/>
         <Toast/>

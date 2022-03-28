@@ -1,11 +1,11 @@
 import express from 'express';
 import axios from 'axios';
-import {config, API_URL} from '../_utils';
+import {config, API_URL} from './_utils';
 
 const router = express.Router();
 let accessToken;
 
-router.post('/playItem', async (req, res) => {
+async function playback(req, res){
     try{
         accessToken = req.get('access-token');
         const itemUri = req.body.item.uri;
@@ -26,6 +26,14 @@ router.post('/playItem', async (req, res) => {
     catch(error){
         res.json({error});
     }
-});
+};
 
-module.exports = router;
+//module.exports = router;
+
+router.post('/playItem', playback);
+
+if(process.env.NODE_ENV === 'development'){
+    module.exports = router;
+}    
+
+export default playback;

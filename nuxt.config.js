@@ -66,6 +66,14 @@ export default {
   build: {
   },
 
+/*   serverMiddleware: process.env.NODE_ENV === 'production' ? [] : [
+    {path: '/discover', handler: '~/api/discover.js'},
+    {path: '/detail', handler: '~/api/detail.js'},
+    {path: '/playback', handler: '~/api/playback.js'},
+    {path: '/myAux', handler: '~/api/myAux.js'},
+    {path: '/artist', handler: '~/api/artist.js'}
+  ], */
+
   serverMiddleware: process.env.NODE_ENV === 'production' ? [] : ['~/api/v1'],
 
   vuetify: {

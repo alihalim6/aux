@@ -1,6 +1,6 @@
 import express from 'express';
 import axios from 'axios';//TODO resuable client
-import {config, API_URL} from '../_utils';
+import {config, API_URL} from './_utils';
 
 const router = express.Router();
 let accessToken;
@@ -22,11 +22,7 @@ const getRelatedArtists = async () => {
     return await axios.get(`${API_URL}/artists/${itemDetailId}/related-artists`, config(accessToken));
 };
 
-const getArtist = async (itemId) => {
-    return await axios.get(`${API_URL}/artists/${itemId}`, config(accessToken));
-};
-
-router.post('/', async (req, res) => {
+async function detail(req, res){
     try{
         accessToken = req.get('access-token');
         itemDetailId = req.body.itemDetailId;
@@ -66,18 +62,15 @@ router.post('/', async (req, res) => {
     catch(error){
         res.json({error: {message: error}});
     }
-});
+};
 
-router.post('/artist', async (req, res) => {
-    try{
-        accessToken = req.get('access-token');
-        const artist = await getArtist(req.body.itemId);
 
-        res.json({artist: artist.data});
-    }
-    catch(error){
-        res.json({error});
-    }
-});
+//module.exports = router;
 
-module.exports = router;
+router.post('/', detail);
+
+if(process.env.NODE_ENV === 'development'){
+    module.exports = router;
+}    
+
+export default detail;

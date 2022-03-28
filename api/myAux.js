@@ -1,9 +1,9 @@
 import express from 'express';
-import {headers} from '../_utils';
+import {headers} from './_utils';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+async function myAux(req, res){
   try{
     const accessToken = req.get('access-token');
     const topArtists = await topItems('artists', headers(accessToken));
@@ -17,6 +17,14 @@ router.get('/', async (req, res) => {
   catch(error){
     res.json({error});
   }
-});
+};
 
-module.exports = router;
+//module.exports = router;
+
+router.get('/', myAux);
+
+if(process.env.NODE_ENV === 'development'){
+    module.exports = router;
+}    
+
+export default myAux;

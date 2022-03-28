@@ -1,6 +1,6 @@
 import express from 'express';
 import axios from 'axios';
-import {config, topItems, shuffleArray, API_URL, getRecommendationSeeds, getATopArtist} from '../_utils';
+import {config, topItems, shuffleArray, API_URL, getRecommendationSeeds, getATopArtist} from './_utils';
 
 const router = express.Router();
 let accessToken;
@@ -31,7 +31,7 @@ const getRecommendedArtists = async (topArtists) => {
     }});
 };
 
-router.get('/', async (req, res) => {
+async function discover(req, res){
     //TODO don't recommend if already follow an artist/like a track etc.
 
     try{
@@ -63,6 +63,12 @@ router.get('/', async (req, res) => {
     }catch(error){
         res.json({error});
     }
-});
+};
 
-module.exports = router;
+router.get('/', discover);
+
+if(process.env.NODE_ENV === 'development'){
+    module.exports = router;
+}    
+
+export default discover;

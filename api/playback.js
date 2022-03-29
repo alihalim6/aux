@@ -28,7 +28,7 @@ async function playback(req, res){
     }
 };
 
-router.post('/playItem', playback);
+router.post('/', playback);
 
 if(process.env.NODE_ENV === 'development'){
     module.exports = router;

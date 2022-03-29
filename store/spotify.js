@@ -34,7 +34,7 @@ export const getters = {
 
 export const actions = {
     playItem: async ({commit, getters}, item) => {
-        await httpClient.post('/playback/playItem', {
+        await httpClient.post('/playItem', {
             item, 
             deviceId: getters.spotifyDeviceId, 
             devicePlaybackTransferNeeded: getters.devicePlaybackTransferNeeded

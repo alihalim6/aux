@@ -14,8 +14,8 @@
         "dest": "/api/newAndRecommended.js"
       },
       {
-        "src": "/api/playback",
-        "dest": "/api/playback.js"
+        "src": "/api/playItem",
+        "dest": "/api/playItem.js"
       },
       {
         "src": "/api/detail",

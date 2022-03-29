@@ -10,8 +10,8 @@
         }
       },
       {
-        "src": "/api/newAndRecommended",
-        "dest": "/api/newAndRecommended.js"
+        "src": "/api/v1",
+        "dest": "/api/v1.js"
       }
     ],
     "builds": [

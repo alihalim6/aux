@@ -35,7 +35,7 @@ async function newAndRecommended(req, res){
     //TODO don't recommend if already follow an artist/like a track etc.
 
     try{
-        accessToken = req.get('access-token');
+        accessToken = req.headers['access-token'];
         const newReleases = await getNewReleases();
         const topArtists = await topItems('artists', config(accessToken));
         //console.log(`top artists: ${JSON.stringify(topArtists.data)}`);

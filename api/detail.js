@@ -64,9 +64,6 @@ async function detail(req, res){
     }
 };
 
-
-//module.exports = router;
-
 router.post('/', detail);
 
 if(process.env.NODE_ENV === 'development'){

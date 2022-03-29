@@ -28,8 +28,6 @@ async function playback(req, res){
     }
 };
 
-//module.exports = router;
-
 router.post('/playItem', playback);
 
 if(process.env.NODE_ENV === 'development'){

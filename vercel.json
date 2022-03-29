@@ -12,6 +12,18 @@
       {
         "src": "/api/newAndRecommended",
         "dest": "/api/newAndRecommended.js"
+      },
+      {
+        "src": "/api/playback",
+        "dest": "/api/playback.js"
+      },
+      {
+        "src": "/api/detail",
+        "dest": "/api/detail.js"
+      },
+      {
+        "src": "/api/artist",
+        "dest": "/api/artist.js"
       }
     ],
     "builds": [

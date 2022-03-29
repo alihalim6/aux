@@ -5,7 +5,7 @@ import {config, API_URL} from './_utils';
 const router = express.Router();
 let accessToken;
 
-async function playback(req, res){
+async function playItem(req, res){
     try{
         accessToken = req.get('access-token');
         const itemUri = req.body.item.uri;
@@ -28,10 +28,10 @@ async function playback(req, res){
     }
 };
 
-router.post('/', playback);
+router.post('/', playItem);
 
 if(process.env.NODE_ENV === 'development'){
     module.exports = router;
 }    
 
-export default playback;
+export default playItem;

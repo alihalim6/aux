@@ -11,7 +11,7 @@ const getArtist = async (itemId) => {
 
 async function artist(req, res){
     try{
-        accessToken = req.get('access-token');
+        accessToken = req.headers['access-token'];
         const artist = await getArtist(req.body.itemId);
 
         res.json({artist: artist.data});

@@ -24,7 +24,7 @@ const getRelatedArtists = async () => {
 
 async function detail(req, res){
     try{
-        accessToken = req.get('access-token');
+        accessToken = req.headers['access-token'];
         itemDetailId = req.body.itemDetailId;
         console.log(`detailId: ${itemDetailId}`);
         const isAlbum = req.body.isAlbum;

@@ -7,7 +7,7 @@ let accessToken;
 
 async function playItem(req, res){
     try{
-        accessToken = req.get('access-token');
+        accessToken = req.headers['access-token'];
         const itemUri = req.body.item.uri;
         const requestBody = req.body.item.isTrack ? {uris: [itemUri]} : {context_uri: itemUri};
 

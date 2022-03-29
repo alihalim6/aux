@@ -5,7 +5,7 @@ const router = express.Router();
 
 async function myAux(req, res){
   try{
-    const accessToken = req.get('access-token');
+    const accessToken = req.headers['access-token'];
     const topArtists = await topItems('artists', headers(accessToken));
     const topTracks = await topItems('tracks', headers(accessToken));
 

@@ -42,6 +42,9 @@ export default class Splash extends Vue {
 
     .under-construction {
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
 
       .tbd-message {
         margin-bottom: 32px;

@@ -1,5 +1,5 @@
 export const AUX_NAMESPACE = 'aux.';
-export const BASE_URL = (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://aux-kappa.vercel.app');//TODO
+export const BASE_URL = (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://www.liveonaux.com');//TODO
 
 export const AUTH = {
     ACCESS_TOKEN: 'accessToken',

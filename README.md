@@ -2,4 +2,4 @@ Web app for listening to Spotify together with others.  Built with Nuxt.js, Spot
 
 liveonaux.com
 
-<img src="https://res.cloudinary.com/develpement/image/upload/v1648838229/aux/initial_aux_q0anwf.gif"/>
+<img src="https://res.cloudinary.com/develpement/image/upload/v1648838946/aux/initial_aux_cj1s6o.gif"/>

@@ -1,6 +1,11 @@
 <template>
     <v-app>
-        <v-app-bar elevation="2" color="white" class="app-bar"></v-app-bar>
+        <v-app-bar elevation="2" color="white" class="app-bar">
+            <div class="logo-container">
+                <div class="stripe-one"></div><div class="stripe-two"></div>
+               <div class="logo-label">AUX</div>
+            </div>
+        </v-app-bar>
         
         <NewAndRecommended/>
         
@@ -50,8 +55,46 @@ export default class App extends Vue {
 
 <style lang="scss">
 .app-bar {
+    height: $app-header-height !important;
     max-height: $app-header-height;
     margin-bottom: 22px;
     z-index: 1000;
+
+    .logo-container {
+        margin: 28px auto 0px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        border: 4px solid black;
+        border-radius: 8px;
+        padding-left: 14px;
+        padding-right: 10px;
+
+        .logo-stripe {
+            height: 16px;
+            width: 9px;
+            transform: skewX(-20deg);
+            background-color: white;
+            border: 2px solid $primary-theme-color;
+        }
+
+        .stripe-one {
+            @extend .logo-stripe;
+            margin-right: 4px;
+        }
+
+        .stripe-two {
+            @extend .logo-stripe;
+            margin-right: 2px;
+        }
+
+        .logo-label {
+            color: $primary-theme-color;
+            font-weight: 600;
+            letter-spacing: 2px;
+            font-size: 33px;
+            margin-left: 4px;
+        }
+    }
 }
 </style>

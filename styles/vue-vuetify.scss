@@ -12,3 +12,8 @@
 .v-dialog--fullscreen {
     overflow-y: hidden !important;
 }
+
+.v-sheet.v-card {
+    border: none !important;
+    border-radius: 0px !important;
+}

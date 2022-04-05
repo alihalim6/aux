@@ -43,4 +43,9 @@
   .record-icon {
     color: #ed0000 !important;
   }
+
+  .content-hover {
+    z-index: 100;
+    margin-top: 2px;
+  }
 </style>

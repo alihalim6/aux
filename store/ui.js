@@ -24,7 +24,15 @@ export const getters = {
 export const actions = {
     displayDetailOverlay: async ({commit}, item) => {
         const detailId = (item.isTrack ? item.album.id : item.id);
-        const response = await httpClient.post('/detail', {itemDetailId: detailId, isTrack: item.isTrack, isAlbum: item.isAlbum, isArtist: item.isArtist});
+
+        const response = await httpClient.post('/detail', {
+            itemDetailId: detailId, 
+            isTrack: item.isTrack, 
+            isAlbum: item.isAlbum, 
+            isArtist: item.isArtist,
+            singleArtistId: item.singleArtistId
+        });
+
         commit('setItemDetailData', {item, data: response.data});
         commit('displayDetailOverlay', item);
     },

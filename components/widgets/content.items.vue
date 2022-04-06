@@ -4,7 +4,7 @@
             <div v-for="(item, index) in data" :key="item.id">
                 <v-hover v-slot="{hover}">
                     <v-card max-width="175" elevation="10" class="clickable" :class="{'content-hover': hover}">
-                      <v-img class="content-img" :src="item.imgUrl" @click="displayDetailOverlay(item)"></v-img>
+                      <v-img class="content-img" :src="item.imgUrl" @click="itemImagePressed(item)"></v-img>
                       <PlaybackIcon :item="item" icon-class="playback-button" :conditional-icon-class="{'last-item-playback-button': (index === data.length - 1)}"/>
                     </v-card>
                 </v-hover>
@@ -36,6 +36,14 @@
 
       @Getter('spotifyPlayer', {namespace: 'spotify'})
       spotifyPlayer;
+
+      itemImagePressed(item){
+        if(item.isAlbum && (item.total_tracks === 1) || (item.isTrack && item.album && item.album.total_tracks === 1)){
+          item.singleArtistId = item.artists[0].id;
+        }
+
+        this.displayDetailOverlay(item);
+      }
   }
   </script>
 

@@ -77,7 +77,7 @@
 
     .item-image {
         max-width: $max-inner-width !important;
-        height: 90vh;
+        height: 88vh;
         padding: 6px;
         margin: 0 auto;
         border-radius: 4px;
@@ -88,7 +88,7 @@
             height: 60px;
             width: 25px;
             background-color: $primary-theme-color;
-            right: -18px;
+            right: -16px;
             top: 53px;
             border-radius: 0px 4px 4px 0px;
             display: flex;
@@ -110,7 +110,7 @@
             border: unset;
             position: relative;
             width: fill-available;
-            height: fill-available;
+            height: 100%;
             background-color: white;
             max-width: unset;
             border: 2px solid $secondary-theme-color;

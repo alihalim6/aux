@@ -19,7 +19,7 @@ export const setItemDisplayData = (item) => {
       item.subLabel = artists.join(', ');
       item.primaryLabel = item.name;
 
-      if(!item.isTrack && item.total_tracks > 1){
+      if(item.isAlbum && item.total_tracks > 1){
         item.bottomLabel = `${item.total_tracks} Tracks`;
       }
 
@@ -60,5 +60,5 @@ export const setItemDisplayData = (item) => {
     const mins = s % 60;
     const hrs = (s - mins) / 60;
   
-    return (hrs ? pad(hrs, true) + ':' : '') + (mins ? pad(mins, !hrs) + ':' : '') + pad(secs, !mins);
+    return (hrs ? pad(hrs, true) + ':' : '') + (mins ? pad(mins, !hrs) + ':' : '0:') + pad(secs, !mins);
   };

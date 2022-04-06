@@ -11,7 +11,7 @@ const getAlbumTracks = async () => {
 };
 
 const getArtistAlbums = async () => {
-    return await axios.get(`${API_URL}/artists/${itemDetailId}/albums?limit=50`, config(accessToken));
+    return await axios.get(`${API_URL}/artists/${itemDetailId}/albums?limit=15`, config(accessToken));
 };
 
 const getArtistTopTracks = async () => {
@@ -30,6 +30,7 @@ async function detail(req, res){
         const isAlbum = req.body.isAlbum;
         const isTrack = req.body.isTrack;
         const isArtist = req.body.isArtist;
+        const singleArtistId = req.body.singleArtistId;
 
         let artistAlbums = {data: {}};
         let artistTopTracks = {data: {}};
@@ -41,7 +42,13 @@ async function detail(req, res){
             albumTracks = await getAlbumTracks();
             console.log(`# of album tracks: ${albumTracks.data.items.length}`);
         }
-        else if(isArtist){
+        
+        if(isArtist || singleArtistId){
+            //get artist data as well for singles
+            if(singleArtistId){
+                itemDetailId = singleArtistId;
+            }
+
             console.log(`item is artist`);
             artistAlbums = await getArtistAlbums();
             console.log(`# of albums: ${artistAlbums.data.items.length}`);
@@ -60,7 +67,7 @@ async function detail(req, res){
         });
     }
     catch(error){
-        res.json({error: {message: error}});
+        res.json({error});
     }
 };
 

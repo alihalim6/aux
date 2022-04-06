@@ -89,12 +89,13 @@ export const actions = {
                 commit('setAudioPlaying', true);
                 commit('setCurrentlyPlayingItem', item)
                 
-                //////
                 const playerState = await player.getCurrentState();
                 
-                if (!playerState) {
-                    console.error('User is not playing music through the Web Playback SDK');
-                    await player.connect();
+                //////TODO: needs work -- completely need to re auth?
+                if(!playerState){
+                    console.error('attempting to tansfer playback to device and try to play item again...');
+                    commit('setDevicePlaybackTransferNeeded', true);
+                    await dispatch('playItem', item);
                 }
 
                 try{

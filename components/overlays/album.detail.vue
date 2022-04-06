@@ -15,12 +15,34 @@
                 <span v-show="duration">{{duration}}</span>
             </div>
         </div>
+
+        <!-- TODO COMPONENTIZE TO USE FOR PLAYLISTS OVERLAY -->
+        <div class="track-list-container" v-show="album.total_tracks > 1">
+            <div v-for="(track, index) in album.details.albumTracks" :key="index" class="track-container" :class="{'no-bottom-border': (track.track_number === album.details.albumTracks.length)}">
+                <div class="left-container">
+                    <div class="track-number">{{track.track_number}}</div>
+                    <div class="track-name">
+                        <span>{{track.name}}</span>               
+                        <div class="track-duration">{{track.duration}}</div>
+                    </div>
+                </div>
+
+                <div class="right-container">
+                    <PlaybackIcon :item="track" class="track-list-playback"/>
+                    <v-icon small class="clickable">mdi-heart-plus-outline</v-icon>
+                </div>
+            </div>
+        </div>
+
+        <div class="artist-top-tracks-container" v-show="album.total_tracks === 1">
+            
+        </div>
     </section>
 </template>
 
 <script>
   import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
-  import {msToDuration} from '~/utils/helpers';
+  import {msToDuration, setItemDisplayData} from '~/utils/helpers';
 
   @Component
   export default class AlbumDetail extends Vue {
@@ -33,6 +55,11 @@
       displayArtistDetail;
 
       beforeMount(){
+        this.album.details.albumTracks.forEach(track => {
+            setItemDisplayData(track);
+            track.duration = msToDuration(track.duration_ms);
+        });
+
         if(this.album.total_tracks === 1){
             this.duration = msToDuration(this.album.details.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
         }

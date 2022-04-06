@@ -17,6 +17,7 @@
 <script>
 import {Component, Vue, Mutation, Action} from 'nuxt-property-decorator';
 import {httpClient} from '~/utils/api';
+import {refreshToken} from '~/preAuth.js';
 
 @Component
 export default class App extends Vue {
@@ -35,9 +36,22 @@ export default class App extends Vue {
     }
 
     initApiErrorHandling(){
-        httpClient.interceptors.response.use(response => {
-            if(response.data.error && response.data.error.message){
-                this.handleApiError(response.data.error.message);
+        httpClient.interceptors.response.use(async response => {
+            const errorMessage = response.data.error ? response.data.error.message : '';
+
+            if(response.data.error && errorMessage){
+                if(errorMessage.indexOf('401') > 1){
+                    try{
+                        await refreshToken(this);
+                    }
+                    catch(error){
+                        console.log(`unable to refresh token after API 401; sending user back to splash: ${error}`);
+                        this.$router.push('splash');
+                    }
+                }
+                else{
+                    this.handleApiError(errorMessage);
+                }
             }
 
             return response;
@@ -65,7 +79,7 @@ export default class App extends Vue {
         display: flex;
         align-items: baseline;
         justify-content: center;
-        border: 4px solid black;
+        border: 3px solid black;
         border-radius: 8px;
         padding-left: 14px;
         padding-right: 10px;

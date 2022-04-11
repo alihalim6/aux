@@ -16,7 +16,7 @@
     </v-app>
 </template>
 
-<script lang="ts">
+<script>
 import {Component, Vue} from 'nuxt-property-decorator';
 import {authorize} from '~/preAuth';
 

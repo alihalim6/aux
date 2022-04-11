@@ -24,7 +24,7 @@
 
                                 <div class="section-title overlay-section-title">
                                     {{item.name}}
-                                    <div class="controls-container" :class="{'flex-end-justify': item.isArtist}">
+                                    <div class="controls-container" :class="{'justify-end': item.isArtist}">
                                         <PlaybackIcon :item="item" class="detail-overlay-playback-button"/>
                                         <!-- TODO -->
                                         <v-icon medium class="clickable">mdi-heart-plus-outline</v-icon>

@@ -11,7 +11,7 @@ const getAlbumTracks = async () => {
 };
 
 const getArtistAlbums = async () => {
-    return await axios.get(`${API_URL}/artists/${itemDetailId}/albums?limit=15`, config(accessToken));
+    return await axios.get(`${API_URL}/artists/${itemDetailId}/albums?limit=30&include_groups=album,compilation`, config(accessToken));
 };
 
 const getArtistTopTracks = async () => {
@@ -38,9 +38,7 @@ async function detail(req, res){
         let albumTracks = {data: {}};
         
         if(isAlbum || isTrack){
-            console.log(`item is album: ${isAlbum}; item is track: ${isTrack}`);
             albumTracks = await getAlbumTracks();
-            console.log(`# of album tracks: ${albumTracks.data.items.length}`);
         }
         
         if(isArtist || singleArtistId){
@@ -48,17 +46,17 @@ async function detail(req, res){
             if(singleArtistId){
                 itemDetailId = singleArtistId;
             }
-
-            console.log(`item is artist`);
+            
             artistAlbums = await getArtistAlbums();
-            console.log(`# of albums: ${artistAlbums.data.items.length}`);
+            //Spotify sends back explicit and clean albums, so filter out clean ones
+            artistAlbums.data.items = [...new Map(artistAlbums.data.items.map(album => [album['name'], album])).values()];
+
             artistTopTracks = await getArtistTopTracks();
-            console.log(`# of top tracks: ${artistTopTracks.data.tracks.length}`);
             relatedArtists = await getRelatedArtists();
-            console.log(`# of related artists: ${relatedArtists.data.artists.length}`);
         }
         //else playlist
-        
+
+  
         res.json({
             artistAlbums: artistAlbums.data.items,
             artistTopTracks: artistTopTracks.data.tracks,

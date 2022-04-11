@@ -13,7 +13,7 @@
       <div class="secondary-title-border"></div>
     </div>
 
-    <ContentItems :data="data"/>
+    <ContentCarousel :data="data"/>
   </section>
 </template>
 

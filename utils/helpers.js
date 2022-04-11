@@ -42,6 +42,12 @@ export const setItemDisplayData = (item) => {
     }
   };
 
+  export const setDetailsDisplayData = (details) => {
+    details.forEach(item => {
+      setItemDisplayData(item);
+  });
+  };
+
   //adapted from https://stackoverflow.com/a/9763769
   export const msToDuration = (ms) => {
     function pad(n, paddingCheck) {

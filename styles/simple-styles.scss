@@ -16,18 +16,18 @@
     white-space: nowrap;
 }
 
-.flex-end-justify {
-    justify-content: flex-end !important;
-}
-
-.sub-pad-left {
-    padding-left: $sub-padding;
-}
-
 .no-bottom-border {
     border-bottom: none !important;
 }
 
-.font-weight-normal {
-    font-weight: normal;
+.dashed-separator {
+    border-bottom: 1px dashed #eeeeee;
+} 
+
+.sub-padding-left {
+    padding-left: $sub-padding;
+}
+
+.sub-padding-right {
+    padding-right: ($sub-padding + 2px) !important;
 }

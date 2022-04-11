@@ -1,16 +1,20 @@
 <template>
     <section>
-        <div class="content-carousel">
+        <div class="content-carousel" :class="{'more-from-content-carosuel': moreFromContent}">
             <div v-for="(item, index) in data" :key="item.id">
                 <v-hover v-slot="{hover}">
-                    <v-card max-width="175" elevation="10" class="clickable" :class="{'content-hover': hover}">
+                    <v-card max-width="175" elevation="10" class="clickable" :class="{'content-hover': hover, 'spaced-content': moreFromContent}">
                       <v-img class="content-img" :src="item.imgUrl" @click="itemImagePressed(item)"></v-img>
-                      <PlaybackIcon :item="item" icon-class="playback-button" :conditional-icon-class="{'last-item-playback-button': (index === data.length - 1)}"/>
+                      
+                      <PlaybackIcon 
+                        :item="item" 
+                        icon-class="playback-button" 
+                        :conditional-icon-class="{'last-item-playback-button': (index === data.length - 1) || moreFromContent}"/>
                     </v-card>
                 </v-hover>
                 
-                <div class="sub-text" :class="{'artist-sub-label': item.isArtist}">{{item.subLabel}}</div>
-                <div class="primary-text" :class="{'artist-primary-text': item.isArtist}">{{item.primaryLabel}}</div>
+                <div v-if="!moreFromContent" class="sub-text" :class="{'artist-sub-label': item.isArtist}">{{item.subLabel}}</div>
+                <div class="primary-text" :class="{'artist-primary-text': item.isArtist, 'more-from-padding': moreFromContent}">{{item.primaryLabel}}</div>
                 <div class="sub-text bottom-label"><v-icon v-show="item.bottomLabel" class="record-icon" small>mdi-music-circle</v-icon>{{item.bottomLabel}}</div>
             </div>
         </div>
@@ -21,9 +25,12 @@
   import {Component, Vue, Prop, Action, Getter} from 'nuxt-property-decorator';
   
   @Component
-  export default class ContentItems extends Vue {
+  export default class ContentCarousel extends Vue {
       @Prop({required: true})
       data;
+    
+      @Prop({default: false})
+      moreFromContent;
 
       @Action('togglePlayback', {namespace: 'spotify'})
       togglePlayback;
@@ -38,14 +45,14 @@
       spotifyPlayer;
 
       itemImagePressed(item){
-        if(item.isAlbum && (item.total_tracks === 1) || (item.isTrack && item.album && item.album.total_tracks === 1)){
-          item.singleArtistId = item.artists[0].id;
+        if((item.isAlbum && (item.total_tracks === 1)) || (item.isTrack && (!item.album || item.album.total_tracks === 1))){
+          item.singleArtistId = item.singleTrack = item.artists[0].id;
         }
 
         this.displayDetailOverlay(item);
       }
   }
-  </script>
+</script>
 
 <style lang="scss">
   .record-icon {

@@ -43,7 +43,7 @@ export default class Splash extends Vue {
       width: fit-content;
       margin-bottom: 12px;
       background-color: #1D8954 !important;
-      color: white;
+      color: white !important;
     }
 
     .under-construction {

@@ -1,22 +1,22 @@
 <template>
      <section>
-        <div class="more-from-artist">More from <span class="font-weight-bold">{{artist.name}}</span>:</div>
+        <div v-if="!item.isArtist" class="more-from-artist">More from <span class="font-weight-bold">{{artist.name}}</span>:</div>
 
-        <v-card class="overlay-details-container more-from-details-container" elevation="7">
+        <v-card class="overlay-details-container more-from-details-container" elevation="7" v-if="item.details.artistTopTracks.length">
             <div class="more-from-details">
                 <span class="more-from-details-title font-weight-bold">Top Tracks</span>
                 <TrackList :tracks="item.details.artistTopTracks" :mixOfTracks="true" :mainId="item.id"/>
             </div>
         </v-card>
 
-        <v-card class="overlay-details-container more-from-details-container sub-padding-right" elevation="7">
+        <v-card class="overlay-details-container more-from-details-container sub-padding-right" elevation="7" v-if="item.details.artistAlbums.length">
             <div class="more-from-details">
                 <span class="more-from-details-title font-weight-bold">Top Albums</span>
                 <ContentCarousel :data="item.details.artistAlbums" :moreFromContent="true"/>
             </div>
         </v-card>
 
-        <v-card class="overlay-details-container more-from-details-container sub-padding-right" elevation="7">
+        <v-card class="overlay-details-container more-from-details-container sub-padding-right" elevation="7" v-if="item.details.relatedArtists.length">
             <div class="more-from-details">
                 <span class="more-from-details-title font-weight-bold">Related Artists</span>
                 

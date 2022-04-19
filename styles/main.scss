@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@200;300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700&display=swap');
 @import './vue-vuetify.scss';
 @import './simple-styles.scss';
 
@@ -16,7 +16,7 @@
         color: rgba(0, 0, 0, 0.8);
         font-weight: 600;
         line-height: 1.1;
-        padding: 8px $sub-padding 0px;
+        padding: 8px $base-padding 0px;
     }
 
     .secondary-title-border {
@@ -137,7 +137,7 @@ $content-img-size: 275px;
 
 .more-from-content-carosuel {
     margin-top: 6px;
-    padding: 0px $sub-padding;
+    padding: 0px $base-padding;
 }
 
 .sub-title-container {
@@ -145,10 +145,10 @@ $content-img-size: 275px;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    padding: 0px $sub-padding;
+    padding: 0px $base-padding;
 }
 
 .overlay-details-container {
     margin: 10px 0px 16px;
-    padding: 10px $sub-padding 14px;
+    padding: 10px $base-padding 14px;
 }

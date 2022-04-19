@@ -23,7 +23,7 @@
                 <div class="related-artists-container">
                     <div 
                         v-for="(artist, index) in item.details.relatedArtists" 
-                        :key="index" class="clickable artist-container dashed-separator" 
+                        :key="artist.id" class="clickable artist-container dashed-separator" 
                         :class="{'no-bottom-border': (index === item.details.relatedArtists.length - 1)}"
                         @click="displayArtistDetail(artist)">
 
@@ -67,7 +67,7 @@
 
     .more-from-artist {
         font-size: 20px;
-        padding: 20px $sub-padding 0px;
+        padding: 20px $base-padding 0px;
     }
 
     .more-from-details {
@@ -75,7 +75,7 @@
         
         .more-from-details-title {
             margin-bottom: 6px;
-            padding: 6px 0px 10px $sub-padding;
+            padding: 6px 0px 10px $base-padding;
             text-decoration: underline;
         }
 
@@ -87,7 +87,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                padding-left: $sub-padding;
+                padding-left: $base-padding;
                 border-radius: 2px;
                 border-bottom: 1px dashed #eeeeee;
 

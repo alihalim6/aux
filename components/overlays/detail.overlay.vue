@@ -1,6 +1,6 @@
 <template>
     <section>
-        <v-dialog :value="detailOverlay.display" hide-overlay fullscreen transition="fade-transition" @click:outside="closeDetailOverlay()">
+        <v-dialog :value="detailOverlay.display" fullscreen transition="fade-transition" persistent>
             <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="detailOverlay.currentIndex">
                 <v-carousel-item v-for="(item, index) in detailOverlay.items" :key="item.id" transition="fade-transition">                    
                     <!-- v-show img so that timing of img then content stays consistent as carousel nav happens -->
@@ -128,7 +128,7 @@
 
             .inner-container {
                 max-width: $max-inner-width;
-                padding: $sub-padding;
+                padding: $base-padding;
                 margin: 0 auto;
                 width: fill-available;
 
@@ -185,7 +185,7 @@
                 }
 
                 .overlay-section-title {
-                    padding: 16px $sub-padding 8px;
+                    padding: 16px $base-padding 8px;
                     font-size: 26px;
 
                      .controls-container {

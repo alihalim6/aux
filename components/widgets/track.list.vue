@@ -1,17 +1,17 @@
 <template>
     <section class="track-list-container" :class="{'mt-0': mixOfTracks}">
-        <div v-for="(track, index) in tracks" :key="index" @click="displayDetailOverlay(track)">
+        <div v-for="(track, index) in tracks" :key="track.id">
             <div v-if="mainId !== track.id" class="track-container dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
                 <div class="left-container">
                     <div v-if="!mixOfTracks" class="track-number">{{track.track_number}}</div>
-                    <v-img v-if="mixOfTracks" class="clickable track-album-img" :src="track.imgUrl"></v-img>
+                    <v-img v-if="mixOfTracks" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl"></v-img>
 
                     <div class="track-info" :class="{'smaller-track-names': mixOfTracks}">
-                        <span>{{track.name}}</span>               
+                        <span :class="{'clickable': mixOfTracks}" @click="trackPressed(track)">{{track.name}}</span>               
                         <div class="track-duration">{{track.duration}}</div>
 
                         <div v-if="mixOfTracks && track.album.total_tracks > 1" class="track-from-album-container">
-                            From <div class="clickable font-weight-bold text-decoration-underline track-from-album">{{track.album.name}}</div><v-icon small class="clickable">mdi-arrow-right</v-icon>
+                            From <div @click.stop="displayDetailOverlay(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">{{track.album.name}}</div><v-icon small class="clickable">mdi-arrow-right</v-icon>
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
 
 <script>
   import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
-  import {msToDuration, setItemDisplayData} from '~/utils/helpers';
+  import {msToDuration, setItemDisplayData, setDetailsDisplayData} from '~/utils/helpers';
     
   @Component
   export default class TrackList extends Vue {
@@ -43,10 +43,20 @@
     @Action('displayDetailOverlay', {namespace: 'ui'})
     displayDetailOverlay;
 
+    trackPressed(track){
+        if(this.mixOfTracks){
+            this.displayDetailOverlay(track);
+        }
+    }
+
     beforeMount(){
       this.tracks.forEach(track => {
         setItemDisplayData(track);
         track.duration = msToDuration(track.duration_ms);
+
+        if(track.album){
+            setItemDisplayData(track.album);
+        }
       });
     }
   }
@@ -55,7 +65,7 @@
 <style lang="scss">
   .track-list-container {
       margin: 18px auto 0px;
-      padding: 0px $sub-padding;
+      padding: 0px $base-padding;
 
       .track-container {
           display: flex;

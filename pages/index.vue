@@ -10,7 +10,7 @@
   import {Component, Vue, Mutation, Action} from 'nuxt-property-decorator';
   import {storageGet, clearStorage} from '~/utils/storage';
   import {AUTH} from '~/utils/constants';
-  import {initToken, accessTokenExpiring, refreshToken} from '~/preAuth.js';
+  import {initToken, accessTokenExpiring, refreshToken} from '~/preAuth';
 
   @Component
   export default class Root extends Vue {

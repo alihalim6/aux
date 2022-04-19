@@ -11,7 +11,7 @@ export const setItemDisplayData = (item) => {
     }
     //not all items have images
     catch(error){
-        console.log('there was an issue getting item\'s image');
+        //console.info('unable to set item\'s image url');
     }
     
     if(item.isAlbum || item.isTrack){
@@ -39,6 +39,12 @@ export const setItemDisplayData = (item) => {
       if(genres.length){
         item.primaryLabel = genres.slice(0, 3).join(', ');
       }
+    }
+
+    item.singleTrack = (item.isAlbum && (item.total_tracks === 1)) || (item.isTrack && (!item.album || item.album.total_tracks === 1));
+
+    if(item.singleTrack){
+      item.singleArtistId = item.artists[0].id;
     }
   };
 

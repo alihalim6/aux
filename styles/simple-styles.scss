@@ -25,9 +25,13 @@
 } 
 
 .sub-padding-left {
-    padding-left: $sub-padding;
+    padding-left: $base-padding;
 }
 
 .sub-padding-right {
-    padding-right: ($sub-padding + 2px) !important;
+    padding-right: ($base-padding + 2px) !important;
+}
+
+.inline-display {
+    display: inline;
 }

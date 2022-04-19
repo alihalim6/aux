@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Aux',
+    title: 'Aux - Listen to Spotify with Others',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -65,14 +65,6 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build`
   build: {
   },
-
-/*   serverMiddleware: process.env.NODE_ENV === 'production' ? [] : [
-    {path: '/discover', handler: '~/api/discover.js'},
-    {path: '/detail', handler: '~/api/detail.js'},
-    {path: '/playback', handler: '~/api/playback.js'},
-    {path: '/myAux', handler: '~/api/myAux.js'},
-    {path: '/artist', handler: '~/api/artist.js'}
-  ], */
 
   serverMiddleware: process.env.NODE_ENV === 'production' ? [] : ['~/api/v1'],
 

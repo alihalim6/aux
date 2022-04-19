@@ -41,7 +41,7 @@
         this.data.forEach(setItemDisplayData);
       }
 
-      async fetch(){
+      async beforeMount(){
         await this.fetchNewAndRecommendedData();
         const {previewData} = this.getData('newAndRecommended');
         this.data = previewData;

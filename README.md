@@ -1,4 +1,4 @@
-Web app for listening to Spotify together with others.  Built with Vue, Spotify API, Vuetify, Socket.IO, NestJS, Vercel. 
+Web app for listening to Spotify together with others.  Built with Vue, Spotify API, Vuetify, Socket.IO, Vercel. 
 
 App is in still in development.
 

@@ -18,8 +18,8 @@
         "dest": "/api/playItem.js"
       },
       {
-        "src": "/api/detail",
-        "dest": "/api/detail.js"
+        "src": "/api/details",
+        "dest": "/api/details.js"
       },
       {
         "src": "/api/artist",

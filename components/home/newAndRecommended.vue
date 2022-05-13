@@ -1,55 +1,52 @@
 <template>
   <section>
-    <div class="content-container">
+    <div class="title-container">
       <div class="section-title">
         New & Recommended
         
-        <div class="clickable see-all">
-          <div class="sub-title-label">See All</div><v-icon class="see-all-icon">mdi-arrow-right</v-icon>
+        <div class="action-container">
+          <div class="clickable action-label">New Releases Only</div>
+          <span class="action-divider">/</span>
+          <div class="clickable action-label">See All</div>
         </div>
       </div>
 
-      <div class="sub-title">Lorem ipsum dolor sit amet, consectetur adipiscing elit, consectetur adipiscing.</div>
-      <div class="secondary-title-border"></div>
+      <div class="title-border"></div>
     </div>
 
-    <ContentCarousel :data="data"/>
+    <ContentCarousel :data="previewItems"/>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Getter, Action} from 'nuxt-property-decorator';
-  import {setItemDisplayData} from '~/utils/helpers';
-  
+  import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
+  import {setItemMetaData} from '~/utils/helpers';
+  import {SPOTIFY, UI} from '~/store/constants';
+  import {httpClient} from '~/utils/api';
+
   @Component
   export default class NewAndRecommended extends Vue {
-      data = [];
+    allItems = [];
+    previewItems = []; //subset of items to preview on homepage 
+    newReleasesOnly = [];
 
-      @Action('fetchNewAndRecommendedData')
-      fetchNewAndRecommendedData;
+    @Getter('currentlyPlayingItemUri', {namespace: SPOTIFY})
+    currentlyPlayingItemUri;
 
-      @Getter('data')
-      getData;
+    @Getter('spotifyPlayer', {namespace: SPOTIFY})
+    spotifyPlayer;
 
-      @Getter('currentlyPlayingItemUri', {namespace: 'spotify'})
-      currentlyPlayingItemUri;
+    @Mutation('setLoading', {namespace: UI})
+    setLoading;
 
-      @Getter('spotifyPlayer', {namespace: 'spotify'})
-      spotifyPlayer;
-      
-      preProcessData(){
-        this.data.forEach(setItemDisplayData);
-      }
+    async beforeMount(){
+      const { data } = await httpClient.get('/newAndRecommended');
 
-      async beforeMount(){
-        await this.fetchNewAndRecommendedData();
-        const {previewData} = this.getData('newAndRecommended');
-        this.data = previewData;
+      this.allItems = data.allItems;
+      this.previewItems = setItemMetaData(data.previewItems);
+      this.newReleases = data.newReleasesOnly;
 
-        if(this.data){
-          this.preProcessData();
-        }
-      }
-
+      this.setLoading(false);
+    }
   }
 </script>

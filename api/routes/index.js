@@ -1,12 +1,9 @@
 const router = require('express').Router();
-const bodyParser = require('body-parser');
-
-router.use(bodyParser.json());
 
 router.use('/newAndRecommended', require('../newAndRecommended'));
 router.use('/playItem', require('../playItem'));
-router.use('/detail', require('../detail'));
+router.use('/details', require('../details'));
 router.use('/artist', require('../artist'));
-//!TODO: add new paths to vercel config
+//!TODO: add all new paths to vercel config
 
 module.exports = router;

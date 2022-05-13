@@ -1,13 +1,13 @@
 import express from 'express';
-import {headers} from './_utils';
+import {apiConfig, topItems} from './_utils';
 
 const router = express.Router();
 
 async function myAux(req, res){
   try{
     const accessToken = req.headers['access-token'];
-    const topArtists = await topItems('artists', headers(accessToken));
-    const topTracks = await topItems('tracks', headers(accessToken));
+    const topArtists = await topItems('artists', apiConfig(accessToken));
+    const topTracks = await topItems('tracks', apiConfig(accessToken));
 
     res.json({
       ...topArtists.data,
@@ -19,12 +19,10 @@ async function myAux(req, res){
   }
 };
 
-//module.exports = router;
-
 router.get('/', myAux);
 
 if(process.env.NODE_ENV === 'development'){
-    module.exports = router;
+  module.exports = router;
 }    
 
 export default myAux;

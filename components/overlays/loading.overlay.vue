@@ -75,7 +75,7 @@
         @for $i from 1 through 7 {
           .animated-line-#{$i} {
             @extend .animated-line;
-            animation-delay: calc($i * $animated-line-delay-multiplier);
+            animation-delay: calc(#{$i} * #{$animated-line-delay-multiplier});
           }
         }
 

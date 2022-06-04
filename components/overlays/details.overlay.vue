@@ -132,7 +132,7 @@
         padding: $base-padding;
         margin: 0 auto;
         width: stretch;
-
+        
         .inner-image-cta-container {
           display: flex;
           justify-content: space-between;

@@ -1,75 +1,82 @@
 import {httpClient} from '~/utils/api';
-import {setItemDisplayData} from '~/utils/helpers';
+import {setItemMetaData} from '~/utils/helpers';
 
 export const state = () => {
-    return {
-        detailOverlay: {items: [], display: false, currentIndex: -1},
-        fullItemImage: '',
-        toast: {display: false}
-    };
+  return {
+    detailsOverlay: {items: [], display: false, currentIndex: -1},
+    fullItemImage: '',
+    toast: {display: false},
+    loading: true
+  };
 };
 
 export const getters = {
-    detailOverlay: (state) => {
-        return state.detailOverlay;
-    },
-    fullItemImage: (state) => {
-        return state.fullItemImage;
-    },
-    toast: (state) => {
-        return state.toast;
-    }
+  detailsOverlay: (state) => {
+    return state.detailsOverlay;
+  },
+  fullItemImage: (state) => {
+    return state.fullItemImage;
+  },
+  toast: (state) => {
+    return state.toast;
+  },
+  isLoading: (state) => {
+    return state.loading;
+  }
 };
 
 export const actions = {
-    displayDetailOverlay: async ({commit}, item) => {
-        const detailId = (item.isTrack ? item.album.id : item.id);
+  displayDetailsOverlay: async ({commit}, item) => {
+    const detailsId = (item.isTrack ? item.album.id : item.id);
 
-        const response = await httpClient.post('/detail', {
-            itemDetailId: detailId, 
-            isTrack: item.isTrack, 
-            isAlbum: item.isAlbum, 
-            isArtist: item.isArtist,
-            singleArtistId: item.singleArtistId
-        });
+    const response = await httpClient.post('/details', {
+      itemDetailsId: detailsId, 
+      isTrack: item.isTrack, 
+      isAlbum: item.isAlbum, 
+      isArtist: item.isArtist,
+      singleArtistId: item.singleArtistId
+    });
 
-        commit('setItemDetailData', {item, data: response.data});
-        commit('displayDetailOverlay', item);
-    },
-    displayArtistDetail: async ({dispatch}, artist) =>{
-        const response = await httpClient.post('/artist', {itemId: artist.id});
-        artist.images = response.data.artist.images;
-        artist.genres = response.data.artist.genres;
-        
-        setItemDisplayData(artist);
-        dispatch('displayDetailOverlay', artist);
-    }
+    commit('setItemDetailsData', {item, data: response.data});
+    commit('displayDetailsOverlay', item);
+  },
+  displayArtistDetails: async ({dispatch}, artist) =>{
+    const response = await httpClient.post('/artist', {itemId: artist.id});
+    artist.images = response.data.artist.images;
+    artist.genres = response.data.artist.genres;
+    
+    setItemMetaData([artist]);
+    dispatch('displayDetailsOverlay', artist);
+  }
 };
 
 export const mutations = {
-    displayDetailOverlay(state, item){
-        state.detailOverlay.currentIndex++;
-        state.detailOverlay.items = [...state.detailOverlay.items, item];
-        state.detailOverlay.display = true;
-    },
-    closeDetailOverlay(state){
-        state.detailOverlay = {items: [], display: false, currentIndex: -1}
-    },
-    goBackDetailOverlay(state){
-        state.detailOverlay.items.splice(state.detailOverlay.currentIndex, 1);
-        state.detailOverlay.currentIndex--;
-    },
-    displayFullItemImage(state, imageUrl){
-        state.fullItemImage = imageUrl;
-    },
-    closeFullItemImage(state){
-        state.fullItemImage = '';
-    },
-    setItemDetailData(state, payload){
-        payload.item.details = payload.data;
-    },
-    setToast(state, toast){
-        //{display: boolean, text: string}
-        state.toast = toast;
-    }
+  displayDetailsOverlay(state, item){
+    state.detailsOverlay.currentIndex++;
+    state.detailsOverlay.items = [...state.detailsOverlay.items, item];
+    state.detailsOverlay.display = true;
+  },
+  closeDetailsOverlay(state){
+    state.detailsOverlay = {items: [], display: false, currentIndex: -1}
+  },
+  goBackDetailsOverlay(state){
+    state.detailsOverlay.items.splice(state.detailsOverlay.currentIndex, 1);
+    state.detailsOverlay.currentIndex--;
+  },
+  displayFullItemImage(state, imageUrl){
+    state.fullItemImage = imageUrl;
+  },
+  closeFullItemImage(state){
+    state.fullItemImage = '';
+  },
+  setItemDetailsData(state, payload){
+    payload.item.details = payload.data;
+  },
+  setToast(state, toast){
+    //{display: boolean, text: string}
+    state.toast = toast;
+  },
+  setLoading(state, loading){
+    state.loading = loading;
+  }
 };

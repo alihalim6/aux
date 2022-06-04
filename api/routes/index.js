@@ -1,12 +1,14 @@
-const router = require('express').Router();
-const bodyParser = require('body-parser');
+import express from 'express';
+import newAndRecommended from '../newAndRecommended';
+import playItem from '../playItem';
+import details from '../details';
+import artist from '../artist';
 
-router.use(bodyParser.json());
+const router = express.Router();
+router.use('/newAndRecommended', newAndRecommended);
+router.use('/playItem', playItem);
+router.use('/details', details);
+router.use('/artist', artist);
+//!TODO: add all new paths to vercel config
 
-router.use('/newAndRecommended', require('../newAndRecommended'));
-router.use('/playItem', require('../playItem'));
-router.use('/detail', require('../detail'));
-router.use('/artist', require('../artist'));
-//!TODO: add new paths to vercel config
-
-module.exports = router;
+export default router;

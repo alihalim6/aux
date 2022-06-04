@@ -1,30 +1,27 @@
-import express from 'express';
-import {headers} from './_utils';
+import {apiConfig, topItems} from './_utils';
 
-const router = express.Router();
+let accessToken;
+
+const getUserProfile = async () => {
+  return await httpClient.get('/me', apiConfig(accessToken));
+};
 
 async function myAux(req, res){
   try{
-    const accessToken = req.headers['access-token'];
-    const topArtists = await topItems('artists', headers(accessToken));
-    const topTracks = await topItems('tracks', headers(accessToken));
+    accessToken = req.headers['access-token'];
+    const { display_name } = await getUserProfile();
+    const topArtists = await topItems('artists', apiConfig(accessToken));
+    const topTracks = await topItems('tracks', apiConfig(accessToken));
+    const topItems = [...topArtists.data, ...topTracks.data];
 
     res.json({
-      ...topArtists.data,
-      ...topTracks.data
+      user: { displayName: display_name},
+      topItems
     });
   }
   catch(error){
     res.json({error});
   }
 };
-
-//module.exports = router;
-
-router.get('/', myAux);
-
-if(process.env.NODE_ENV === 'development'){
-    module.exports = router;
-}    
 
 export default myAux;

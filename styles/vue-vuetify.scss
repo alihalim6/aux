@@ -1,23 +1,23 @@
 .v-application {
-    font-family: 'Public Sans', sans-serif !important;
+  font-family: 'Public Sans', sans-serif !important;
 }
 
 .v-dialog {
-    padding-top: 0px !important;
-    margin-top: $app-header-height !important;
-    background-color: rgba(0, 0, 0, 0.2);
-    box-shadow: none;
+  padding-top: 0px !important;
+  margin-top: $app-header-height !important;
+  background-color: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
 }
 
 .v-dialog--fullscreen {
-    overflow-y: hidden !important;
+  overflow-y: hidden !important;
 }
 
 .v-sheet.v-card {
-    border: none !important;
-    border-radius: 0px !important;
+  border: none !important;
+  border-radius: 0px !important;
 }
 
 .v-card .content-carousel .spaced-content {
-    box-shadow: none !important;
+  box-shadow: none !important;
 }

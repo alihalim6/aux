@@ -1,37 +1,47 @@
+$phrase-border-size: 1px;
+$phrase-border-color: #aaaaaa;
+
 .clickable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .circle-separator {
-    padding: 4px;
-    color: $primary-theme-color !important;
-    font-size: 8px !important;
+  padding: 4px;
+  color: $primary-theme-color !important;
+  font-size: 8px !important;
 }
 
 .no-visiblity {
-    visibility: hidden;
+  visibility: hidden;
 }
 
 .no-wrap {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .no-bottom-border {
-    border-bottom: none !important;
+  border-bottom: none !important;
 }
 
 .dashed-separator {
-    border-bottom: 1px dashed #eeeeee;
+  border-bottom: 1px dashed #eeeeee;
 } 
 
 .sub-padding-left {
-    padding-left: $base-padding;
+  padding-left: $base-padding;
 }
 
 .sub-padding-right {
-    padding-right: ($base-padding + 2px) !important;
+  padding-right: ($base-padding + 2px) !important;
 }
 
 .inline-display {
-    display: inline;
+  display: inline;
+}
+
+@supports(-webkit-text-stroke: $phrase-border-size $phrase-border-color) {
+  .outlined-phrase {
+    -webkit-text-stroke: $phrase-border-size $phrase-border-color;
+    -webkit-text-fill-color: $secondary-theme-color;
+  }
 }

@@ -2,7 +2,7 @@
 @import './vue-vuetify.scss';
 @import './simple-styles.scss';
 
-.content-container {
+.title-container {
     display: flex;
     flex-direction: column;
     margin: 0 auto;
@@ -11,133 +11,42 @@
     .section-title {
         font-size: 32px;
         display: flex;
+        flex-direction: column;
+        align-items: flex-start;
         justify-content: space-between;
-        align-items: center;
         color: rgba(0, 0, 0, 0.8);
         font-weight: 600;
         line-height: 1.1;
-        padding: 8px $base-padding 0px;
+        padding: 8px $base-padding 10px;
     }
 
-    .secondary-title-border {
+    .title-border {
         width: 96%;
-        height: 7px;
-        border: 2px solid $primary-theme-color;
-        background-color: $secondary-theme-color;
+        height: 4px;
+        background-color: $primary-theme-color;
         margin: 0 auto;
     }
-    
-    .sub-title {
-        @extend .sub-text;
-        padding: 10px 16px;
-        color: rgba(0,0,0,0.6);
-    }
 
-    .see-all {
+    .action-container {
         display: flex;
         justify-content: space-evenly;
         align-items: center;
-        bottom: -5px;
-        position: relative;
-        white-space: nowrap;
-
-        .sub-title-label {
-            color: rgba(0,0,0,0.6);
-            font-size: 16px;
-            margin-right: 6px;
-        }
-        
-        .see-all-icon {
-            font-size: 22px;
-            color: $primary-theme-color;
-        }
-    }
-}
-
-$content-img-size: 275px;
-
-.content-carousel {
-    display: flex;
-    overflow: scroll;
-    margin-top: 20px;
-    $label-left-padding: 6px;
-
-    .content-hover {
-        border: 2px solid;
-    }
-
-    .spaced-content {
-        margin-right: 103px;
-    }
-
-    .content-img {
-        min-width: $content-img-size;
-        min-height: $content-img-size;
-        max-height: $content-img-size;
-    }
-
-    .playback-button {
-        position: absolute !important;
-        bottom: -31px;
-        right: 8px;
-    }
-
-    .last-item-playback-button {
-        left: $content-img-size - 40px;
-    }    
-
-    $sub-text-font-size: 12px;
-    $primary-text-font-size: 14px;
-
-    .sub-text {
-        font-size: $sub-text-font-size;
-        color: rgba(0,0,0,0.8);
-        padding: 10px 8px 4px $label-left-padding;
-        width: 150px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-    }
-
-    .artist-sub-label {
-        text-overflow: unset;
-        white-space: unset;
-        overflow: auto;
-        font-weight: 600;
-        font-size: $primary-text-font-size;
-    }
-
-    .primary-text {
-        font-size: $primary-text-font-size;
-        font-weight: 600;
-        padding: 0px $label-left-padding;
-    }
-
-    .artist-primary-text {
-        @extend .primary-text;
-        @extend .artist-sub-label;
         font-weight: normal;
-        font-size: $sub-text-font-size;
-    }
+        margin-top: 6px;
 
-    .more-from-padding {
-        padding: 6px 38px 0px 0px;
-    }
-
-    .bottom-label {
-        padding-top: 6px;
-        display: flex;
-        align-items: center;
-
-        .record-icon {
-            padding-right: 4px;
+        .action-label {
+            color: rgba(0,0,0,0.6);
+            font-size: 12px;
+            margin-right: 4px;
+            border: 1px solid black;
+            padding: 6px;
+            border-radius: 4px;
         }
     }
-}
 
-.more-from-content-carosuel {
-    margin-top: 6px;
-    padding: 0px $base-padding;
+    .action-divider {
+        padding: 0px 10px;
+    }
 }
 
 .sub-title-container {
@@ -148,7 +57,11 @@ $content-img-size: 275px;
     padding: 0px $base-padding;
 }
 
+.overlay-margin {
+  margin: 10px 0px 16px;
+}
+
 .overlay-details-container {
-    margin: 10px 0px 16px;
+    @extend .overlay-margin;
     padding: 10px $base-padding 14px;
 }

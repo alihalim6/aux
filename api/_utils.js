@@ -15,7 +15,7 @@ export const apiConfig = (accessToken) => {
 };
 
 export const topItems = async (topType, config) => {
-  return await httpClient.get(`/me/top/${topType}?limit=20`, config);
+  return await httpClient.get(`/me/top/${topType}`, config);
 };
 
 //https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array

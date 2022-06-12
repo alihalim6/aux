@@ -1,21 +1,23 @@
 <template>
     <section>
-      <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist}">
+      <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}">
         <div v-for="(item, index) in data" :key="item.id">
           <v-hover v-slot="{hover}">
-            <v-card max-width="175" elevation="10" class="clickable" :class="{'content-hover': hover, 'spaced-content': moreFromArtist}">
+            <v-card max-width="175" elevation="10" class="clickable" :class="{'content-hover': hover, 'spaced-content': moreFromArtist, 'no-max-width': vertical}">
               <v-img class="content-img" :src="item.imgUrl" @click="displayDetailsOverlay(item)"></v-img>
               
               <PlaybackIcon 
                 :item="item" 
                 icon-class="playback-button" 
-                :conditional-icon-class="{'last-item-playback-button': (index === data.length - 1) || moreFromArtist}"/>
+                :conditional-icon-class="{'reduce-playback-button-left': (!vertical && (index === data.length - 1)) || moreFromArtist}"/>
             </v-card>
           </v-hover>
           
-          <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-secondary-label': item.isArtist}">{{item.secondaryLabel}}</div>
-          <div class="primary-label" :class="{'artist-primary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
-          <div class="secondary-label bottom-label"><v-icon v-show="item.tracksLabel" class="record-icon" small>mdi-music-circle</v-icon>{{item.tracksLabel}}</div>
+          <div :class="{'pb-8': vertical}">
+            <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-secondary-label': item.isArtist}">{{item.secondaryLabel}}</div>
+            <div class="primary-label" :class="{'artist-primary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
+            <div class="secondary-label bottom-label"><v-icon v-show="item.tracksLabel" class="record-icon" small>mdi-music-circle</v-icon>{{item.tracksLabel}}</div>
+          </div>
         </div>
       </div>
     </section>
@@ -32,6 +34,9 @@
   
     @Prop({default: false})
     moreFromArtist;
+
+    @Prop({default: false})
+    vertical;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
@@ -76,7 +81,7 @@
       right: 8px;
     }
 
-    .last-item-playback-button {
+    .reduce-playback-button-left {
       left: $content-img-size - 40px;
     }    
 
@@ -132,6 +137,10 @@
   .more-from-artist-carosuel {
       margin-top: 6px;
       padding: 0px $base-padding;
+  }
+
+  .vertical-carousel {
+    flex-direction: column;
   }
 
   .record-icon {

@@ -6,7 +6,7 @@ export const state = () => {
     currentlyPlayingItemUri: '',//simple string so that watcher for this doesn't have to be deep on object (performance)
     currentlyPlayingItem: {},
     spotifyPlayer: {},
-    devicePlaybackTransferNeeded: true,
+    devicePlaybackTransferNeeded: false,
     audioPlaying: false
   };
 };
@@ -65,8 +65,8 @@ export const actions = {
         commit('setItemPlaybackIcon', {item, icon: ((item.uri === currentlyPlayingItemUri) && (getters.audioPlaying || startingNewTrack)) ? 'pause' : 'play'});
       };
 
-      if(previouslyPlayingItem){
-        //same item if toggling item
+      if(previouslyPlayingItem.uri){
+        //these two lines are redundant (set icon for same item) if toggling item
         setPlaybackIcon(previouslyPlayingItem);
         setPlaybackIcon(item);
       }
@@ -79,11 +79,13 @@ export const actions = {
       if(currentItemToggled){
         await player.togglePlay();
       }
+      //playing different item than before
       else{
-        if(currentlyPlayingItemUri){
+        //if(currentlyPlayingItemUri){
           await getters.spotifyPlayer.pause();
-        }
+        //}
 
+        await player.connect();///////////////////////
         await dispatch('playItem', item);
         
         commit('setAudioPlaying', true);
@@ -92,8 +94,9 @@ export const actions = {
         const playerState = await player.getCurrentState();
         
         //////TODO: needs work -- completely need to re auth?
+        //disconnect player then reconnect?
         if(!playerState){
-          console.error('attempting to tansfer playback to device and try to play item again...');
+          console.error('attempting to transfer playback to device and try to play item again...');
           commit('setDevicePlaybackTransferNeeded', true);
           await dispatch('playItem', item);
         }
@@ -114,7 +117,7 @@ export const actions = {
       dispatch('stopPlayback');
     }
   },
-  stopPlayback({commit}){
+  stopPlayback({commit, getters}){
     const player = getters.spotifyPlayer;
     const currentlyPlayingItem = getters.currentlyPlayingItem;
 
@@ -129,7 +132,6 @@ export const actions = {
 
 export const mutations = {
   setSpotifyDeviceId(state, deviceId){
-    state.devicePlaybackTransferNeeded = (state.spotifyDeviceId !== deviceId);
     state.spotifyDeviceId = deviceId;
   },
   setCurrentlyPlayingItemUri(state, itemUri){
@@ -145,7 +147,9 @@ export const mutations = {
     state.devicePlaybackTransferNeeded = needed;
   },
   setItemPlaybackIcon(state, payload){
-    payload.item ? payload.item.playbackIcon = payload.icon : null;
+    if(payload.item){
+      payload.item.playbackIcon = payload.icon
+    }
   },
   setAudioPlaying(state, playing){
     console.log(`setting audioPlaying to ${playing}`);

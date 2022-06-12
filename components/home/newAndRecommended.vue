@@ -4,10 +4,10 @@
       <div class="section-title">
         New & Recommended
         
-        <div class="action-container">
-          <div class="clickable action-label">New Releases Only</div>
-          <span class="action-divider">/</span>
-          <div class="clickable action-label">See All</div>
+        <div class="filter-container">
+          <div class="clickable filter-label">See All</div>
+          <span class="filter-divider">/</span>
+          <div class="clickable filter-label">New Releases Only</div>
         </div>
       </div>
 
@@ -21,7 +21,7 @@
 <script>
   import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
-  import {SPOTIFY, UI} from '~/store/constants';
+  import {UI} from '~/store/constants';
   import {httpClient} from '~/utils/api';
 
   @Component
@@ -29,12 +29,6 @@
     allItems = [];
     previewItems = []; //subset of items to preview on homepage 
     newReleasesOnly = [];
-
-    @Getter('currentlyPlayingItemUri', {namespace: SPOTIFY})
-    currentlyPlayingItemUri;
-
-    @Getter('spotifyPlayer', {namespace: SPOTIFY})
-    spotifyPlayer;
 
     @Mutation('setLoading', {namespace: UI})
     setLoading;
@@ -44,7 +38,7 @@
 
       this.allItems = data.allItems;
       this.previewItems = setItemMetaData(data.previewItems);
-      this.newReleases = data.newReleasesOnly;
+      this.newReleasesOnly = data.newReleasesOnly;
 
       this.setLoading(false);
     }

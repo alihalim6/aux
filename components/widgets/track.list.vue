@@ -3,14 +3,15 @@
     <div v-for="(track, index) in tracks" :key="track.id">
       <div v-if="mainId !== track.id" class="track-container dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
-            <div v-if="!tracksFromDifferentAlbums" class="track-number">{{track.track_number}}</div>
+          <div v-if="!tracksFromDifferentAlbums" class="track-number">{{track.track_number}}</div>
             <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl"></v-img>
 
-            <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums}">
-              <span :class="{'clickable': tracksFromDifferentAlbums}" @click="trackPressed(track)">{{track.name}}</span>               
+            <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums, 'font-weight-bold': displayArtists}">
+              <span :class="{'clickable': tracksFromDifferentAlbums}" @click="trackPressed(track)">{{track.name}}</span>  
+              <div class="track-artists" v-if="displayArtists">{{track.secondaryLabel}}</div>             
               <div class="track-duration">{{track.duration}}</div>
 
-              <div v-if="tracksFromDifferentAlbums && track.album.total_tracks > 1" class="track-from-album-container">
+              <div v-if="tracksFromDifferentAlbums && (track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
                 From <div @click.stop="displayDetailsOverlay(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">{{track.album.name}}</div><v-icon small class="clickable">mdi-arrow-right</v-icon>
               </div>
             </div>
@@ -18,7 +19,7 @@
 
           <div class="right-container">
             <PlaybackIcon :item="track" class="track-list-playback"/>
-            <v-icon small class="clickable">mdi-heart-plus-outline</v-icon>
+            <v-icon v-if="!hideLikes" small class="clickable">mdi-heart-plus-outline</v-icon>
           </div>
         </div>
       </div>
@@ -35,11 +36,20 @@
     @Prop({required: true})
     tracks;
 
-    @Prop({required: true})
+    @Prop({required: false})
     mainId;
 
     @Prop({default: false})
     tracksFromDifferentAlbums;
+
+    @Prop({default: false})
+    displayArtists;
+
+    @Prop({default: false})
+    hideAlbums;
+
+    @Prop({default: false})
+    hideLikes;
 
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;
@@ -102,6 +112,11 @@
           color: #333333;
           display: flex;
           flex-direction: column;
+
+          .track-artists {
+            font-weight: normal;
+            font-size: 12px;
+          }
 
           .track-duration {
             color: #888888;

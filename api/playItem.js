@@ -8,7 +8,7 @@ async function playItem(req, res){
     const itemUri = req.body.item.uri;
     const requestBody = req.body.item.isTrack ? {uris: [itemUri]} : {context_uri: itemUri};
 
-    //apparently needed for Spotify to consider this device active and able to play items (https://developer.spotify.com/documentation/web-api/reference/#/operations/transfer-a-users-playback) 
+    //needed for Spotify to consider this device active and able to play items (https://developer.spotify.com/documentation/web-api/reference/#/operations/transfer-a-users-playback) 
     if(req.body.devicePlaybackTransferNeeded){
       console.log('playback transfer requested for this device');
       await httpClient.put('/me/player', {device_ids: [req.body.deviceId]}, apiConfig(accessToken));
@@ -17,7 +17,7 @@ async function playItem(req, res){
       console.log('no playback transfer needed for this device');
     }
 
-    await httpClient.put(`/me/player/play?deviceId=${req.body.deviceId}`, requestBody, apiConfig(accessToken));
+    await httpClient.put(`/me/player/play?device_id=${req.body.deviceId}`, requestBody, apiConfig(accessToken));
     res.end();
   }
   catch(error){

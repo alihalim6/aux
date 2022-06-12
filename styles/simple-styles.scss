@@ -45,3 +45,7 @@ $phrase-border-color: #aaaaaa;
     -webkit-text-fill-color: $secondary-theme-color;
   }
 }
+
+.no-max-width {
+  max-width: unset !important;
+}

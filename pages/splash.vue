@@ -51,6 +51,7 @@
     .login-button {
       width: fit-content;
       margin-bottom: 12px;
+      font-size: 16px;
 
       //ignore !important - temp splash page
       background-color: #1D8954 !important;

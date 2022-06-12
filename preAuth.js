@@ -33,8 +33,10 @@ const setTokenData = (response) => {
 
 export const accessTokenExpiring = () => {
   const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
-  console.log(`token set at: ${parseInt(storageGet(AUTH.TOKEN_SET_AT))}; token expires ${tokenExpirationTime - Date.now()}ms from now`);
-  return (tokenExpirationTime < (Date.now() - 300000));//refresh 5 mins before expire
+  console.log(`tokenExpirationTime: ${tokenExpirationTime}`);
+  console.log(`Date.now() is ${Date.now()}`);
+  console.log(`token set at: ${parseInt(storageGet(AUTH.TOKEN_SET_AT))}; token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
+  return (tokenExpirationTime < Date.now());
 };
 
 const pkceVerifier = () => {

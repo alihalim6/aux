@@ -24,6 +24,10 @@
       {
         "src": "/api/artist",
         "dest": "/api/artist.js"
+      },
+      {
+        "src": "/api/myAux",
+        "dest": "/api/myAux.js"
       }
     ],
     "builds": [

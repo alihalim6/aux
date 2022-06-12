@@ -1,10 +1,11 @@
+//framework overrides
+
 .v-application {
   font-family: 'Public Sans', sans-serif !important;
 }
 
 .v-dialog {
-  padding-top: 0px !important;
-  margin-top: $app-header-height !important;
+  padding-top: $app-header-height !important;
   background-color: rgba(0, 0, 0, 0.2);
   box-shadow: none;
 }

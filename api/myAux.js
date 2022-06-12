@@ -1,22 +1,48 @@
-import {apiConfig, topItems} from './_utils';
+import {httpClient, apiConfig, topItems} from './_utils';
 
 let accessToken;
+const likesLimit = 50;
 
-const getUserProfile = async () => {
-  return await httpClient.get('/me', apiConfig(accessToken));
+const getLikedTracks = async () => {
+  return await httpClient.get(`/me/tracks?limit=${likesLimit}`, apiConfig(accessToken));
+};
+
+const getLikedAlbums = async () => {
+  return await httpClient.get(`/me/albums?limit=${likesLimit}`, apiConfig(accessToken));
+};
+
+const getRecentlyPlayedItems = async () => {
+  return await httpClient.get('/me/player/recently-played?limit=50', apiConfig(accessToken));
 };
 
 async function myAux(req, res){
   try{
     accessToken = req.headers['access-token'];
-    const { display_name } = await getUserProfile();
+
+    const likedTracks = await getLikedTracks();
+    const likedAlbums = await getLikedAlbums();
+ 
+    const recentlyPlayed = await getRecentlyPlayedItems();
+
     const topArtists = await topItems('artists', apiConfig(accessToken));
     const topTracks = await topItems('tracks', apiConfig(accessToken));
-    const topItems = [...topArtists.data, ...topTracks.data];
+    const userTopItems = [...topArtists.data.items, ...topTracks.data.items];
 
     res.json({
-      user: { displayName: display_name},
-      topItems
+      likedTracks: {
+        items: likedTracks.data.items,
+        total: likedTracks.data.total,
+        limit: likesLimit
+      },
+      likedAlbums: {
+        items: likedAlbums.data.items,
+        total: likedAlbums.data.total,
+        limit: likesLimit
+      },
+      recentlyPlayed: {
+        items: recentlyPlayed.data.items
+      },
+      topItems: userTopItems
     });
   }
   catch(error){

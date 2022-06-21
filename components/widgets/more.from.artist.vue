@@ -5,15 +5,15 @@
       <!-- TOP TRACKS -->  
       <v-card class="more-from-artist-container" elevation="7" v-if="parentItem.details.artistTopTracks.length">
         <div class="more-from-artist">
-          <span class="more-from-artist-title font-weight-bold">Top Tracks</span>
-          <TrackList :tracks="parentItem.details.artistTopTracks" :tracksFromDifferentAlbums="true" :mainId="parentItem.id"/>
+          <span class="more-from-artist-title font-weight-bold top-tracks">Top Tracks</span>
+          <TrackList :tracks="parentItem.details.artistTopTracks" :tracksFromDifferentAlbums="true" :parentId="parentItem.id"/>
         </div>
       </v-card>
 
       <!-- TOP ALBUMS -->  
       <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.artistAlbums.length">
         <div class="more-from-artist">
-          <span class="more-from-artist-title font-weight-bold">Top Albums</span>
+          <span class="more-from-artist-title font-weight-bold top-albums">Top Albums</span>
           <ContentCarousel :data="parentItem.details.artistAlbums" :moreFromArtist="true"/>
         </div>
       </v-card>
@@ -21,7 +21,7 @@
       <!-- RELATED ARTISTS -->  
       <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.relatedArtists.length">
         <div class="more-from-artist">
-          <span class="more-from-artist-title font-weight-bold">Related Artists</span>
+          <span class="more-from-artist-title font-weight-bold related-artists">Related Artists</span>
           
           <div class="related-artists-container">
             <div 

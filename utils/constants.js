@@ -17,3 +17,10 @@ export const AUTH = {
     REDIRECT: BASE_URL
   }
 };
+
+export const MY_AUX = {
+  LIKED_ITEMS: 'Liked Items',
+  LIKED_ALBUMS: 'Liked Albums',
+  RECENTLY_PLAYED: 'Recently Played',
+  TOP_ITEMS: 'Top Items'
+};

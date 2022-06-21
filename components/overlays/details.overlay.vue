@@ -24,6 +24,7 @@
 
                   <div class="section-title overlay-section-title">
                     {{item.name}}
+                    
                     <div class="controls-container" :class="{'justify-end': item.isArtist}">
                       <PlaybackIcon :item="item" class="details-overlay-playback-button"/>
                       <!-- TODO -->
@@ -53,22 +54,22 @@
 
   @Component
   export default class DetailsOverlay extends Vue {
-  @Getter('detailsOverlay', {namespace: UI})
-  detailsOverlay;
-  
-  @Getter('fullItemImage', {namespace: UI})
-  fullItemImage;
-  
-  @Mutation('closeDetailsOverlay', {namespace: UI})
-  closeDetailsOverlay;
-  
-  @Mutation('goBackDetailsOverlay', {namespace: UI})
-  goBackDetailsOverlay;
-  
-  @Mutation('displayFullItemImage', {namespace: UI})
-  displayFullItemImage;
-  
-  @Mutation('closeFullItemImage', {namespace: UI})
+    @Getter('detailsOverlay', {namespace: UI})
+    detailsOverlay;
+    
+    @Getter('fullItemImage', {namespace: UI})
+    fullItemImage;
+    
+    @Mutation('closeDetailsOverlay', {namespace: UI})
+    closeDetailsOverlay;
+    
+    @Mutation('goBackDetailsOverlay', {namespace: UI})
+    goBackDetailsOverlay;
+    
+    @Mutation('displayFullItemImage', {namespace: UI})
+    displayFullItemImage;
+    
+    @Mutation('closeFullItemImage', {namespace: UI})
     closeFullItemImage;
   }
 </script>
@@ -83,6 +84,7 @@
     margin: 0 auto;
     border-radius: 4px;
     overflow: visible !important;
+    top: $app-header-height;
 
     .full-item-image-cta-outer {
       position: absolute;

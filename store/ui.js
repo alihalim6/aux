@@ -42,11 +42,16 @@ export const actions = {
   },
   displayArtistDetails: async ({dispatch}, artist) =>{
     const response = await httpClient.post('/artist', {itemId: artist.id});
-    artist.images = response.data.artist.images;
-    artist.genres = response.data.artist.genres;
     
-    setItemMetaData([artist]);
-    dispatch('displayDetailsOverlay', artist);
+    //use new object to avoid vuex issues when mutating passed in artist directly
+    const artistToDisplay = {
+      ...artist,
+      images: response.data.artist.images,
+      genres: response.data.artist.genres
+    };
+    
+    setItemMetaData([artistToDisplay]);
+    dispatch('displayDetailsOverlay', artistToDisplay);
   }
 };
 

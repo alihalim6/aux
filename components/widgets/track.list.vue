@@ -1,25 +1,27 @@
 <template>
   <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums}">
     <div v-for="(track, index) in tracks" :key="track.id">
-      <div v-if="mainId !== track.id" class="track-container dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
+      <div v-if="parentId !== track.id" class="track-container dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
-          <div v-if="!tracksFromDifferentAlbums" class="track-number">{{track.track_number}}</div>
+            <div v-if="!tracksFromDifferentAlbums" class="track-number">{{track.track_number}}</div>
             <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl"></v-img>
 
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums, 'font-weight-bold': displayArtists}">
-              <span :class="{'clickable': tracksFromDifferentAlbums}" @click="trackPressed(track)">{{track.name}}</span>  
+              <span class="track-name" :class="{'clickable': tracksFromDifferentAlbums}" @click="trackPressed(track)">{{track.name}}</span>  
               <div class="track-artists" v-if="displayArtists">{{track.secondaryLabel}}</div>             
               <div class="track-duration">{{track.duration}}</div>
 
-              <div v-if="tracksFromDifferentAlbums && (track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
-                From <div @click.stop="displayDetailsOverlay(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">{{track.album.name}}</div><v-icon small class="clickable">mdi-arrow-right</v-icon>
+              <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
+                From <div @click.stop="displayDetailsOverlay(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
+                  {{track.album.name}}</div>
+                  <v-icon small class="clickable">mdi-arrow-right</v-icon>
               </div>
             </div>
           </div>
 
           <div class="right-container">
             <PlaybackIcon :item="track" class="track-list-playback"/>
-            <v-icon v-if="!hideLikes" small class="clickable">mdi-heart-plus-outline</v-icon>
+            <v-icon v-if="!hideLikeability" small class="clickable">mdi-heart-plus-outline</v-icon>
           </div>
         </div>
       </div>
@@ -37,7 +39,7 @@
     tracks;
 
     @Prop({required: false})
-    mainId;
+    parentId;
 
     @Prop({default: false})
     tracksFromDifferentAlbums;
@@ -49,7 +51,7 @@
     hideAlbums;
 
     @Prop({default: false})
-    hideLikes;
+    hideLikeability;
 
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;

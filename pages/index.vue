@@ -44,7 +44,7 @@
       //else if storage has access token, user has been in app, so go check if expired etc and load app
       else if(storageGet(AUTH.ACCESS_TOKEN)){
         if(accessTokenExpiring()){
-          console.log('token expiring, attempting refreshing it');
+          console.log('token expiring/expired, attempting refreshing it');
 
           try{
             await refreshToken();

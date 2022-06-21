@@ -2,9 +2,7 @@
   <section>
     <div class="sub-title-container">
       <div class="secondary-label">
-        <span v-for="(artist, index) in track.artists" :key="artist.id">
-          <span class="clickable text-decoration-underline inline-display" @click="displayArtistDetails(artist)">{{artist.name}}</span><span v-show="(index < track.artists.length - 1)">, </span>
-        </span>
+        <OverlayArtists :artists="track.artists"/>
         <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
         {{new Date(track.album ? track.album.release_date : track.release_date).getFullYear()}}
       </div>
@@ -15,7 +13,7 @@
     </div>
 
     <v-card class="clickable overlay-details-container" elevation="7" v-show="track.album && (track.album.total_tracks > 1)" @click="displayDetailsOverlay(track.album)">
-      <div>From <span class="from-title">{{track.album.name}}</span>
+      <div id="fromAlbumTitle">From <span class="from-title">{{track.album.name}}</span>
         <v-icon small>mdi-arrow-right</v-icon>
       </div>
 
@@ -24,7 +22,7 @@
 
         <div class="album-data">
           <div><span class="font-weight-regular">by</span> {{track.album.secondaryLabel}}</div>
-          <div class="font-weight-regular">{{track.album.total_tracks}} {{track.album.total_tracks > 1 ? 'Tracks' : 'Track'}}</div>
+          <div class="font-weight-regular from-album-tracks">{{track.album.total_tracks}} {{track.album.total_tracks > 1 ? 'Tracks' : 'Track'}}</div>
         </div>
       </div>
     </v-card>
@@ -44,9 +42,6 @@
 
     @Prop({required: true})
     track;
-
-    @Action('displayArtistDetails', {namespace: UI})
-    displayArtistDetails;
     
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;

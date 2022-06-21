@@ -6,7 +6,7 @@ export interface MyAuxContent {
   limit?: number;
   offset?: number; 
   carousel?: boolean;
-  hideLikes?: boolean;
+  hideLikeability?: boolean;
   api?: string;
   fetchPending?: boolean;
 }

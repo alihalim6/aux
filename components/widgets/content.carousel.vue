@@ -16,7 +16,7 @@
           <div :class="{'pb-8': vertical}">
             <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-secondary-label': item.isArtist}">{{item.secondaryLabel}}</div>
             <div class="primary-label" :class="{'artist-primary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
-            <div class="secondary-label bottom-label"><v-icon v-show="item.tracksLabel" class="record-icon" small>mdi-music-circle</v-icon>{{item.tracksLabel}}</div>
+            <div class="secondary-label bottom-label"><v-icon v-show="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
           </div>
         </div>
       </div>
@@ -120,7 +120,7 @@
     }
 
     .more-from-padding {
-      padding: 6px 38px 0px 0px;
+      padding: 6px 52px 0px 0px;
     }
 
     .bottom-label {

@@ -15,7 +15,7 @@ router.use('/myAux', myAux);
 //!TODO: add all new paths to vercel config
 
 //direct passthru from client to Spotify
-router.post('/passThru', async (req, res) => {
+router.post('/passthru', async (req, res) => {
   try{
     const accessToken = req.headers['access-token'];
     const url = req.body.url;

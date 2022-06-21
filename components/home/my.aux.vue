@@ -1,15 +1,13 @@
 <template>
   <section class="my-aux-container mt-4 pt-1 pb-6">
     <div class="title-container mt-4">
-      <div class="section-title color-white">
-        My Vibe
-      </div>
+      <div class="section-title color-white">My Vibe</div>
     </div>
 
     <v-tabs class="tab-container my-aux-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
       <v-tab v-for="(item, index) in content" :key="item.key">
         <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
-          <span v-if="!item.fetchPending">{{item.label}}</span>
+          <span v-if="!item.fetchPending" :id="`myAuxTabLabel${index}`">{{item.label}}</span>
           <v-progress-circular v-if="item.fetchPending" class="fetch-in-progress" indeterminate color="white"></v-progress-circular>
         </div>
         <span v-if="index < (content.length - 1)" class="filter-divider color-white">/</span>
@@ -19,7 +17,7 @@
     <v-tabs-items v-model="selectedTab" class="tab-content-container mt-2">
       <v-tab-item v-for="item in content" :key="item.key">
         <div class="my-aux-list-container my-aux-responsive" v-if="item.data.length" v-scroll.self="contentScrolled">
-          <TrackList v-if="!item.carousel" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true" :hideLikes="item.hideLikes"/>
+          <TrackList v-if="!item.carousel" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true" :hideLikeability="item.hideLikeability"/>
           <ContentCarousel v-if="item.carousel" :data="item.data" :vertical="true"/>
         </div>
       </v-tab-item>
@@ -32,6 +30,7 @@
   import {httpClient} from '~/utils/api';
   import {setItemMetaData, msToDuration} from '~/utils/helpers';
   import {MyAuxContent, UserItem} from '~/types/user';
+  import {MY_AUX} from '~/utils/constants';
 
   @Component
   export default class MyAux extends Vue {
@@ -47,14 +46,14 @@
       {
         ...this.defaultContent,
         key: 'likedTracks',
-        label: 'Tracks',
-        hideLikes: true,
+        label: MY_AUX.LIKED_ITEMS,
+        hideLikeability: true,
         api: 'tracks'
       },
       {
         ...this.defaultContent,
         key: 'likedAlbums',
-        label: 'Albums',
+        label: MY_AUX.LIKED_ALBUMS,
         carousel: true,
         api: 'albums'
       },
@@ -62,7 +61,7 @@
       {
         data: [],
         key: 'recentlyPlayed',
-        label: 'Recently Played'
+        label: MY_AUX.RECENTLY_PLAYED
       }
     ];
 
@@ -82,12 +81,14 @@
       this.content.forEach((item: MyAuxContent) => {
         item.data = this.mapData(data[item.key].items);
         item.total = data[item.key].total;
+        //lazy loading/pagination
         item.limit = item.offset = data[item.key].limit;
       });
 
+      //data structure for top items is different than the others, so no mapping needed
       this.content = [...this.content, {
         key: 'topItems',
-        label: 'Top Items',
+        label: MY_AUX.TOP_ITEMS,
         data: setItemMetaData(data.topItems),
         carousel: true
       }];
@@ -105,7 +106,7 @@
         if(moreDataToFetch && fetchMoreData && !currentContent.fetchPending){
           currentContent.fetchPending = true;
 
-          const { data } = await httpClient.post('/passThru', {
+          const { data } = await httpClient.post('/passthru', {
             url: `/me/${currentContent.api}?limit=${currentContent.limit}&offset=${currentContent.offset}`,
             method: 'GET'
           });

@@ -12,7 +12,7 @@
   </section>
 </template>
 
-<script lang="ts">
+<script>
   import {Component, Vue} from 'vue-property-decorator';
 
   @Component

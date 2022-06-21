@@ -87,7 +87,7 @@
         this.setSpotifyDeviceId(device_id);
 
         //transfer playback to this device
-        await httpClient.post('/passThru', {
+        await httpClient.post('/passthru', {
           url: '/me/player',
           method: 'PUT',
           data: {device_ids: [device_id]}

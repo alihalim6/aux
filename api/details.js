@@ -23,7 +23,6 @@ async function details(req, res){
   try{
     accessToken = req.headers['access-token'];
     itemDetailsId = req.body.itemDetailsId;
-    console.log(`detailsId: ${itemDetailsId}`);
     const isAlbum = req.body.isAlbum;
     const isTrack = req.body.isTrack;
     const isArtist = req.body.isArtist;

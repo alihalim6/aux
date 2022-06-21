@@ -85,7 +85,7 @@ export const actions = {
           await getters.spotifyPlayer.pause();
         //}
 
-        await player.connect();///////////////////////
+        //await player.connect();///////////////////////
         await dispatch('playItem', item);
         
         commit('setAudioPlaying', true);
@@ -99,6 +99,9 @@ export const actions = {
           console.error('attempting to transfer playback to device and try to play item again...');
           commit('setDevicePlaybackTransferNeeded', true);
           await dispatch('playItem', item);
+        }
+        else{
+          //console.log(`playerState: ${JSON.stringify(playerState)}`);
         }
 
         try{

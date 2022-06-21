@@ -22,7 +22,7 @@ export const setItemMetaData = (items) => {
       item.secondaryLabel = artists.join(', ');
 
       if(item.isAlbum && item.total_tracks > 1){
-        item.tracksLabel = `${item.total_tracks} Tracks`;
+        item.numberOfTracks = `${item.total_tracks} Tracks`;
       }
 
       if(item.isAlbum){
@@ -55,6 +55,10 @@ export const setItemMetaData = (items) => {
 
 //adapted from https://stackoverflow.com/a/9763769
 export const msToDuration = (ms) => {
+  if(!ms){
+    return '';
+  }
+
   function pad(n, paddingCheck) {
     let padding = 2;
 

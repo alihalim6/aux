@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="sub-title-container">
-        <div class="secondary-label">{{artist.primaryLabel}}</div>
+      <div class="secondary-label">{{artist.secondaryLabel}}</div>
     </div>
 
     <MoreFromArtist :parentItem="artist" :artist="artist"/>

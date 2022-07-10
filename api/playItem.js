@@ -21,7 +21,7 @@ async function playItem(req, res){
     res.end();
   }
   catch(error){
-    res.json({error});
+   res.json({error: error.toString()});
   }
 };
 

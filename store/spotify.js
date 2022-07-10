@@ -1,4 +1,5 @@
 import {httpClient} from '~/utils/api';
+import {refreshToken, accessTokenExpired} from '~/auth';
 
 export const state = () => {
   return {
@@ -81,36 +82,26 @@ export const actions = {
       }
       //playing different item than before
       else{
-        //if(currentlyPlayingItemUri){
-          await getters.spotifyPlayer.pause();
-        //}
-
-        //await player.connect();///////////////////////
-        await dispatch('playItem', item);
-        
-        commit('setAudioPlaying', true);
         commit('setCurrentlyPlayingItem', item)
-        
+
         const playerState = await player.getCurrentState();
-        
-        //////TODO: needs work -- completely need to re auth?
+
+         //////TODO: needs work -- completely need to re auth?
         //disconnect player then reconnect?
+        //if(!connected || !playerState){
         if(!playerState){
           console.error('attempting to transfer playback to device and try to play item again...');
           commit('setDevicePlaybackTransferNeeded', true);
           await dispatch('playItem', item);
         }
-        else{
-          //console.log(`playerState: ${JSON.stringify(playerState)}`);
+
+        if(accessTokenExpired()){
+          await refreshToken(); 
         }
 
-        try{
-          //make sure new track playing starts at beginning
-          await player.seek(0);
-        }
-        catch(error){
-          console.log(`error setting player to 0ms after playing item api call: ${error}`);
-        }
+        await dispatch('playItem', item);
+        
+        commit('setAudioPlaying', true);
       }
 
       commit('setSpotifyPlayer', player);
@@ -129,6 +120,7 @@ export const actions = {
     }
 
     commit('setItemPlaybackIcon', {item: currentlyPlayingItem, icon: 'play'});
+    commit('setAudioPlaying', false);
     commit('ui/setToast', {display: true, text: 'There was an issue playing music lorem ipsum...'}, {root: true});
   }
 };

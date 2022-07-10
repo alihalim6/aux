@@ -55,7 +55,7 @@ describe('my aux', () => {
     const topItemsTab = wrapper.find('#myAuxTabLabel3');
 
     expect(dataFetch).toHaveBeenCalled();
-    expect(likedItemsTab.text()).toBe(MY_AUX.LIKED_ITEMS);
+    expect(likedItemsTab.text()).toBe(MY_AUX.LIKED_TRACKS);
     expect(likedAlbumsTab.text()).toBe(MY_AUX.LIKED_ALBUMS);
     expect(recentlyPlayedTab.text()).toBe(MY_AUX.RECENTLY_PLAYED);
     expect(topItemsTab.text()).toBe(MY_AUX.TOP_ITEMS);

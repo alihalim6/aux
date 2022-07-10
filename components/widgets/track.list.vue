@@ -107,6 +107,7 @@
           width: $track-img-size;
           height: $track-img-size;
           margin-right: 10px;
+          top: 6px;
         }
 
         .track-info {

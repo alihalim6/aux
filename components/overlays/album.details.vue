@@ -23,9 +23,8 @@
 </template>
 
 <script>
-  import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData} from '~/utils/helpers';
-  import {UI} from '~/store/constants';
 
   @Component
   export default class AlbumDetails extends Vue {
@@ -33,9 +32,6 @@
 
     @Prop({required: true})
     album;
-
-    @Action('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
 
     beforeMount(){
       if(this.album.singleTrack){

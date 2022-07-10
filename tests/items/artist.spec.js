@@ -30,8 +30,8 @@ describe('meta data', () => {
     let artistWithMetaData = setItemMetaData([baseMock.artist])[0];
 
     expect(artistWithMetaData.imgUrl).toBe(baseMock.images[0].url);
-    expect(artistWithMetaData.primaryLabel).toBe('Doesnt Matter, Irrelevant, Not Applicable');
-    expect(artistWithMetaData.secondaryLabel).toBe(baseMock.artist.name);
+    expect(artistWithMetaData.secondaryLabel).toBe('Doesnt Matter, Irrelevant, Not Applicable');
+    expect(artistWithMetaData.primaryLabel).toBe(baseMock.artist.name);
     expect(artistWithMetaData.singleTrack).toBeFalsy();
   });
 });

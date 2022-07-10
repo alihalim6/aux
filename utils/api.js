@@ -1,6 +1,6 @@
 import {BASE_URL} from './constants';
 import axios from 'axios';
-import {refreshToken, accessTokenExpiring} from '~/preAuth';
+import {refreshToken, accessTokenExpired} from '~/auth';
 import {storageGet} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
 
@@ -9,7 +9,7 @@ const httpClient = axios.create({
 });
 
 httpClient.interceptors.request.use(async config => {
-  if(accessTokenExpiring()){
+  if(accessTokenExpired()){
     await attemptTokenRefresh(); 
   }
     
@@ -46,7 +46,7 @@ async function attemptTokenRefresh(){
 }
 
 function handleApiError(error){
-  console.log(error);
+  console.error(error);
   $nuxt.$store.dispatch('spotify/stopPlayback');
   $nuxt.$store.commit('ui/setToast', {display: true, text: 'Something went wrong lorem ipsum...'});
 }

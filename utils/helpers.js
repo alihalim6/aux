@@ -1,4 +1,9 @@
 import {capitalCase} from 'capital-case';
+import {storageGet} from '~/utils/storage';
+import {AUTH} from '~/utils/constants';
+import {refreshToken} from '~/auth';
+import {handleAuthError} from '~/utils/auth';
+import {httpClient} from '~/utils/api';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
@@ -7,6 +12,7 @@ export const setItemMetaData = (items) => {
     item.isAlbum = (item.type === 'album');
     item.isArtist = (item.type === 'artist');
     item.isTrack = (item.type === 'track');
+    item.isPlaylist = (item.type === 'playlist');
 
     try{
       item.imgUrl = item.images ? item.images[0].url : item.album.images[0].url;
@@ -29,7 +35,9 @@ export const setItemMetaData = (items) => {
         item.albumType = capitalCase(item.album_type);
       }
     }
-    else if(item.isArtist){    
+    else if(item.isArtist){  
+      item.primaryLabel = item.name;
+
       const genres = item.genres.map(genre => {
         genre = capitalCase(genre);
         //capitalCase turns r&b into R B, so account for that
@@ -37,10 +45,14 @@ export const setItemMetaData = (items) => {
       });
 
       if(genres.length){
-        item.primaryLabel = genres.slice(0, 3).join(', ');
+        item.secondaryLabel = genres.slice(0, 3).join(', ');
       }
-
-      item.secondaryLabel = item.name;
+    }
+    else if(item.isPlaylist){
+      item.primaryLabel = item.name;
+      item.secondaryLabel = item.description;
+      item.numberOfTracks = `${item.tracks.total} Tracks`;
+      item.albumType = 'Playlist';
     }
 
     item.singleTrack = (item.isAlbum && (item.total_tracks === 1)) || (item.isTrack && (!item.album || item.album.total_tracks === 1));
@@ -77,3 +89,66 @@ export const msToDuration = (ms) => {
 
   return (hrs ? pad(hrs, true) + ':' : '') + (mins ? pad(mins, !hrs) + ':' : '0:') + pad(secs, !mins);
 };
+
+const retryPlayerInit = async () => {
+  try{
+    await refreshToken();
+    initSpotifyPlayer();
+  }
+  catch(error){
+    handleAuthError('Couldn\'t init player.');
+  }
+};
+
+//this also makes whatever device/browser that user is on avaiable as a Spotify Connect device (e.g speaker); 
+//tested and worked to play track from iphone Spotify to browser;
+//TODO: tie this in as a way to be live on aux (from Spotify -- user who prefers their interface)?
+//EDIT: doesn't seem doable as we'd need a hook to know/display something has been played from elsewhere etc. 
+//EDIT: --> maybe sptofiy tracking object has this info
+export const initSpotifyPlayer = () => {
+  let accessToken = storageGet(AUTH.ACCESS_TOKEN);
+
+  function newPlayer(){
+    return new Spotify.Player({
+      name: 'Aux',
+      getOAuthToken: callback => {callback(accessToken)},
+      volume: 1
+    });
+  }
+
+  const player = newPlayer();
+
+  player.connect().then(connected => {
+    $nuxt.$store.commit('spotify/setSpotifyPlayer', player);
+    console.log(`Connected to Spotify player: ${connected}`);
+
+    if(!connected){
+      console.log(`Retrying...`);
+      retryPlayerInit();
+    }
+  });
+
+  player.addListener('ready', async ({device_id}) => {
+    console.log(`Spotify player ready with device id ${device_id}`);
+    $nuxt.$store.commit('spotify/setSpotifyDeviceId', device_id);
+
+    //TODO: comment out when listening to spotify on phone (this takes playback away)
+    //transfer playback to this device
+    await httpClient.post('/passthru', {
+      url: '/me/player',
+      method: 'PUT',
+      data: {device_ids: [device_id], play: true}
+    });
+
+    //TODO: calling for info purposes
+    await httpClient.post('/passthru', {
+      url: '/me/player/devices',
+      method: 'GET'
+    });
+  });
+
+  player.addListener('authentication_error', async ({message}) => {
+    console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
+    retryPlayerInit();
+  });
+}

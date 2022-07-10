@@ -21,7 +21,7 @@
 
 <script>
   import {Component, Vue, Mutation} from 'nuxt-property-decorator';
-  import {authorize} from '~/preAuth';
+  import {authorize} from '~/auth';
   import {UI} from '~/store/constants';
 
   @Component

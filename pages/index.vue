@@ -8,7 +8,7 @@
   import {Component, Vue, Mutation, Action, Getter} from 'nuxt-property-decorator';
   import {storageGet} from '~/utils/storage';
   import {AUTH, SPLASH, APP} from '~/utils/constants';
-  import {initToken, accessTokenExpiring, refreshToken} from '~/preAuth';
+  import {initToken, accessTokenExpired, refreshToken} from '~/auth';
   import {UI} from '~/store/constants';
   import {handleAuthError} from '~/utils/auth';
 
@@ -43,15 +43,15 @@
 
       //else if storage has access token, user has been in app, so go check if expired etc and load app
       else if(storageGet(AUTH.ACCESS_TOKEN)){
-        if(accessTokenExpiring()){
-          console.log('token expiring/expired, attempting refreshing it');
+        if(accessTokenExpired()){
+          console.log('token expired, attempting refreshing it');
 
           try{
             await refreshToken();
             this.$router.push(APP);
           }
           catch(error){
-            this.handleAuthError('token refresh failed...');
+            handleAuthError('token refresh failed...');
           }
         }
         else{

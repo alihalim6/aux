@@ -14,9 +14,9 @@
           </v-hover>
           
           <div :class="{'pb-8': vertical}">
-            <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-secondary-label': item.isArtist}">{{item.secondaryLabel}}</div>
-            <div class="primary-label" :class="{'artist-primary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
-            <div class="secondary-label bottom-label"><v-icon v-show="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
+            <div class="primary-label" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
+            <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
+            <div class="secondary-label bottom-label"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
           </div>
         </div>
       </div>
@@ -54,12 +54,14 @@
 
 <style lang="scss">
   $content-img-size: 275px;
+  $label-left-padding: 6px;
+  $secondary-label-font-size: 12px;
+  $primary-label-font-size: 14px;
 
   .content-carousel {
     display: flex;
     overflow: scroll;
     margin-top: 20px;
-    $label-left-padding: 6px;
 
     .content-hover {
       border: 2px solid;
@@ -83,19 +85,12 @@
 
     .reduce-playback-button-left {
       left: $content-img-size - 40px;
-    }    
-
-    $secondary-label-font-size: 12px;
-    $primary-label-font-size: 14px;
+    } 
 
     .secondary-label {
       font-size: $secondary-label-font-size;
       color: rgba(0,0,0,0.8);
-      padding: 10px 8px 4px $label-left-padding;
-      width: 150px;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
+      padding: 0px 8px 4px $label-left-padding;
     }
 
     .artist-secondary-label {
@@ -109,12 +104,13 @@
     .primary-label {
       font-size: $primary-label-font-size;
       font-weight: 600;
-      padding: 0px $label-left-padding;
+      padding: 10px 30px 4px $label-left-padding;
     }
 
     .artist-primary-label {
       @extend .primary-label;
       @extend .artist-secondary-label;
+      padding-top: 0px;
       font-weight: normal;
       font-size: $secondary-label-font-size;
     }
@@ -124,23 +120,23 @@
     }
 
     .bottom-label {
-      padding-top: 6px;
       display: flex;
       align-items: center;
-
-      .record-icon {
-        padding-right: 4px;
-      }
     }
   }
 
   .more-from-artist-carosuel {
-      margin-top: 6px;
-      padding: 0px $base-padding;
+    margin-top: 6px;
+    padding: 0px $base-padding;
+
+    .bottom-label {
+      padding-left: 0px;
+    }
   }
 
   .vertical-carousel {
     flex-direction: column;
+    padding: 0px $base-padding;
   }
 
   .record-icon {

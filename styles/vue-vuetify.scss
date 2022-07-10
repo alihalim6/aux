@@ -5,7 +5,7 @@
 }
 
 .v-dialog {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.6);
   box-shadow: none;
 }
 
@@ -20,4 +20,10 @@
 
 .v-card .content-carousel .spaced-content {
   box-shadow: none !important;
+}
+
+.home-tabs {
+  .v-window-item {
+    max-height: $max-home-content-height;
+  }
 }

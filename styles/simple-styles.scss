@@ -49,3 +49,40 @@ $phrase-border-color: #aaaaaa;
 .no-max-width {
   max-width: unset !important;
 }
+
+.no-animation {
+  -webkit-animation: none !important;
+  animation: none !important;
+}
+
+.home-content-border {
+  border: 2px solid #888888;
+  border-radius: 4px;
+}
+
+.home-content {
+  @extend .home-content-border;
+  @extend .home-content-responsive;
+
+  max-width: $max-inner-width;
+  max-height: $max-home-content-height;
+  overflow-y: scroll;
+  margin: 0 $base-padding;
+  padding: 4px;
+  background-color: white;
+}
+
+.home-content-responsive {
+  @media(min-width: $max-inner-width){
+    max-width: $max-inner-width - 28px;
+    margin: 0 auto;
+  }
+}
+
+.overflow-scroll {
+  overflow: scroll;
+}
+
+.not-clickable {
+  cursor: none;
+}

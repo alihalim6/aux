@@ -34,10 +34,10 @@
 
               <div class="artist-info">
                 <div class="font-weight-bold">{{artist.name}}</div>
-                <div class="font-weight-regular artist-genres">{{artist.primaryLabel}}</div>
+                <div class="font-weight-regular artist-genres">{{artist.secondaryLabel}}</div>
               </div>
 
-              <v-icon class="artist-arrow">mdi-arrow-right</v-icon>
+              <v-icon class="clickable ml-auto">mdi-arrow-right</v-icon>
             </div>
           </div>
         </div>
@@ -104,10 +104,6 @@
       .artist-genres {
         font-size: 12px;
         color: #333333;
-      }
-
-      .artist-arrow {
-        margin-left: auto;
       }
     }
   }

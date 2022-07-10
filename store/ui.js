@@ -34,13 +34,14 @@ export const actions = {
       isTrack: item.isTrack, 
       isAlbum: item.isAlbum, 
       isArtist: item.isArtist,
+      isPlaylist: item.isPlaylist,
       singleArtistId: item.singleArtistId
     });
 
     commit('setItemDetailsData', {item, data: response.data});
     commit('displayDetailsOverlay', item);
   },
-  displayArtistDetails: async ({dispatch}, artist) =>{
+  displayArtistDetails: async ({dispatch}, artist) => {
     const response = await httpClient.post('/artist', {itemId: artist.id});
     
     //use new object to avoid vuex issues when mutating passed in artist directly

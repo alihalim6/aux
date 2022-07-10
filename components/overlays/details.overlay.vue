@@ -3,15 +3,15 @@
     <v-dialog :value="detailsOverlay.display" fullscreen transition="fade-transition" persistent>
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="detailsOverlay.currentIndex">
           <v-carousel-item v-for="(item, index) in detailsOverlay.items" :key="item.id" transition="fade-transition">                    
-            <!-- v-show img so that timing of img then content stays consistent as carousel nav happens -->
+            <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
             <v-img class="clickable item-image" :src="item.imgUrl" v-show="detailsOverlay.currentIndex === index">
-              <div class="full-item-image-cta-outer" @click="displayFullItemImage(item.imgUrl)">
+              <div class="full-item-image-cta-outer" @click="displayFullItemImage(item.imgUrl)" v-show="!item.simpleOverlay">
                 <v-icon color="white" class="eye">mdi-eye</v-icon>
               </div>
 
-              <div class="content-container overlay-content" @click.stop>
+              <div class="overlay-content" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay}" @click.stop>
                 <div class="inner-container">
-                  <div class="inner-image-cta-container">
+                  <div class="inner-image-cta-container" v-show="!item.simpleOverlay">
                     <div class="clickable full-item-image-cta-inner" @click="displayFullItemImage(item.imgUrl)">
                       {{item.isArtist ? 'Photo' : (item.albumType || 'Track') + ' Artwork'}}
                     </div>
@@ -22,22 +22,27 @@
                     <v-icon class="close-button" large @click="closeDetailsOverlay()">mdi-close</v-icon>
                   </div>
 
-                  <div class="section-title overlay-section-title">
+                  <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
                     {{item.name}}
                     
-                    <div class="controls-container" :class="{'justify-end': item.isArtist}">
+                    <div class="controls-container" :class="{'justify-end': item.isArtist}" v-show="!item.simpleOverlay">
                       <PlaybackIcon :item="item" class="details-overlay-playback-button"/>
                       <!-- TODO -->
                       <v-icon medium class="clickable">mdi-heart-plus-outline</v-icon>
                     </div>
                   </div>
 
+                  <NewAndRecommendedDetails v-if="item.allNewAndRecommended" :data="item.data"/>
+                  <NewReleases v-if="item.newReleases"/>
                   <TrackDetails v-if="item.isTrack" :track="item"/>
                   <AlbumDetails v-if="item.isAlbum" :album="item"/>
                   <ArtistDetails v-if="item.isArtist" :artist="item"/>
+                  <PlaylistDetails v-if="item.isPlaylist" :playlist="item"/>
                 </div>
               </div>
             </v-img>
+
+            <BackToTop :elementId="`overlayContent${index}`"/>
           </v-carousel-item>
         </v-carousel>
     </v-dialog>
@@ -75,6 +80,8 @@
 </script>
 
 <style lang="scss">
+  @import '~/styles/simple-styles.scss';
+
   $full-image-cta-breakpoint: 850px;
 
   .item-image {
@@ -206,7 +213,24 @@
             }
           }
         }
+
+        $title-border-size: 3px;
+
+        @supports(-webkit-text-stroke: $title-border-size $primary-theme-color) {
+          .simple-overlay-title {
+            -webkit-text-stroke: $title-border-size $primary-theme-color;
+            -webkit-text-fill-color: $secondary-theme-color;
+            font-size: 44px;
+            line-height: 1;
+            word-break: break-word;
+          }
+        }
       }
+    }
+
+    .simple-overlay {
+      @extend .no-animation;
+      opacity: 1;
     }
   }
 

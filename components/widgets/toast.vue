@@ -1,5 +1,5 @@
 <template>
-  <v-snackbar class="app-toast" :value="toast.display" :app="true" top width="100%" max-width="420" transition="fade-transition" color="red" timeout="-1">
+  <v-snackbar class="app-toast" :value="toast.display" :app="true" top width="100%" max-width="420" transition="fade-transition" color="red">
     <div class="toast-container">
       <span class="toast-text">{{toast.text}}</span>
       <v-icon class="clickable" @click.stop.prevent="closeToast()" id="appToast">mdi-close</v-icon>

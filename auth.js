@@ -1,6 +1,7 @@
 import {storageGet, storageSet} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
 import axios from 'axios';
+import {initSpotifyPlayer} from '~/utils/helpers';
 
 export const authorize = async () => {
   const state = Math.random().toString(36).substring(2, 15);
@@ -22,6 +23,9 @@ export const refreshToken = async () => {
   await axios.post(AUTH.URL.TOKEN, 
     `grant_type=refresh_token&refresh_token=${storageGet(AUTH.REFRESH_TOKEN)}&client_id=${AUTH.CLIENT_ID}`, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
     .then(response => setTokenData(response));
+
+  //set new player with new token
+  initSpotifyPlayer();
 };
 
 const setTokenData = (response) => {
@@ -31,7 +35,7 @@ const setTokenData = (response) => {
   storageSet(AUTH.TOKEN_SET_AT, Date.now());
 };
 
-export const accessTokenExpiring = () => {
+export const accessTokenExpired = () => {
   const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
   console.log(`tokenExpirationTime: ${tokenExpirationTime}`);
   console.log(`Date.now() is ${Date.now()}`);

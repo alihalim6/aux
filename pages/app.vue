@@ -18,23 +18,20 @@
     <div v-show="!isLoading">
       <NewAndRecommended/>
       <MyAux/>
+      <Playlists/>
+      <DetailsOverlay/>
     </div>
 
     <LoadingOverlay v-show="isLoading"/>
       
-    <DetailsOverlay/>
     <Toast/>
   </v-app>
 </template>
 
 <script>
-  import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
-  import {UI, SPOTIFY} from '~/store/constants';
-  import {storageGet} from '~/utils/storage';
-  import {AUTH} from '~/utils/constants';
-  import {refreshToken} from '~/preAuth';
-  import {handleAuthError} from '~/utils/auth';
-  import {httpClient} from '~/utils/api';
+  import {Component, Vue, Getter} from 'nuxt-property-decorator';
+  import {UI} from '~/store/constants';
+  import {initSpotifyPlayer} from '~/utils/helpers';
 
   @Component
   export default class App extends Vue {
@@ -43,13 +40,6 @@
     
     @Getter('isLoading', {namespace: UI})
     isLoading;
-
-    @Mutation('setSpotifyDeviceId', {namespace: SPOTIFY})
-    setSpotifyDeviceId;
-
-    @Mutation('setSpotifyPlayer', {namespace: SPOTIFY})
-    setSpotifyPlayer;
-
 
     async beforeMount(){
       //add SDK to scripts
@@ -60,65 +50,9 @@
 
     mounted(){
       window.onSpotifyWebPlaybackSDKReady = () => {
-        this.initSpotifyPlayer();
+        initSpotifyPlayer();
       };
     }
-
-    //this also makes whatever device/browser that user is on avaiable as a Spotify Connect device (e.g speaker); 
-    //tested and worked to play track from iphone Spotify to browser;
-    //TODO: tie this in as a way to be live on aux (from Spotify -- user who prefers their interface)?
-    //EDIT: doesn't seem doable as we'd need a hook to know/display something has been played from elsewhere etc. 
-    //EDIT: --> maybe sptofiy tracking object has this info
-    initSpotifyPlayer(){
-      let accessToken = storageGet(AUTH.ACCESS_TOKEN);
-
-      const newPlayer = () => {
-        return new Spotify.Player({
-          name: 'Aux',
-          getOAuthToken: callback => {callback(accessToken)},
-          volume: 1
-        });
-      };
-
-      const player = newPlayer();
-
-      player.addListener('ready', async ({device_id}) => {
-        console.log(`Spotify player ready with device id ${device_id}`);
-        this.setSpotifyDeviceId(device_id);
-
-        //transfer playback to this device
-        await httpClient.post('/passthru', {
-          url: '/me/player',
-          method: 'PUT',
-          data: {device_ids: [device_id]}
-        });
-      });
-
-      player.addListener('authentication_error', async ({message}) => {
-          console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
-          this.retryPlayerInit();
-      });
-
-      player.connect().then(connected => {
-        this.setSpotifyPlayer(player);
-        console.log(`Connected to Spotify player: ${connected}`);
-
-        if(!connected){
-          console.log(`Retrying...`);
-          this.retryPlayerInit();
-        }
-      });
-    }
-
-    async retryPlayerInit(){
-      try{
-        await refreshToken();
-        this.initSpotifyPlayer();
-      }
-      catch(error){
-        handleAuthError('Couldn\'t init player.');
-      }
-    };
   }
 </script>
 

@@ -1,35 +1,36 @@
 <template>
-  <section class="my-aux-container mt-4 pt-1 pb-6">
+  <section class="pt-1 pb-6">
     <div class="title-container mt-4">
-      <div class="section-title color-white">My Vibe</div>
+      <div class="section-title">My Vibe</div>
     </div>
 
-    <v-tabs class="tab-container my-aux-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
+    <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
       <v-tab v-for="(item, index) in content" :key="item.key">
         <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
           <span v-if="!item.fetchPending" :id="`myAuxTabLabel${index}`">{{item.label}}</span>
           <v-progress-circular v-if="item.fetchPending" class="fetch-in-progress" indeterminate color="white"></v-progress-circular>
         </div>
-        <span v-if="index < (content.length - 1)" class="filter-divider color-white">/</span>
+        <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
       </v-tab>
     </v-tabs>
 
-    <v-tabs-items v-model="selectedTab" class="tab-content-container mt-2">
-      <v-tab-item v-for="item in content" :key="item.key">
-        <div class="my-aux-list-container my-aux-responsive" v-if="item.data.length" v-scroll.self="contentScrolled">
+    <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
+      <v-tab-item v-for="(item, index) in getContent()" :key="item.key">
+        <div class="home-content" :id="`myAux${index}`">
           <TrackList v-if="!item.carousel" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true" :hideLikeability="item.hideLikeability"/>
           <ContentCarousel v-if="item.carousel" :data="item.data" :vertical="true"/>
         </div>
+        
+        <BackToTop :elementId="`myAux${index}`"/>
       </v-tab-item>
     </v-tabs-items>
   </section>
 </template>
 
-<script lang="ts">
+<script>
   import {Component, Vue} from 'vue-property-decorator';
   import {httpClient} from '~/utils/api';
   import {setItemMetaData, msToDuration} from '~/utils/helpers';
-  import {MyAuxContent, UserItem} from '~/types/user';
   import {MY_AUX} from '~/utils/constants';
 
   @Component
@@ -42,11 +43,11 @@
       offset: 0
     };
 
-    content: MyAuxContent[] = [
+    content = [
       {
         ...this.defaultContent,
         key: 'likedTracks',
-        label: MY_AUX.LIKED_ITEMS,
+        label: MY_AUX.LIKED_TRACKS,
         hideLikeability: true,
         api: 'tracks'
       },
@@ -65,8 +66,8 @@
       }
     ];
 
-    mapData(data: UserItem[]){
-      return data.map((item: UserItem) => {
+    mapData(data){
+      return data.map(item => {
         return {
           ...setItemMetaData([(item.track || item.album)])[0],
           hideAlbum: true,
@@ -78,7 +79,7 @@
     async beforeMount(){
       const { data } = await httpClient.get('/myAux');
 
-      this.content.forEach((item: MyAuxContent) => {
+      this.content.forEach(item => {
         item.data = this.mapData(data[item.key].items);
         item.total = data[item.key].total;
         //lazy loading/pagination
@@ -95,7 +96,7 @@
     }
 
     //fetch more data for current tab when certain scroll length reached
-    async contentScrolled(e: any){
+    async contentScrolled(e){
       const currentContent = this.content[this.selectedTab];
       const scrollThreshold = 1000;
       const fetchMoreData = (e.target.scrollHeight - e.target.scrollTop <= scrollThreshold);
@@ -117,70 +118,51 @@
         }
       }
     }
+
+    getContent(){
+      return this.content.filter(content => content.data.length);
+    }
   }
 </script>
 
 <style lang="scss">
   @import '~/styles/variables.scss';
 
-  .my-aux-container {
-    background-color: black;
+  .tab-container {
+    padding-left: $base-padding;
+    max-width: calc(100vw - #{$base-padding});
 
-    .tab-container {
-      padding-left: $base-padding;
-      max-width: calc(100vw - #{$base-padding});
-
-      @media(min-width: $max-inner-width){
-        padding: 0px;
-      }
-
-      .fetch-in-progress {
-        $icon-size: 16px !important;
-        width: $icon-size;
-        height: $icon-size;
-      }
-
-      .selected-tab {
-        background-color: $spotify-green;
-        color: white;
-      }
+    @media(min-width: $max-inner-width){
+      padding: 0px;
     }
 
-    .tab-content-container {
-      background-color: transparent !important;
+    .fetch-in-progress {
+      $icon-size: 16px !important;
+      width: $icon-size;
+      height: $icon-size;
     }
 
-    .my-aux-list-container {
-      max-width: $max-inner-width;
-      max-height: 500px;
-      overflow-y: scroll;
-      margin: 0 $base-padding;
-      border-radius: 4px;
-      padding: 4px;
-      background-color: white;
-    }
-
-    .my-aux-responsive {
-      @media(min-width: $max-inner-width){
-        max-width: $max-inner-width - 28px;
-        margin: 0 auto;
-      }
-    }
-
-    .v-tab {
-      padding: 0px !important;
-    }
-
-    .v-slide-group__prev {
-      display: none !important;
-    }
-
-    .v-tab--active::before {
-      opacity: 0 !important;
+    .selected-tab {
+      background-color: $spotify-green;
+      color: $secondary-theme-color;
+      border: none;
+      padding: 10px;
     }
   }
 
-  .color-white {
-    color: white !important;
+  .v-tab {
+    padding: 0px !important;
+  }
+
+  .v-slide-group__prev {
+    display: none !important;
+  }
+
+  .v-tab--active::before {
+    opacity: 0 !important;
+  }
+  
+  .color-black {
+    color: black !important;
   }
 </style>

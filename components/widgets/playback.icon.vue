@@ -2,15 +2,25 @@
     <section>
       <v-icon 
         class="clickable" 
-          :color="itemIsPlaying ? '#1DB954' : ''" 
-          :class="[iconClass, conditionalIconClass]" 
-          v-show="!item.isArtist && !collectionPlaying()" 
-          @click="togglePlay(item)"
-          :aria-label="`${item.playbackIcon} item`">
+        :color="itemIsPlaying ? '#1DB954' : ''" 
+        :class="[iconClass, conditionalIconClass]" 
+        v-show="!item.isArtist && !collectionPlaying()" 
+        @click="togglePlay(item)"
+        :aria-label="`${item.playbackIcon} item`"
+      >
         {{`mdi-${item.playbackIcon}-circle-outline`}}
       </v-icon>
 
-      <v-icon class="clickable" color= "#1DB954" :class="[iconClass, conditionalIconClass]" v-show="collectionPlaying()" @click="stopPlayback(true)">mdi-stop-circle</v-icon>
+      <v-icon
+        class="clickable" 
+        color= "#1DB954" 
+        :class="[iconClass, conditionalIconClass]" 
+        v-show="collectionPlaying()" 
+        @click="stopPlayback(true)"
+        aria-label="stop playback"
+      >
+        mdi-stop-circle
+      </v-icon>
     </section>
 </template>
 

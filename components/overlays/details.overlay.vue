@@ -18,8 +18,8 @@
                   </div>
 
                   <div class="d-flex justify-space-between align-center py-2">
-                    <v-icon :class="{'no-visibility': (index === 0)}" class="back-button" large @click="goBackDetailsOverlay()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="closeDetailsOverlay()">mdi-close</v-icon>
+                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBackDetailsOverlay()">mdi-arrow-left</v-icon>
+                    <v-icon class="close-button" large @click="closeDetailsOverlay()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">

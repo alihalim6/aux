@@ -1,7 +1,7 @@
 <template>
   <div class="clickable back-to-top-container" :class="{'bottom-reached': bottomReached}" v-if="scrolledDown">
     <div class="back-to-top">
-      <v-icon large color="black" @click.stop="backToTop()">mdi-arrow-up</v-icon>
+      <v-icon large color="black" @click.stop="backToTop()" aria-label="scroll to top of content">mdi-arrow-up</v-icon>
     </div>
   </div>
 </template>

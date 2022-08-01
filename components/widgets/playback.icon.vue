@@ -1,6 +1,12 @@
 <template>
     <section>
-      <v-icon class="clickable" :color="itemIsPlaying ? '#1DB954' : ''" :class="[iconClass, conditionalIconClass]" v-show="!item.isArtist && !collectionPlaying()" @click="togglePlay(item)">
+      <v-icon 
+        class="clickable" 
+          :color="itemIsPlaying ? '#1DB954' : ''" 
+          :class="[iconClass, conditionalIconClass]" 
+          v-show="!item.isArtist && !collectionPlaying()" 
+          @click="togglePlay(item)"
+          :aria-label="`${item.playbackIcon} item`">
         {{`mdi-${item.playbackIcon}-circle-outline`}}
       </v-icon>
 

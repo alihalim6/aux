@@ -1,7 +1,7 @@
 <template>
   <v-footer class="currently-playing-container">
     <div class="clickable view-queue-container" :class="{'off-air': !currentlyPlayingItem.uri}" v-if="profile">      
-      <v-btn elevation="4" class="view-queue">
+      <v-btn elevation="4" class="view-queue" aria-label="view playback queue">
         <v-icon small color="white">mdi-format-list-text</v-icon>
       </v-btn>
 
@@ -26,15 +26,42 @@
           class="d-flex align-center"
           @change="updateElapsedDisplay"
           @end="seek"
+          aria-label="seek track"
         >
           <template v-slot:prepend><span class="playback-time">{{playbackElapsed.display}}</span></template>
           <template v-slot:append><span class="playback-time">{{playbackTotal.display}}</span></template>
         </v-slider>
 
         <div class="d-flex justify-center">
-          <v-icon medium class="clickable queue-control" :class="{'no-visibility': !hasPreviousItem}" @click.stop="playPreviousItem()">mdi-skip-previous</v-icon>
-          <v-icon large class="clickable control playback-toggle" :class="{'disabled-control': !currentlyPlayingItem.uri}" @click.stop="playbackToggled()">{{`mdi-${playbackIcon}`}}</v-icon>        
-          <v-icon medium class="clickable queue-control" :class="{'no-visibility': !hasNextItem}" @click.stop="playNextItem()">mdi-skip-next</v-icon>
+          <v-icon 
+            medium 
+            class="clickable queue-control" 
+            :class="{'no-visibility': !hasPreviousItem}" 
+            @click.stop="playPreviousItem()"
+            aria-label="skip to previous track"
+          >
+            mdi-skip-previous
+          </v-icon>
+          
+          <v-icon 
+            large 
+            class="clickable control playback-toggle" 
+            :class="{'disabled-control': !currentlyPlayingItem.uri}" 
+            @click.stop="playbackToggled()"
+            :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
+          >
+            {{`mdi-${playbackIcon}`}}
+          </v-icon>        
+          
+          <v-icon 
+            medium 
+            class="clickable queue-control" 
+            :class="{'no-visibility': !hasNextItem}" 
+            @click.stop="playNextItem()"
+            aria-label="skip to next track"
+          >
+            mdi-skip-next
+          </v-icon>
         </div>
       </div>
     </div>

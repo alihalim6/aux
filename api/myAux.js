@@ -14,6 +14,10 @@ async function myAux(req, res){
     const topTracks = await topItems('tracks', apiConfig(accessToken));
     const userTopItems = [...topArtists.data.items, ...topTracks.data.items];
 
+    const { data } = await httpClient.get('/me', apiConfig(accessToken));
+    const username = data.display_name;
+    const profileImg = data.images[0] ? data.images[0].url : '';
+
     res.json({
       likedTracks: {
         items: likedTracks.data.items,
@@ -28,7 +32,11 @@ async function myAux(req, res){
       recentlyPlayed: {
         items: recentlyPlayed.data.items
       },
-      topItems: userTopItems
+      topItems: userTopItems,
+      profile: {
+        username,
+        img: profileImg
+      }
     });
   }
   catch(error){

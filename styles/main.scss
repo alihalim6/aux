@@ -22,6 +22,12 @@ $section-title-font-size: 36px;
     padding: 8px $base-padding 10px;
   }
 
+  .home-content-title {
+    @extend .section-title;
+    padding-left: $home-content-padding;
+    padding-right: $home-content-padding;
+  }
+
   .filter-container {
     display: flex;
     justify-content: space-evenly;

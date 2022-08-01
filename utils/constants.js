@@ -22,7 +22,7 @@ export const MY_AUX = {
   LIKED_TRACKS: 'Liked Tracks',
   LIKED_ALBUMS: 'Liked Albums',
   RECENTLY_PLAYED: 'Recently Played',
-  TOP_ITEMS: 'Top Items'
+  TOP_ITEMS: 'Top Tracks/Artists'
 };
 
 export const PLAYLISTS = {

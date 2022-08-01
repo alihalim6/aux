@@ -29,7 +29,7 @@
   import {UI} from '~/store/constants';
 
   @Component
-  export default class NewReleases extends Vue {
+  export default class NewAndRecommendedDetails extends Vue {
     selectedTab = 0;
     newAndRecommended = [];
 
@@ -58,7 +58,7 @@
 
     async beforeMount(){
       this.newAndRecommended = setItemMetaData(this.data);
-      this.content[0].data = this.newAndRecommended.filter(item => (item.isTrack && !item.singleTrack) || item.singleTrack);//tracks
+      this.content[0].data = this.newAndRecommended.filter(item => item.isTrack || item.singleTrack);//tracks
       this.content[1].data = this.newAndRecommended.filter(item => item.isAlbum && !item.singleTrack);//albums
       this.content[2].data = this.newAndRecommended.filter(item => item.isArtist);//artists
     }

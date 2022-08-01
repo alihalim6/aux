@@ -2,7 +2,7 @@
   <section>
     <div class="sub-title-container">
       <div class="secondary-label">
-        <OverlayArtists :artists="track.artists"/>
+        <ArtistList :artists="track.artists"/>
         <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
         {{new Date(track.album ? track.album.release_date : track.release_date).getFullYear()}}
       </div>
@@ -17,7 +17,7 @@
         <v-icon small>mdi-arrow-right</v-icon>
       </div>
 
-      <div class="album-info">
+      <div class="d-flex align-center">
         <v-img class="clickable track-album" :src="track.album.imgUrl"></v-img>
 
         <div class="album-data">
@@ -68,25 +68,20 @@
     text-decoration: underline;
   }
 
-  .album-info {
+  .track-album {
+    max-width: 55%;
+    margin-top: 8px;
+  }
+
+  .album-data {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    margin-left: 18px;
+    font-weight: 600;
+    font-size: 14px;
 
-    .track-album {
-      max-width: 55%;
-      margin-top: 8px;
-    }
-
-    .album-data {
-      display: flex;
-      flex-direction: column;
-      margin-left: 18px;
-      font-weight: 600;
-      font-size: 14px;
-
-      @media(min-width: 600px){
-        font-size: 16px;
-      }
+    @media(min-width: 600px){
+      font-size: 16px;
     }
   }
 </style>

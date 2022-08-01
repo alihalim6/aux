@@ -27,7 +27,8 @@
       });
     }
 
-    backToTop(){
+    async backToTop(){
+      await this.$nextTick();
       this.element.scrollTop = 0;
     }
   }

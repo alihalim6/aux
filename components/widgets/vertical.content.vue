@@ -1,27 +1,27 @@
 <template>
   <section>
     <div v-if="data.length" class="vertical-content">
-      <v-card v-for="(item, index) in data" :key="item.id" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="7">        
+      <v-card v-for="(item, index) in data" :key="item.id" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="7" @click="displayDetailsOverlay(item)">        
         <div class="item-container">  
-          <v-card max-width="40%" elevation="7" class="clickable">
-            <v-img class="item-img" :src="item.imgUrl" @click="displayDetailsOverlay(item)"></v-img>
+          <v-card max-width="40%" elevation="7">
+            <v-img class="item-img" :src="item.imgUrl"></v-img>
           </v-card>
 
           <v-icon class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
 
-          <div class="info-container">
-            <span class="clickable item-title font-weight-bold" :class="{'smaller-title': alternateFormat}" @click="displayDetailsOverlay(item)">{{item.primaryLabel}}</span>
+          <div class="d-flex flex-column">
+            <span class="item-title font-weight-bold" :class="{'smaller-title': alternateFormat}">{{item.primaryLabel}}</span>
             <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
             <div class="item-detail d-flex" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
           </div>
 
-          <v-icon v-if="!alternateFormat" class="clickable ml-auto" color="black" @click="displayDetailsOverlay(item)">mdi-arrow-right</v-icon>
+          <v-icon v-if="!alternateFormat" class="ml-auto" color="black">mdi-arrow-right</v-icon>
         </div>
 
         <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
           <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
           <span :class="{'no-visibility': !item.timeAgo}" class="time-ago">{{item.timeAgo}}</span>
-          <PlaybackIcon :item="item"/>
+          <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
         </div>
       </v-card>
     </div>
@@ -33,7 +33,7 @@
   import {UI} from '~/store/constants';
 
   @Component
-  export default class NewReleases extends Vue {
+  export default class VerticalContent extends Vue {
     @Prop({required: true})
     data;
 
@@ -70,19 +70,14 @@
         font-size: 20px;
       }
 
-      .info-container {
-        display: flex;
-        flex-direction: column;
+      .item-title {
+        font-size: 22px;
+        line-height: 1.3;
+        padding-bottom: 2px;
+      }
 
-        .item-title {
-          font-size: 22px;
-          line-height: 1.3;
-          padding-bottom: 2px;
-        }
-
-        .smaller-title {
-          font-size: 16px;
-        }
+      .smaller-title {
+        font-size: 16px;
       }
     }
 

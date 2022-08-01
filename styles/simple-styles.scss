@@ -11,7 +11,7 @@ $phrase-border-color: #aaaaaa;
   font-size: 8px !important;
 }
 
-.no-visiblity {
+.no-visibility {
   visibility: hidden;
 }
 
@@ -67,7 +67,7 @@ $phrase-border-color: #aaaaaa;
   max-width: $max-inner-width;
   max-height: $max-home-content-height;
   overflow-y: scroll;
-  margin: 0 $base-padding;
+  margin: 0 $home-content-padding;
   padding: 4px;
   background-color: white;
 }

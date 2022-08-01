@@ -6,7 +6,8 @@ export const state = () => {
     detailsOverlay: {items: [], display: false, currentIndex: -1},
     fullItemImage: '',
     toast: {display: false},
-    loading: true
+    loading: true,
+    profile: null
   };
 };
 
@@ -22,6 +23,9 @@ export const getters = {
   },
   isLoading: (state) => {
     return state.loading;
+  },
+  profile: (state) => {
+    return state.profile;
   }
 };
 
@@ -29,7 +33,7 @@ export const actions = {
   displayDetailsOverlay: async ({commit}, item) => {
     const detailsId = (item.isTrack ? item.album.id : item.id);
 
-    const response = await httpClient.post('/details', {
+    const { data } = await httpClient.post('/details', {
       itemDetailsId: detailsId, 
       isTrack: item.isTrack, 
       isAlbum: item.isAlbum, 
@@ -38,17 +42,17 @@ export const actions = {
       singleArtistId: item.singleArtistId
     });
 
-    commit('setItemDetailsData', {item, data: response.data});
+    commit('setItemDetailsData', {item, data});
     commit('displayDetailsOverlay', item);
   },
   displayArtistDetails: async ({dispatch}, artist) => {
-    const response = await httpClient.post('/artist', {itemId: artist.id});
+    const { data } = await httpClient.post('/artist', {itemId: artist.id});
     
     //use new object to avoid vuex issues when mutating passed in artist directly
     const artistToDisplay = {
       ...artist,
-      images: response.data.artist.images,
-      genres: response.data.artist.genres
+      images: data.artist.images,
+      genres: data.artist.genres
     };
     
     setItemMetaData([artistToDisplay]);
@@ -84,5 +88,8 @@ export const mutations = {
   },
   setLoading(state, loading){
     state.loading = loading;
+  },
+  setProfile(state, profile){
+    state.profile = profile;
   }
 };

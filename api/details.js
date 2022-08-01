@@ -17,7 +17,7 @@ async function details(req, res){
     let relatedArtists = defaultResponse;
     let albumTracks = defaultResponse;
     let playlistTracks = [];
-    let playlistTotalTracks;
+    let totalPlaylistTracks;
     
     if(isAlbum || isTrack){
       albumTracks = await httpClient.get(`/albums/${itemDetailsId}/tracks?limit=50`, apiConfig(accessToken));
@@ -40,7 +40,7 @@ async function details(req, res){
     if(isPlaylist){
       const { data } = await httpClient.get(`/playlists/${itemDetailsId}/tracks?limit=${playlistTrackLimit}`, apiConfig(accessToken));
       playlistTracks = data.items;
-      playlistTotalTracks = data.total;
+      totalPlaylistTracks = data.total;
     }
 
     res.json({
@@ -48,11 +48,9 @@ async function details(req, res){
       artistTopTracks: artistTopTracks.data.tracks,
       relatedArtists: relatedArtists.data.artists,
       albumTracks: albumTracks.data.items,
-      playlists: {
-        tracks: playlistTracks,
-        totalTracks: playlistTotalTracks,
-        limit: playlistTrackLimit
-      }
+      playlistTracks,
+      totalPlaylistTracks,
+      playlistTrackLimit
     });
   }
   catch(error){

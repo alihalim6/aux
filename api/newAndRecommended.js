@@ -42,7 +42,8 @@ async function newAndRecommended(req, res){
       allItems,
       previewItems: [...Array.from(allItems)].splice(0, 25)
     });
-  }catch(error){
+  }
+  catch(error){
    res.json({error: error.toString()});
   }
 };

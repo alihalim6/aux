@@ -24,13 +24,13 @@
     playlist;
 
     async beforeMount(){
-      const { tracks, totalTracks, limit } = this.playlist.details.playlists;
-      this.tracks = tracks.map(this.setTrackData);
+      const { playlistTracks, totalPlaylistTracks, playlistTrackLimit } = this.playlist.details;
+      this.tracks = playlistTracks.map(this.setTrackData);
 
       while(!this.allTracksRetrieved){
-        if(this.tracks.length < totalTracks){
+        if(this.tracks.length < totalPlaylistTracks){
           const { data } = await httpClient.post('/passthru', {
-            url: `/playlists/${this.playlist.id}/tracks?limit=${limit}&offset=${this.tracks.length}`,
+            url: `/playlists/${this.playlist.id}/tracks?limit=${playlistTrackLimit}&offset=${this.tracks.length}`,
             method: 'GET'
           });
 
@@ -38,7 +38,10 @@
         }
         else{
           this.allTracksRetrieved = true;
+          this.tracks.forEach(track => track.fromCollection = this.playlist.uri);
           this.tracks = this.tracks.filter(track => track.id);
+          //needed for collection logic for 'play entire playlist' toggle on overlay
+          this.playlist.details.playlistTracks = this.tracks;
         }
       }
     }

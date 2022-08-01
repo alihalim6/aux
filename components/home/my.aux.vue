@@ -1,7 +1,7 @@
 <template>
   <section class="pt-1 pb-6">
     <div class="title-container mt-4">
-      <div class="section-title">My Vibe</div>
+      <div class="home-content-title">My Vibe</div>
     </div>
 
     <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
@@ -17,8 +17,13 @@
     <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
       <v-tab-item v-for="(item, index) in getContent()" :key="item.key">
         <div class="home-content" :id="`myAux${index}`">
-          <TrackList v-if="!item.carousel" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true" :hideLikeability="item.hideLikeability"/>
+          <TrackList v-if="item.trackList" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true" :hideLikeability="item.hideLikeability"/>
           <ContentCarousel v-if="item.carousel" :data="item.data" :vertical="true"/>
+
+          <div v-if="item.topItems">
+            <TrackList :tracks="item.topItems.tracks" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true"/>
+            <ContentCarousel :data="item.topItems.artists" :vertical="true"/>
+          </div>
         </div>
         
         <BackToTop :elementId="`myAux${index}`"/>
@@ -28,10 +33,11 @@
 </template>
 
 <script>
-  import {Component, Vue} from 'vue-property-decorator';
+  import {Component, Vue, Mutation} from 'nuxt-property-decorator';
   import {httpClient} from '~/utils/api';
   import {setItemMetaData, msToDuration} from '~/utils/helpers';
   import {MY_AUX} from '~/utils/constants';
+  import {UI} from '~/store/constants';
 
   @Component
   export default class MyAux extends Vue {
@@ -49,6 +55,7 @@
         key: 'likedTracks',
         label: MY_AUX.LIKED_TRACKS,
         hideLikeability: true,
+        trackList: true,
         api: 'tracks'
       },
       {
@@ -62,9 +69,13 @@
       {
         data: [],
         key: 'recentlyPlayed',
-        label: MY_AUX.RECENTLY_PLAYED
+        label: MY_AUX.RECENTLY_PLAYED,
+        trackList: true
       }
     ];
+
+    @Mutation('setProfile', {namespace: UI})
+    setProfile;
 
     mapData(data){
       return data.map(item => {
@@ -78,6 +89,8 @@
 
     async beforeMount(){
       const { data } = await httpClient.get('/myAux');
+      this.setProfile(data.profile);
+      const topItems = setItemMetaData(data.topItems);
 
       this.content.forEach(item => {
         item.data = this.mapData(data[item.key].items);
@@ -86,12 +99,15 @@
         item.limit = item.offset = data[item.key].limit;
       });
 
-      //data structure for top items is different than the others, so no mapping needed
+      //data structure for top items response is different than the others, so no mapping needed
       this.content = [...this.content, {
         key: 'topItems',
         label: MY_AUX.TOP_ITEMS,
-        data: setItemMetaData(data.topItems),
-        carousel: true
+        data: topItems,
+        topItems: {
+          tracks: topItems.filter(item => item.isTrack || item.singleTrack),
+          artists: topItems.filter(item => item.isArtist)
+        }
       }];
     }
 
@@ -129,8 +145,8 @@
   @import '~/styles/variables.scss';
 
   .tab-container {
-    padding-left: $base-padding;
-    max-width: calc(100vw - #{$base-padding});
+    padding-left: $home-content-padding;
+    max-width: calc(100vw - #{$home-content-padding});
 
     @media(min-width: $max-inner-width){
       padding: 0px;

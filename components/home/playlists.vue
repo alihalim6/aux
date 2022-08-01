@@ -1,9 +1,9 @@
 <template>
   <section class="pt-1 pb-6">
     <div class="title-container mt-4">
-      <div class="section-title">Playlists</div>
+      <div class="home-content-title">Playlists</div>
       
-      <div class="home-content playlist-container">
+      <div class="home-content d-flex pa-1">
         <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active vertical class="playlist-tabs">
           <v-tab v-for="(item, index) in content" :key="item.key" class="justify-start">
             <div class="playlist-tab" :class="{'selected-tab': selectedTab === index}">
@@ -66,28 +66,23 @@
 </script>
 
 <style lang="scss">
-  .playlist-container {
-    display: flex;
-    padding-left: 4px;
+  .playlist-tabs {
+    max-width: 150px;
+    padding: 4px;
+    padding-left: 12px;
 
-    .playlist-tabs {
-      max-width: 150px;
-      padding: 4px;
-      padding-left: 12px;
+    .playlist-tab {
+      color: $filter-label-color;
 
-      .playlist-tab {
-        color: $filter-label-color;
-
-        @media(min-width: 400px){
-          font-size: 18px;
-        }
+      @media(min-width: 400px){
+        font-size: 18px;
       }
+    }
 
-      .selected-tab {
-        color: $secondary-theme-color;
-        background-color: $spotify-green;
-        font-weight: bold;
-      }
+    .selected-tab {
+      color: $secondary-theme-color;
+      background-color: $spotify-green;
+      font-weight: bold;
     }
   }
 </style>

@@ -11,6 +11,11 @@
 
 .v-dialog--fullscreen {
   overflow-y: hidden !important;
+  max-height: calc(100vh - #{$max-footer-height});
+}
+
+.v-dialog__content {
+  max-height: calc(100vh - #{$max-footer-height});
 }
 
 .v-sheet.v-card {
@@ -25,5 +30,13 @@
 .home-tabs {
   .v-window-item {
     max-height: $max-home-content-height;
+  }
+}
+
+.app-bar {
+  .v-toolbar__content {
+    display: flex !important;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

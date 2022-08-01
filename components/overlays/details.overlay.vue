@@ -1,6 +1,6 @@
 <template>
   <section>
-    <v-dialog :value="detailsOverlay.display" fullscreen transition="fade-transition" persistent>
+    <v-dialog :value="detailsOverlay.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="detailsOverlay.currentIndex">
           <v-carousel-item v-for="(item, index) in detailsOverlay.items" :key="item.id" transition="fade-transition">                    
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
@@ -17,8 +17,8 @@
                     </div>
                   </div>
 
-                  <div class="overlay-header">
-                    <v-icon :class="{'no-visiblity': (index === 0)}" class="back-button" large @click="goBackDetailsOverlay()">mdi-arrow-left</v-icon>
+                  <div class="d-flex justify-space-between align-center py-2">
+                    <v-icon :class="{'no-visibility': (index === 0)}" class="back-button" large @click="goBackDetailsOverlay()">mdi-arrow-left</v-icon>
                     <v-icon class="close-button" large @click="closeDetailsOverlay()">mdi-close</v-icon>
                   </div>
 
@@ -26,7 +26,7 @@
                     {{item.name}}
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-show="!item.simpleOverlay">
-                      <PlaybackIcon :item="item" class="details-overlay-playback-button"/>
+                      <PlaybackIcon :item="item" :icon-class="'details-overlay-playback-button'"/>
                       <!-- TODO -->
                       <v-icon medium class="clickable">mdi-heart-plus-outline</v-icon>
                     </div>
@@ -86,12 +86,11 @@
 
   .item-image {
     max-width: $max-inner-width !important;
-    height: 88vh;
+    height: 100%;
     padding: 6px;
     margin: 0 auto;
     border-radius: 4px;
     overflow: visible !important;
-    top: $app-header-height;
 
     .full-item-image-cta-outer {
       position: absolute;
@@ -171,29 +170,22 @@
           }
         }
 
-        .overlay-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          padding: 0px 8px;
-
-          @media (max-width: $full-image-cta-breakpoint) {
-            padding-top: 8px;
-          }
-
-          .overlay-button {
-            color: $primary-theme-color !important;
-          }
-
-          .back-button {
-            @extend .overlay-button;
-          }
-
-          .close-button {
-            @extend .overlay-button;
-          }
+        @media (max-width: $full-image-cta-breakpoint) {
+          padding-top: 8px;
         }
 
+        .overlay-button {
+          color: $primary-theme-color !important;
+        }
+
+        .back-button {
+          @extend .overlay-button;
+        }
+
+        .close-button {
+          @extend .overlay-button;
+        }
+        
         .overlay-section-title {
           padding: 16px $base-padding 8px;
           font-size: 26px;
@@ -210,6 +202,10 @@
 
             .details-overlay-playback-button {
               font-size: 40px;
+            }
+
+            .details-overlay-playback-button:hover {
+              font-size: 42px;
             }
           }
         }

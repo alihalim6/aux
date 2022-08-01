@@ -12,7 +12,7 @@
   import {UI} from '~/store/constants';
 
   @Component
-  export default class Artists extends Vue {
+  export default class ArtistList extends Vue {
     @Prop({required: true})
     artists;
 

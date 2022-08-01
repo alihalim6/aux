@@ -1,7 +1,7 @@
 <template>
   <section>
     <div class="title-container">
-      <div class="section-title">
+      <div class="home-content-title">
         New & Recommended
         
         <div class="filter-container">

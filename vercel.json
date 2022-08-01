@@ -28,6 +28,14 @@
       {
         "src": "/api/myAux",
         "dest": "/api/myAux.js"
+      },
+      {
+        "src": "/api/passthru",
+        "dest": "/api/passthru.js"
+      },
+      {
+        "src": "/api/playlists",
+        "dest": "/api/playlists.js"
       }
     ],
     "builds": [

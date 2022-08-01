@@ -23,8 +23,8 @@
     </div>
 
     <LoadingOverlay v-show="isLoading"/>
-      
     <Toast/>
+    <CurrentlyPlaying/>
   </v-app>
 </template>
 

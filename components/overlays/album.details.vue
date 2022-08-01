@@ -2,7 +2,7 @@
   <section>
     <div class="sub-title-container">
       <div>
-        <OverlayArtists :artists="album.artists"/>
+        <ArtistList :artists="album.artists"/>
         <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
         {{new Date(album.release_date).getFullYear()}}
       </div>
@@ -45,6 +45,18 @@
       else{
         this.duration = msToDuration(this.album.details.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
         setItemMetaData(this.album.details.albumTracks);
+
+        //set image for all tracks on album
+        this.album.details.albumTracks.forEach(track => track.imgUrl = this.album.imgUrl);
+      }
+
+      for(const track of this.album.details.albumTracks){
+        track.fromCollection = this.album.uri;
+
+        //needed to display track detail when clicking album track on player widget;
+        //can't set whole album as that causes circular JSON error
+        track.album = {...this.album};
+        delete track.album.details;
       }
     }
   }

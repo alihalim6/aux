@@ -7,9 +7,12 @@
               <v-img class="content-img" :src="item.imgUrl" @click="displayDetailsOverlay(item)"></v-img>
               
               <PlaybackIcon 
+                v-if="!item.isCollection"
                 :item="item" 
                 icon-class="playback-button" 
-                :conditional-icon-class="{'reduce-playback-button-left': (!vertical && (index === data.length - 1)) || moreFromArtist}"/>
+                :conditional-icon-class="{'reduce-playback-button-left': (!vertical && (index === data.length - 1)) || moreFromArtist}"
+                :itemSet="data"
+              />
             </v-card>
           </v-hover>
           
@@ -37,9 +40,6 @@
 
     @Prop({default: false})
     vertical;
-
-    @Action('togglePlayback', {namespace: SPOTIFY})
-    togglePlayback;
 
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;
@@ -104,7 +104,7 @@
     .primary-label {
       font-size: $primary-label-font-size;
       font-weight: 600;
-      padding: 10px 30px 4px $label-left-padding;
+      padding: 10px 33px 4px $label-left-padding;
     }
 
     .artist-primary-label {

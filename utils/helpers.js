@@ -9,10 +9,10 @@ import {httpClient} from '~/utils/api';
 export const setItemMetaData = (items) => {
   items.forEach(item => {
     item.playbackIcon = 'play';
-    item.isAlbum = (item.type === 'album');
-    item.isArtist = (item.type === 'artist');
-    item.isTrack = (item.type === 'track');
-    item.isPlaylist = (item.type === 'playlist');
+    item.isAlbum = item.type === 'album';
+    item.isArtist = item.type === 'artist';
+    item.isTrack = item.type === 'track';
+    item.isPlaylist = item.type === 'playlist';
 
     try{
       item.imgUrl = item.images ? item.images[0].url : item.album.images[0].url;
@@ -33,6 +33,10 @@ export const setItemMetaData = (items) => {
 
       if(item.isAlbum){
         item.albumType = capitalCase(item.album_type);
+      }
+
+      if(!item.fromCollection && item.isTrack && item.album && item.album.total_tracks > 1){
+        item.fromCollection = item.album.uri;
       }
     }
     else if(item.isArtist){  
@@ -56,6 +60,7 @@ export const setItemMetaData = (items) => {
     }
 
     item.singleTrack = (item.isAlbum && (item.total_tracks === 1)) || (item.isTrack && (!item.album || item.album.total_tracks === 1));
+    item.isCollection = (item.isAlbum && !item.singleTrack) || item.isPlaylist;
 
     if(item.singleTrack){
       item.singleArtistId = item.artists[0].id;
@@ -67,10 +72,6 @@ export const setItemMetaData = (items) => {
 
 //adapted from https://stackoverflow.com/a/9763769
 export const msToDuration = (ms) => {
-  if(!ms){
-    return '';
-  }
-
   function pad(n, paddingCheck) {
     let padding = 2;
 
@@ -87,7 +88,7 @@ export const msToDuration = (ms) => {
   const mins = s % 60;
   const hrs = (s - mins) / 60;
 
-  return (hrs ? pad(hrs, true) + ':' : '') + (mins ? pad(mins, !hrs) + ':' : '0:') + pad(secs, !mins);
+  return (hrs ? pad(hrs, true) + ':' : '') + (mins ? pad(mins, !hrs) + ':' : '0:') + pad(secs, (!mins && secs >= 10));
 };
 
 const retryPlayerInit = async () => {
@@ -134,17 +135,17 @@ export const initSpotifyPlayer = () => {
 
     //TODO: comment out when listening to spotify on phone (this takes playback away)
     //transfer playback to this device
-    await httpClient.post('/passthru', {
+   /*  await httpClient.post('/passthru', {
       url: '/me/player',
       method: 'PUT',
-      data: {device_ids: [device_id], play: true}
+      data: {device_ids: [device_id]}
     });
 
     //TODO: calling for info purposes
     await httpClient.post('/passthru', {
       url: '/me/player/devices',
       method: 'GET'
-    });
+    }); */
   });
 
   player.addListener('authentication_error', async ({message}) => {

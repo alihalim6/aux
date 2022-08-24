@@ -86,3 +86,27 @@ $phrase-border-color: #aaaaaa;
 .not-clickable {
   cursor: none;
 }
+
+.ellipses-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@supports(-webkit-text-stroke: $simple-title-border-size $primary-theme-color) {
+  .simple-overlay-title {
+    -webkit-text-stroke: $simple-title-border-size $primary-theme-color;
+    -webkit-text-fill-color: $secondary-theme-color;
+    font-size: 44px !important;
+    line-height: 1;
+    word-break: break-word;
+  }
+}
+
+.min-width-fit {
+  min-width: fit-content;
+}
+
+.underlined {
+  text-decoration: underline;
+}

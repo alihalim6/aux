@@ -3,8 +3,8 @@
     <div v-for="(track, index) in tracks" :key="track.id">
       <div v-if="parentId !== track.id" class="d-flex justify-space-between align-center py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
-            <div v-if="!tracksFromDifferentAlbums" class="track-number">{{track.track_number}}</div>
             <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl"></v-img>
+            <div v-else class="track-number">{{track.track_number}}</div>
 
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums, 'font-weight-bold': displayArtists}">
               <span class="track-name" :class="{'clickable': tracksFromDifferentAlbums}" @click="trackPressed(track)">{{track.name}}</span>  
@@ -30,7 +30,7 @@
 
 <script>
   import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
-  import {msToDuration, setItemMetaData} from '~/utils/helpers';
+  import {msToDuration, setItemMetaData, getItemDuration} from '~/utils/helpers';
   import {UI} from '~/store/constants';
   import {httpClient} from '~/utils/api';
 
@@ -54,6 +54,9 @@
     @Prop({default: false})
     hideLikeability;
 
+    @Prop({default: false})
+    metaDataSet;
+
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;
 
@@ -65,20 +68,14 @@
 
     async beforeMount(){
       for(const track of this.tracks){
-        setItemMetaData([track]);
-
-        if(track.album_type === 'single' && !track.duration){
-          const { data } = await httpClient.post('/passthru', {
-            url: `/albums/${track.id}/tracks?limit=50`,
-            method: 'GET'
-          });
-
-          track.duration_ms = data.items[0].duration_ms;
+        if(!this.metaDataSet){
+          setItemMetaData([track]);
         }
 
+        track.duration_ms = await getItemDuration(track);
         track.duration = msToDuration(track.duration_ms);
 
-        if(track.album){
+        if(!this.metaDataSet && track.album){
           setItemMetaData([track.album]);
         }
       }

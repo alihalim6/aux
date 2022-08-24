@@ -7,7 +7,7 @@ export const state = () => {
     fullItemImage: '',
     toast: {display: false},
     loading: true,
-    profile: null
+    auxSession: {display: false}
   };
 };
 
@@ -24,8 +24,8 @@ export const getters = {
   isLoading: (state) => {
     return state.loading;
   },
-  profile: (state) => {
-    return state.profile;
+  auxSession: (state) => {
+    return state.auxSession;
   }
 };
 
@@ -79,8 +79,8 @@ export const mutations = {
   closeFullItemImage(state){
     state.fullItemImage = '';
   },
-  setItemDetailsData(state, payload){
-    payload.item.details = payload.data;
+  setItemDetailsData(state, params){
+    params.item.details = params.data;
   },
   setToast(state, toast){
     //{display: boolean, text: string}
@@ -89,7 +89,12 @@ export const mutations = {
   setLoading(state, loading){
     state.loading = loading;
   },
-  setProfile(state, profile){
-    state.profile = profile;
+  displayAuxSession(state){
+    state.auxSession.display = true;
+    state.detailsOverlay.display = false;
+  },
+  closeAuxSession(state){
+    state.auxSession.display = false;
+    state.detailsOverlay.display = !!state.detailsOverlay.items.length;
   }
 };

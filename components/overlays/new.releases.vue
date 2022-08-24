@@ -12,8 +12,8 @@
 <script>
   import {Component, Vue} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
-  import {format} from 'timeago.js';
   import {httpClient} from '~/utils/api';
+  import moment from 'moment';
 
   @Component
   export default class NewReleases extends Vue {
@@ -29,7 +29,7 @@
 
       this.newReleases.forEach(release => {
         if(release.release_date){
-          release.timeAgo = format(release.release_date);
+          release.timeAgo = moment(release.release_date).toISOString();
         }
       });
     }

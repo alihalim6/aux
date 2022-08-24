@@ -1,10 +1,10 @@
 import {setItemMetaData} from '~/utils/helpers';
 import {baseMock} from '~/utils/test.mocks';
 import {createLocalVue, mount} from '@vue/test-utils';
-import TrackDetails from '~/components/overlays/track.details.vue';
+import TrackDetails from '~/components/overlays/itemDetails/track.details.vue';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
-import ArtistDetails from '~/components/overlays/artist.details.vue';
+import ArtistDetails from '~/components/overlays/itemDetails/artist.details.vue';
 import {expectMoreFromArtistContent} from '~/tests/helpers';
 
 const localVue = createLocalVue();

@@ -1,51 +1,80 @@
+import {SPOTIFY, SESSION} from './constants';
+
 export const state = () => {
   return {
-    queue: [],
-    currentlyPlayingIndex: 0
+    queue: []
   };
 };
+
+//doNotRestartQueue: track ends or 'next' pressed, so just move within queue without restarting it;
+//otherwise if user clicks play on an item ('jumps'), queue set clean (started) from that item on forward
+
+function playTrackWithinQueue(params){
+  const queue = params.getters.queue;
+
+  params.dispatch(`${SPOTIFY}/togglePlayback`, {
+    item: queue[params.index], 
+    itemSet: queue, 
+    doNotRestartQueue: true
+  }, {root: true});
+}
 
 export const getters = {
   queue: (state) => {
     return state.queue;
   },
-  currentlyPlayingIndex: (state) => {
-    return state.currentlyPlayingIndex;
+  currentlyPlayingIndex(state, getters, rootState, rootGetters){
+    const currentlyPlayingUri = rootGetters[`${SPOTIFY}/currentlyPlayingItemUri`];
+    const index = getters.queue.findIndex(track => track.uri == currentlyPlayingUri);
+    return index;
   },
-  hasPreviousItem: (state) => {
-    return state.currentlyPlayingIndex >= 1;
+  hasPreviousTrack: (state, getters, rootState, rootGetters) => {
+    return getters.currentlyPlayingIndex >= 1;
   },
-  hasNextItem: (state) => {
-    return state.currentlyPlayingIndex < (state.queue.length - 1);
+  hasNextTrack: (state, getters, rootState, rootGetters) => {
+    return getters.currentlyPlayingIndex < (state.queue.length - 1);
+  },
+  nextTrack: (state, getters, rootState, rootGetters) => {
+    return state.queue[getters.currentlyPlayingIndex + 1];
+  },
+  nextTracks: (state, getters, rootState, rootGetters) => {
+    return state.queue.slice(getters.currentlyPlayingIndex + 1);
+  },
+  //tracks after the next track
+  thenTracks: (state, getters, rootState, rootGetters) => {
+    return state.queue.slice(getters.currentlyPlayingIndex + 2);
   }
 };
 
 export const actions = {  
-  handlePlaybackQueue: ({commit}, params) => {
-    commit('setCurrentlyPlayingIndex', params.index);
-    commit('setQueue', params.items);
+  startPlaybackQueue: ({commit, getters, dispatch}, params) => {
+    if(!getters.queue.length){
+      dispatch(`${SESSION}/addToActivityFeed`, {track: params.itemSet[params.index], wentLive: true}, {root: true});
+    }
+
+    commit('startQueue', params);
   },
-  playPreviousItem: ({dispatch, getters}) => {
-    const queue = getters.queue;
-    const currentlyPlayingIndex = getters.currentlyPlayingIndex;
-    dispatch('spotify/togglePlayback', {item: queue[currentlyPlayingIndex - 1], itemSet: queue}, {root: true});
+  playPreviousTrack: ({dispatch, getters, rootGetters}) => {
+    playTrackWithinQueue({
+      getters,
+      dispatch,
+      index: getters.currentlyPlayingIndex - 1
+    });
   },
-  playNextItem: ({dispatch, getters}) => {
-    const queue = getters.queue;
-    const currentlyPlayingIndex = getters.currentlyPlayingIndex;
-    dispatch('spotify/togglePlayback', {item: queue[currentlyPlayingIndex + 1], itemSet: queue}, {root: true});
-  },
-  clearQueue: ({commit}) => {
-    commit('setQueue', []);
-    commit('setCurrentlyPlayingIndex', 0);
+  playNextTrack: ({dispatch, getters, rootGetters}) => {
+    playTrackWithinQueue({
+      getters,
+      dispatch,
+      index: getters.currentlyPlayingIndex + 1
+    });
   }
 };
 
 export const mutations = {
-  setQueue(state, queue){
-    state.queue = queue;
+  startQueue(state, params){
+    state.queue = [...params.itemSet.slice(params.index)];
   },
-  setCurrentlyPlayingIndex(state, index){
-    state.currentlyPlayingIndex = index;
+  clearQueue(state){
+    state.queue = [];
   }
 };

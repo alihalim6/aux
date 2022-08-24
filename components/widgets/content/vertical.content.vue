@@ -10,9 +10,9 @@
           <v-icon class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
 
           <div class="d-flex flex-column">
-            <span class="item-title font-weight-bold" :class="{'smaller-title': alternateFormat}">{{item.primaryLabel}}</span>
+            <span class="item-title" :class="{'smaller-title': alternateFormat}">{{item.primaryLabel}}</span>
             <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-            <div class="item-detail d-flex" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
+            <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
           </div>
 
           <v-icon v-if="!alternateFormat" class="ml-auto" color="black">mdi-arrow-right</v-icon>
@@ -20,7 +20,7 @@
 
         <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
           <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-          <span :class="{'no-visibility': !item.timeAgo}" class="time-ago">{{item.timeAgo}}</span>
+          <Timeago v-if="item.timeAgo" class="time-ago" :datetime="item.timeAgo"></Timeago>
           <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
         </div>
       </v-card>
@@ -74,6 +74,7 @@
         font-size: 22px;
         line-height: 1.3;
         padding-bottom: 2px;
+        font-weight: bold;
       }
 
       .smaller-title {
@@ -84,6 +85,7 @@
     .bottom-container {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       max-width: 40%;
 
       .time-ago {
@@ -102,6 +104,8 @@
     .item-detail {
       font-size: 14px;
       padding-bottom: 2px;
+      display: flex;
+      align-items: flex-start;
     }
 
     .smaller-detail {

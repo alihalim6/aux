@@ -37,7 +37,7 @@
   import {httpClient} from '~/utils/api';
   import {setItemMetaData, msToDuration} from '~/utils/helpers';
   import {MY_AUX} from '~/utils/constants';
-  import {UI} from '~/store/constants';
+  import {USER} from '~/store/constants';
 
   @Component
   export default class MyAux extends Vue {
@@ -74,7 +74,7 @@
       }
     ];
 
-    @Mutation('setProfile', {namespace: UI})
+    @Mutation('setProfile', {namespace: USER})
     setProfile;
 
     mapData(data){

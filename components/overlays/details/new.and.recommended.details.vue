@@ -14,8 +14,8 @@
       <v-tabs-items v-model="selectedTab">
         <v-tab-item v-for="item in content" :key="item.label">
           <div class="" v-if="item.data.length">
-            <TrackList v-if="!item.carousel" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true"/>
             <ContentCarousel v-if="item.carousel" :data="item.data" :vertical="true"/>
+            <TrackList v-else :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true"/>
           </div>
         </v-tab-item>
       </v-tabs-items>

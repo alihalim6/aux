@@ -20,6 +20,7 @@
       <MyAux/>
       <Playlists/>
       <DetailsOverlay/>
+      <AuxSession/>
     </div>
 
     <LoadingOverlay v-show="isLoading"/>

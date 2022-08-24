@@ -87,7 +87,7 @@
   .item-image {
     max-width: $max-inner-width !important;
     height: 100%;
-    padding: 6px;
+    padding: $overlay-border-size;
     margin: 0 auto;
     border-radius: 4px;
     overflow: visible !important;
@@ -207,18 +207,6 @@
             .details-overlay-playback-button:hover {
               font-size: 42px;
             }
-          }
-        }
-
-        $title-border-size: 3px;
-
-        @supports(-webkit-text-stroke: $title-border-size $primary-theme-color) {
-          .simple-overlay-title {
-            -webkit-text-stroke: $title-border-size $primary-theme-color;
-            -webkit-text-fill-color: $secondary-theme-color;
-            font-size: 44px;
-            line-height: 1;
-            word-break: break-word;
           }
         }
       }

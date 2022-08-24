@@ -43,8 +43,6 @@ export const getRecommendationSeeds = (artists, tracks) => {
   shuffleArray(artists.items);
   shuffleArray(tracks.items);
 
-  console.log(`arrays have been shuffled;`);
-
   function addSeeds(seedObject, seed){
     let i = 0;
 
@@ -53,6 +51,8 @@ export const getRecommendationSeeds = (artists, tracks) => {
       if(i === 2){
         return;
       }
+
+      console.log(`seed: ${item.name}`);
   
       seed += item.id + ',';
       i++;

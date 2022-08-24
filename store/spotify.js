@@ -1,6 +1,6 @@
 import {httpClient} from '~/utils/api';
 import {refreshToken, accessTokenExpired} from '~/auth';
-import {PLAYBACK_QUEUE} from './constants';
+import {PLAYBACK_QUEUE, USER, SESSION} from './constants';
 
 export const state = () => {
   return {
@@ -44,13 +44,13 @@ export const actions = {
 
     commit('setDevicePlaybackTransferNeeded', false);
   },
-  togglePlayback: async ({commit, getters, dispatch}, params) => {
+  togglePlayback: async ({commit, getters, dispatch, rootGetters}, params) => {
     try{
       let item = params.item;
       let itemSet = params.itemSet ? params.itemSet.filter(item => !item.isArtist && !item.isCollection) : [];
 
       //if album or playlist toggled, intercept logic to begin play from its first track instead of whole item (so that we can manage queue via tracks);
-      //collections need their details opened in order to be played since tracks already available at that time (too messy/duplicative to approach otherwise)
+      //collections need their details opened in order to be played since tracks available by that time (too messy/duplicative to approach otherwise)
       if(item.isCollection){
         const collectionUri = item.uri;
         console.log(`collection toggled: ${item.name} - ${collectionUri}`);
@@ -65,7 +65,7 @@ export const actions = {
       const currentItemToggled = (item ? currentlyPlayingItemUri === item.uri : false);
       const startingNewTrack = (previouslyPlayingItem && previouslyPlayingItem.uri !== item.uri);
 
-      console.log(`togglePlay pressed for ${item.uri} (previously playing: ${currentlyPlayingItemUri || 'nothing'})`);
+      console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
 
       //if there was nothing playing and now there is, or if item playing has been toggled, flip the boolean
       if(!currentlyPlayingItemUri || currentItemToggled){
@@ -104,8 +104,21 @@ export const actions = {
         //has to be first for icons to work right
         commit('setCurrentlyPlayingItem', item);
 
-        const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);
-        await dispatch(`${PLAYBACK_QUEUE}/handlePlaybackQueue`, {index: currentlyPlayingItemIndex, items: itemSet}, {root: true});
+        //handle session feed for new tracks (besides the very first play which is handled in the playback store)
+        if(rootGetters[`${PLAYBACK_QUEUE}/queue`].length){
+          dispatch(`${SESSION}/addToActivityFeed`, {
+            track: {
+              imgUrl: item.imgUrl,
+              primaryLabel: item.primaryLabel,
+              secondaryLabel: item.secondaryLabel
+            }
+          }, {root: true});
+        }
+
+        if(!params.doNotRestartQueue){
+          const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
+          dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet, itemId: item.id}, {root: true});
+        }
 
         const playerState = await player.getCurrentState();
 
@@ -147,7 +160,7 @@ export const actions = {
     commit('setAudioPlaying', false);
     commit('setCurrentlyPlayingItem', {});
     commit('setCurrentlyPlayingItemUri', '');
-    dispatch(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
+    commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
     if(!noError){
       commit('ui/setToast', {display: true, text: 'There was an issue playing music lorem ipsum...'}, {root: true});
@@ -186,9 +199,9 @@ export const mutations = {
   setDevicePlaybackTransferNeeded(state, needed){
     state.devicePlaybackTransferNeeded = needed;
   },
-  setItemPlaybackIcon(state, payload){
-    if(payload.item){
-      payload.item.playbackIcon = payload.icon
+  setItemPlaybackIcon(state, params){
+    if(params.item){
+      params.item.playbackIcon = params.icon
     }
   },
   setAudioPlaying(state, playing){

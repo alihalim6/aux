@@ -44,9 +44,6 @@
     @Prop({default: () =>{}})
     conditionalIconClass;
 
-    @Prop({default: ''})
-    iconSize;
-
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 

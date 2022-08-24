@@ -34,7 +34,7 @@ async function myAux(req, res){
       },
       topItems: userTopItems,
       profile: {
-        username,
+        name: username,
         img: profileImg
       }
     });

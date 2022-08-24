@@ -85,3 +85,23 @@ $section-title-font-size: 36px;
 .record-icon {
   padding-right: 4px;
 }
+
+.track-sneak-peek {
+  width: 67vw;
+  display: flex;
+  margin-left: 4px;
+
+  .track-img {
+    $img-size: 22px;
+
+    width: $img-size;
+    max-width: $img-size;
+    height: $img-size;
+    margin: 0px 4px;
+  }
+
+  .track-artists {
+    font-weight: normal;
+    font-size: 12px;
+  }
+}

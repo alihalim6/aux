@@ -5,7 +5,6 @@ let accessToken;
 const getRecommendedTracks = async (topArtists) => {
   const topTracks = await topItems('tracks', apiConfig(accessToken));
   const seeds = getRecommendationSeeds(topArtists, topTracks.data);
-  console.log(`seeds: ${JSON.stringify(seeds)}`);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
     await httpClient.get(`/recommendations?limit=25&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`, apiConfig(accessToken)) :

@@ -91,6 +91,20 @@ export const msToDuration = (ms) => {
   return (hrs ? pad(hrs, true) + ':' : '') + (mins ? pad(mins, !hrs) + ':' : '0:') + pad(secs, (!mins && secs >= 10));
 };
 
+export const getItemDuration = async (item) => {
+  //singles (with type 'album') don't have duration
+  if(!item.duration_ms){
+    const { data } = await httpClient.post('/passthru', {
+      url: `/albums/${item.id}/tracks`,
+      method: 'GET'
+    });
+
+    return data.items[0].duration_ms;
+  }
+
+  return item.duration_ms;
+};
+
 const retryPlayerInit = async () => {
   try{
     await refreshToken();

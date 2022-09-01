@@ -5,7 +5,7 @@ async function passthru(req, res){
   try{
     const accessToken = req.headers['access-token'];
     const url = req.body.url;
-    const method = req.body.method;
+    const method = req.body.method || 'GET';
     const data = req.body.data;
 
     const response = await httpClient({...apiConfig(accessToken), url, method, data});

@@ -8,7 +8,7 @@ async function artist(req, res){
     res.json({artist: artist.data});
   }
   catch(error){
-   res.json({error: error.toString()});
+   res.error({error: error.toString()});
   }
 };
 

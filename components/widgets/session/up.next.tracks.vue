@@ -13,7 +13,14 @@
       </div>
     </div>
     
-    <div class="up-next-title">UP NEXT</div>
+    <div class="d-flex flex-column align-center">
+      <span class="up-next-title">UP NEXT</span>
+
+      <div class="clickable font-weight-bold d-flex align-center mt-2">
+        <span class="underlined" @click.stop="clearUpNextPressed()">CLEAR ALL</span>
+        <v-icon small class="pl-1" color="white">mdi-cancel</v-icon>
+      </div>
+    </div>
 
     <div class="next-track-container">
       <v-card elevation="6" class="clickable mt-3" @click.stop="nextTrackPressed(nextTrack, nextTracks)">
@@ -58,9 +65,10 @@
     <div class="then-container" v-if="thenTracks.length">
       <span class="then-label">THEN</span>
 
-      <div v-for="track in thenTracks" :key="track.id" class="clickable then-track-container" @click.stop="nextTrackPressed(track, thenTracks)">
+      <div v-for="(track, index) in thenTracks" :key="index + track.uuid" class="clickable then-track-container" @click.stop="nextTrackPressed(track, thenTracks)">
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
+        <ThreeDotIcon :item="track" :itemInQueue="true" iconClass="up-next-three-dot"/>
       </div>
     </div>
 
@@ -94,6 +102,9 @@
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
+    @Action('clearUpNext', {namespace: PLAYBACK_QUEUE})
+    clearUpNext;
+
     @Watch('nextTrack', {immediate: true})
     async nextTrackChanged(){
       if(this.nextTrack){
@@ -122,9 +133,15 @@
     }
 
     async fromAlbumPressed(album){
+      const albumPressed = {...album};
       this.$nuxt.$emit('hideUpNext');
-      setItemMetaData([album]);
-      await this.displayDetailsOverlay(album);
+      setItemMetaData([albumPressed]);
+      await this.displayDetailsOverlay(albumPressed);
+    }
+
+    clearUpNextPressed(){
+      this.clearUpNext();
+      this.$nuxt.$emit('hideUpNext');
     }
   }
 </script>
@@ -214,15 +231,17 @@
 
       .then-track-container {
         $item-margin: 8px;
+        $track-item-padding: 4px;
 
         display: flex;
         align-items: flex-start;
         justify-content: space-around;
         width: -webkit-fill-available;
+        margin: 4px 0px;
 
         .track-item {
           width: 50%;
-          padding: 4px 0px;
+          padding: $track-item-padding 0px;
         }
 
         .track-title {
@@ -236,6 +255,13 @@
           text-align: left;
           font-weight: normal;
           margin-left: $item-margin;
+        }
+
+        .up-next-three-dot {
+          display: flex;
+          align-items: center;
+          color: white;
+          padding: $track-item-padding 0px;
         }
       }
     }

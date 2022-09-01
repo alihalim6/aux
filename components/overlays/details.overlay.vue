@@ -2,7 +2,7 @@
   <section>
     <v-dialog :value="detailsOverlay.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="detailsOverlay.currentIndex">
-          <v-carousel-item v-for="(item, index) in detailsOverlay.items" :key="item.id" transition="fade-transition">                    
+          <v-carousel-item v-for="(item, index) in detailsOverlay.items" :key="item.uuid" transition="fade-transition">                    
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
             <v-img class="clickable item-image" :src="item.imgUrl" v-show="detailsOverlay.currentIndex === index">
               <div class="full-item-image-cta-outer" @click="displayFullItemImage(item.imgUrl)" v-show="!item.simpleOverlay">
@@ -26,9 +26,10 @@
                     {{item.name}}
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-show="!item.simpleOverlay">
-                      <PlaybackIcon :item="item" :icon-class="'details-overlay-playback-button'"/>
-                      <!-- TODO -->
-                      <v-icon medium class="clickable">mdi-heart-plus-outline</v-icon>
+                      <div class="item-icon-container">
+                        <PlaybackIcon :item="item" :icon-class="'details-overlay-playback-button'"/>
+                        <ThreeDotIcon :item="item" :icon-class="'details-overlay-dots-button'"/>
+                      </div>
                     </div>
                   </div>
 
@@ -194,18 +195,36 @@
           font-weight: 600;
 
           .controls-container {
+            $playback-size: 40px;
+            $dots-size: 28px;
+
             min-width: 80px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-left: 6px;
 
+            .action-button {
+              right: -$base-padding;
+            }
+
             .details-overlay-playback-button {
-              font-size: 40px;
+              @extend .action-button;
+              font-size: $playback-size;
             }
 
             .details-overlay-playback-button:hover {
-              font-size: 42px;
+              font-size: $playback-size + 2px;
+            }
+
+            .details-overlay-dots-button {
+              @extend .action-button;
+              font-size: $dots-size !important;
+              padding-top: 4px;
+            }
+
+            .details-overlay-dots-button:hover {
+              font-size: $dots-size + 2px !important;
             }
           }
         }

@@ -20,7 +20,7 @@ httpClient.interceptors.request.use(async config => {
 });
 
 httpClient.interceptors.response.use(async response => {
-  const errorMessage = response.data.error ? response.data.error.message : '';
+  const errorMessage = response.data.error ? (response.data.error || response.data.error.message) : '';
 
   if(response.data.error && errorMessage){
     if(errorMessage.indexOf('401') > 1){
@@ -41,14 +41,14 @@ async function attemptTokenRefresh(){
     await refreshToken();
   }
   catch(error){
-    $nuxt.$store.commit('ui/setToast', {display: true, text: 'Something went wrong, please refresh the page lorem ipsum...'});
+    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong, please refresh the page lorem ipsum...'});
   }
 }
 
 function handleApiError(error){
   console.error(error);
-  $nuxt.$store.dispatch('spotify/stopPlayback');
-  $nuxt.$store.commit('ui/setToast', {display: true, text: 'Something went wrong lorem ipsum...'});
+  //$nuxt.$store.dispatch('spotify/stopPlayback');
+  $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong lorem ipsum...'});
 }
 
 export {httpClient};

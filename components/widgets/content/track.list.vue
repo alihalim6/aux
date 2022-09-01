@@ -1,7 +1,7 @@
 <template>
   <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums}">
-    <div v-for="(track, index) in tracks" :key="track.id">
-      <div v-if="parentId !== track.id" class="d-flex justify-space-between align-center py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
+    <div v-for="(track, index) in tracks" :key="track.uuid">
+      <div v-if="parentId !== track.id" class="d-flex justify-space-between align-start py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
             <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl"></v-img>
             <div v-else class="track-number">{{track.track_number}}</div>
@@ -20,9 +20,13 @@
           </div>
 
           <div class="right-container">
-            <PlaybackIcon :item="track" class="track-list-playback" :itemSet="tracks"/>
-            <v-icon v-if="!hideLikeability" small class="clickable">mdi-heart-plus-outline</v-icon>
-          </div>
+            <div class="item-icon-container">
+              <PlaybackIcon :item="track" :itemSet="tracks"/>
+              <ThreeDotIcon :item="track"/>
+            </div>
+            
+<!--             <v-icon v-if="!hideLikeability" small class="clickable">mdi-heart-plus-outline</v-icon>
+ -->          </div>
         </div>
       </div>
   </section>
@@ -149,12 +153,8 @@
     .right-container {
       display: flex;
       justify-content: space-between;
-      align-items: baseline;
+      align-items: flex-start;
       min-width: 48px;
-
-      .track-list-playback {
-        font-size: 26px;
-      }
     }
   }
 </style>

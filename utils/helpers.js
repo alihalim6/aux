@@ -4,15 +4,22 @@ import {AUTH} from '~/utils/constants';
 import {refreshToken} from '~/auth';
 import {handleAuthError} from '~/utils/auth';
 import {httpClient} from '~/utils/api';
+import {v4 as uuid} from 'uuid';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
+  if(!items){
+    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong with the data lorem ipsum...'});
+    return;
+  }
+
   items.forEach(item => {
     item.playbackIcon = 'play';
     item.isAlbum = item.type === 'album';
     item.isArtist = item.type === 'artist';
     item.isTrack = item.type === 'track';
     item.isPlaylist = item.type === 'playlist';
+    item.uuid = uuid();
 
     try{
       item.imgUrl = item.images ? item.images[0].url : item.album.images[0].url;
@@ -32,7 +39,7 @@ export const setItemMetaData = (items) => {
       }
 
       if(item.isAlbum){
-        item.albumType = capitalCase(item.album_type);
+        item.albumType = (item.album_type == 'single' && item.total_tracks > 1) ? 'EP' : capitalCase(item.album_type);
       }
 
       if(!item.fromCollection && item.isTrack && item.album && item.album.total_tracks > 1){
@@ -94,10 +101,7 @@ export const msToDuration = (ms) => {
 export const getItemDuration = async (item) => {
   //singles (with type 'album') don't have duration
   if(!item.duration_ms){
-    const { data } = await httpClient.post('/passthru', {
-      url: `/albums/${item.id}/tracks`,
-      method: 'GET'
-    });
+    const { data } = await httpClient.post('/passthru', {url: `/albums/${item.id}/tracks`});
 
     return data.items[0].duration_ms;
   }
@@ -155,11 +159,8 @@ export const initSpotifyPlayer = () => {
       data: {device_ids: [device_id]}
     });
 
-    //TODO: calling for info purposes
-    await httpClient.post('/passthru', {
-      url: '/me/player/devices',
-      method: 'GET'
-    }); */
+    //TODO: calling for info/debugging purposes
+    await httpClient.post('/passthru', {url: '/me/player/devices'}); */
   });
 
   player.addListener('authentication_error', async ({message}) => {

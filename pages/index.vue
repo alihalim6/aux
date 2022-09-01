@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import {Component, Vue, Mutation, Action, Getter} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter} from 'nuxt-property-decorator';
   import {storageGet} from '~/utils/storage';
   import {AUTH, SPLASH, APP} from '~/utils/constants';
   import {initToken, accessTokenExpired, refreshToken} from '~/auth';
@@ -14,9 +14,6 @@
 
   @Component
   export default class Root extends Vue {
-    @Mutation('setToast', {namespace: UI})
-    setToast;
-
     @Getter('isLoading', {namespace: UI})
     isLoading;
 

@@ -3,7 +3,7 @@
       <v-icon 
         class="clickable" 
         :color="itemIsPlaying ? '#1DB954' : ''" 
-        :class="[iconClass, conditionalIconClass]" 
+        :class="[iconClass]" 
         v-show="!item.isArtist && !collectionPlaying()" 
         @click="togglePlay(item)"
         :aria-label="`${item.playbackIcon} item`"
@@ -14,7 +14,7 @@
       <v-icon
         class="clickable" 
         color= "#1DB954" 
-        :class="[iconClass, conditionalIconClass]" 
+        :class="[iconClass]" 
         v-show="collectionPlaying()" 
         @click="stopPlayback(true)"
         aria-label="stop playback"
@@ -38,11 +38,8 @@
     @Prop({default: () => []})
     itemSet;
 
-    @Prop({default: ''})
+    @Prop()
     iconClass;
-
-    @Prop({default: () =>{}})
-    conditionalIconClass;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
@@ -94,6 +91,8 @@
 
     collectionPlaying(){
       //TODO: fix play from elsewhee (e.g. artist top tracks) then load album -- item.fromCollection not set so wrong icon on collection
+      //still happens? ^^^
+
       return (this.item.isCollection && this.currentlyPlayingItem.fromCollection === this.item.uri);
     }
   }

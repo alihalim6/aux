@@ -16,10 +16,11 @@ export const getters = {
 export const actions = {
   addToActivityFeed: ({commit, rootGetters}, params) => {
     commit('addToActivityFeed', {
-      user: rootGetters[`${USER}/profile`], 
-      track: params.track,
+      user: rootGetters[`${USER}/profile`],
+      track: {...params.track},
       wentLive: params.wentLive,
-      timestamp: moment().toISOString()
+      timestamp: moment().toISOString(),
+      addedByCurrentUser: true
     });
   }
 };

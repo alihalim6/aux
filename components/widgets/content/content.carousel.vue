@@ -1,23 +1,33 @@
 <template>
     <section>
       <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}">
-        <div v-for="(item, index) in data" :key="item.id">
+        <div v-for="(item, index) in data" :key="item.uuid">
           <v-hover v-slot="{hover}">
-            <v-card max-width="175" elevation="10" class="clickable" :class="{'content-hover': hover, 'spaced-content': moreFromArtist, 'no-max-width': vertical}">
+            <v-card 
+              max-width="175" 
+              elevation="10" 
+              class="clickable" 
+              :class="{'content-hover': hover, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
+            >
               <v-img class="content-img" :src="item.imgUrl" @click="displayDetailsOverlay(item)"></v-img>
-              
-              <PlaybackIcon 
-                v-if="!item.isCollection"
-                :item="item" 
-                icon-class="playback-button" 
-                :conditional-icon-class="{'reduce-playback-button-left': (!vertical && (index === data.length - 1)) || moreFromArtist}"
-                :itemSet="data"
-              />
             </v-card>
           </v-hover>
           
           <div :class="{'pb-8': vertical}">
-            <div class="primary-label" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
+            <div class="primary-container">
+              <div class="primary-label" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
+
+              <div class="item-icon-container">
+                <PlaybackIcon 
+                  v-if="!item.isCollection"
+                  :item="item" 
+                  :itemSet="data"
+                />
+
+                <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
+              </div>
+            </div>
+
             <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
             <div class="secondary-label bottom-label"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
           </div>
@@ -71,21 +81,15 @@
       margin-right: 103px;
     }
 
+    .last-item {
+      max-width: $content-img-size !important;
+    }
+
     .content-img {
       min-width: $content-img-size;
       min-height: $content-img-size;
       max-height: $content-img-size;
     }
-
-    .playback-button {
-      position: absolute !important;
-      bottom: -31px;
-      right: 8px;
-    }
-
-    .reduce-playback-button-left {
-      left: $content-img-size - 40px;
-    } 
 
     .secondary-label {
       font-size: $secondary-label-font-size;
@@ -101,10 +105,18 @@
       font-size: $primary-label-font-size;
     }
 
-    .primary-label {
-      font-size: $primary-label-font-size;
-      font-weight: 600;
-      padding: 10px 33px 4px $label-left-padding;
+    .primary-container {
+      display: flex;
+      align-items: flex-start;
+      padding: 6px 6px 4px $label-left-padding;
+      justify-content: space-between;
+
+      .primary-label {
+        font-size: $primary-label-font-size;
+        font-weight: 600;
+        padding-top: 2px;
+        padding-right: 2px;
+      }
     }
 
     .artist-primary-label {

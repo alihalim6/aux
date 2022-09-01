@@ -7,7 +7,7 @@
       <v-btn class="login-button" @click="loginClicked()">Login with Spotify</v-btn>
 
       <div class="under-construction">
-        <div class="info-msg">This is a web application using Spotify's API. You can discover and listen to music “live,” meaning other Aux users can see and listen to everything you play, as well as add their own tracks to this “session.”  I love the feeling of discovering great new music and this project was born from the idea of sharing that with others. Aesthetically, the goal of Aux is to celebrate the artistic aspect of music, so cover art and artist photos are prominent and enlargeable throughout.</div>
+        <div class="info-msg">This is a web application using Spotify's API. You can discover and listen to music “live,” meaning other Aux users can see and listen to everything you play, as well as add their own tracks to this “session.”  I love the feeling of discovering great new music and this project was born from the idea of sharing that with others. Aesthetically, the goal of Aux is to celebrate the visual artistic aspect of music, so cover art and artist photos are prominent and enlargeable throughout.</div>
         
         <div class="tbd-message">*This application is still in development.  Apps in development that use Spotify's API have to be in beta.  
           If you're a Spotify user interested in getting added to the list and seeing the app at its current stage, let's connect! Message me on LinkedIn and I'll get you added right away.  

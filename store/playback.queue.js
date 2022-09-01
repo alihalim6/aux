@@ -1,4 +1,4 @@
-import {SPOTIFY, SESSION} from './constants';
+import {SPOTIFY, SESSION, UI} from './constants';
 
 export const state = () => {
   return {
@@ -28,22 +28,27 @@ export const getters = {
     const index = getters.queue.findIndex(track => track.uri == currentlyPlayingUri);
     return index;
   },
-  hasPreviousTrack: (state, getters, rootState, rootGetters) => {
+  hasPreviousTrack: (state, getters) => {
     return getters.currentlyPlayingIndex >= 1;
   },
-  hasNextTrack: (state, getters, rootState, rootGetters) => {
+  hasNextTrack: (state, getters) => {
     return getters.currentlyPlayingIndex < (state.queue.length - 1);
   },
-  nextTrack: (state, getters, rootState, rootGetters) => {
+  nextTrack: (state, getters) => {
     return state.queue[getters.currentlyPlayingIndex + 1];
   },
-  nextTracks: (state, getters, rootState, rootGetters) => {
+  nextTracks: (state, getters) => {
     return state.queue.slice(getters.currentlyPlayingIndex + 1);
   },
   //tracks after the next track
-  thenTracks: (state, getters, rootState, rootGetters) => {
+  thenTracks: (state, getters) => {
     return state.queue.slice(getters.currentlyPlayingIndex + 2);
   }
+};
+
+const threeDotToast = {
+  color: '#1DB954',
+  timeout: 2500
 };
 
 export const actions = {  
@@ -54,19 +59,30 @@ export const actions = {
 
     commit('startQueue', params);
   },
-  playPreviousTrack: ({dispatch, getters, rootGetters}) => {
+  playPreviousTrack: ({dispatch, getters}) => {
     playTrackWithinQueue({
       getters,
       dispatch,
       index: getters.currentlyPlayingIndex - 1
     });
   },
-  playNextTrack: ({dispatch, getters, rootGetters}) => {
+  playNextTrack: ({dispatch, getters}) => {
     playTrackWithinQueue({
       getters,
       dispatch,
       index: getters.currentlyPlayingIndex + 1
     });
+  },
+  clearUpNext: ({getters, commit}) => {
+    commit('clearUpNext', getters.currentlyPlayingIndex);
+  },
+  addToEndOfQueue: ({commit}, tracks) => {
+    commit('addToEndOfQueue', tracks);
+    commit(`${UI}/setToast`, {...threeDotToast, text: `Track${tracks.length > 1 ? 's' : ''} added to end of queue`}, {root: true});
+  },
+  setTracksToPlayNext: ({commit, getters}, tracks) => {
+    commit('setPlayNext', {currentIndex: getters.currentlyPlayingIndex, tracks});
+    commit(`${UI}/setToast`, {...threeDotToast, text: `Track${tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
   }
 };
 
@@ -76,5 +92,18 @@ export const mutations = {
   },
   clearQueue(state){
     state.queue = [];
+  },  
+  removeFromQueue(state, track){
+    const trackIndex = state.queue.findIndex(queueTrack => queueTrack.uuid === track.uuid);
+    state.queue.splice(trackIndex, 1);
+  },
+  setPlayNext(state, params){
+    state.queue.splice(params.currentIndex + 1, 0, ...params.tracks);
+  },
+  clearUpNext(state, currentIndex){
+    state.queue = state.queue.slice(0, currentIndex + 1);
+  },
+  addToEndOfQueue(state, tracks){
+    state.queue.push(...tracks);
   }
 };

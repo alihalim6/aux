@@ -105,3 +105,9 @@ $section-title-font-size: 36px;
     font-size: 12px;
   }
 }
+
+.item-icon-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}

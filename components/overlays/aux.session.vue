@@ -2,22 +2,27 @@
   <section>
     <v-dialog :value="auxSession.display && !detailsOverlay.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
       <div class="session-container">
-        <v-icon class="close-button" large @click="closeAuxSession()" aria-label="close aux session">mdi-close</v-icon>
-
         <div v-if="currentlyPlayingItem.uri" class="d-flex flex-column">
           <div class="session-title-container">
-            <div>
-              <v-icon x-small color="red">mdi-circle</v-icon>
-              <span class="session-title">{{profile.name}}</span>
+            <v-icon class="close-button" large @click="closeAuxSession()" aria-label="close aux session">mdi-close</v-icon>
+
+            <div class="d-flex align-start">
+              <v-icon x-small color="red" class="live-circle">mdi-circle</v-icon>
+
+              <div class="d-flex flex-column">
+                <span class="session-title">{{profile.name}}</span>
+
+                <div class="live-now-label">
+                  <span class="live-now-number">0</span><span class="live-now"> others live right now</span><v-icon small class="clickable ml-2" color="white">mdi-help-circle-outline</v-icon>
+                </div>
+              </div>
             </div>
             
-            <div class="live-now-label">
-              <span class="live-now-number">0</span><span class="live-now"> others live now</span><v-icon small class="clickable ml-2" color="white">mdi-help-circle-outline</v-icon>
-            </div>
+          
           </div>
 
           <div class="pb-10">
-            <AuxSessionFeedItem v-for="item in auxSessionFeed" :key="item.uri" :item="item"/>
+            <AuxSessionFeedItem v-for="item in auxSessionFeed" :key="item.timestamp" :item="item"/>
           </div>
         </div>
 
@@ -30,13 +35,11 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
   import {UI, PLAYBACK_QUEUE, USER, SPOTIFY, SESSION} from '~/store/constants';
 
   @Component
   export default class AuxSession extends Vue {
-    upNext = null;
-
     @Mutation('closeAuxSession', {namespace: UI})
     closeAuxSession;
 
@@ -56,19 +59,7 @@
     auxSessionFeed;
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
-    currentlyPlayingItem;
-
-    @Watch('currentlyPlayingItem')
-    updateSession(){
-      if(this.queue.length){
-        const currentlyPlayingIndex = this.queue.findIndex(item => item.uri == this.currentlyPlayingItem.uri);
-        this.upNext = [...this.queue.slice(currentlyPlayingIndex + 1)];
-      }
-    }
-
-    beforeMount(){
-      this.updateSession();
-    }    
+    currentlyPlayingItem;  
   }
 </script>
 
@@ -87,7 +78,7 @@
 
     .close-button {
       align-self: flex-end;
-      color: $spotify-green;
+      color: $primary-theme-color;
     }
 
     .session-title-container {
@@ -95,6 +86,11 @@
       flex-direction: column;
       font-size: 24px;
       margin-bottom: 8px;
+
+      .live-circle {
+        margin-top: 14px;
+        margin-right: 6px;
+      }
 
       .live-now-label {
         font-size: 14px;

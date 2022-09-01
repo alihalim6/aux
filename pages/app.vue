@@ -64,7 +64,7 @@
     height: $app-header-height !important;
     max-height: $app-header-height;
     margin-bottom: 22px;
-    z-index: 20;
+    z-index: 15;
 
     @supports(-webkit-text-stroke: $phrase-border-size $primary-theme-color) {
       .outlined-phrase {

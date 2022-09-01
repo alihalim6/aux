@@ -106,18 +106,12 @@ export const actions = {
 
         //handle session feed for new tracks (besides the very first play which is handled in the playback store)
         if(rootGetters[`${PLAYBACK_QUEUE}/queue`].length){
-          dispatch(`${SESSION}/addToActivityFeed`, {
-            track: {
-              imgUrl: item.imgUrl,
-              primaryLabel: item.primaryLabel,
-              secondaryLabel: item.secondaryLabel
-            }
-          }, {root: true});
+          dispatch(`${SESSION}/addToActivityFeed`, {track: item}, {root: true});
         }
 
         if(!params.doNotRestartQueue){
           const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
-          dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet, itemId: item.id}, {root: true});
+          dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet}, {root: true});
         }
 
         const playerState = await player.getCurrentState();
@@ -163,7 +157,7 @@ export const actions = {
     commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
     if(!noError){
-      commit('ui/setToast', {display: true, text: 'There was an issue playing music lorem ipsum...'}, {root: true});
+      commit('ui/setToast', {text: 'There was an issue playing music lorem ipsum...'}, {root: true});
     }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){

@@ -1,7 +1,7 @@
 <template>
   <section>
     <div v-if="data.length" class="vertical-content">
-      <v-card v-for="(item, index) in data" :key="item.id" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="7" @click="displayDetailsOverlay(item)">        
+      <v-card v-for="(item, index) in data" :key="item.uuid" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="7" @click="displayDetailsOverlay(item)">        
         <div class="item-container">  
           <v-card max-width="40%" elevation="7">
             <v-img class="item-img" :src="item.imgUrl"></v-img>
@@ -21,7 +21,11 @@
         <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
           <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
           <Timeago v-if="item.timeAgo" class="time-ago" :datetime="item.timeAgo"></Timeago>
-          <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
+
+          <div class="item-icon-container">
+            <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
+            <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
+          </div>
         </div>
       </v-card>
     </div>
@@ -86,7 +90,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      max-width: 40%;
+      max-width: 41%;
 
       .time-ago {
         font-size: 14px;
@@ -105,11 +109,16 @@
       font-size: 14px;
       padding-bottom: 2px;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
     }
 
     .smaller-detail {
       font-size: 12px;
+      align-items: flex-start;
+
+      .v-icon {
+        padding-top: 1px;
+      }
     }
   }
 </style>

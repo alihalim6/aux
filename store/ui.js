@@ -83,7 +83,6 @@ export const mutations = {
     params.item.details = params.data;
   },
   setToast(state, toast){
-    //{display: boolean, text: string}
     state.toast = toast;
   },
   setLoading(state, loading){

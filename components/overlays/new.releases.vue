@@ -20,10 +20,7 @@
     newReleases = [];
 
     async beforeMount(){
-      const { data } = await httpClient.post('/passthru', {
-        url: '/browse/new-releases?limit=50',
-        method: 'GET'
-      });
+      const { data } = await httpClient.post('/passthru', {url: '/browse/new-releases?limit=50'});
 
       this.newReleases = setItemMetaData(data.albums.items);
 

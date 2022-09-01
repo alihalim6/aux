@@ -16,7 +16,7 @@
 
     <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
       <v-tab-item v-for="(item, index) in getContent()" :key="item.key">
-        <div class="home-content" :id="`myAux${index}`">
+        <div class="home-content" :id="`myAux${index}`" v-if="item.data.length" v-scroll.self="contentScrolled">
           <TrackList v-if="item.trackList" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true" :hideLikeability="item.hideLikeability"/>
           <ContentCarousel v-if="item.carousel" :data="item.data" :vertical="true"/>
 
@@ -56,14 +56,16 @@
         label: MY_AUX.LIKED_TRACKS,
         hideLikeability: true,
         trackList: true,
-        api: 'tracks'
+        api: 'tracks',
+        type: 'track'
       },
       {
         ...this.defaultContent,
         key: 'likedAlbums',
         label: MY_AUX.LIKED_ALBUMS,
         carousel: true,
-        api: 'albums'
+        api: 'albums',
+        type: 'album'
       },
       //apparently API doesn't return total for this
       {
@@ -109,6 +111,33 @@
           artists: topItems.filter(item => item.isArtist)
         }
       }];
+
+      this.$nuxt.$root.$on('removedLikedItem', item => this.handleItemLikeStatus(item, true));
+      this.$nuxt.$root.$on('likedItem', this.handleItemLikeStatus);
+    }
+
+    handleItemLikeStatus(item, removal){
+      const contentWithItemType = this.content.find(content => {
+        let contentAndItemTypeIsTrack = false;
+
+        if(content.type == 'track'){
+          contentAndItemTypeIsTrack = item.type == 'track' || (item.type == 'album' && item.total_tracks == 1);
+        }
+
+        return contentAndItemTypeIsTrack || content.type == item.type;
+      });
+
+      if(contentWithItemType && contentWithItemType.data){
+        const { data } = content;
+
+        if(removal){
+          const itemIndex = data.findIndex(like => like.uuid == item.uuid);
+          data.splice(itemIndex, 1);
+        }
+        else{
+          data.unshift(item);
+        }
+      }
     }
 
     //fetch more data for current tab when certain scroll length reached
@@ -124,8 +153,7 @@
           currentContent.fetchPending = true;
 
           const { data } = await httpClient.post('/passthru', {
-            url: `/me/${currentContent.api}?limit=${currentContent.limit}&offset=${currentContent.offset}`,
-            method: 'GET'
+            url: `/me/${currentContent.api}?limit=${currentContent.limit}&offset=${currentContent.offset}`
           });
 
           currentContent.data = [...currentContent.data, ...this.mapData(data.items)];

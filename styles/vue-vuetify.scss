@@ -40,3 +40,11 @@
     align-items: flex-start;
   }
 }
+
+.v-list {
+  padding: 0px;
+}
+
+.v-list-item--disabled {
+  color: #cccccc !important;
+}

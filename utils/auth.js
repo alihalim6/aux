@@ -3,7 +3,7 @@ import {SPLASH} from '~/utils/constants';
 
 export const handleAuthError = (error) => {
   console.error(`${error} / Sending back to Splash page.`);
-  $nuxt.$store.commit('ui/setToast', {display: true, text: 'Spotify needs you to log in again lorem ipsum...'});
+  $nuxt.$store.commit('ui/setToast', {text: 'Spotify needs you to log in again lorem ipsum...'});
   $nuxt.$store.commit('ui/closeDetailsOverlay');
   $nuxt.$store.dispatch('spotify/stopPlayback');
 

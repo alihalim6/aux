@@ -1,5 +1,14 @@
 <template>
-  <v-snackbar class="app-toast" :value="toast.display" :app="true" top width="100%" max-width="420" transition="fade-transition" color="red">
+  <v-snackbar 
+    class="app-toast" 
+    v-model="currentToast"
+    :app="true" 
+    top width="100%" 
+    max-width="420" 
+    transition="fade-transition" 
+    :color="toast.color || 'red'"
+    :timeout="toast.timeout || 5000"
+  >
     <div class="toast-container">
       <span class="toast-text">{{toast.text}}</span>
       <v-icon class="clickable" @click.stop.prevent="closeToast()" id="appToast" aria-label="close toast message">mdi-close</v-icon>
@@ -8,24 +17,23 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter, Watch} from 'nuxt-property-decorator';
   import {UI} from '~/store/constants';
 
   @Component
   export default class Toast extends Vue {
+    currentToast = null;
+
     @Getter('toast', {namespace: UI})
     toast;
 
-    @Watch('toast', {immediate: true, deep: true})
+    @Watch('toast')
     toastChanged(newVal){
-      this.displayToast = newVal.display;
+      this.currentToast = {...newVal};
     }
 
-    @Mutation('setToast', {namespace: UI})
-    setToast;
-
     closeToast(){
-      this.setToast({display: false});
+      this.currentToast = null;
     }
   }
 </script>

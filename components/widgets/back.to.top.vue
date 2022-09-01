@@ -24,6 +24,8 @@
       this.element.addEventListener('scroll', (e) => {
         this.scrolledDown = e.target.scrollTop > 150;
         this.bottomReached = (e.target.scrollHeight - e.target.scrollTop) < (e.target.clientHeight + 50);
+        
+        this.$nuxt.$root.$emit('hideThreeDotMenu');
       });
     }
 
@@ -39,8 +41,6 @@
     position: sticky;
     margin: 0 auto;
     width: fit-content;
-    display: flex;
-    justify-content: center;
     bottom: 8%;
     z-index: 20;
 

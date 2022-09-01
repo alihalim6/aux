@@ -29,10 +29,7 @@
 
       while(!this.allTracksRetrieved){
         if(this.tracks.length < totalPlaylistTracks){
-          const { data } = await httpClient.post('/passthru', {
-            url: `/playlists/${this.playlist.id}/tracks?limit=${playlistTrackLimit}&offset=${this.tracks.length}`,
-            method: 'GET'
-          });
+          const { data } = await httpClient.post('/passthru', {url: `/playlists/${this.playlist.id}/tracks?limit=${playlistTrackLimit}&offset=${this.tracks.length}`});
 
           this.tracks = [...this.tracks, ...data.items.map(this.setTrackData)];
         }

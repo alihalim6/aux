@@ -1,7 +1,7 @@
 import {setItemMetaData} from '~/utils/helpers';
 import {baseMock} from '~/utils/test.mocks';
 import {createLocalVue, mount} from '@vue/test-utils';
-import AlbumDetails from '~/components/overlays/itemDetails/album.details.vue';
+import AlbumDetails from '~/components/overlays/album.details.vue';
 import Vuetify from 'vuetify';
 import Vuex from 'vuex';
 import {expectMoreFromArtistContent} from '../helpers';

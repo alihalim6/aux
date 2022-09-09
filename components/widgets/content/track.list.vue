@@ -33,13 +33,14 @@
 </template>
 
 <script>
-  import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop, Action, Watch} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData, getItemDuration} from '~/utils/helpers';
   import {UI} from '~/store/constants';
-  import {httpClient} from '~/utils/api';
 
   @Component
   export default class TrackList extends Vue {
+    trackList = [];
+    
     @Prop({required: true})
     tracks;
 
@@ -70,18 +71,22 @@
       }
     }
 
-    async beforeMount(){
-      for(const track of this.tracks){
+    @Watch('tracks', {
+      //needed to ensure all prop tracks get processed (e.g. additional (while loop) tracks in playlist.details don't come thru here otherwise)
+      immediate: true
+    })
+    async tracksChanged(){
+     for(const track of this.tracks){
         if(!this.metaDataSet){
           setItemMetaData([track]);
+
+          if(track.album){
+            setItemMetaData([track.album]);
+          }
         }
 
         track.duration_ms = await getItemDuration(track);
         track.duration = msToDuration(track.duration_ms);
-
-        if(!this.metaDataSet && track.album){
-          setItemMetaData([track.album]);
-        }
       }
 
       //seems to be needed in order to show durations after adding the async call above

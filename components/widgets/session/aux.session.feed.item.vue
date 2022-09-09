@@ -33,7 +33,7 @@
 
     <div class="d-flex align-center mt-1 ml-1">       
        <div class="item-icon-container">
-          <PlaybackIcon :item="item.track" :itemSet="auxSessionFeed.map(activity => activity.track)"/>
+          <PlaybackIcon :item="item.track" :itemSet="itemSet"/>
           <ThreeDotIcon :item="item.track"/>
         </div>
     </div>
@@ -41,8 +41,8 @@
 </template>
 
 <script>
-  import {Component, Prop, Vue, Getter, Action} from 'nuxt-property-decorator';
-  import {SESSION, UI} from '~/store/constants';
+  import {Component, Prop, Vue, Action} from 'nuxt-property-decorator';
+  import {UI} from '~/store/constants';
 
   @Component
   export default class AuxSessionFeedItem extends Vue {
@@ -67,13 +67,12 @@
     @Prop()
     item;
 
-    @Getter('auxSessionFeed', {namespace: SESSION})
-    auxSessionFeed;
+    @Prop()
+    itemSet;
 
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;
   }
-   
 </script>
 
 <style lang="scss">

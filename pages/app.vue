@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :class="{'item-playing': currentlyPlayingItem.uri}">
     <v-app-bar elevation="2" color="white" class="app-bar" short>
       <div class="logo-container" :class="{'smaller-logo-container': $vuetify.breakpoint.smAndDown}">
         <div class="aux-logo-container">
@@ -14,24 +14,25 @@
         <v-img class="spotify-full d-none d-md-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
       </div>
     </v-app-bar>
-    
+
     <div v-show="!isLoading">
       <NewAndRecommended/>
       <MyAux/>
       <Playlists/>
       <DetailsOverlay/>
       <AuxSession/>
+      <CurrentlyPlaying/>
     </div>
 
-    <LoadingOverlay v-show="isLoading"/>
+    <LoadingOverlay v-show="isLoading"/>    
+    
     <Toast/>
-    <CurrentlyPlaying/>
   </v-app>
 </template>
 
 <script>
   import {Component, Vue, Getter} from 'nuxt-property-decorator';
-  import {UI} from '~/store/constants';
+  import {UI, SPOTIFY} from '~/store/constants';
   import {initSpotifyPlayer} from '~/utils/helpers';
 
   @Component
@@ -41,6 +42,9 @@
     
     @Getter('isLoading', {namespace: UI})
     isLoading;
+
+    @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
+    currentlyPlayingItem;
 
     async beforeMount(){
       //add SDK to scripts

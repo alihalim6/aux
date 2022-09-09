@@ -9,7 +9,11 @@
               class="clickable" 
               :class="{'content-hover': hover, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
             >
-              <v-img class="content-img" :src="item.imgUrl" @click="displayDetailsOverlay(item)"></v-img>
+              <v-img class="content-img" :src="item.imgUrl" @click="displayDetailsOverlay(item)">
+                <template v-slot:placeholder>
+                  <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
+                </template>
+              </v-img>
             </v-card>
           </v-hover>
           
@@ -18,18 +22,17 @@
               <div class="primary-label" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist}">{{item.primaryLabel}}</div>
 
               <div class="item-icon-container">
-                <PlaybackIcon 
-                  v-if="!item.isCollection"
-                  :item="item" 
-                  :itemSet="data"
-                />
-
+                <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
                 <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
               </div>
             </div>
 
             <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
-            <div class="secondary-label bottom-label"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
+
+            <div class="secondary-label bottom-label">
+              <v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>
+              <span>{{item.numberOfTracks}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -37,8 +40,8 @@
 </template>
 
 <script>
-  import {Component, Vue, Prop, Action, Getter} from 'nuxt-property-decorator';
-  import {SPOTIFY, UI} from '~/store/constants';
+  import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
+  import {UI} from '~/store/constants';
   
   @Component
   export default class ContentCarousel extends Vue {
@@ -53,12 +56,6 @@
 
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;
-
-    @Getter('currentlyPlayingItemUri', {namespace: SPOTIFY})
-    currentlyPlayingItemUri;
-
-    @Getter('spotifyPlayer', {namespace: SPOTIFY})
-    spotifyPlayer;
   }
 </script>
 
@@ -71,7 +68,7 @@
   .content-carousel {
     display: flex;
     overflow: scroll;
-    margin-top: 20px;
+    margin-top: 12px;
 
     .content-hover {
       border: 2px solid;
@@ -89,6 +86,16 @@
       min-width: $content-img-size;
       min-height: $content-img-size;
       max-height: $content-img-size;
+
+      .content-placeholder {
+        font-size: 120px;
+        font-weight: bold;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+        padding-left: $base-padding;
+      }
     }
 
     .secondary-label {

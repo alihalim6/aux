@@ -1,6 +1,6 @@
 import {httpClient} from '~/utils/api';
 import {refreshToken, accessTokenExpired} from '~/auth';
-import {PLAYBACK_QUEUE, USER, SESSION} from './constants';
+import {PLAYBACK_QUEUE, SESSION} from './constants';
 
 export const state = () => {
   return {

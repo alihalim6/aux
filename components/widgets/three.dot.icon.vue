@@ -59,9 +59,6 @@
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
 
-    @Getter('queue', {namespace: PLAYBACK_QUEUE})
-    queue;
-
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
@@ -87,7 +84,7 @@
     async onPress(){
       this.hide = false;
       this.options = [...this.defaultOptions];
-      this.disableQueueOptions = !this.currentlyPlayingItem.uri || this.currentlyPlayingItem.uri === this.item.uri || (this.nextTrack.uri == this.item.uri);
+      this.disableQueueOptions = !this.currentlyPlayingItem.uri || this.currentlyPlayingItem.uri === this.item.uri;
 
       //for items already in queue, remove the option to add to end, and append option to remove from queue
       if(this.itemInQueue){
@@ -141,6 +138,11 @@
     }
 
     playNextPressed(){
+      //if already next, ignore
+      if(this.nextTrack && this.nextTrack.uri == this.item.uri){
+        return;
+      }
+
       //for item already in queue, move it from where it is to next in line
       if(this.itemInQueue){
         this.removeFromQueue(this.item);

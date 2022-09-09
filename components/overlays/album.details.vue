@@ -15,49 +15,61 @@
     </div>
 
     <div v-if="album.total_tracks > 1">
-      <TrackList :tracks="album.details.albumTracks" :parentId="album.id"/>
+      <TrackList :tracks="overlayAlbum.details.albumTracks" :parentId="album.id"/>
     </div>
 
-    <MoreFromArtist v-if="album.singleTrack" :parentItem="album" :artist="album.artists[0]"/>
+    <MoreFromArtist v-if="album.singleTrack" :parentItem="overlayAlbum" :artist="album.artists[0]"/>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Prop} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop, Mutation} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData} from '~/utils/helpers';
+  import {UI} from '~/store/constants';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class AlbumDetails extends Vue {
     duration = 0;
+    overlayAlbum;
 
     @Prop({required: true})
     album;
 
+    @Mutation('updateOverlayItem', {namespace: UI})
+    updateOverlayItem;
+
     beforeMount(){
+      this.overlayAlbum = cloneDeep(this.album);
+      const albumDetails = this.overlayAlbum.details;
+
       if(this.album.singleTrack){
-        this.duration = msToDuration(this.album.details.albumTracks[0].duration_ms);
+        this.duration = msToDuration(albumDetails.albumTracks[0].duration_ms);
 
         //set data for 'more from artist' content
-        setItemMetaData(this.album.details.artistAlbums);
-        setItemMetaData(this.album.details.artistTopTracks);
-        setItemMetaData(this.album.details.relatedArtists);
+        setItemMetaData(albumDetails.artistAlbums);
+        setItemMetaData(albumDetails.artistTopTracks);
+        setItemMetaData(albumDetails.relatedArtists);
       }
       else{
-        this.duration = msToDuration(this.album.details.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
-        setItemMetaData(this.album.details.albumTracks);
+        this.duration = msToDuration(albumDetails.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
+        setItemMetaData(albumDetails.albumTracks);
 
         //set image for all tracks on album
-        this.album.details.albumTracks.forEach(track => track.imgUrl = this.album.imgUrl);
+        albumDetails.albumTracks.forEach(track => track.imgUrl = this.album.imgUrl);
       }
 
-      for(const track of this.album.details.albumTracks){
+      //mark all album tracks as part of this album (collection)
+      for(const track of albumDetails.albumTracks){
         track.fromCollection = this.album.uri;
 
-        //needed to display track detail when clicking album track on player widget;
+        //needed to display track detail when clicking album track on currently playing widget;
         //can't set whole album as that causes circular JSON error
         track.album = {...this.album};
         delete track.album.details;
       }
+
+      this.updateOverlayItem(this.overlayAlbum);
     }
   }
   </script>

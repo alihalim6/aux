@@ -38,6 +38,7 @@
   import {setItemMetaData, msToDuration} from '~/utils/helpers';
   import {MY_AUX} from '~/utils/constants';
   import {USER} from '~/store/constants';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class MyAux extends Vue {
@@ -82,7 +83,7 @@
     mapData(data){
       return data.map(item => {
         return {
-          ...setItemMetaData([(item.track || item.album)])[0],
+          ...setItemMetaData([cloneDeep(item.track || item.album)])[0],
           hideAlbum: true,
           duration: item.track ? msToDuration(item.track.duration_ms) : 0
         }
@@ -128,7 +129,7 @@
       });
 
       if(contentWithItemType && contentWithItemType.data){
-        const { data } = content;
+        const { data } = contentWithItemType;
 
         if(removal){
           const itemIndex = data.findIndex(like => like.uuid == item.uuid);

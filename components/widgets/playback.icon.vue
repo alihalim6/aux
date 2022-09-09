@@ -5,7 +5,7 @@
         :color="itemIsPlaying ? '#1DB954' : ''" 
         :class="[iconClass]" 
         v-show="!item.isArtist && !collectionPlaying()" 
-        @click="togglePlay(item)"
+        @click.stop="togglePlay(item)"
         :aria-label="`${item.playbackIcon} item`"
       >
         {{`mdi-${item.playbackIcon}-circle-outline`}}
@@ -16,7 +16,7 @@
         color= "#1DB954" 
         :class="[iconClass]" 
         v-show="collectionPlaying()" 
-        @click="stopPlayback(true)"
+        @click.stop="stopPlayback(true)"
         aria-label="stop playback"
       >
         mdi-stop-circle

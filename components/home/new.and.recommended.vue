@@ -5,13 +5,11 @@
         New & Recommended
         
         <div class="filter-container">
-          <div class="clickable filter-label" @click="displayAll()">See All</div>
+          <div class="clickable filter-label" v-if="allItems.length" @click="displayAll()">See All</div>
           <span class="filter-divider">/</span>
           <div class="clickable filter-label" @click="displayNewReleases()">New Releases Only</div>
         </div>
       </div>
-
-      <div class="title-border"></div>
     </div>
 
     <ContentCarousel :data="previewItems"/>
@@ -28,7 +26,11 @@
   export default class NewAndRecommended extends Vue {
     previewItems = [];
     allItems = [];
-    overlayBackgroundImgUrl = 'https://dummyimage.com/768/000000/000000';
+
+    baseOverlay = {
+      simpleOverlay: true,
+      imgUrl: 'https://dummyimage.com/768/000000/000000'
+    };
 
     @Mutation('setLoading', {namespace: UI})
     setLoading;
@@ -46,9 +48,8 @@
 
     displayAll(){
       this.displayDetailsOverlay({
+        ...this.baseOverlay,
         allNewAndRecommended: true,
-        simpleOverlay: true,
-        imgUrl: this.overlayBackgroundImgUrl,
         name: 'NEW AND RECOMMENDED',
         data: this.allItems
       });
@@ -56,9 +57,8 @@
 
     displayNewReleases(){
       this.displayDetailsOverlay({
+        ...this.baseOverlay,
         newReleases: true,
-        simpleOverlay: true,
-        imgUrl: this.overlayBackgroundImgUrl,
         name: 'NEW RELEASES'
       });
     }

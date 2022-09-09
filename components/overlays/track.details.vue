@@ -12,51 +12,60 @@
       </div>
     </div>
 
-    <v-card class="clickable overlay-details-container" elevation="7" v-show="track.album && (track.album.total_tracks > 1)" @click="displayDetailsOverlay(track.album)">
+    <v-card class="clickable overlay-details-container" elevation="7" v-show="track.album && (track.album.total_tracks > 1)" @click="displayDetailsOverlay(overlayTrack.album)">
       <div id="fromAlbumTitle">From <span class="from-title">{{track.album.name}}</span>
         <v-icon small>mdi-arrow-right</v-icon>
       </div>
 
       <div class="d-flex align-center">
-        <v-img class="clickable track-album" :src="track.album.imgUrl"></v-img>
+        <v-img class="clickable track-album" :src="overlayTrack.album.imgUrl"></v-img>
 
         <div class="album-data">
-          <div><span class="font-weight-regular">by</span> {{track.album.secondaryLabel}}</div>
+          <div><span class="font-weight-regular">by</span> {{overlayTrack.album.secondaryLabel}}</div>
           <div class="font-weight-regular from-album-tracks">{{track.album.total_tracks}} {{track.album.total_tracks > 1 ? 'Tracks' : 'Track'}}</div>
         </div>
       </div>
     </v-card>
 
-    <MoreFromArtist v-if="(!track.album || track.album.total_tracks === 1)" :parentItem="track" :artist="track.artists[0]"/>
+    <MoreFromArtist v-if="(!track.album || track.album.total_tracks === 1)" :parentItem="overlayTrack" :artist="track.artists[0]"/>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop, Action, Mutation} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData} from '~/utils/helpers';
   import {UI} from '~/store/constants';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class TrackDetails extends Vue {
     duration = 0;
+    overlayTrack;
 
     @Prop({required: true})
     track;
+
+    @Mutation('updateOverlayItem', {namespace: UI})
+    updateOverlayItem;
     
     @Action('displayDetailsOverlay', {namespace: UI})
     displayDetailsOverlay;
 
     beforeMount(){
+      this.overlayTrack = cloneDeep(this.track);
+      const trackDetails = this.overlayTrack.details;
+
       if(this.track.album){
-        setItemMetaData([this.track.album]);
+        setItemMetaData([this.overlayTrack.album]);
       }
       
       if(this.track.singleTrack){
-        setItemMetaData(this.track.details.artistAlbums);
-        setItemMetaData(this.track.details.artistTopTracks);
-        setItemMetaData(this.track.details.relatedArtists);
+        setItemMetaData(trackDetails.artistAlbums);
+        setItemMetaData(trackDetails.artistTopTracks);
+        setItemMetaData(trackDetails.relatedArtists);
       }
 
+      this.updateOverlayItem(this.overlayTrack);
       this.duration = msToDuration(this.track.duration_ms);
     }
   }

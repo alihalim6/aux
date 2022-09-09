@@ -2,32 +2,33 @@
   <section>
     <v-dialog :value="auxSession.display && !detailsOverlay.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
       <div class="session-container">
-        <div v-if="currentlyPlayingItem.uri" class="d-flex flex-column">
+        <div class="d-flex flex-column">
           <div class="session-title-container">
             <v-icon class="close-button" large @click="closeAuxSession()" aria-label="close aux session">mdi-close</v-icon>
 
             <div class="d-flex align-start">
-              <v-icon x-small color="red" class="live-circle">mdi-circle</v-icon>
+              <div class="position-relative">
+                <v-icon>mdi-earth</v-icon>
+                <v-icon x-small color="red" class="live-circle">mdi-circle</v-icon>
+              </div>
 
               <div class="d-flex flex-column">
-                <span class="session-title">{{profile.name}}</span>
+                <span v-if="profile" class="session-title">{{profile.name}}</span>
 
                 <div class="live-now-label">
-                  <span class="live-now-number">0</span><span class="live-now"> others live right now</span><v-icon small class="clickable ml-2" color="white">mdi-help-circle-outline</v-icon>
+                  <span class="live-now-number">0</span><span class="live-now"> others live right now</span><v-icon small class="clickable ml-1" color="black">mdi-help-circle-outline</v-icon>
                 </div>
               </div>
             </div>
-            
-          
           </div>
 
-          <div class="pb-10">
-            <AuxSessionFeedItem v-for="item in auxSessionFeed" :key="item.timestamp" :item="item"/>
+          <div class="pb-10"  v-if="auxSessionFeed.length">
+            <AuxSessionFeedItem v-for="item in auxSessionFeed" :key="item.timestamp" :item="item" :itemSet="auxSessionFeed.map(activity => activity.track)"/>
           </div>
-        </div>
 
-        <div v-else>
-          START PLAYING MUSIC TO VIEW YOUR QUEUE LOREM IPSUM...
+          <div v-else>
+            START PLAYING MUSIC TO VIEW YOUR QUEUE LOREM IPSUM...
+          </div>
         </div>
       </div>
     </v-dialog>
@@ -36,7 +37,7 @@
 
 <script>
   import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
-  import {UI, PLAYBACK_QUEUE, USER, SPOTIFY, SESSION} from '~/store/constants';
+  import {UI, USER, SESSION} from '~/store/constants';
 
   @Component
   export default class AuxSession extends Vue {
@@ -52,14 +53,8 @@
     @Getter('profile', {namespace: USER})
     profile;
 
-    @Getter('queue', {namespace: PLAYBACK_QUEUE})
-    queue;
-
     @Getter('auxSessionFeed', {namespace: SESSION})
     auxSessionFeed;
-
-    @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
-    currentlyPlayingItem;  
   }
 </script>
 
@@ -90,6 +85,9 @@
       .live-circle {
         margin-top: 14px;
         margin-right: 6px;
+        position: absolute;
+        bottom: 4px;
+        right: -10px;
       }
 
       .live-now-label {

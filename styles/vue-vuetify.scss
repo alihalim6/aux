@@ -2,20 +2,54 @@
 
 .v-application {
   font-family: 'Public Sans', sans-serif !important;
+
+  .v-dialog--fullscreen {
+    overflow-y: hidden !important;
+    max-height: calc(100vh - #{$max-footer-height-not-playing});
+  }
+
+  .v-dialog__content {
+    max-height: calc(100vh - #{$max-footer-height-not-playing});
+  }
+
+  .up-next-hidden {
+    animation: slide-down-not-playing $up-next-slide-animation;
+
+    @keyframes slide-down-not-playing {
+      to {
+        height: $max-footer-height-not-playing;
+      }
+    }
+  }
+}
+
+.v-application.item-playing {
+  .v-dialog--fullscreen {
+    max-height: calc(100vh - #{$max-footer-height-playing});
+  }
+
+  .v-dialog__content {
+    max-height: calc(100vh - #{$max-footer-height-playing});
+  }
+
+  .playback-toggle {
+    font-size: 36px !important;
+  }
+
+  .up-next-hidden {
+    animation: slide-down-playing $up-next-slide-animation;
+
+    @keyframes slide-down-playing {
+      to {
+        height: $max-footer-height-playing;
+      }
+    }
+  }
 }
 
 .v-dialog {
   background-color: rgba(0, 0, 0, 0.6);
   box-shadow: none;
-}
-
-.v-dialog--fullscreen {
-  overflow-y: hidden !important;
-  max-height: calc(100vh - #{$max-footer-height});
-}
-
-.v-dialog__content {
-  max-height: calc(100vh - #{$max-footer-height});
 }
 
 .v-sheet.v-card {

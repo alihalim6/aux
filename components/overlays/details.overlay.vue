@@ -119,7 +119,7 @@
       opacity: 0;
       border: unset;
       position: relative;
-      width: stretch;
+      width: -webkit-fill-available;
       height: 100%;
       background-color: white;
       max-width: unset;
@@ -238,7 +238,7 @@
   }
 
   .full-item-image {
-    width: fit-content;
+    width: -webkit-fill-available;
     margin: 0 auto;
   }
 </style>

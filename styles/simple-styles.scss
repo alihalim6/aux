@@ -55,13 +55,7 @@ $phrase-border-color: #aaaaaa;
   animation: none !important;
 }
 
-.home-content-border {
-  border: 2px solid #888888;
-  border-radius: 4px;
-}
-
 .home-content {
-  @extend .home-content-border;
   @extend .home-content-responsive;
 
   max-width: $max-inner-width;
@@ -70,6 +64,10 @@ $phrase-border-color: #aaaaaa;
   margin: 0 $home-content-padding;
   padding: 4px;
   background-color: white;
+
+  .track-list-container {
+    padding: 0px;
+  }
 }
 
 .home-content-responsive {
@@ -113,4 +111,8 @@ $phrase-border-color: #aaaaaa;
 
 .display-none {
   display: none;
+}
+
+.position-relative {
+  position: relative;
 }

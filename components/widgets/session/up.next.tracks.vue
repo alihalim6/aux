@@ -23,7 +23,7 @@
     </div>
 
     <div class="next-track-container">
-      <v-card elevation="6" class="clickable mt-3" @click.stop="nextTrackPressed(nextTrack, nextTracks)">
+      <v-card elevation="6" class="clickable mt-3" @click.stop="fromAlbumPressed(nextTrack.album)">
         <v-img :src="nextTrack.imgUrl" class="next-track-img"></v-img>
       </v-card>
 
@@ -50,7 +50,8 @@
         
         <div v-if="multiTrackAlbum()" class="d-flex">
           <div class="info-item">
-            <div class="info-label">FROM</div><div class="clickable info-value ellipses-text underlined" @click.stop="fromAlbumPressed(nextTrack.album)">{{nextTrack.album.name.toUpperCase()}}</div>
+            <div class="info-label">FROM</div>
+            <div class="clickable info-value ellipses-text underlined" @click.stop="fromAlbumPressed(nextTrack.album)">{{nextTrack.album.name.toUpperCase()}}</div>
           </div>
         </div>
         
@@ -133,10 +134,9 @@
     }
 
     async fromAlbumPressed(album){
-      const albumPressed = {...album};
+      setItemMetaData([album]);
       this.$nuxt.$emit('hideUpNext');
-      setItemMetaData([albumPressed]);
-      await this.displayDetailsOverlay(albumPressed);
+      await this.displayDetailsOverlay(album);
     }
 
     clearUpNextPressed(){
@@ -163,7 +163,7 @@
       align-items: center;
       justify-content: flex-start;
       width: 100%;
-      margin-bottom: 12px;
+      margin-bottom: 24px;
 
       .track-sneak-peek {
         width: 62vw;
@@ -220,7 +220,7 @@
       align-items: center;
       font-weight: bold;
       width: 90vw;
-      margin-top: 24px;
+      margin-top: 36px;
       padding-bottom: 24px;
 
       .then-label {

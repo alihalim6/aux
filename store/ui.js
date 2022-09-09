@@ -42,8 +42,7 @@ export const actions = {
       singleArtistId: item.singleArtistId
     });
 
-    commit('setItemDetailsData', {item, data});
-    commit('displayDetailsOverlay', item);
+    commit('displayDetailsOverlay', {...item, details: data});
   },
   displayArtistDetails: async ({dispatch}, artist) => {
     const { data } = await httpClient.post('/artist', {itemId: artist.id});
@@ -55,8 +54,7 @@ export const actions = {
       genres: data.artist.genres
     };
     
-    setItemMetaData([artistToDisplay]);
-    dispatch('displayDetailsOverlay', artistToDisplay);
+    dispatch('displayDetailsOverlay', setItemMetaData([artistToDisplay])[0]);
   }
 };
 
@@ -79,8 +77,8 @@ export const mutations = {
   closeFullItemImage(state){
     state.fullItemImage = '';
   },
-  setItemDetailsData(state, params){
-    params.item.details = params.data;
+  updateOverlayItem(state, updatedItem){
+    state.detailsOverlay.items[state.detailsOverlay.currentIndex] = updatedItem;
   },
   setToast(state, toast){
     state.toast = toast;

@@ -11,9 +11,11 @@
 </template>
 
 <script>
-  import {Component, Vue, Prop} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop, Mutation} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
   import {httpClient} from '~/utils/api';
+  import {UI} from '~/store/constants';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class PlaylistDetails extends Vue {
@@ -23,9 +25,12 @@
     @Prop({required: true})
     playlist;
 
+    @Mutation('updateOverlayItem', {namespace: UI})
+    updateOverlayItem;
+
     async beforeMount(){
       const { playlistTracks, totalPlaylistTracks, playlistTrackLimit } = this.playlist.details;
-      this.tracks = playlistTracks.map(this.setTrackData);
+      this.tracks = playlistTracks.map(this.setTrackData).filter(track => track.id);
 
       while(!this.allTracksRetrieved){
         if(this.tracks.length < totalPlaylistTracks){
@@ -37,18 +42,20 @@
           this.allTracksRetrieved = true;
           this.tracks.forEach(track => track.fromCollection = this.playlist.uri);
           this.tracks = this.tracks.filter(track => track.id);
+          
           //needed for collection logic for 'play entire playlist' toggle on overlay
-          this.playlist.details.playlistTracks = this.tracks;
+          this.updateOverlayItem({...this.playlist, playlistTracks: this.tracks});
         }
       }
     }
 
     setTrackData(item){
-      if(!item.track){
+      //ignore playlist tracks that come back from API sometimes with no data
+      if(!item.id && !item.track){
         return {};
       }
 
-      return setItemMetaData([item.track])[0];
+      return setItemMetaData([cloneDeep(item.track)])[0];
     }
   }
 </script>

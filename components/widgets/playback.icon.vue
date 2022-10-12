@@ -4,7 +4,7 @@
         class="clickable" 
         :color="itemIsPlaying ? '#1DB954' : ''" 
         :class="[iconClass]" 
-        v-show="!item.isArtist && !collectionPlaying()" 
+        v-if="!item.isArtist && !collectionPlaying()" 
         @click.stop="togglePlay(item)"
         :aria-label="`${item.playbackIcon} item`"
       >
@@ -12,10 +12,9 @@
       </v-icon>
 
       <v-icon
-        class="clickable" 
-        color= "#1DB954" 
+        class="clickable collection-playback" 
         :class="[iconClass]" 
-        v-show="collectionPlaying()" 
+        v-if="collectionPlaying()" 
         @click.stop="stopPlayback(true)"
         aria-label="stop playback"
       >
@@ -27,6 +26,7 @@
 <script>
   import {Component, Vue, Prop, Action, Getter, Watch, Mutation} from 'nuxt-property-decorator';
   import {SPOTIFY} from '~/store/constants';
+  import {isSameTrack} from '~/utils/helpers';
 
   @Component
   export default class PlaybackIcon extends Vue {
@@ -58,7 +58,7 @@
 
     @Mutation('setItemPlaybackIcon', {namespace: SPOTIFY})
     setItemPlaybackIcon;
-
+    
     @Watch('audioPlaying')   
     @Watch('currentlyPlayingItemUri')
     playbackChanged(){
@@ -80,7 +80,7 @@
     updateThisItem(){
       //if playing track and then loading its album for e.g., make sure corresponding track has correct icon in resulting view;
       //can't rely on item uri as individual track and its counterpart on album have different uris
-      this.itemIsPlaying = (this.item.name == this.currentlyPlayingItem.name) && (this.item.duration == this.currentlyPlayingItem.duration) && (this.item.track_number == this.currentlyPlayingItem.track_number);
+      this.itemIsPlaying = isSameTrack(this.item, this.currentlyPlayingItem);
 
       const icon = (this.audioPlaying && this.itemIsPlaying) ? 'pause' : 'play';
 
@@ -93,7 +93,13 @@
       //TODO: fix play from elsewhee (e.g. artist top tracks) then load album -- item.fromCollection not set so wrong icon on collection
       //still happens? ^^^
 
-      return (this.item.isCollection && this.currentlyPlayingItem.fromCollection === this.item.uri);
+      return (this.item.isCollection && this.currentlyPlayingItem.fromCollection && this.currentlyPlayingItem.fromCollection.includes(this.item.uri));
     }
   }
 </script>
+
+<style lang="scss">
+  .collection-playback {
+    color: #1DB954 !important;
+  }
+</style>

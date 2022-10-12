@@ -8,17 +8,17 @@
       </div>
 
       <div class="sub-padding-left no-wrap">
-        <span v-show="duration">{{duration}}</span>
+        <span v-if="duration">{{duration}}</span>
       </div>
     </div>
 
-    <v-card class="clickable overlay-details-container" elevation="7" v-show="track.album && (track.album.total_tracks > 1)" @click="displayDetailsOverlay(overlayTrack.album)">
+    <v-card class="clickable overlay-details-container" elevation="7" v-if="track.album && (track.album.total_tracks > 1)" @click="displayDetailOverlays(overlayTrack.album)">
       <div id="fromAlbumTitle">From <span class="from-title">{{track.album.name}}</span>
         <v-icon small>mdi-arrow-right</v-icon>
       </div>
 
       <div class="d-flex align-center">
-        <v-img class="clickable track-album" :src="overlayTrack.album.imgUrl"></v-img>
+        <v-img class="clickable track-album" :src="overlayTrack.album.imgUrl.medium"></v-img>
 
         <div class="album-data">
           <div><span class="font-weight-regular">by</span> {{overlayTrack.album.secondaryLabel}}</div>
@@ -48,8 +48,8 @@
     @Mutation('updateOverlayItem', {namespace: UI})
     updateOverlayItem;
     
-    @Action('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
+    @Action('displayDetailOverlays', {namespace: UI})
+    displayDetailOverlays;
 
     beforeMount(){
       this.overlayTrack = cloneDeep(this.track);

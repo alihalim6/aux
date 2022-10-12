@@ -1,16 +1,19 @@
 <template>
   <v-footer class="currently-playing-container" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
-    <div class="clickable view-queue-container" v-if="!upNextDisplaying && currentlyPlayingItem.uri">
-      <v-btn elevation="4" class="view-queue" aria-label="view playback queue" @click="displayAuxSession()">
+    <div class="clickable view-feed-container" v-if="!upNextDisplaying" @click="feedIconPressed()">
+      <v-btn rounded elevation="4" class="view-feed" aria-label="view feed">
         <v-icon small color="white">mdi-format-list-text</v-icon>
       </v-btn>
 
-      <div class="d-flex align-center ml-2" :class="{'off-air': !currentlyPlayingItem.uri}"><v-icon x-small color="red">mdi-circle</v-icon><span class="on-air">ON AIR</span></div>
+      <div class="d-flex align-center ml-2">
+        <v-icon x-small color="red">mdi-circle</v-icon>
+        <span class="on-air">ON AIR</span>
+      </div>
     </div>
 
     <div class="currently-playing" v-if="!upNextDisplaying">
       <div class="d-flex">
-        <v-img @click="displayDetailsOverlay(currentlyPlayingItem)" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl"></v-img>
+        <v-img @click="displayDetailOverlays(currentlyPlayingItem)" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium"></v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
           <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
@@ -34,7 +37,7 @@
               <template v-slot:append><span class="playback-time">{{playbackTotal.display}}</span></template>
             </v-slider>
 
-            <v-icon v-if="currentlyPlayingItem.uri" class="clickable pl-3" color="#1DB954">mdi-heart{{itemLiked ? '' : '-outline'}}</v-icon>
+            <v-icon v-if="currentlyPlayingItem.uri" class="clickable pl-3" @click.stop="trackLikeToggled()" color="#1DB954">mdi-heart{{itemLiked ? '' : '-outline'}}</v-icon>
           </div>
 
           <div class="d-flex justify-center">
@@ -68,7 +71,7 @@
         </div>
       </div>
 
-      <div class="d-flex flex-column align-start mt-2"  @click.stop="viewUpNext()" v-if="currentlyPlayingItem.uri">
+      <div class="d-flex flex-column align-start"  @click.stop="viewUpNext()" v-if="currentlyPlayingItem.uri">
         <div class="up-next-container">
           <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
@@ -76,7 +79,7 @@
             <span class="clickable min-width-fit" :class="{'no-next-track': !hasNextTrack}">UP NEXT: </span>
 
             <div v-if="hasNextTrack" class="clickable track-sneak-peek">
-              <v-img class="track-img" :src="nextTrack.imgUrl"></v-img>
+              <v-img class="track-img" :src="nextTrack.imgUrl.medium"></v-img>
               <span class="ellipses-text">{{nextTrack.primaryLabel}} /<span class="track-artists"> {{nextTrack.secondaryLabel}}</span></span>
             </div>
           </div>
@@ -91,8 +94,9 @@
 <script>
   import {Component, Vue, Getter, Watch, Action, Mutation} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
-  import {msToDuration, getItemDuration} from '~/utils/helpers';
+  import {msToDuration, getItemDuration, isSameTrack} from '~/utils/helpers';
   import {httpClient} from '~/utils/api';
+  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, SPOTIFY_GREEN, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
 
   @Component
   export default class CurrentlyPlaying extends Vue {
@@ -127,6 +131,9 @@
     @Getter('hasNextTrack', {namespace: PLAYBACK_QUEUE})
     hasNextTrack;
 
+    @Getter('feed', {namespace: UI})
+    feed;
+
     @Action('stopPlayback', {namespace: SPOTIFY})
     stopPlayback;
 
@@ -142,12 +149,21 @@
     @Action('seekPlayback', {namespace: SPOTIFY})
     seekPlayback;
 
-    @Action('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
+    @Action('displayDetailOverlays', {namespace: UI})
+    displayDetailOverlays;
 
-    @Mutation('displayAuxSession', {namespace: UI})
-    displayAuxSession;
+    @Mutation('displayFeed', {namespace: UI})
+    displayFeed;
 
+    @Mutation('closeFeed', {namespace: UI})
+    closeFeed;
+
+    @Mutation('setToast', {namespace: UI})
+    setToast;
+
+    @Mutation('setCurrentlyPlayingItem', {namespace: SPOTIFY})
+    setCurrentlyPlayingItem;
+    
     //TODO: NOT 'OFF AIR' IF NOTHING PLAYING - ONLY WHEN NOTHING HAS BEEN PLAYED
 
     @Watch('audioPlaying')
@@ -186,6 +202,9 @@
         this.upNextHidden = true;
         this.upNextDisplaying = false;
       });
+
+      this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, this.handleItemLikeStatus);
+      this.$nuxt.$root.$on(LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
     }
 
     initializeTiming(item){
@@ -248,6 +267,36 @@
       }
     }
 
+    feedIconPressed(){
+      if(this.feed.display){
+        this.closeFeed();
+      }
+      else{
+        this.displayFeed();
+      }
+    }
+
+    async trackLikeToggled(){
+      const modifyLikeUrl = `/me/tracks?ids=${this.currentlyPlayingItem.id}`;
+
+      if(this.itemLiked){
+        await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'DELETE'});
+        this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.currentlyPlayingItem);
+        this.setToast({text: REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN});
+      }
+      else{
+        await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'PUT'});
+        this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.currentlyPlayingItem);
+        this.setToast({text: ADDED_TO_LIKES, backgroundColor: SPOTIFY_GREEN});
+      }
+    }
+
+    handleItemLikeStatus(item, liked){
+      if(this.currentlyPlayingItem && isSameTrack(this.currentlyPlayingItem, item)){
+        this.itemLiked = liked;
+      }
+    }
+
     unmounted(){
       this.stopInterval();
     }
@@ -271,23 +320,22 @@
     overflow: hidden;
     padding: 6px 4px !important;
 
-    .view-queue-container {
+    .view-feed-container {
       align-self: flex-end;
       margin-right: 12px;
       display: flex;
       padding-top: 2px;
+      position: relative;
 
-      .view-queue {
+      .view-feed {
         color: white;
         display: flex;
         font-weight: bold;
         z-index: 30;
-        border-radius: 4px;
-        background-color: $spotify-green;
-        border-radius: 100%;
-        padding: 12px;
-        height: unset;
-        min-width: unset;
+        background-color: $primary-theme-color !important;
+        padding: 12px !important;
+        height: unset !important;
+        min-width: unset !important;
       }
 
       .on-air {
@@ -298,12 +346,8 @@
       }
     }
 
-    .view-queue-container:hover {
+    .view-feed-container:hover {
       padding: 1px;
-    }
-
-    .off-air {
-      color: $off-color !important;
     }
 
     .currently-playing {
@@ -337,7 +381,6 @@
 
         .queue-control {
           @extend .control;
-          padding: 0px 16px;
           margin: 0px 20px;
         }
 

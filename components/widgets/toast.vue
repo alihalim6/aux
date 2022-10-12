@@ -1,17 +1,26 @@
 <template>
   <v-snackbar 
     class="app-toast" 
+
     v-model="currentToast"
     :app="true" 
-    top width="100%" 
+    top 
+    width="100%" 
     max-width="420" 
-    transition="fade-transition" 
-    :color="toast.color || 'red'"
+    transition="slide-y-transition" 
+    :color="toast.backgroundColor || 'red'"
     :timeout="toast.timeout || 5000"
   >
-    <div class="toast-container">
-      <span class="toast-text">{{toast.text}}</span>
-      <v-icon class="clickable" @click.stop.prevent="closeToast()" id="appToast" aria-label="close toast message">mdi-close</v-icon>
+    <div class="snackbar-container fill-available">
+      <div class="d-flex align-center pr-3">
+        <v-img v-if="toast.img" :src="toast.img" class="snackbar-img"></v-img>
+        
+        <span class="toast-text">
+          <span>{{toast.username}} </span><span>{{toast.text}}</span>
+        </span>
+      </div>
+
+      <v-icon class="clickable" @click.stop="closeToast()" color="white" aria-label="close the toast message">mdi-close</v-icon>
     </div>
   </v-snackbar>
 </template>
@@ -38,20 +47,14 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss">  
   .app-toast {
     margin-top: 6px;
 
-    .toast-container {
-      display: flex;
-      justify-content: space-between;
-      padding-top: 2px;
-      
-      .toast-text {
-        color: white;
-        font-weight: 600;
-        padding: 4px;
-      }
+    .toast-text {
+      font-weight: bold;
+      padding: 4px;
+      color: white;
     }
   }
   </style>

@@ -1,4 +1,7 @@
-import {SPOTIFY, SESSION, UI} from './constants';
+import {SPOTIFY, UI} from './constants';
+import {SPOTIFY_GREEN} from '~/utils/constants';
+import {shuffleArray} from '~/utils/helpers';
+import {isSameTrack} from '~/utils/helpers';
 
 export const state = () => {
   return {
@@ -47,16 +50,12 @@ export const getters = {
 };
 
 const threeDotToast = {
-  color: '#1DB954',
+  backgroundColor: SPOTIFY_GREEN,
   timeout: 2500
 };
 
 export const actions = {  
   startPlaybackQueue: ({commit, getters, dispatch}, params) => {
-    if(!getters.queue.length){
-      dispatch(`${SESSION}/addToActivityFeed`, {track: params.itemSet[params.index], wentLive: true}, {root: true});
-    }
-
     commit('startQueue', params);
   },
   playPreviousTrack: ({dispatch, getters}) => {
@@ -80,9 +79,24 @@ export const actions = {
     commit('addToEndOfQueue', tracks);
     commit(`${UI}/setToast`, {...threeDotToast, text: `Track${tracks.length > 1 ? 's' : ''} added to end of queue`}, {root: true});
   },
-  setTracksToPlayNext: ({commit, getters}, tracks) => {
-    commit('setPlayNext', {currentIndex: getters.currentlyPlayingIndex, tracks});
-    commit(`${UI}/setToast`, {...threeDotToast, text: `Track${tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
+  setTracksToPlayNext: ({commit, getters}, params) => {
+    commit('setPlayNext', {currentIndex: getters.currentlyPlayingIndex, tracks: params.tracks});
+
+    if(!params.noConfirmationToast){
+      commit(`${UI}/setToast`, {...threeDotToast, text: `Track${params.tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
+    }
+  },
+  shuffleUpNext: ({commit, getters}) => {
+    commit('shuffleUpNext', {nextTracks: getters.nextTracks, currentIndex: getters.currentlyPlayingIndex});
+  },
+  playTrackNow: ({dispatch, getters, commit}, track) => {
+    dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true});
+    
+    if(isSameTrack(track, getters.nextTrack)){
+      commit('removeFromQueue', getters.nextTrack);
+    }
+
+    dispatch('playNextTrack');
   }
 };
 
@@ -105,5 +119,8 @@ export const mutations = {
   },
   addToEndOfQueue(state, tracks){
     state.queue.push(...tracks);
+  },
+  shuffleUpNext(state, params){
+    state.queue.splice(...[params.currentIndex + 1, params.nextTracks.length].concat(shuffleArray(params.nextTracks)));
   }
 };

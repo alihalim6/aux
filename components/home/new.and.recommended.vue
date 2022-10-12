@@ -25,29 +25,31 @@
   @Component
   export default class NewAndRecommended extends Vue {
     previewItems = [];
+    newReleases = [];
     allItems = [];
 
     baseOverlay = {
       simpleOverlay: true,
-      imgUrl: 'https://dummyimage.com/768/000000/000000'
+      imgUrl: {}
     };
 
     @Mutation('setLoading', {namespace: UI})
     setLoading;
 
-    @Mutation('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
+    @Mutation('displayDetailOverlays', {namespace: UI})
+    displayDetailOverlays;
 
     async beforeMount(){
       const { data } = await httpClient.get('/newAndRecommended');
       this.previewItems = setItemMetaData(data.previewItems);
       this.setLoading(false);
       
+      this.newReleases = data.newReleases;
       this.allItems = data.allItems;
     }
 
     displayAll(){
-      this.displayDetailsOverlay({
+      this.displayDetailOverlays({
         ...this.baseOverlay,
         allNewAndRecommended: true,
         name: 'NEW AND RECOMMENDED',
@@ -56,10 +58,11 @@
     }
 
     displayNewReleases(){
-      this.displayDetailsOverlay({
+      this.displayDetailOverlays({
         ...this.baseOverlay,
         newReleases: true,
-        name: 'NEW RELEASES'
+        name: 'NEW RELEASES',
+        data: this.newReleases
       });
     }
   }

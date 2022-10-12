@@ -22,7 +22,18 @@ export const setItemMetaData = (items) => {
     item.uuid = uuid();
 
     try{
-      item.imgUrl = item.images ? item.images[0].url : item.album.images[0].url;
+      item.imgUrl = {};
+      item.imgUrl.large = item.images ? item.images[0].url : item.album.images[0].url;
+
+      if(item.images && item.images.length > 1){
+        item.imgUrl.medium = item.images[1].url;
+        item.imgUrl.small = item.images[2].url;
+      }
+
+      if(item.album.images && item.album.images.length > 1){
+        item.imgUrl.medium = item.album.images[1].url;
+        item.imgUrl.small = item.album.images[2].url;
+      }
     }
     //not all items have images
     catch(error){
@@ -43,7 +54,7 @@ export const setItemMetaData = (items) => {
       }
 
       if(!item.fromCollection && item.isTrack && item.album && item.album.total_tracks > 1){
-        item.fromCollection = item.album.uri;
+        handleItemCollection(item, item.album.uri);
       }
     }
     else if(item.isArtist){  
@@ -77,6 +88,15 @@ export const setItemMetaData = (items) => {
   return items;
 };
 
+export const handleItemCollection = (item, collectionId) => {
+  if(item.fromCollection){
+    item.fromCollection.push(collectionId);
+  }
+  else{
+    item.fromCollection = [collectionId];
+  }
+};
+
 //adapted from https://stackoverflow.com/a/9763769
 export const msToDuration = (ms) => {
   function pad(n, paddingCheck) {
@@ -100,7 +120,7 @@ export const msToDuration = (ms) => {
 
 export const getItemDuration = async (item) => {
   //singles (with type 'album') don't have duration
-  if(!item.duration_ms){
+  if(item.id && !item.duration_ms){
     const { data } = await httpClient.post('/passthru', {url: `/albums/${item.id}/tracks`});
 
     return data.items[0].duration_ms;
@@ -167,4 +187,20 @@ export const initSpotifyPlayer = () => {
     console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
     retryPlayerInit();
   });
+};
+
+//https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+export const shuffleArray = (array) => {
+  for(let i = array.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+};
+
+export function isSameTrack(trackA, trackB){
+  return (trackA.name == trackB.name) && 
+        (trackA.duration_ms == trackB.duration_ms) && 
+        (trackA.track_number == trackB.track_number);
 }

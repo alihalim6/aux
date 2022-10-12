@@ -5,7 +5,7 @@
     </div>
 
     <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
-      <v-tab v-for="(item, index) in content" :key="item.key">
+      <v-tab v-for="(item, index) in getContent()" :key="item.key" @change="tabChanged">
         <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
           <span v-if="!item.fetchPending" :id="`myAuxTabLabel${index}`">{{item.label}}</span>
           <v-progress-circular v-if="item.fetchPending" class="fetch-in-progress" indeterminate color="white"></v-progress-circular>
@@ -16,13 +16,19 @@
 
     <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
       <v-tab-item v-for="(item, index) in getContent()" :key="item.key">
-        <div class="home-content" :id="`myAux${index}`" v-if="item.data.length" v-scroll.self="contentScrolled">
-          <TrackList v-if="item.trackList" :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true" :hideLikeability="item.hideLikeability"/>
-          <ContentCarousel v-if="item.carousel" :data="item.data" :vertical="true"/>
+        <div class="home-content" :id="`myAux${index}`" v-if="item.data.length">
+          <div v-if="item.trackList">
+            <PlayAllAndShuffle v-if="!item.fetchPending" :tracks="item.data" :collectionKey="item.key"/>
+            <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true"/>
+          </div>
+          
+          <ContentCarousel v-if="item.likedAlbums" :data="item.data" :vertical="true"/>
 
           <div v-if="item.topItems">
+            <PlayAllAndShuffle v-if="!item.fetchPending" :tracks="item.topItems.tracks" :collectionKey="item.key"/>
             <TrackList :tracks="item.topItems.tracks" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true"/>
-            <ContentCarousel :data="item.topItems.artists" :vertical="true"/>
+
+            <ContentCarousel :data="item.topItems.artists" :vertical="true" class="mt-15"/>
           </div>
         </div>
         
@@ -34,14 +40,15 @@
 
 <script>
   import {Component, Vue, Mutation} from 'nuxt-property-decorator';
-  import {httpClient} from '~/utils/api';
+  import {httpClient, handleApiError} from '~/utils/api';
   import {setItemMetaData, msToDuration} from '~/utils/helpers';
-  import {MY_AUX} from '~/utils/constants';
+  import {MY_AUX, LIKED_ITEM_EVENT, REMOVED_LIKED_ITEM_EVENT} from '~/utils/constants';
   import {USER} from '~/store/constants';
-  import cloneDeep from 'lodash.clonedeep';
+  import {v4 as uuid} from 'uuid';
 
   @Component
   export default class MyAux extends Vue {
+    dataFetch;
     selectedTab = 0;
 
     defaultContent = {
@@ -55,35 +62,38 @@
         ...this.defaultContent,
         key: 'likedTracks',
         label: MY_AUX.LIKED_TRACKS,
-        hideLikeability: true,
         trackList: true,
         api: 'tracks',
-        type: 'track'
+        type: 'track',
+        id: uuid()
       },
       {
         ...this.defaultContent,
         key: 'likedAlbums',
         label: MY_AUX.LIKED_ALBUMS,
-        carousel: true,
+        likedAlbums: true,
         api: 'albums',
-        type: 'album'
+        type: 'album',
+        id: uuid()
       },
       //apparently API doesn't return total for this
       {
         data: [],
         key: 'recentlyPlayed',
         label: MY_AUX.RECENTLY_PLAYED,
-        trackList: true
+        trackList: true,
+        id: uuid()
       }
     ];
 
+    //TODO: find better place for this?
     @Mutation('setProfile', {namespace: USER})
     setProfile;
 
     mapData(data){
       return data.map(item => {
         return {
-          ...setItemMetaData([cloneDeep(item.track || item.album)])[0],
+          ...setItemMetaData([item.track || item.album])[0],
           hideAlbum: true,
           duration: item.track ? msToDuration(item.track.duration_ms) : 0
         }
@@ -91,7 +101,8 @@
     };
 
     async beforeMount(){
-      const { data } = await httpClient.get('/myAux');
+      this.dataFetch = httpClient.get('/myAux');
+      const { data } = await this.dataFetch;
       this.setProfile(data.profile);
       const topItems = setItemMetaData(data.topItems);
 
@@ -107,14 +118,23 @@
         key: 'topItems',
         label: MY_AUX.TOP_ITEMS,
         data: topItems,
+        id: uuid(),
         topItems: {
           tracks: topItems.filter(item => item.isTrack || item.singleTrack),
           artists: topItems.filter(item => item.isArtist)
         }
       }];
 
-      this.$nuxt.$root.$on('removedLikedItem', item => this.handleItemLikeStatus(item, true));
-      this.$nuxt.$root.$on('likedItem', this.handleItemLikeStatus);
+      this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
+      this.$nuxt.$root.$on(LIKED_ITEM_EVENT, this.handleItemLikeStatus);
+    }
+
+    //proactive fetch of liked tracks in the background
+    async mounted(){
+      await this.dataFetch;
+      await this.fetchRemainingData(this.content[0].key);
+
+      this.$forceUpdate();
     }
 
     handleItemLikeStatus(item, removal){
@@ -141,27 +161,33 @@
       }
     }
 
-    //fetch more data for current tab when certain scroll length reached
-    async contentScrolled(e){
-      const currentContent = this.content[this.selectedTab];
-      const scrollThreshold = 1000;
-      const fetchMoreData = (e.target.scrollHeight - e.target.scrollTop <= scrollThreshold);
+    async fetchRemainingData(key){
+      const contentToFetchFor = key ? this.content.find(content => content.key = key) : this.content[this.selectedTab];
 
-      if(currentContent.offset && currentContent.total){
-        const moreDataToFetch = currentContent.offset < currentContent.total;
+      while(contentToFetchFor.api && contentToFetchFor.offset < contentToFetchFor.total){
+        if(!contentToFetchFor.fetchPending){
+          contentToFetchFor.fetchPending = true;
 
-        if(moreDataToFetch && fetchMoreData && !currentContent.fetchPending){
-          currentContent.fetchPending = true;
+          try{
+            const { data } = await httpClient.post('/passthru', {
+              url: `/me/${contentToFetchFor.api}?limit=${contentToFetchFor.limit}&offset=${contentToFetchFor.offset}`
+            });
 
-          const { data } = await httpClient.post('/passthru', {
-            url: `/me/${currentContent.api}?limit=${currentContent.limit}&offset=${currentContent.offset}`
-          });
-
-          currentContent.data = [...currentContent.data, ...this.mapData(data.items)];
-          currentContent.offset += data.items.length;
-          currentContent.fetchPending = false;
+            contentToFetchFor.data = [...contentToFetchFor.data, ...this.mapData(data.items)];
+            contentToFetchFor.offset += data.items.length;
+            contentToFetchFor.fetchPending = false;
+          }
+          catch(error){
+            handleApiError(error);
+            break;
+          }
         }
       }
+    }
+
+    async tabChanged(){
+      await this.$nextTick();
+      await this.fetchRemainingData();
     }
 
     getContent(){

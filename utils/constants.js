@@ -2,6 +2,7 @@ export const AUX_NAMESPACE = 'aux.';
 export const SPLASH = 'splash';
 export const APP = 'app';
 export const BASE_URL = (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://www.liveonaux.com');//TODO
+export const SPOTIFY_GREEN = '#1DB954';
 
 export const AUTH = {
   ACCESS_TOKEN: 'accessToken',
@@ -35,6 +36,8 @@ export const AUTH = {
   }
 };
 
+export const AUX_MODE = 'auxMode';
+
 export const MY_AUX = {
   LIKED_TRACKS: 'Liked Tracks',
   LIKED_ALBUMS: 'Liked Albums',
@@ -47,3 +50,8 @@ export const PLAYLISTS = {
   BY_ME: 'By Me',
   LIKED: 'Liked'
 };
+
+export const REMOVED_FROM_LIKES = 'Removed from Likes';
+export const ADDED_TO_LIKES = 'Added to Likes';
+export const LIKED_ITEM_EVENT = 'likedItem';
+export const REMOVED_LIKED_ITEM_EVENT = 'removedLikedItem';

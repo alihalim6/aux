@@ -23,6 +23,11 @@ httpClient.interceptors.response.use(async response => {
   const errorMessage = response.data.error ? (response.data.error || response.data.error.message) : '';
 
   if(response.data.error && errorMessage){
+    //TODO: seems to happen on first /playItem API call from sdk but it seems to work on next call and music plays, so for now ignore
+    if(errorMessage.indexOf('502') > -1){
+      return;
+    }
+
     if(errorMessage.indexOf('401') > 1){
       await attemptTokenRefresh();
     }
@@ -51,4 +56,4 @@ function handleApiError(error){
   $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong lorem ipsum...'});
 }
 
-export {httpClient};
+export {httpClient, handleApiError};

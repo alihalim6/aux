@@ -5,7 +5,7 @@
       
       <div class="home-content d-flex pa-1">
         <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active vertical class="playlist-tabs">
-          <v-tab v-for="(item, index) in content" :key="item.key" class="justify-start">
+          <v-tab v-for="(item, index) in content" :key="item.type" class="justify-start">
             <div class="playlist-tab" :class="{'selected-tab': selectedTab === index}">
               <span>{{item.label}}</span>
             </div>
@@ -13,9 +13,9 @@
         </v-tabs>
 
         <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs" id="playlistTabContent">
-          <v-tab-item v-for="item in getContent()" :key="item.key">
+          <v-tab-item v-for="item in getContent()" :key="item.type">
             <div class="pa-2">
-              <VerticalContent :data="item.data" :alternate-format="true"/>
+              <VerticalContent :data="item.data" :alternate-format="true" :playlists="true"/>
             </div>
 
             <BackToTop elementId="playlistTabContent"/>
@@ -39,24 +39,28 @@
     content = [
       {
         data: [],
-        key: 'featured',
+        type: 'featured',
         label: PLAYLISTS.FEATURED
       },
       {
         data: [],
-        key: 'byMe',
+        type: 'byMe',
         label: PLAYLISTS.BY_ME
       },
       {
         data: [],
-        key: 'liked',
+        type: 'liked',
         label: PLAYLISTS.LIKED
       }
     ];
 
     async beforeMount(){
       const { data } = await httpClient.get('/playlists');
-      this.content.forEach(item => item.data = setItemMetaData(data[item.key]));
+      
+      this.content.forEach(playlistTab => {
+        const playlist = data[playlistTab.type].filter(playlist => playlist);//spotify can send null playlists
+        playlistTab.data = setItemMetaData(playlist);
+      });
     }
 
     getContent(){

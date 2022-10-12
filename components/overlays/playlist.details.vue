@@ -40,11 +40,17 @@
         }
         else{
           this.allTracksRetrieved = true;
-          this.tracks.forEach(track => track.fromCollection = this.playlist.uri);
+          this.tracks.forEach(track => track.fromCollection = [this.playlist.uri]);
           this.tracks = this.tracks.filter(track => track.id);
           
           //needed for collection logic for 'play entire playlist' toggle on overlay
-          this.updateOverlayItem({...this.playlist, playlistTracks: this.tracks});
+          this.updateOverlayItem({
+            ...this.playlist, 
+            details: {
+              ...this.playlist.details,
+              playlistTracks: this.tracks
+            }
+          });
         }
       }
     }

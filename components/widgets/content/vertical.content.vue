@@ -1,13 +1,21 @@
 <template>
   <section>
     <div v-if="data.length" class="vertical-content">
-      <v-card v-for="(item, index) in data" :key="item.uuid" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="7" @click="displayDetailsOverlay(item)">        
-        <div class="item-container">  
-          <v-card max-width="40%" elevation="7">
-            <v-img class="item-img" :src="item.imgUrl"></v-img>
+      <v-card v-for="(item, index) in data" :key="item.uuid" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="3" @click="displayDetailOverlays(item)">        
+        <div class="item-container" :class="{'flex-column': playlists}">  
+          <v-card v-if="!playlists" max-width="40%" elevation="7">
+            <v-img :src="item.imgUrl.large"></v-img>
           </v-card>
 
-          <v-icon class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
+          <div v-if="playlists" class="d-flex justify-space-between align-start fill-available mb-4">
+            <v-card max-width="75%" elevation="7">
+              <v-img :src="item.imgUrl.large"></v-img>
+            </v-card>
+
+            <v-icon v-if="alternateFormat" class="ml-auto" large color="black">mdi-arrow-right</v-icon>
+          </div>
+
+          <v-icon v-if="!playlists" class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
 
           <div class="d-flex flex-column">
             <span class="item-title" :class="{'smaller-title': alternateFormat}">{{item.primaryLabel}}</span>
@@ -20,7 +28,7 @@
 
         <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
           <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-          <Timeago v-if="item.timeAgo" class="time-ago" :datetime="item.timeAgo"></Timeago>
+          <timeago v-if="item.timeAgo" class="time-ago" :datetime="item.timeAgo"></timeago>
 
           <div class="item-icon-container">
             <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
@@ -44,8 +52,11 @@
     @Prop()
     alternateFormat;
 
-    @Action('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
+    @Prop()
+    playlists;
+
+    @Action('displayDetailOverlays', {namespace: UI})
+    displayDetailOverlays;
   }
 </script>
 
@@ -60,10 +71,6 @@
       align-items: flex-start;
       padding: $base-padding $base-padding 8px;
 
-      .item-img {
-        max-height: 100%;
-      }
-      
       .divider {
         font-size: 32px;
         color: $primary-theme-color;
@@ -79,6 +86,7 @@
         line-height: 1.3;
         padding-bottom: 2px;
         font-weight: bold;
+        word-break: break-word;
       }
 
       .smaller-title {

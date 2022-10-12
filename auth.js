@@ -37,9 +37,9 @@ const setTokenData = (response) => {
 
 export const accessTokenExpired = () => {
   const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
-  console.log(`tokenExpirationTime: ${tokenExpirationTime}`);
+  /* console.log(`tokenExpirationTime: ${tokenExpirationTime}`);
   console.log(`Date.now() is ${Date.now()}`);
-  console.log(`token set at: ${parseInt(storageGet(AUTH.TOKEN_SET_AT))}; token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
+  console.log(`token set at: ${parseInt(storageGet(AUTH.TOKEN_SET_AT))}; token expires/expired ${tokenExpirationTime - Date.now()}ms from now`); */
   return (tokenExpirationTime < Date.now());
 };
 

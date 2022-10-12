@@ -8,9 +8,9 @@
       </div>
 
       <div class="sub-padding-left no-wrap">
-        <span v-show="album.numberOfTracks">{{album.numberOfTracks}}</span>
-        <v-icon v-show="album.numberOfTracks && duration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
-        <span v-show="duration">{{duration}}</span>
+        <span v-if="album.numberOfTracks">{{album.numberOfTracks}}</span>
+        <v-icon v-if="album.numberOfTracks && duration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
+        <span v-if="duration">{{duration}}</span>
       </div>
     </div>
 
@@ -24,7 +24,7 @@
 
 <script>
   import {Component, Vue, Prop, Mutation} from 'nuxt-property-decorator';
-  import {msToDuration, setItemMetaData} from '~/utils/helpers';
+  import {msToDuration, setItemMetaData, handleItemCollection} from '~/utils/helpers';
   import {UI} from '~/store/constants';
   import cloneDeep from 'lodash.clonedeep';
 
@@ -61,7 +61,7 @@
 
       //mark all album tracks as part of this album (collection)
       for(const track of albumDetails.albumTracks){
-        track.fromCollection = this.album.uri;
+        handleItemCollection(track, this.album.uri);
 
         //needed to display track detail when clicking album track on currently playing widget;
         //can't set whole album as that causes circular JSON error

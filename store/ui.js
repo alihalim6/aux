@@ -1,19 +1,21 @@
 import {httpClient} from '~/utils/api';
 import {setItemMetaData} from '~/utils/helpers';
+import {v4 as uuid} from 'uuid';
 
 export const state = () => {
   return {
-    detailsOverlay: {items: [], display: false, currentIndex: -1},
+    detailOverlays: {items: [], display: false, currentIndex: -1},
     fullItemImage: '',
-    toast: {display: false},
+    toast: {},
     loading: true,
-    auxSession: {display: false}
+    feed: {display: false},
+    feedAlert: {}
   };
 };
 
 export const getters = {
-  detailsOverlay: (state) => {
-    return state.detailsOverlay;
+  detailOverlays: (state) => {
+    return state.detailOverlays;
   },
   fullItemImage: (state) => {
     return state.fullItemImage;
@@ -24,13 +26,16 @@ export const getters = {
   isLoading: (state) => {
     return state.loading;
   },
-  auxSession: (state) => {
-    return state.auxSession;
+  feed: (state) => {
+    return state.feed;
+  },
+  feedAlert: (state) => {
+    return state.feedAlert;
   }
 };
 
 export const actions = {
-  displayDetailsOverlay: async ({commit}, item) => {
+  displayDetailOverlays: async ({commit}, item) => {
     const detailsId = (item.isTrack ? item.album.id : item.id);
 
     const { data } = await httpClient.post('/details', {
@@ -42,7 +47,7 @@ export const actions = {
       singleArtistId: item.singleArtistId
     });
 
-    commit('displayDetailsOverlay', {...item, details: data});
+    commit('displayDetailOverlays', {...item, details: data});
   },
   displayArtistDetails: async ({dispatch}, artist) => {
     const { data } = await httpClient.post('/artist', {itemId: artist.id});
@@ -54,22 +59,23 @@ export const actions = {
       genres: data.artist.genres
     };
     
-    dispatch('displayDetailsOverlay', setItemMetaData([artistToDisplay])[0]);
+    dispatch('displayDetailOverlays', setItemMetaData([artistToDisplay])[0]);
   }
 };
 
 export const mutations = {
-  displayDetailsOverlay(state, item){
-    state.detailsOverlay.currentIndex++;
-    state.detailsOverlay.items = [...state.detailsOverlay.items, item];
-    state.detailsOverlay.display = true;
+  displayDetailOverlays(state, item){
+    state.detailOverlays.currentIndex++;
+    state.detailOverlays.items = [...state.detailOverlays.items, {...item, overlayId: uuid()}];
+    state.detailOverlays.display = true;
+    state.feed.display = false;
   },
-  closeDetailsOverlay(state){
-    state.detailsOverlay = {items: [], display: false, currentIndex: -1}
+  closeDetailOverlays(state){
+    state.detailOverlays = {items: [], display: false, currentIndex: -1}
   },
-  goBackDetailsOverlay(state){
-    state.detailsOverlay.items.splice(state.detailsOverlay.currentIndex, 1);
-    state.detailsOverlay.currentIndex--;
+  goBackDetailOverlays(state){
+    state.detailOverlays.items.splice(state.detailOverlays.currentIndex, 1);
+    state.detailOverlays.currentIndex--;
   },
   displayFullItemImage(state, imageUrl){
     state.fullItemImage = imageUrl;
@@ -78,7 +84,7 @@ export const mutations = {
     state.fullItemImage = '';
   },
   updateOverlayItem(state, updatedItem){
-    state.detailsOverlay.items[state.detailsOverlay.currentIndex] = updatedItem;
+    state.detailOverlays.items.splice(state.detailOverlays.currentIndex, 1, updatedItem);
   },
   setToast(state, toast){
     state.toast = toast;
@@ -86,12 +92,15 @@ export const mutations = {
   setLoading(state, loading){
     state.loading = loading;
   },
-  displayAuxSession(state){
-    state.auxSession.display = true;
-    state.detailsOverlay.display = false;
+  displayFeed(state){
+    state.feed.display = true;
+    state.detailOverlays.display = false;
   },
-  closeAuxSession(state){
-    state.auxSession.display = false;
-    state.detailsOverlay.display = !!state.detailsOverlay.items.length;
-  }
+  closeFeed(state){
+    state.feed.display = false;
+    state.detailOverlays.display = !!state.detailOverlays.items.length;//display overlay if one is there
+  },
+  setFeedAlert(state, alert){
+    state.feedAlert = alert;
+  },
 };

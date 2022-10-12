@@ -67,6 +67,8 @@
         padding-left: 16px;
         position: relative;
         top: -16px;
+        color: $spotify-green;
+        font-weight: bold;
 
         .animated-line {
           animation: show-line 1.5s infinite backwards;

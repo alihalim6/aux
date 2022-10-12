@@ -1,31 +1,31 @@
 <template>
   <section>
-    <v-dialog :value="detailsOverlay.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
-      <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="detailsOverlay.currentIndex">
-          <v-carousel-item v-for="(item, index) in detailsOverlay.items" :key="item.uuid" transition="fade-transition">                    
+    <v-dialog :value="detailOverlays.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
+      <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="detailOverlays.currentIndex">
+          <v-carousel-item v-for="(item, index) in detailOverlays.items" :key="item.overlayId" transition="fade-transition">                    
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
-            <v-img class="clickable item-image" :src="item.imgUrl" v-show="detailsOverlay.currentIndex === index">
-              <div class="full-item-image-cta-outer" @click="displayFullItemImage(item.imgUrl)" v-show="!item.simpleOverlay">
+            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="item.imgUrl && detailOverlays.currentIndex === index">
+              <div class="full-item-image-cta-outer" @click="displayFullItemImage(item.imgUrl.large)" v-if="!item.simpleOverlay">
                 <v-icon color="white" class="eye">mdi-eye</v-icon>
               </div>
 
-              <div class="overlay-content" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay}" @click.stop>
+              <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay}" @click.stop>
                 <div class="inner-container">
-                  <div class="inner-image-cta-container" v-show="!item.simpleOverlay">
-                    <div class="clickable full-item-image-cta-inner" @click="displayFullItemImage(item.imgUrl)">
+                  <div class="inner-image-cta-container" v-if="item.imgUrl && !item.simpleOverlay">
+                    <div class="clickable full-item-image-cta-inner" @click="displayFullItemImage(item.imgUrl.large)">
                       {{item.isArtist ? 'Photo' : (item.albumType || 'Track') + ' Artwork'}}
                     </div>
                   </div>
 
                   <div class="d-flex justify-space-between align-center py-2">
-                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBackDetailsOverlay()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="closeDetailsOverlay()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBackDetailOverlays()">mdi-arrow-left</v-icon>
+                    <v-icon class="close-button" large @click="closeDetailOverlays()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
                     {{item.name}}
                     
-                    <div class="controls-container" :class="{'justify-end': item.isArtist}" v-show="!item.simpleOverlay">
+                    <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
                       <div class="item-icon-container">
                         <PlaybackIcon :item="item" :icon-class="'details-overlay-playback-button'"/>
                         <ThreeDotIcon :item="item" :icon-class="'details-overlay-dots-button'"/>
@@ -33,12 +33,12 @@
                     </div>
                   </div>
 
-                  <NewAndRecommendedDetails v-if="item.allNewAndRecommended" :data="item.data"/>
-                  <NewReleases v-if="item.newReleases"/>
-                  <TrackDetails v-if="item.isTrack" :track="item"/>
-                  <AlbumDetails v-if="item.isAlbum" :album="item"/>
-                  <ArtistDetails v-if="item.isArtist" :artist="item"/>
-                  <PlaylistDetails v-if="item.isPlaylist" :playlist="item"/>
+                  <LazyAllNewAndRecommended v-if="item.allNewAndRecommended" :data="item.data"/>
+                  <LazyNewReleases v-if="item.newReleases" :initialData="item.data"/>
+                  <LazyTrackDetails v-if="item.isTrack" :track="item"/>
+                  <LazyAlbumDetails v-if="item.isAlbum" :album="item"/>
+                  <LazyArtistDetails v-if="item.isArtist" :artist="item"/>
+                  <LazyPlaylistDetails v-if="item.isPlaylist" :playlist="item"/>
                 </div>
               </div>
             </v-img>
@@ -49,7 +49,7 @@
     </v-dialog>
 
     <v-dialog :value="fullItemImage" max-width="824" transition="slide-y-transition" @click:outside="closeFullItemImage()">
-      <v-img class="full-item-image" :src="fullItemImage" @click="closeFullItemImage()"></v-img>
+      <v-img class="full-item-image fill-available" :src="fullItemImage" @click="closeFullItemImage()"></v-img>
     </v-dialog>
   </section>
 </template>
@@ -59,18 +59,18 @@
   import {UI} from '~/store/constants';
 
   @Component
-  export default class DetailsOverlay extends Vue {
-    @Getter('detailsOverlay', {namespace: UI})
-    detailsOverlay;
+  export default class DetailOverlays extends Vue {
+    @Getter('detailOverlays', {namespace: UI})
+    detailOverlays;
     
     @Getter('fullItemImage', {namespace: UI})
     fullItemImage;
     
-    @Mutation('closeDetailsOverlay', {namespace: UI})
-    closeDetailsOverlay;
+    @Mutation('closeDetailOverlays', {namespace: UI})
+    closeDetailOverlays;
     
-    @Mutation('goBackDetailsOverlay', {namespace: UI})
-    goBackDetailsOverlay;
+    @Mutation('goBackDetailOverlays', {namespace: UI})
+    goBackDetailOverlays;
     
     @Mutation('displayFullItemImage', {namespace: UI})
     displayFullItemImage;
@@ -119,7 +119,6 @@
       opacity: 0;
       border: unset;
       position: relative;
-      width: -webkit-fill-available;
       height: 100%;
       background-color: white;
       max-width: unset;
@@ -238,7 +237,6 @@
   }
 
   .full-item-image {
-    width: -webkit-fill-available;
     margin: 0 auto;
   }
 </style>

@@ -18,6 +18,7 @@ async function myAux(req, res){
     const { data } = await httpClient.get('/me', apiConfig(accessToken));
     const username = data.display_name;
     const profileImg = data.images[0] ? data.images[0].url : '';
+    const userId = data.id;
 
     //handle tracks that spotify categorizes as albums
     likedTracks.data.items = likedTracks.data.items.concat(likedAlbums.data.items.filter(item => item.album.total_tracks == 1));//add such tracks to likedTracks
@@ -41,7 +42,8 @@ async function myAux(req, res){
       topItems: userTopItems,
       profile: {
         name: username,
-        img: profileImg
+        img: profileImg,
+        id: userId
       }
     });
   }

@@ -2,7 +2,7 @@
   <span>
     <span v-for="(artist, index) in artists" :key="artist.id">
       <span :id="`trackArtist${index}`" class="clickable text-decoration-underline inline-display" @click="displayArtistDetails(artist)">{{artist.name}}</span>
-      <span v-show="(index < artists.length - 1)">, </span>
+      <span v-if="(index < artists.length - 1)">, </span>
     </span>
   </span>
 </template>

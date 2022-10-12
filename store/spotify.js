@@ -1,6 +1,7 @@
 import {httpClient} from '~/utils/api';
 import {refreshToken, accessTokenExpired} from '~/auth';
-import {PLAYBACK_QUEUE, SESSION} from './constants';
+import {PLAYBACK_QUEUE, FEED} from './constants';
+import {shuffleArray} from '~/utils/helpers';
 
 export const state = () => {
   return {
@@ -54,7 +55,23 @@ export const actions = {
       if(item.isCollection){
         const collectionUri = item.uri;
         console.log(`collection toggled: ${item.name} - ${collectionUri}`);
-        itemSet = item.isPlaylist ? item.details.playlistTracks : item.details.albumTracks;
+
+        if(item.isPlaylist){
+          itemSet = item.details.playlistTracks;
+        }
+        else if(item.isAlbum){
+          itemSet = item.details.albumTracks;
+        }
+        else{
+          itemSet = params.itemSet;
+        }
+
+        item = itemSet[0];
+      }
+
+      if(params.shuffle){
+        console.log('item set shuffled');
+        shuffleArray(itemSet);
         item = itemSet[0];
       }
 
@@ -104,11 +121,8 @@ export const actions = {
         //has to be first for icons to work right
         commit('setCurrentlyPlayingItem', item);
 
-        //handle session feed for new tracks (besides the very first play which is handled in the playback store)
-        if(rootGetters[`${PLAYBACK_QUEUE}/queue`].length){
-          dispatch(`${SESSION}/addToActivityFeed`, {track: item}, {root: true});
-        }
-
+        dispatch(`${FEED}/addToFeed`, {track: item}, {root: true});
+      
         if(!params.doNotRestartQueue){
           const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
           dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet}, {root: true});

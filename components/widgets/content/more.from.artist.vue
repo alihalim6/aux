@@ -30,7 +30,7 @@
               :class="{'no-bottom-border': (index === parentItem.details.relatedArtists.length - 1)}"
               @click="displayArtistDetails(artist)">
 
-              <v-img class="artist-image" :src="artist.imgUrl"></v-img>
+              <v-img class="artist-image" :src="artist.imgUrl.medium"></v-img>
 
               <div class="artist-info">
                 <div class="font-weight-bold">{{artist.name}}</div>

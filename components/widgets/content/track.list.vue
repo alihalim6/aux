@@ -1,9 +1,10 @@
 <template>
   <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums}">
+<!--     <div v-for="(track, index) in trackList" :key="track.uuid"> -->
     <div v-for="(track, index) in tracks" :key="track.uuid">
-      <div v-if="parentId !== track.id" class="d-flex justify-space-between align-start py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
+      <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
-            <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl"></v-img>
+            <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl.small"></v-img>
             <div v-else class="track-number">{{track.track_number}}</div>
 
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums, 'font-weight-bold': displayArtists}">
@@ -12,7 +13,7 @@
               <div class="track-duration">{{track.duration}}</div>
 
               <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
-                From <div @click.stop="displayDetailsOverlay(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
+                From <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
                   {{track.album.name}}</div>
                   <v-icon small class="clickable">mdi-arrow-right</v-icon>
               </div>
@@ -24,9 +25,7 @@
               <PlaybackIcon :item="track" :itemSet="tracks"/>
               <ThreeDotIcon :item="track"/>
             </div>
-            
-<!--             <v-icon v-if="!hideLikeability" small class="clickable">mdi-heart-plus-outline</v-icon>
- -->          </div>
+         </div>
         </div>
       </div>
   </section>
@@ -36,11 +35,12 @@
   import {Component, Vue, Prop, Action, Watch} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData, getItemDuration} from '~/utils/helpers';
   import {UI} from '~/store/constants';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
-  export default class TrackList extends Vue {
+  export default class TrackList extends Vue {    
     trackList = [];
-    
+
     @Prop({required: true})
     tracks;
 
@@ -57,33 +57,26 @@
     hideAlbums;
 
     @Prop({default: false})
-    hideLikeability;
-
-    @Prop({default: false})
     metaDataSet;
 
-    @Action('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
-
-    trackPressed(track){
-      if(this.tracksFromDifferentAlbums){
-        this.displayDetailsOverlay(track);
-      }
-    }
+    @Action('displayDetailOverlays', {namespace: UI})
+    displayDetailOverlays;
 
     @Watch('tracks', {
       //needed to ensure all prop tracks get processed (e.g. additional (while loop) tracks in playlist.details don't come thru here otherwise)
       immediate: true
     })
     async tracksChanged(){
-     for(const track of this.tracks){
-        if(!this.metaDataSet){
+      //this.trackList = cloneDeep(this.tracks);
+
+      for(const track of this.tracks){
+       /*  if(!this.metaDataSet){
           setItemMetaData([track]);
 
           if(track.album){
             setItemMetaData([track.album]);
           }
-        }
+        } */
 
         track.duration_ms = await getItemDuration(track);
         track.duration = msToDuration(track.duration_ms);
@@ -91,6 +84,17 @@
 
       //seems to be needed in order to show durations after adding the async call above
       this.$forceUpdate();
+    }
+
+    trackPressed(track){
+      if(this.tracksFromDifferentAlbums){
+        this.displayDetailOverlays(track);
+      }
+    }
+
+    fromAlbumPressed(album){
+      album = setItemMetaData([album])[0];
+      this.displayDetailOverlays(album);
     }
   }
 </script>

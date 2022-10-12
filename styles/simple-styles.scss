@@ -55,28 +55,6 @@ $phrase-border-color: #aaaaaa;
   animation: none !important;
 }
 
-.home-content {
-  @extend .home-content-responsive;
-
-  max-width: $max-inner-width;
-  max-height: $max-home-content-height;
-  overflow-y: scroll;
-  margin: 0 $home-content-padding;
-  padding: 4px;
-  background-color: white;
-
-  .track-list-container {
-    padding: 0px;
-  }
-}
-
-.home-content-responsive {
-  @media(min-width: $max-inner-width){
-    max-width: $max-inner-width - 28px;
-    margin: 0 auto;
-  }
-}
-
 .overflow-scroll {
   overflow: scroll;
 }
@@ -115,4 +93,10 @@ $phrase-border-color: #aaaaaa;
 
 .position-relative {
   position: relative;
+}
+
+.fill-available {
+  width: -moz-available;          /* WebKit-based browsers will ignore this. */
+  width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
+  width: stretch;
 }

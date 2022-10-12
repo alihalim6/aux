@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <LoadingOverlay v-show="isLoading"/>
+    <LoadingOverlay v-if="isLoading"/>
   </v-app>
 </template>
 

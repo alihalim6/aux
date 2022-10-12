@@ -1,5 +1,7 @@
 //framework overrides
 
+$alert-container-base-bottom: 10px;
+
 .v-application {
   font-family: 'Public Sans', sans-serif !important;
 
@@ -8,10 +10,14 @@
     max-height: calc(100vh - #{$max-footer-height-not-playing});
   }
 
-  .v-dialog__content {
+  .v-dialog__content, .activity-feed {
     max-height: calc(100vh - #{$max-footer-height-not-playing});
   }
 
+ .feed-alert-container {
+    bottom: calc(#{$alert-container-base-bottom} + #{$max-footer-height-not-playing})
+  }
+  
   .up-next-hidden {
     animation: slide-down-not-playing $up-next-slide-animation;
 
@@ -24,12 +30,12 @@
 }
 
 .v-application.item-playing {
-  .v-dialog--fullscreen {
+  .v-dialog--fullscreen, .v-dialog__content, .activity-feed {
     max-height: calc(100vh - #{$max-footer-height-playing});
   }
 
-  .v-dialog__content {
-    max-height: calc(100vh - #{$max-footer-height-playing});
+  .feed-alert-container {
+    bottom: calc(#{$alert-container-base-bottom} + #{$max-footer-height-playing})
   }
 
   .playback-toggle {

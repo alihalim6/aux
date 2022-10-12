@@ -9,9 +9,9 @@
               class="clickable" 
               :class="{'content-hover': hover, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
             >
-              <v-img class="content-img" :src="item.imgUrl" @click="displayDetailsOverlay(item)">
+              <v-img class="content-img" :src="item.imgUrl.medium" @click="displayDetailOverlays(item)">
                 <template v-slot:placeholder>
-                  <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
+                  <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                 </template>
               </v-img>
             </v-card>
@@ -54,8 +54,8 @@
     @Prop({default: false})
     vertical;
 
-    @Action('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
+    @Action('displayDetailOverlays', {namespace: UI})
+    displayDetailOverlays;
   }
 </script>
 

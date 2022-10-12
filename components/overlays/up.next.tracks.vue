@@ -7,7 +7,7 @@
         <span class="min-width-fit">PLAYING: </span>
 
         <div class="track-sneak-peek">
-          <v-img class="track-img" :src="currentlyPlayingItem.imgUrl"></v-img>
+          <v-img class="track-img" :src="currentlyPlayingItem.imgUrl.small"></v-img>
           <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
         </div>
       </div>
@@ -16,15 +16,22 @@
     <div class="d-flex flex-column align-center">
       <span class="up-next-title">UP NEXT</span>
 
-      <div class="clickable font-weight-bold d-flex align-center mt-2">
-        <span class="underlined" @click.stop="clearUpNextPressed()">CLEAR ALL</span>
-        <v-icon small class="pl-1" color="white">mdi-cancel</v-icon>
+      <div class="up-next-actions">
+        <div class="clickable up-next-action" v-if="nextTracks.length > 1"> 
+          <span class="underlined" @click.stop="shuffleUpNext()">SHUFFLE</span>
+          <v-icon small class="pl-1" color="white">mdi-shuffle</v-icon>
+        </div>
+
+         <div class="clickable up-next-action"> 
+          <span class="underlined" @click.stop="clearUpNextPressed()">CLEAR<span v-if="nextTracks.length > 1"> ALL</span></span>
+          <v-icon small class="pl-1" color="white">mdi-cancel</v-icon>
+         </div>
       </div>
     </div>
 
     <div class="next-track-container">
       <v-card elevation="6" class="clickable mt-3" @click.stop="fromAlbumPressed(nextTrack.album)">
-        <v-img :src="nextTrack.imgUrl" class="next-track-img"></v-img>
+        <v-img :src="nextTrack.imgUrl.medium" class="next-track-img"></v-img>
       </v-card>
 
       <div class="track-info">
@@ -66,7 +73,7 @@
     <div class="then-container" v-if="thenTracks.length">
       <span class="then-label">THEN</span>
 
-      <div v-for="(track, index) in thenTracks" :key="index + track.uuid" class="clickable then-track-container" @click.stop="nextTrackPressed(track, thenTracks)">
+      <div v-for="(track, index) in thenTracks" :key="index + track.uuid" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
         <ThreeDotIcon :item="track" :itemInQueue="true" iconClass="up-next-three-dot"/>
@@ -97,14 +104,17 @@
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
-    @Action('displayDetailsOverlay', {namespace: UI})
-    displayDetailsOverlay;
+    @Action('displayDetailOverlays', {namespace: UI})
+    displayDetailOverlays;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
     @Action('clearUpNext', {namespace: PLAYBACK_QUEUE})
     clearUpNext;
+
+    @Action('shuffleUpNext', {namespace: PLAYBACK_QUEUE})
+    shuffleUpNext;
 
     @Watch('nextTrack', {immediate: true})
     async nextTrackChanged(){
@@ -125,18 +135,14 @@
     }
 
     async nextTrackPressed(track, itemSet){
+      this.$nuxt.$emit('hideUpNext');
       await this.togglePlayback({item: track, itemSet});
-
-      //if last track in queue clicked (now there's no next track, hide this view)
-      if(!this.nextTrack){
-        this.$nuxt.$emit('hideUpNext');
-      }
     }
 
     async fromAlbumPressed(album){
       setItemMetaData([album]);
       this.$nuxt.$emit('hideUpNext');
-      await this.displayDetailsOverlay(album);
+      await this.displayDetailOverlays(album);
     }
 
     clearUpNextPressed(){
@@ -178,8 +184,22 @@
       }
     }
 
+    .up-next-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      width: 225px;
+      margin-top: 8px;
+
+      .up-next-action {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+      }
+    }
+
     .next-track-container {
-      margin-top: 12px;
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -209,7 +229,7 @@
      
         .info-value {
           transform: scaleY(1.7);
-          padding: 2px 0px;
+          padding: 2px 1px;
         }
       }
     }
@@ -225,7 +245,6 @@
 
       .then-label {
         text-decoration: underline;
-        margin-bottom: 4px;
         font-size: 16px;
       }
 
@@ -236,7 +255,6 @@
         display: flex;
         align-items: flex-start;
         justify-content: space-around;
-        width: -webkit-fill-available;
         margin: 4px 0px;
 
         .track-item {

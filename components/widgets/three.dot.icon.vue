@@ -11,7 +11,7 @@
         @click="option.fn(item)" 
         :disabled="option.forQueue && disableQueueOptions"
       >
-        <v-icon :disabled="option.forQueue && disableQueueOptions" :color="option.color || 'black'">mdi-{{option.icon}}</v-icon>
+        <v-icon small :disabled="option.forQueue && disableQueueOptions" :color="option.color || 'black'">mdi-{{option.icon}}</v-icon>
         <span class="option-title">{{option.title}}</span>
       </v-list-item>
     </v-list>
@@ -22,6 +22,7 @@
   import {Component, Vue, Prop, Getter, Mutation, Action} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI, USER} from '~/store/constants';
   import {httpClient} from '~/utils/api';
+  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, SPOTIFY_GREEN, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
 
   @Component
   export default class ThreeDotIcon extends Vue {
@@ -36,6 +37,7 @@
         title: 'Play Next',
         fn: this.playNextPressed,
         icon: 'skip-next-outline',
+        playNext: true,
         forQueue: true
       },
       {
@@ -44,7 +46,7 @@
         icon: 'playlist-plus',
         addToEnd: true,
         forQueue: true
-      }    
+      }
     ];
 
     @Prop({default: {}, required: true})
@@ -77,8 +79,15 @@
     @Action('setTracksToPlayNext', {namespace: PLAYBACK_QUEUE})
     setTracksToPlayNext;
 
+    @Action('togglePlayback', {namespace: SPOTIFY})
+    togglePlayback;
+
     async beforeMount(){
-      this.$nuxt.$root.$on('hideThreeDotMenu', () => this.hide = true);
+      this.$nuxt.$root.$on('hideThreeDotMenu', () => {
+        if(!this.hide){
+          this.hide = true;
+        }
+      });
     }
 
     async onPress(){
@@ -96,6 +105,17 @@
           icon: 'playlist-remove'
         });
       }
+      else if(this.item.isCollection){
+        const playNextIndex = this.options.findIndex(option => option.playNext);
+
+        this.options.splice(playNextIndex, 0, {
+          title: 'Shuffle + Play',
+          fn: async () => {
+            await this.togglePlayback({item: this.item, shuffle: true});
+          },
+          icon: 'shuffle'
+        });
+      }
       
       const likeType = this.item.type == 'album' ? 'albums' : 'tracks';
       const {data} = await httpClient.post('/passthru', {url: `/me/${likeType}/contains?ids=${this.item.id}`});
@@ -107,8 +127,8 @@
           title: 'Remove from Likes',
             fn: async () => {
               await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'DELETE'});
-              this.$nuxt.$root.$emit('removedLikedItem', this.item);
-              this.setToast({text: 'Removed from Likes', color: '#1DB954'});
+              this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.item);
+              this.setToast({text: REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN});
             },
             icon: 'heart-remove-outline',
             color: 'red'
@@ -117,11 +137,11 @@
             title: 'Like',
             fn: async () => {
               await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'PUT', data: {public: this.item.public || true}});//public param for playlists (api defaults to true)
-              this.$nuxt.$root.$emit('likedItem', this.item);
-              this.setToast({text: 'Added to Likes', color: '#1DB954'});
+              this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.item);
+              this.setToast({text: ADDED_TO_LIKES, backgroundColor: SPOTIFY_GREEN});
             },
             icon: 'heart',
-            color: '#1DB954'
+            color: SPOTIFY_GREEN
           }
         );
       }
@@ -138,8 +158,17 @@
     }
 
     playNextPressed(){
+      const nextTrackUri = this.nextTrack ? this.nextTrack.uri : '';
+      let itemSet;
+      let nextCollectionTrackUri;
+
+      if(nextTrackUri && this.item.isCollection){
+        itemSet = this.item.isPlaylist ? this.item.details.playlistTracks : this.item.details.albumTracks;
+        nextCollectionTrackUri = itemSet[0].uri;
+      }
+
       //if already next, ignore
-      if(this.nextTrack && this.nextTrack.uri == this.item.uri){
+      if(nextTrackUri == this.item.uri || nextTrackUri == nextCollectionTrackUri){
         return;
       }
 
@@ -148,7 +177,7 @@
         this.removeFromQueue(this.item);
       }
 
-      this.setTracksToPlayNext(this.getTracksToPlayNext());
+      this.setTracksToPlayNext({tracks: this.getTracksToPlayNext()});
     }
 
     addToEndPressed(){

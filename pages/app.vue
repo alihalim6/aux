@@ -1,6 +1,6 @@
 <template>
   <v-app :class="{'item-playing': currentlyPlayingItem.uri}">
-    <v-app-bar elevation="2" color="white" class="app-bar" short>
+    <v-app-bar elevation="2" color="white" class="app-bar" short fixed>
       <div class="logo-container" :class="{'smaller-logo-container': $vuetify.breakpoint.smAndDown}">
         <div class="aux-logo-container">
           <div class="outlined-phrase d-none d-md-inline">PASS THE</div>
@@ -15,17 +15,19 @@
       </div>
     </v-app-bar>
 
-    <div v-show="!isLoading">
+    <div v-show="!isLoading" class="base-app-container">
       <NewAndRecommended/>
       <MyAux/>
       <Playlists/>
-      <DetailsOverlay/>
-      <AuxSession/>
-      <CurrentlyPlaying/>
+      <LazyDetailOverlays/>
+      <LazyFeed/>
     </div>
 
-    <LoadingOverlay v-show="isLoading"/>    
-    
+    <!-- needs to be outside of above block so that up next overlay slides all the way to top (relativity issue) -->
+    <CurrentlyPlaying v-show="!isLoading"/>
+
+    <LoadingOverlay v-if="isLoading"/>    
+    <FeedAlert/>
     <Toast/>
   </v-app>
 </template>
@@ -68,7 +70,7 @@
     height: $app-header-height !important;
     max-height: $app-header-height;
     margin-bottom: 22px;
-    z-index: 15;
+    z-index: 30 !important;
 
     @supports(-webkit-text-stroke: $phrase-border-size $primary-theme-color) {
       .outlined-phrase {
@@ -119,5 +121,9 @@
         background-color: $secondary-theme-color !important;
       }
     }
+  }
+
+  .base-app-container {
+    margin-top: calc(#{$app-header-height} + 10px);
   }
 </style>

@@ -7,7 +7,7 @@ const getRecommendedTracks = async (topArtists) => {
   const seeds = getRecommendationSeeds(topArtists, topTracks.data);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=25&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`, apiConfig(accessToken)) :
+    await httpClient.get(`/recommendations?limit=30&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`, apiConfig(accessToken)) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -29,17 +29,20 @@ async function newAndRecommended(req, res){
   try{
     accessToken = req.headers['access-token'];
 
-    const newReleases = await httpClient.get('/browse/new-releases?limit=50', apiConfig(accessToken));
+    let newReleases = await httpClient.get('/browse/new-releases?limit=10', apiConfig(accessToken));
+    newReleases = newReleases.data.albums.items;
+
     const topArtists = await topItems('artists', apiConfig(accessToken));
     const recommendedTracks = await getRecommendedTracks(topArtists.data);
     const recommendedArtists = await getRecommendedArtists(topArtists.data);
     
-    const allItems = [...newReleases.data.albums.items, ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists];
+    const allItems = [...newReleases, ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 10)];
     shuffleArray(allItems);
 
     res.json({
       allItems,
-      previewItems: [...Array.from(allItems)].splice(0, 25)
+      previewItems: [...Array.from(allItems)].splice(0, 25),
+      newReleases
     });
   }
   catch(error){

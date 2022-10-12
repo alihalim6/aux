@@ -111,3 +111,93 @@ $section-title-font-size: 36px;
   justify-content: space-between;
   align-items: flex-start;
 }
+
+.round-img-icon {
+  $added-by-icon-size: 18px;
+
+  border-radius: 100%;
+  height: $added-by-icon-size;
+  max-width: $added-by-icon-size;
+  color: $primary-theme-color;
+  background-color: white;
+}
+
+.round-profile-letter {
+  @extend .round-img-icon;
+  border: 1px solid $primary-theme-color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.scroll-shadow {
+  //https://css-tricks.com/scroll-shadows-with-javascript/
+  background:
+    /* Shadow Cover TOP */
+    linear-gradient(
+      white 30%,
+      rgba(255, 255, 255, 0)
+    ) center top,
+    
+    /* Shadow Cover BOTTOM */
+    linear-gradient(
+      rgba(255, 255, 255, 0), 
+      white 70%
+    ) center bottom,
+    
+    /* Shadow TOP */
+    radial-gradient(
+      farthest-side at 50% 0,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ) center top,
+    
+    /* Shadow BOTTOM */
+    radial-gradient(
+      farthest-side at 50% 100%,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ) center bottom;
+  
+  background-repeat: no-repeat;
+  background-size: 100% 40px, 100% 40px, 100% 8px, 100% 8px;
+  background-attachment: local, local, scroll, scroll;
+}
+
+.home-content {
+  @extend .home-content-responsive;
+  @extend .scroll-shadow;
+
+  max-width: $max-inner-width;
+  max-height: $max-home-content-height;
+  overflow-y: scroll;
+  margin: 0 $home-content-padding;
+  padding: 4px;
+
+  .track-list-container {
+    padding: 0px;
+  }
+}
+
+.home-content-responsive {
+  @media(min-width: $max-inner-width){
+    max-width: $max-inner-width - 28px;
+    margin: 0 auto;
+  }
+}
+
+.snackbar-container {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 2px;
+}
+
+.snackbar-img {
+  @extend .round-img-icon;
+  $snackbar-img-size: 28px;
+  
+  margin-left: 8px;
+  height: $snackbar-img-size;
+  max-width: $snackbar-img-size;
+}

@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'Aux - Listen to Spotify with Others',
+    title: 'AUX - Listen to Spotify with Others',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -17,7 +17,9 @@ export default {
   css: ['@/styles/main.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ['~/plugins/vue-timeago.js'],
+  plugins: [
+    '~/plugins/vue-timeago.js',
+  ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: [
@@ -42,7 +44,7 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
 
-    '~/io'
+    '~/io',
   ],
 
   env: {
@@ -61,6 +63,11 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build`
   build: {
+    extend(config, ctx){
+      config.node = {
+          fs: "empty"
+      };
+    }
   },
 
   serverMiddleware: process.env.NODE_ENV === 'production' ? [] : ['~/api/v1'],

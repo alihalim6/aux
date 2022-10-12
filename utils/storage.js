@@ -4,6 +4,10 @@ export const storageGet = (item) => {
   return window.localStorage.getItem(AUX_NAMESPACE + item);
 };
 
+export const storageGetBoolean = (item) => {
+  return window.localStorage.getItem(AUX_NAMESPACE + item) == 'true';
+}
+
 export const storageSet = (item, value) => {
   window.localStorage.setItem((AUX_NAMESPACE + item), value);
 };

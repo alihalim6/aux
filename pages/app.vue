@@ -36,6 +36,7 @@
   import {Component, Vue, Getter} from 'nuxt-property-decorator';
   import {UI, SPOTIFY} from '~/store/constants';
   import {initSpotifyPlayer} from '~/utils/helpers';
+  import io from '~/utils/io';
 
   @Component
   export default class App extends Vue {
@@ -49,6 +50,7 @@
     currentlyPlayingItem;
 
     async beforeMount(){
+      io();
       //add SDK to scripts
       const spotifyPlaybackSdk = document.createElement('script');
       spotifyPlaybackSdk.setAttribute('src', 'https://sdk.scdn.co/spotify-player.js');

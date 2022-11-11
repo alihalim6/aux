@@ -8,47 +8,17 @@
           "Cache-Control": "public, max-age=0, must-revalidate",
           "Service-Worker-Allowed": "/"
         }
-      },
-      {
-        "src": "/api/newAndRecommended",
-        "dest": "/api/newAndRecommended.js"
-      },
-      {
-        "src": "/api/playItem",
-        "dest": "/api/playItem.js"
-      },
-      {
-        "src": "/api/details",
-        "dest": "/api/details.js"
-      },
-      {
-        "src": "/api/artist",
-        "dest": "/api/artist.js"
-      },
-      {
-        "src": "/api/myAux",
-        "dest": "/api/myAux.js"
-      },
-      {
-        "src": "/api/passthru",
-        "dest": "/api/passthru.js"
-      },
-      {
-        "src": "/api/playlists",
-        "dest": "/api/playlists.js"
       }
     ],
+    "functions": {
+      "api/**/*.js": {
+        "excludeFiles": "api/routes/index.js"
+      }
+    },
     "builds": [
       {
-        "src": "api/**/*.js",
-        "use": "@vercel/node"
-      },
-      {
         "src": "nuxt.config.js",
-        "use": "@nuxtjs/vercel-builder",
-        "config": {
-          "serverFiles": ["api/**"]
-        }
+        "use": "@nuxtjs/vercel-builder"
       }
     ]
   }

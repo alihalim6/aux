@@ -122,6 +122,7 @@
       font-weight: bold;
       margin: 0 auto;
       max-width: $max-inner-width;
+      border-radius: 10px;
 
       .close-button {
         align-self: flex-end;

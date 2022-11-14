@@ -46,7 +46,7 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
 
-    '~/io',
+    //'~/io',
   ],
 
   env: {

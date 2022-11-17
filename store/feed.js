@@ -1,6 +1,6 @@
 import {USER, UI, PLAYBACK_QUEUE} from './constants';
 import moment from 'moment';
-//import socket from '~/plugins/socket.client.js';
+import socket from '~/plugins/socket.client.js';
 import {AUX_MODE, SPOTIFY_GREEN} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
 import {isSameTrack} from '~/utils/helpers';

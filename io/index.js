@@ -1,7 +1,7 @@
 //https://github.com/nuxt/nuxt.js/blob/2ec62617ced873fef97c73a6d7aa1271911ccfd5/examples/with-sockets/io/index.js
 
 import http from 'http';
-//import socketIO from 'socket.io';
+import socketIO from 'socket.io';
 
 export default function(){
   this.nuxt.hook('render:before', () => {

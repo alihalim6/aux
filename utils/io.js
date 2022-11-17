@@ -1,4 +1,4 @@
-//import socket from '~/plugins/socket.client.js';
+import socket from '~/plugins/socket.client.js';
 import {FEED} from '../store/constants';
 
 function io(){

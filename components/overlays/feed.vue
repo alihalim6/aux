@@ -46,7 +46,7 @@
 <script>
   import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
   import {UI, USER, FEED} from '~/store/constants';
-  //import socket from '~/plugins/socket.client.js';
+  import socket from '~/plugins/socket.client.js';
   import {storageGet, storageGetBoolean, storageSet} from '~/utils/storage';
   import {AUX_MODE} from '~/utils/constants';
 

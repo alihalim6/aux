@@ -1,6 +1,4 @@
-export default {
-  target: 'static',
-  
+export default {  
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'AUX - Listen to Spotify with Others',
@@ -46,7 +44,7 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
 
-    //'~/io',
+    '~/io',
   ],
 
   env: {

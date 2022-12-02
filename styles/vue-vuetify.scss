@@ -1,6 +1,9 @@
 //framework overrides
 
 $alert-container-base-bottom: 10px;
+$feed-height: 63vh;
+$feed-height-smaller: 95vh;
+$feed-base-bottom: 15px;
 
 .v-application {
   font-family: 'Public Sans', sans-serif !important;
@@ -10,12 +13,26 @@ $alert-container-base-bottom: 10px;
     max-height: calc(100vh - #{$max-footer-height-not-playing});
   }
 
-  .v-dialog__content, .activity-feed {
+  .v-dialog__content {
     max-height: calc(100vh - #{$max-footer-height-not-playing});
   }
 
+  .activity-feed {
+    max-height: calc(#{$feed-height}  - #{$max-footer-height-not-playing});
+    bottom: calc(#{$feed-base-bottom} + #{$max-footer-height-not-playing});
+
+    @media(max-width: $feed-size-threshold){
+      height: calc(100vh - #{$max-footer-height-not-playing});
+      width: 100vw;
+      max-height: none;
+      max-width: none;
+      bottom: $max-footer-height-not-playing;
+      right: 0px;
+    }
+  }
+
  .feed-alert-container {
-    bottom: calc(#{$alert-container-base-bottom} + #{$max-footer-height-not-playing})
+    bottom: calc(#{$alert-container-base-bottom} + #{$max-footer-height-not-playing});
   }
   
   .up-next-hidden {
@@ -30,12 +47,26 @@ $alert-container-base-bottom: 10px;
 }
 
 .v-application.item-playing {
-  .v-dialog--fullscreen, .v-dialog__content, .activity-feed {
+  .v-dialog--fullscreen, .v-dialog__content {
     max-height: calc(100vh - #{$max-footer-height-playing});
   }
 
   .feed-alert-container {
-    bottom: calc(#{$alert-container-base-bottom} + #{$max-footer-height-playing})
+    max-height: calc(#{$feed-height}  - #{$max-footer-height-playing});
+    bottom: calc(#{$alert-container-base-bottom} + #{$max-footer-height-playing});
+  }
+
+  .activity-feed {
+    bottom: calc(#{$feed-base-bottom} + #{$max-footer-height-playing});
+
+    @media(max-width: $feed-size-threshold){
+      height: calc(100vh - #{$max-footer-height-playing});
+      width: 100vw;
+      max-height: none;
+      max-width: none;
+      bottom: $max-footer-height-playing;
+      right: 0px;
+    }
   }
 
   .playback-toggle {
@@ -87,4 +118,16 @@ $alert-container-base-bottom: 10px;
 
 .v-list-item--disabled {
   color: #cccccc !important;
+}
+
+.v-toolbar__content {
+  flex-direction: row !important;
+  justify-content: space-between;
+  align-items: center !important;
+  margin-top: 6px;
+  padding: 4px 20px !important;
+}
+
+.v-icon {
+  width: max-content;
 }

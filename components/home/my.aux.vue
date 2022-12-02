@@ -58,6 +58,14 @@
     };
 
     content = [
+      //apparently API doesn't return total for this
+      {
+        data: [],
+        key: 'recentlyPlayed',
+        label: MY_AUX.RECENTLY_PLAYED,
+        trackList: true,
+        id: uuid()
+      },
       {
         ...this.defaultContent,
         key: 'likedTracks',
@@ -74,14 +82,6 @@
         likedAlbums: true,
         api: 'albums',
         type: 'album',
-        id: uuid()
-      },
-      //apparently API doesn't return total for this
-      {
-        data: [],
-        key: 'recentlyPlayed',
-        label: MY_AUX.RECENTLY_PLAYED,
-        trackList: true,
         id: uuid()
       }
     ];

@@ -26,6 +26,11 @@ $section-title-font-size: 36px;
     @extend .section-title;
     padding-left: $home-content-padding;
     padding-right: $home-content-padding;
+
+    @media(min-width: $max-inner-width){
+      padding-left: 0px;
+      padding-right: 0px;
+    }
   }
 
   .filter-container {
@@ -70,16 +75,13 @@ $section-title-font-size: 36px;
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
+  font-weight: 600;
+  color: #666666;
   padding: 0px $base-padding;
 }
 
 .overlay-margin {
   margin: 10px 0px 16px;
-}
-
-.overlay-details-container {
-  @extend .overlay-margin;
-  padding: 10px $base-padding 14px;
 }
 
 .record-icon {
@@ -165,6 +167,39 @@ $section-title-font-size: 36px;
   background-attachment: local, local, scroll, scroll;
 }
 
+.scroll-shadow-on-white {
+  background:
+    /* Shadow Cover TOP */
+    linear-gradient(
+      rgba(255, 255, 255, 0),
+      transparent 30%
+    ) center top,
+    
+    /* Shadow Cover BOTTOM */
+    linear-gradient(
+      transparent 70%,
+      rgba(255, 255, 255, 0)
+    ) center bottom,
+    
+    /* Shadow TOP */
+    radial-gradient(
+      farthest-side at 50% 0,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ) center top,
+    
+    /* Shadow BOTTOM */
+    radial-gradient(
+      farthest-side at 50% 100%,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+    ) center bottom;
+  
+  background-repeat: no-repeat;
+  background-size: 100% 40px, 100% 40px, 100% 8px, 100% 8px;
+  background-attachment: local, local, scroll, scroll;
+}
+
 .home-content {
   @extend .home-content-responsive;
   @extend .scroll-shadow;
@@ -173,7 +208,7 @@ $section-title-font-size: 36px;
   max-height: $max-home-content-height;
   overflow-y: scroll;
   margin: 0 $home-content-padding;
-  padding: 4px;
+  padding: 4px 4px 4px 0px;
 
   .track-list-container {
     padding: 0px;
@@ -182,7 +217,7 @@ $section-title-font-size: 36px;
 
 .home-content-responsive {
   @media(min-width: $max-inner-width){
-    max-width: $max-inner-width - 28px;
+    max-width: $max-inner-width;
     margin: 0 auto;
   }
 }
@@ -200,4 +235,8 @@ $section-title-font-size: 36px;
   margin-left: 8px;
   height: $snackbar-img-size;
   max-width: $snackbar-img-size;
+}
+
+.secondary-label {
+  display: flex;
 }

@@ -2,7 +2,7 @@
   <section class="mt-1">
     <div class="title-border mb-3"></div>
 
-    <v-card elevation="7" class="pt-1">
+    <v-card elevation="7" class="pa-2">
       <v-tabs v-model="selectedTab" slider-color="black" grow color="rgba(0, 0, 0, 0.8)">
         <v-tab v-for="(item, index) in content" :key="item.key">
           <div class="unselected-tab" :class="{'selected-tab': selectedTab === index}">

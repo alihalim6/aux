@@ -1,41 +1,45 @@
 <template>
   <section>
     <div v-if="data.length" class="vertical-content">
-      <v-card v-for="(item, index) in data" :key="item.uuid" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="3" @click="displayDetailOverlays(item)">        
-        <div class="item-container" :class="{'flex-column': playlists}">  
-          <v-card v-if="!playlists" max-width="40%" elevation="7">
-            <v-img :src="item.imgUrl.large"></v-img>
-          </v-card>
+      <div v-for="(item, index) in data" :key="item.uuid" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="3" @click="displayDetailOverlays(item)">        
+        <v-hover v-slot="{hover}">
+          <section>
+            <div class="item-container" :class="{'flex-column': playlists}">  
+              <v-card v-if="!playlists" max-width="40%" elevation="7">
+                <v-img :src="item.imgUrl.large"></v-img>
+              </v-card>
 
-          <div v-if="playlists" class="d-flex justify-space-between align-start fill-available mb-4">
-            <v-card max-width="75%" elevation="7">
-              <v-img :src="item.imgUrl.large"></v-img>
-            </v-card>
+              <div v-if="playlists" class="d-flex justify-space-between align-start fill-available mb-4">
+                <v-card max-width="75%" elevation="7">
+                  <v-img class="clickable" :src="item.imgUrl.large"></v-img>
+                </v-card>
 
-            <v-icon v-if="alternateFormat" class="ml-auto" large color="black">mdi-arrow-right</v-icon>
-          </div>
+                <v-icon v-if="alternateFormat" class="clickable ml-auto" large color="black">mdi-arrow-right</v-icon>
+              </div>
 
-          <v-icon v-if="!playlists" class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
+              <v-icon v-if="!playlists" class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
 
-          <div class="d-flex flex-column">
-            <span class="item-title" :class="{'smaller-title': alternateFormat}">{{item.primaryLabel}}</span>
-            <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-            <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
-          </div>
+              <div class="d-flex flex-column">
+                <span class="clickable item-title" :class="{'smaller-title': alternateFormat, 'spotify-green-color': hover}">{{item.primaryLabel}}</span>
+                <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
+                <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
+              </div>
 
-          <v-icon v-if="!alternateFormat" class="ml-auto" color="black">mdi-arrow-right</v-icon>
-        </div>
+              <v-icon v-if="!alternateFormat" class="ml-auto" color="black">mdi-arrow-right</v-icon>
+            </div>
 
-        <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
-          <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-          <timeago v-if="item.timeAgo" class="time-ago" :datetime="item.timeAgo"></timeago>
+            <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
+              <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
+              <timeago v-if="item.timeAgo" class="time-ago" :datetime="item.timeAgo"></timeago>
 
-          <div class="item-icon-container">
-            <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
-            <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
-          </div>
-        </div>
-      </v-card>
+              <div class="item-icon-container">
+                <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
+                <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
+              </div>
+            </div>
+          </section>
+        </v-hover>
+      </div>
     </div>
   </section>
 </template>
@@ -99,6 +103,7 @@
       justify-content: space-between;
       align-items: center;
       max-width: 41%;
+      margin-bottom: 2px;
 
       .time-ago {
         font-size: 14px;

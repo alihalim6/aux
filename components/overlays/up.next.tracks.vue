@@ -278,7 +278,7 @@
         .up-next-three-dot {
           display: flex;
           align-items: center;
-          color: white;
+          color: white !important;
           padding: $track-item-padding 0px;
         }
       }

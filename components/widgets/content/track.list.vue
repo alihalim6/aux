@@ -1,45 +1,43 @@
 <template>
   <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums}">
-<!--     <div v-for="(track, index) in trackList" :key="track.uuid"> -->
-    <div v-for="(track, index) in tracks" :key="track.uuid">
-      <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
-          <div class="left-container">
-            <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackPressed(track)" :src="track.imgUrl.small"></v-img>
-            <div v-else class="track-number">{{track.track_number}}</div>
+      <div v-for="(track, index) in tracks" :key="track.uuid">
+        <v-hover v-slot="{hover}">
+          <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
+            <div class="left-container">
+              <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackImgPressed(track)" :src="track.imgUrl.small"></v-img>
+              <div v-else class="track-number">{{track.track_number}}</div>
 
-            <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums, 'font-weight-bold': displayArtists}">
-              <span class="track-name" :class="{'clickable': tracksFromDifferentAlbums}" @click="trackPressed(track)">{{track.name}}</span>  
-              <div class="track-artists" v-if="displayArtists">{{track.secondaryLabel}}</div>             
-              <div class="track-duration">{{track.duration}}</div>
+              <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums, 'font-weight-bold': displayArtists}">
+                <span class="clickable track-name" :class="{'spotify-green-color': hover || trackIsPlaying(track)}" @click="trackNamePressed(track)">{{track.name}}</span>  
+                <div class="track-artists" v-if="displayArtists">{{track.secondaryLabel}}</div>             
+                <div class="track-duration">{{track.duration}}</div>
 
-              <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
-                From <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
-                  {{track.album.name}}</div>
-                  <v-icon small class="clickable">mdi-arrow-right</v-icon>
+                <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
+                  From <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
+                    {{track.album.name}}</div>
+                    <v-icon small class="clickable">mdi-arrow-right</v-icon>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="right-container">
-            <div class="item-icon-container">
-              <PlaybackIcon :item="track" :itemSet="tracks"/>
-              <ThreeDotIcon :item="track"/>
-            </div>
-         </div>
-        </div>
+            <ThreeDotIcon :item="track"/>
+          </div>
+        </v-hover>
       </div>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Prop, Action, Watch} from 'nuxt-property-decorator';
-  import {msToDuration, setItemMetaData, getItemDuration} from '~/utils/helpers';
-  import {UI} from '~/store/constants';
-  import cloneDeep from 'lodash.clonedeep';
+  import {Component, Vue, Prop, Action, Watch, Getter} from 'nuxt-property-decorator';
+  import {msToDuration, setItemMetaData, getItemDuration, isSameTrack} from '~/utils/helpers';
+  import {UI, SPOTIFY} from '~/store/constants';
 
   @Component
   export default class TrackList extends Vue {    
     trackList = [];
+
+    @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
+    currentlyPlayingItem;
 
     @Prop({required: true})
     tracks;
@@ -56,28 +54,18 @@
     @Prop({default: false})
     hideAlbums;
 
-    @Prop({default: false})
-    metaDataSet;
-
     @Action('displayDetailOverlays', {namespace: UI})
     displayDetailOverlays;
+
+    @Action('togglePlayback', {namespace: SPOTIFY})
+    togglePlayback;
 
     @Watch('tracks', {
       //needed to ensure all prop tracks get processed (e.g. additional (while loop) tracks in playlist.details don't come thru here otherwise)
       immediate: true
     })
     async tracksChanged(){
-      //this.trackList = cloneDeep(this.tracks);
-
       for(const track of this.tracks){
-       /*  if(!this.metaDataSet){
-          setItemMetaData([track]);
-
-          if(track.album){
-            setItemMetaData([track.album]);
-          }
-        } */
-
         track.duration_ms = await getItemDuration(track);
         track.duration = msToDuration(track.duration_ms);
       }
@@ -86,7 +74,7 @@
       this.$forceUpdate();
     }
 
-    trackPressed(track){
+    trackImgPressed(track){
       if(this.tracksFromDifferentAlbums){
         this.displayDetailOverlays(track);
       }
@@ -95,6 +83,14 @@
     fromAlbumPressed(album){
       album = setItemMetaData([album])[0];
       this.displayDetailOverlays(album);
+    }
+
+    trackNamePressed(track){
+      this.togglePlayback({item: track, itemSet: this.tracks});
+    }
+
+    trackIsPlaying(track){
+      return isSameTrack(track, this.currentlyPlayingItem);
     }
   }
 </script>
@@ -125,7 +121,7 @@
         width: $track-img-size;
         height: $track-img-size;
         margin-right: 10px;
-        top: 6px;
+        top: 5px;
       }
 
       .track-info {
@@ -133,6 +129,10 @@
         color: #333333;
         display: flex;
         flex-direction: column;
+
+        .track-name {
+          font-weight: 600;
+        }
 
         .track-artists {
           font-weight: normal;
@@ -157,13 +157,6 @@
       .smaller-track-names {
         font-size: 14px;
       }
-    }
-
-    .right-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      min-width: 48px;
     }
   }
 </style>

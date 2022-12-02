@@ -1,46 +1,38 @@
 <template>
-  <v-dialog :value="uiFeed.display && !detailOverlays.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
-    <div class="activity-feed">
-      <div class="feed-container" id="feedContainer">
-        <div class="d-flex flex-column">
-          <div class="feed-title-container">
-            <v-icon class="close-button" large @click="closeFeed()" aria-label="close feed">mdi-close</v-icon>
+  <div v-show="uiFeed.display" class="activity-feed">
+    <div class="feed-container" id="feedContainer">
+      <div class="d-flex flex-column">
+        <div class="feed-title-container">
+          <v-icon class="close-button" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
 
-            <div class="d-flex align-end justify-space-between">
-              <div class="live-now-label">
-                <span class="live-now-number">{{users.length}}</span>
-                <span class="live-now"> other user<span>{{users.length == 1 ? '' : 's'}}</span> on now</span>
-                <v-icon small class="clickable" color="#888">mdi-information-outline</v-icon>
-              </div>
-
-              <div class="aux-mode-toggle" v-if="activityFeed.length">
-                <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()"></v-switch>
-                <span class="toggle-label">Automatically add tracks from other users to <span class="up-next">UP NEXT</span></span>
-              </div>
+         <!--  <div class="d-flex align-end justify-space-between">
+            <div class="aux-mode-toggle" v-if="activityFeed.length">
+              <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()"></v-switch>
+              <span class="toggle-label">Automatically add tracks from other users to <span class="up-next">UP NEXT</span></span>
             </div>
+          </div> -->
+        </div>
+
+        <div class="activity-item" v-if="activityFeed.length">
+          <ActivityItem v-for="item in activityFeed" :key="item.timestamp" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
+        </div>
+
+        <div v-else class="d-flex flex-column">
+          <div class="no-feed-prompt">
+            <div>Tracks that you and others play will show here.</div>
+            <div class="sub-prompt">Kick things off by playing something!  Invite others lorem ipsum...</div>
           </div>
 
-          <v-card class="mb-2 pb-2" v-if="activityFeed.length">
-            <ActivityItem v-for="item in activityFeed" :key="item.timestamp" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
-          </v-card>
-
-          <div v-else class="d-flex flex-column">
-            <div class="no-feed-prompt">
-              <div>Tracks that you and others play on AUX will show here.</div>
-              <div class="sub-prompt">Kick things off by playing something!  Invite others lorem ipsum...</div>
-            </div>
-
-            <div class="no-prompt-graphic">
-              <v-img id="rotatingEarth" src="http://www.clipartbest.com/cliparts/dT7/6xj/dT76xjjEc.gif"></v-img>
-              <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux_cord.png')"></v-img>
-            </div>
+          <div class="no-prompt-graphic">
+            <v-img src="http://www.clipartbest.com/cliparts/dT7/6xj/dT76xjjEc.gif"></v-img>
+            <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux_cord.png')"></v-img>
           </div>
         </div>
-        
-        <BackToTop elementId="feedContainer"/>
       </div>
+      
+      <BackToTop elementId="feedContainer"/>
     </div>
-  </v-dialog>
+  </div>
 </template>
 
 <script>
@@ -70,9 +62,6 @@
     @Getter('feed', {namespace: FEED})
     activityFeed;
     
-    @Getter('users', {namespace: FEED})
-    users;
-
     @Watch('profile')
     currentUserProfileSet(){
       if(this.profile){
@@ -109,15 +98,22 @@
 
   .activity-feed {
     height: 100%;
-    padding: 8px;
+    padding: 12px 6px 12px 12px;
+    position: fixed;
+    right: 8px;
+    max-width: 80vw;
+    min-width: 40vw;
+    background-color: rgba(0, 0, 0, 0.33);
+    backdrop-filter: blur(24px);
+    color: white;
+    z-index: 300;
+    border-radius: 6px;
 
     .feed-container {
-      background-color: white;
       height: 100%;
       display: flex;
       flex-direction: column;
-      padding: $base-padding 3vw 0px;
-      color: $primary-theme-color;
+      padding: 0px 4px;
       overflow: scroll;
       font-weight: bold;
       margin: 0 auto;
@@ -126,30 +122,15 @@
 
       .close-button {
         align-self: flex-end;
-        color: $primary-theme-color;
+        color: $secondary-theme-color;
+        margin-right: 4px;
       }
 
       .feed-title-container {
-        $title-container-color: #888888;
-
+        margin-bottom: 6px;
         display: flex;
         flex-direction: column;
         font-size: 24px;
-        margin-bottom: 18px;
-
-        .live-now-label {
-          font-size: 14px;
-
-          .live-now-number {
-            font-size: 40px;
-            color: $primary-theme-color;
-          }
-
-          .live-now {
-            font-weight: normal;
-            color: $title-container-color;
-          }
-        }
 
         .aux-mode-toggle {
           padding-right: 8px;
@@ -170,7 +151,6 @@
           .toggle-label {
             padding-top: 4px;
             font-size: 12px;
-            color: $title-container-color;
             font-weight: normal;
 
             .up-next {
@@ -181,15 +161,19 @@
         }
       }
 
+      .activity-item {
+        background-color: transparent;
+        padding-right: 6px;
+      }
+
       .no-feed-prompt {
         font-size: 20px;
         font-weight: bold;
         line-height: 1.4;
 
         .sub-prompt {
-          font-size: 16px;
+          font-size: 14px;
           margin-top: 8px;
-          color: #aaaaaa;
         }
       }
 
@@ -200,6 +184,7 @@
         justify-content: center;
         margin-top: 30px;
         position: relative;
+        overflow-x: hidden;
 
         .animated-phrase {
           position: absolute;
@@ -207,8 +192,8 @@
           animation: blimp-scroll 3.5s infinite forwards linear;
 
           @keyframes blimp-scroll {
-            from {transform: translateX(0);}
-            to {transform: translateX(-205%);}
+            0% {transform: translateX(0);}
+            100% {transform: translateX(-205%);}
           }
         }
       }

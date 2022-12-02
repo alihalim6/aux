@@ -19,7 +19,7 @@
 
                   <div class="d-flex justify-space-between align-center py-2">
                     <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBackDetailOverlays()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="closeDetailOverlays()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon class="close-button" large @click="detailOverlaysClose()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
@@ -27,8 +27,8 @@
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
                       <div class="item-icon-container">
-                        <PlaybackIcon :item="item" :icon-class="'details-overlay-playback-button'"/>
-                        <ThreeDotIcon :item="item" :icon-class="'details-overlay-dots-button'"/>
+                        <PlaybackIcon :item="item" icon-class="details-overlay-playback-button"/>
+                        <ThreeDotIcon :item="item" icon-class="details-overlay-dots-button"/>
                       </div>
                     </div>
                   </div>
@@ -48,8 +48,8 @@
         </v-carousel>
     </v-dialog>
 
-    <v-dialog :value="fullItemImage" max-width="824" transition="slide-y-transition" @click:outside="closeFullItemImage()">
-      <v-img class="full-item-image fill-available" :src="fullItemImage" @click="closeFullItemImage()"></v-img>
+    <v-dialog :value="fullItemImage" max-width="824" transition="slide-y-transition" @click:outside="fullItemImageClose()">
+      <v-img class="full-item-image fill-available" :src="fullItemImage" @click.stop="fullItemImageClose()"></v-img>
     </v-dialog>
   </section>
 </template>
@@ -65,6 +65,9 @@
     
     @Getter('fullItemImage', {namespace: UI})
     fullItemImage;
+
+    @Getter('feed', {namespace: UI})
+    feed;
     
     @Mutation('closeDetailOverlays', {namespace: UI})
     closeDetailOverlays;
@@ -77,6 +80,20 @@
     
     @Mutation('closeFullItemImage', {namespace: UI})
     closeFullItemImage;
+
+    fullItemImageClose(){
+      this.closeFullItemImage();
+
+      //prevent background scroll from being enabled on close of full item image
+      document.documentElement.style.overflowY = 'hidden';
+    }
+
+    detailOverlaysClose(){
+      this.closeDetailOverlays();
+
+      //re-enable scroll
+      document.documentElement.style.overflowY = '';
+    }
   }
 </script>
 
@@ -98,7 +115,7 @@
       height: 60px;
       width: 25px;
       background-color: $primary-theme-color;
-      right: -16px;
+      right: -21px;
       top: 53px;
       border-radius: 0px 4px 4px 0px;
       display: flex;
@@ -219,7 +236,7 @@
             .details-overlay-dots-button {
               @extend .action-button;
               font-size: $dots-size !important;
-              padding-top: 4px;
+              padding-top: 6px;
             }
 
             .details-overlay-dots-button:hover {

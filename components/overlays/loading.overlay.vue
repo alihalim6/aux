@@ -39,7 +39,7 @@
       border-radius: 100%;
       color: $primary-theme-color;
       overflow: hidden;
-      border: 1px solid $phrase-border-color;
+      border: 3px solid $spotify-green;
       animation: loading-rotation 2s infinite linear forwards;
       display: flex;
       flex-direction: column;

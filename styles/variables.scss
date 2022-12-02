@@ -1,17 +1,18 @@
-$primary-theme-color: black;
+$primary-theme-color: #191414;//spotify design guidelines
 $secondary-theme-color: white;
-$spotify-green: #1DB954;
+$spotify-green: #1DB954;//spotify design guidelines
 $filter-label-color: rgba(0, 0, 0, 0.6);
 
 $app-header-height: 66px;
-$max-inner-width: 700px;
+$max-inner-width: 800px;
 $base-padding: 14px;
 $home-content-padding: 32px;
 $max-home-content-height: 500px;
 $max-footer-height-not-playing: 123px;
 $max-footer-height-playing: 219px;
-$overlay-border-size: 6px;
+$overlay-border-size: 4px;
 $simple-title-border-size: 3px;
 $text-field-filled-full-width-outlined-single-line-slot-min-height: 20px;
+$feed-size-threshold: 600px;
 
 $up-next-slide-animation: 0.29s forwards 1 ease-in-out;

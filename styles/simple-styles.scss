@@ -7,8 +7,14 @@ $phrase-border-color: #aaaaaa;
 
 .circle-separator {
   padding: 4px;
+  padding-left: 8px;
   color: $primary-theme-color !important;
   font-size: 8px !important;
+}
+
+.white-circle-separator {
+  @extend .circle-separator;
+  color: $secondary-theme-color !important;
 }
 
 .no-visibility {
@@ -95,8 +101,26 @@ $phrase-border-color: #aaaaaa;
   position: relative;
 }
 
+.position-absolute {
+  position: absolute !important;
+}
+
 .fill-available {
   width: -moz-available;          /* WebKit-based browsers will ignore this. */
   width: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
   width: stretch;
+}
+
+.vertically-hidden {
+  visibility: hidden;
+  max-height: 0px !important;
+  margin: 0px !important;
+}
+
+.spotify-green-color {
+  color: $spotify-green;
+}
+
+.transparent-bg-green-color {
+  color: #2fff20;
 }

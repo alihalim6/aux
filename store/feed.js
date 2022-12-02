@@ -79,7 +79,7 @@ export const actions = {
     const userAlreadyAdded = userAlreadyAddedIndex > -1;
 
     //ignore current user's live status and other users already in array
-    if(userProfile.id == rootGetters[`${USER}/profile`].id || userAlreadyAdded){
+    if((userProfile && rootGetters[`${USER}/profile`] && userProfile.id == rootGetters[`${USER}/profile`].id) || userAlreadyAdded){
       if(userAlreadyAdded){
         commit('updateUserBeacon', {index: userAlreadyAddedIndex, profile: userProfile});
       }

@@ -2,13 +2,13 @@
     <section>
       <v-icon 
         class="clickable" 
-        :color="itemIsPlaying ? '#1DB954' : ''" 
+        :color="itemIsPlaying ? '#1DB954' : 'black'" 
         :class="[iconClass]" 
         v-if="!item.isArtist && !collectionPlaying()" 
         @click.stop="togglePlay(item)"
         :aria-label="`${item.playbackIcon} item`"
       >
-        {{`mdi-${item.playbackIcon}-circle-outline`}}
+        {{`mdi-${item.playbackIcon}`}}
       </v-icon>
 
       <v-icon

@@ -68,7 +68,6 @@ export const mutations = {
     state.detailOverlays.currentIndex++;
     state.detailOverlays.items = [...state.detailOverlays.items, {...item, overlayId: uuid()}];
     state.detailOverlays.display = true;
-    state.feed.display = false;
   },
   closeDetailOverlays(state){
     state.detailOverlays = {items: [], display: false, currentIndex: -1}
@@ -94,11 +93,9 @@ export const mutations = {
   },
   displayFeed(state){
     state.feed.display = true;
-    state.detailOverlays.display = false;
   },
   closeFeed(state){
     state.feed.display = false;
-    state.detailOverlays.display = !!state.detailOverlays.items.length;//display overlay if one is there
   },
   setFeedAlert(state, alert){
     state.feedAlert = alert;

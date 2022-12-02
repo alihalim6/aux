@@ -1,7 +1,7 @@
 <template>
   <v-menu bottom left transition="slide-x-transition" z-index="2000" :value="!hide">
     <template v-slot:activator="{on, attrs}">
-      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" v-if="!item.isArtist" :class="[iconClass]">mdi-dots-vertical</v-icon>
+      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" v-if="!item.isArtist" color="black" :class="[iconClass]">mdi-dots-vertical</v-icon>
     </template>
 
     <v-list>
@@ -36,7 +36,7 @@
       {
         title: 'Play Next',
         fn: this.playNextPressed,
-        icon: 'skip-next-outline',
+        icon: 'skip-next',
         playNext: true,
         forQueue: true
       },

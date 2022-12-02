@@ -67,7 +67,7 @@ export const setItemMetaData = (items) => {
       });
 
       if(genres.length){
-        item.secondaryLabel = genres.slice(0, 3).join(', ');
+        item.secondaryLabel = genres.slice(0, 3).join('/');
       }
     }
     else if(item.isPlaylist){

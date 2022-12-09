@@ -76,6 +76,7 @@
 
     .playlist-tab {
       color: $filter-label-color;
+      font-weight: bold;
 
       @media(min-width: 400px){
         font-size: 18px;

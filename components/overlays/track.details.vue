@@ -15,10 +15,10 @@
       </div>
     </div>
 
-    <div class="clickable from-album-container" v-if="multiTrackAlbum">
+    <div class="from-album-container" v-if="multiTrackAlbum">
       <div class="font-weight-bold font-italic mb-1">FROM:</div>
       
-      <div class="from-album-info">
+      <div class="from-album-info" id="fromAlbumInfo">
         <div class="d-flex justify-space-between mb-3">
           <span>{{track.album.name}}</span>
 
@@ -111,6 +111,12 @@
 
       this.trackAlbumArtistsLengthsDiffer = this.track.album.artists.length != this.track.artists.length;
     }
+
+    mounted(){
+      if(this.multiTrackAlbum){
+        document.getElementById('fromAlbumInfo').style.backgroundImage = `url(${this.overlayTrack.imgUrl.large})`;
+      }
+    }
   }
 </script>
 
@@ -125,8 +131,11 @@
       width: 100%;
       padding: 6px 10px;
       font-weight: 600;
-      background-color: $primary-theme-color;
+      background-color: rgba(0, 0, 0, 0.6);
       color: $secondary-theme-color;
+      background-size: cover;
+      background-position-y: center;
+      background-blend-mode: overlay;
 
       .action-icon {
         color: white !important;

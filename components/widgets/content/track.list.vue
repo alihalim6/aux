@@ -1,28 +1,32 @@
 <template>
   <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums}">
       <div v-for="(track, index) in tracks" :key="track.uuid">
-        <v-hover v-slot="{hover}">
-          <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start py-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
-            <div class="left-container">
-              <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackImgPressed(track)" :src="track.imgUrl.small"></v-img>
-              <div v-else class="track-number">{{track.track_number}}</div>
+        <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
+          <div class="left-container">
+            <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackImgPressed(track)" :src="track.imgUrl.small"></v-img>
+            <div v-else class="track-number">{{track.track_number}}</div>
 
-              <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums, 'font-weight-bold': displayArtists}">
-                <span class="clickable track-name" :class="{'spotify-green-color': hover || trackIsPlaying(track)}" @click="trackNamePressed(track)">{{track.name}}</span>  
-                <div class="track-artists" v-if="displayArtists">{{track.secondaryLabel}}</div>             
-                <div class="track-duration">{{track.duration}}</div>
+            <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums}">
+              <v-hover v-slot="{hover}">
+                <span class="clickable track-name" :class="{'spotify-green-color': trackIsPlaying(track), 'lighter-black-color': hover}" @click.stop="trackNamePressed(track)">{{track.name}}</span>  
+              </v-hover>
 
-                <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
-                  From <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
-                    {{track.album.name}}</div>
-                    <v-icon small class="clickable">mdi-arrow-right</v-icon>
-                </div>
+              <div class="track-artists">
+                <ArtistList :artists="track.artists" :underline="false"/>
+              </div>             
+              
+              <div class="track-duration">{{track.duration}}</div>
+
+              <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
+                From <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
+                  {{track.album.name}}</div>
+                  <v-icon small class="clickable">mdi-arrow-right</v-icon>
               </div>
             </div>
-
-            <ThreeDotIcon :item="track"/>
           </div>
-        </v-hover>
+
+          <ThreeDotIcon :item="track"/>
+        </div>
       </div>
   </section>
 </template>
@@ -47,10 +51,7 @@
 
     @Prop({default: false})
     tracksFromDifferentAlbums;
-
-    @Prop({default: false})
-    displayArtists;
-
+    
     @Prop({default: false})
     hideAlbums;
 
@@ -129,6 +130,8 @@
         color: #333333;
         display: flex;
         flex-direction: column;
+        font-weight: bold;
+        margin-top: 1px;
 
         .track-name {
           font-weight: 600;

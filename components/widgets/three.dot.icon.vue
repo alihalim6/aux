@@ -7,11 +7,10 @@
     <v-list>
       <v-list-item v-for="option in options.filter(option => !option.hidden)" 
         :key="option.title" 
-        class="clickable option-container" 
+        class="clickable menu-option-container" 
         @click="option.fn(item)" 
         :disabled="option.forQueue && disableQueueOptions"
       >
-        <v-icon small :disabled="option.forQueue && disableQueueOptions" :color="option.color || 'black'">mdi-{{option.icon}}</v-icon>
         <span class="option-title">{{option.title}}</span>
       </v-list-item>
     </v-list>
@@ -36,14 +35,12 @@
       {
         title: 'Play Next',
         fn: this.playNextPressed,
-        icon: 'skip-next',
         playNext: true,
         forQueue: true
       },
       {
         title: 'Add to End of Queue',
         fn: this.addToEndPressed,
-        icon: 'playlist-plus',
         addToEnd: true,
         forQueue: true
       }
@@ -101,19 +98,17 @@
         
         this.options.splice(addToEndIndex, 1, {
           title: 'Remove from Queue',
-          fn: this.removeFromQueue,
-          icon: 'playlist-remove'
+          fn: this.removeFromQueue
         });
       }
       else if(this.item.isCollection){
         const playNextIndex = this.options.findIndex(option => option.playNext);
 
         this.options.splice(playNextIndex, 0, {
-          title: 'Shuffle + Play',
+          title: 'Shuffle n\' Play',
           fn: async () => {
             await this.togglePlayback({item: this.item, shuffle: true});
-          },
-          icon: 'shuffle'
+          }
         });
       }
       
@@ -130,7 +125,6 @@
               this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.item);
               this.setToast({text: REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN});
             },
-            icon: 'heart-remove-outline',
             color: 'red'
           } :  
           {
@@ -140,7 +134,6 @@
               this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.item);
               this.setToast({text: ADDED_TO_LIKES, backgroundColor: SPOTIFY_GREEN});
             },
-            icon: 'heart',
             color: SPOTIFY_GREEN
           }
         );
@@ -191,21 +184,5 @@
     font-size: 16px !important;
     padding-top: 4px;
     padding-left: 4px;
-  }
-
-  .option-container {
-    display: flex;
-    padding: 0px 12px !important;
-    min-width: max-content;
-
-    .option-title {
-      font-size: 13px;
-      font-weight: bold;
-      padding: 8px;
-    }
-  }
-
-  .option-container:hover {
-    background-color: rgba(0, 0, 0, 0.03);
   }
 </style>

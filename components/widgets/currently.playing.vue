@@ -28,7 +28,7 @@
               :disabled="!currentlyPlayingItem.uri"
               v-model="playbackElapsed.ms"
               :max="playbackTotal.ms"
-              class="d-flex align-center"
+              class="clickable d-flex align-center"
               @change="updateElapsedDisplay"
               @end="seek"
               aria-label="seek track"
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      <div class="d-flex flex-column align-start"  @click.stop="viewUpNext()" v-if="currentlyPlayingItem.uri">
+      <div class="d-flex flex-column align-start"  @click.stop="viewUpNext()">
         <div class="up-next-container">
           <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
@@ -332,7 +332,7 @@
         display: flex;
         font-weight: bold;
         z-index: 30;
-        background-color: $primary-theme-color !important;
+        background-color: $spotify-green !important;
         padding: 12px !important;
         height: unset !important;
         min-width: unset !important;
@@ -423,6 +423,8 @@
       color: $primary-theme-color;
       display: flex;
       max-width: 50vw;
+      left: -5px;
+      position: relative;
 
       .no-next-track {
         cursor: unset;

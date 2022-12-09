@@ -21,7 +21,7 @@
       <!-- RELATED ARTISTS -->  
       <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.relatedArtists.length">
         <div class="more-from-artist">
-          <span class="more-from-artist-title font-weight-bold related-artists">Related Artists</span>
+          <span class="more-from-artist-title font-weight-bold related-artists">Similar Artists</span>
           
           <div class="related-artists-container">
             <div 

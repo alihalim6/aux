@@ -122,5 +122,18 @@ $phrase-border-color: #aaaaaa;
 }
 
 .transparent-bg-green-color {
-  color: #2fff20;
+  color: #11ff00;
+}
+
+.lighter-black-color {
+  color: #888888;
+}
+
+.blurred {
+  background-color: transparent;
+  backdrop-filter: blur(6px);
+}
+
+.black-background {
+  background-color: black;
 }

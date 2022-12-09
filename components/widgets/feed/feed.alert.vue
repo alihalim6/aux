@@ -1,43 +1,55 @@
 <template>
   <v-snackbar 
     class="clickable feed-alert-container"
-    v-model="currentAlert"
+    v-model="showAlert"
     right
     max-width="75vw"
     transition="slide-y-reverse-transition" 
     color="white"
+    :timeout="timeout"
   >
     <div class="d-flex flex-column align-center" @click.stop="alertPressed()">
-      <div class="snackbar-container fill-available mb-5">
+      <div class="d-flex justify-space-between fill-available">
+        <span :class="{'no-visibility': !(!feedAlert.activityReaction && auxModeOn && currentlyPlayingItem.uri)}" class="up-next">UP NEXT:</span>
+        <v-icon class="clickable mb-2" @click.stop="closeAlert()" color="black" aria-label="close the feed alert">mdi-close</v-icon>
+      </div>
+
+      <div class="snackbar-container fill-available" :class="{'mb-5': !repliedToReaction}">    
         <div class="d-flex align-center pr-3" :class="{'align-start': feedAlert.trackAddedToFeed}">
           <v-img v-if="feedAlert.img" :src="feedAlert.img" class="snackbar-img" @click.stop="trackInfoPressed()" :class="{'track-img': feedAlert.trackAddedToFeed}"></v-img>
-          
+
           <span class="alert-text" :class="{'ml-2': feedAlert.activityReaction}">
             <span>{{feedAlert.username}}</span><span class="ml-1 font-weight-regular">{{feedAlert.text}}</span>
           </span>
 
-          <span v-if="feedAlert.trackAddedToFeed" class="clickable font-weight-bold alert-text" @click.stop="trackInfoPressed()">
+          <span v-if="feedAlert.trackAddedToFeed" class="clickable font-weight-bold alert-text" @click.stop="playActivityTrack()">
             {{feedAlert.track.primaryLabel}} /<span class="track-artists"> {{feedAlert.track.secondaryLabel}}</span>
-            <v-icon class="clickable play-activity-track" @click.stop="playActivityTrack()" aria-label="play the track just added to feed">mdi-play</v-icon>
+            <v-icon class="clickable play-activity-track" aria-label="play the track just added to feed">mdi-play</v-icon>
           </span>
         </div>
-
-        <v-icon class="clickable" @click.stop="closeAlert()" color="black" aria-label="close the feed alert">mdi-close</v-icon>
       </div>
+
+      <span v-if="repliedToReaction" class="reaction-reply">
+        <span>You:</span><span class="ml-1 font-weight-regular">{{repliedToReaction}}</span>
+      </span>
 
       <div class="d-flex align-center align-self-end" v-if="feedAlert.trackAddedToFeed">
         <v-img v-if="feedAlert.addedByImg" :src="feedAlert.addedByImg" class="added-by-img"></v-img>
-        <div v-else class="round-profile-letter">{{`${feedAlert.addedByName.substring(0, 1).toUpperCase()}`}}</div>
-
         <span class="added-by-name">{{feedAlert.addedByName}}</span>
       </div>
 
       <div class="d-flex align-center align-self-end" v-if="feedAlert.activityReaction">
         <v-img :src="feedAlert.track.imgUrl.small" class="small-track-img"></v-img>
-        
-        <span class="clickable reaction-track-info" @click.stop="trackInfoPressed()">
+      
+        <span class="clickable reaction-track-info">
           {{feedAlert.track.primaryLabel}} /<span class="reaction-track-artists"> {{feedAlert.track.secondaryLabel}}</span>
         </span>
+      </div>
+
+      <span v-if="feedAlert.activityReaction && !repliedToReaction" @click="replyPressed()" class="clickable reaction-reply-label">Reply</span>
+      
+      <div class="align-self-end">
+        <ActivityChatInput v-show="replyingToFeedReaction" :activity="feedAlert" color="black" :chatOnFeedAlert="true" submitIconColor="black"/>
       </div>
     </div>
   </v-snackbar>
@@ -45,14 +57,25 @@
 
 <script>
   import {Component, Vue, Getter, Watch, Action, Mutation} from 'nuxt-property-decorator';
-  import {UI, PLAYBACK_QUEUE} from '~/store/constants';
+  import {UI, PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
+  import {AUX_MODE} from '~/utils/constants';
+  import {storageGetBoolean} from '~/utils/storage';
 
   @Component
   export default class FeedAlert extends Vue {
-    currentAlert = null;
+    showAlert = false;
+    auxModeOn = false;
+    repliedToReaction = false;
+    timeout = -1;
 
     @Getter('feedAlert', {namespace: UI})
     feedAlert;
+
+    @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
+    currentlyPlayingItem;
+
+    @Getter('replyingToFeedReaction', {namespace: UI})
+    replyingToFeedReaction;
 
     @Action('displayDetailOverlays', {namespace: UI})
     displayDetailOverlays;
@@ -66,9 +89,31 @@
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
 
+    @Mutation('toggleReplyingToFeedReaction', {namespace: UI})
+    toggleReplyingToFeedReaction;
+
     @Watch('feedAlert')
     alertChanged(newVal){
-      this.currentAlert = {...newVal};
+      this.showAlert = newVal;
+      this.auxModeOn = storageGetBoolean(AUX_MODE);
+      this.repliedToReaction = false;
+      this.resetTimeout();
+    }
+
+    beforeMount(){
+      this.$nuxt.$root.$on('feedAlertChatSubmitted', message => {
+        this.repliedToReaction = message;
+        //sets to false
+        this.toggleReplyingToFeedReaction();
+        this.resetTimeout();
+      });
+    }
+
+    //reset snackbar timer (value needs to change for vuetify to reset it)
+    async resetTimeout(){
+      this.timeout = 0;
+      await this.$nextTick();
+      this.timeout = this.showAlert.timeout || 5000;
     }
 
     trackInfoPressed(){
@@ -82,12 +127,27 @@
     }
 
     alertPressed(){
-      this.displayFeed();
-      this.closeAlert();
+      //for reaction alerts, don't want feed to open when clicked (may seem like supposed to take you directly to that track/its reactions)
+      if(!this.feedAlert.activityReaction){
+        this.displayFeed();
+        this.closeAlert();
+      }
     }
     
     closeAlert(){
-      this.currentAlert = null;
+      this.showAlert = false;
+    }
+
+    async replyPressed(){
+      this.toggleReplyingToFeedReaction();
+      await this.$nextTick();
+
+      if(this.replyingToFeedReaction){
+        this.timeout = -1;
+      }
+      else {
+        this.resetTimeout();
+      }
     }
   }
 </script>
@@ -99,10 +159,24 @@
     $track-info-font-size: 12px;
     $secondary-text-color: #888888;
 
+    .up-next {
+      color: $primary-theme-color;
+      align-self: flex-start;
+      margin: 0px 0px 6px 8px;
+      font-weight: bold;
+    }
+
     .alert-text {
       color: $primary-theme-color;
       font-weight: bold;
       margin-left: 2px;
+    }
+
+    .reaction-reply {
+      @extend .alert-text;
+      align-self: flex-start;
+      font-size: 16px;
+      margin: 8px $snackbar-side-margin 24px;
     }
 
     .track-img {
@@ -158,6 +232,15 @@
       font-weight: bold;
       color: $secondary-text-color;
       padding-left: 6px;
+    }
+
+    .reaction-reply-label {
+      font-weight: bold;
+      color: black;
+      font-size: 14px;
+      align-self: flex-end;
+      margin-top: 6px;
+      margin-right: $reaction-emoji-margin;
     }
   }
 </style>

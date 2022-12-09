@@ -86,6 +86,7 @@ $section-title-font-size: 36px;
 
 .record-icon {
   padding-right: 4px;
+  color: $primary-theme-color !important;
 }
 
 .track-sneak-peek {
@@ -167,7 +168,7 @@ $section-title-font-size: 36px;
   background-attachment: local, local, scroll, scroll;
 }
 
-.scroll-shadow-on-white {
+.scroll-shadow-on-transparent {
   background:
     /* Shadow Cover TOP */
     linear-gradient(
@@ -232,11 +233,28 @@ $section-title-font-size: 36px;
   @extend .round-img-icon;
   $snackbar-img-size: 28px;
   
-  margin-left: 8px;
+  margin-left: $snackbar-side-margin;
   height: $snackbar-img-size;
   max-width: $snackbar-img-size;
 }
 
 .secondary-label {
   display: flex;
+}
+
+
+.menu-option-container {
+  display: flex;
+  padding: 0px 12px !important;
+  min-width: max-content;
+
+  .option-title {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px;
+  }
+}
+
+.menu-option-container:hover {
+  background-color: rgba(0, 0, 0, 0.03);
 }

@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <BackToTop elementId="upNextListContainer"/>
+    <BackToTop elementId="upNextListContainer" arrowColor="white"/>
   </section>
 </template>
 

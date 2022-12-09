@@ -1,20 +1,13 @@
 <template>
   <div v-show="uiFeed.display" class="activity-feed">
-    <div class="feed-container" id="feedContainer">
+    <div class="feed-container scroll-shadow-on-transparent" id="feedContainer">
       <div class="d-flex flex-column">
         <div class="feed-title-container">
           <v-icon class="close-button" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
-
-         <!--  <div class="d-flex align-end justify-space-between">
-            <div class="aux-mode-toggle" v-if="activityFeed.length">
-              <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()"></v-switch>
-              <span class="toggle-label">Automatically add tracks from other users to <span class="up-next">UP NEXT</span></span>
-            </div>
-          </div> -->
         </div>
 
         <div class="activity-item" v-if="activityFeed.length">
-          <ActivityItem v-for="item in activityFeed" :key="item.timestamp" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
+          <ActivityItem v-for="item in activityFeed" :key="item.track.id" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
         </div>
 
         <div v-else class="d-flex flex-column">
@@ -30,7 +23,7 @@
         </div>
       </div>
       
-      <BackToTop elementId="feedContainer"/>
+      <BackToTop elementId="feedContainer" arrowColor="white"/>
     </div>
   </div>
 </template>
@@ -39,13 +32,10 @@
   import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
   import {UI, USER, FEED} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
-  import {storageGet, storageGetBoolean, storageSet} from '~/utils/storage';
-  import {AUX_MODE} from '~/utils/constants';
 
   @Component
   export default class Feed extends Vue {
     liveStatusInterval;
-    auxModeOn;
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -53,15 +43,12 @@
     @Getter('feed', {namespace: UI})
     uiFeed;
 
-    @Getter('detailOverlays', {namespace: UI})
-    detailOverlays;
-
     @Getter('profile', {namespace: USER})
     profile;
 
     @Getter('feed', {namespace: FEED})
     activityFeed;
-    
+
     @Watch('profile')
     currentUserProfileSet(){
       if(this.profile){
@@ -70,23 +57,7 @@
         }, 5000);
       }
     }
-
-    beforeMount(){
-      const auxModeNotSet = !storageGet(AUX_MODE);
-
-      //default to ON if no preference set
-      if(auxModeNotSet){
-        this.auxModeOn = true;
-        storageSet(AUX_MODE, true)
-      }
-
-      this.auxModeOn = storageGetBoolean(AUX_MODE);
-    }
-
-    auxModeToggled(){
-      storageSet(AUX_MODE, this.auxModeOn);
-    }
-
+    
     unmounted(){
       clearInterval(this.liveStatusInterval);
     }
@@ -98,12 +69,12 @@
 
   .activity-feed {
     height: 100%;
-    padding: 12px 6px 12px 12px;
+    padding: 0px 0px 12px 12px;
     position: fixed;
     right: 8px;
     max-width: 80vw;
     min-width: 40vw;
-    background-color: rgba(0, 0, 0, 0.33);
+    background-color: rgba(0, 0, 0, 0.28);
     backdrop-filter: blur(24px);
     color: white;
     z-index: 300;
@@ -120,44 +91,16 @@
       max-width: $max-inner-width;
       border-radius: 10px;
 
-      .close-button {
-        align-self: flex-end;
-        color: $secondary-theme-color;
-        margin-right: 4px;
-      }
-
       .feed-title-container {
-        margin-bottom: 6px;
+        margin: 6px 0px 16px;
         display: flex;
         flex-direction: column;
         font-size: 24px;
 
-        .aux-mode-toggle {
-          padding-right: 8px;
-          padding-bottom: 10px;
-          display: flex;
-          align-items: center;
-
-          .v-input--selection-controls {
-            margin-top: 0px;
-          }
-
-          @media(max-width: 580px){
-            max-width: 35vw;
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .toggle-label {
-            padding-top: 4px;
-            font-size: 12px;
-            font-weight: normal;
-
-            .up-next {
-              font-weight: bold;
-              color: black;
-            }
-          }
+        .close-button {
+          align-self: flex-end;
+          color: $secondary-theme-color;
+          margin-right: 4px;
         }
       }
 

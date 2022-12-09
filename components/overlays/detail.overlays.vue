@@ -11,6 +11,11 @@
 
               <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay}" @click.stop>
                 <div class="inner-container">
+                  <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
+                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBackDetailOverlays()">mdi-arrow-left</v-icon>
+                    <v-icon class="close-button" large @click="detailOverlaysClose()" aria-label="close page">mdi-close</v-icon>
+                  </div>
+
                   <div class="inner-image-cta-container" v-if="item.imgUrl && !item.simpleOverlay">
                     <div class="clickable full-item-image-cta-inner" @click="displayFullItemImage(item.imgUrl.large)">
                       {{item.isArtist ? 'Photo' : (item.albumType || 'Track') + ' Artwork'}}
@@ -55,11 +60,13 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
   import {UI} from '~/store/constants';
 
   @Component
   export default class DetailOverlays extends Vue {
+    scrolledDown = false;
+
     @Getter('detailOverlays', {namespace: UI})
     detailOverlays;
     
@@ -80,6 +87,15 @@
     
     @Mutation('closeFullItemImage', {namespace: UI})
     closeFullItemImage;
+
+    @Watch('detailOverlays', {deep: true})
+    detailOverlaysChanged(){
+      this.scrolledDown = false;
+    }
+
+    beforeMount(){
+      this.$nuxt.$root.$on('scrolledDown', scrolledDown => this.scrolledDown = scrolledDown);
+    }
 
     fullItemImageClose(){
       this.closeFullItemImage();
@@ -157,6 +173,18 @@
         padding: $base-padding;
         margin: 0 auto;
         width: stretch;
+
+        .scrolled-down-top-bar {
+          max-width: $max-inner-width;
+          position: sticky;
+          padding: 4px 0px;
+          width: 100%;
+          z-index: 30;
+          top: 0;
+          left: 0;
+          display: flex;
+          justify-content: space-between;
+        }
         
         .inner-image-cta-container {
           display: flex;

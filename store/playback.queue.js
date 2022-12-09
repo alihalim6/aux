@@ -90,12 +90,11 @@ export const actions = {
     commit('shuffleUpNext', {nextTracks: getters.nextTracks, currentIndex: getters.currentlyPlayingIndex});
   },
   playTrackNow: ({dispatch, getters, commit}, track) => {
-    dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true});
-    
-    if(isSameTrack(track, getters.nextTrack)){
+    if(getters.nextTrack && isSameTrack(track, getters.nextTrack)){
       commit('removeFromQueue', getters.nextTrack);
     }
 
+    dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true});
     dispatch('playNextTrack');
   }
 };

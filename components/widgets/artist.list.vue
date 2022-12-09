@@ -1,8 +1,7 @@
 <template>
   <span>
     <span v-for="(artist, index) in artists" :key="artist.id">
-      <span :id="`trackArtist${index}`" class="clickable text-decoration-underline inline-display" @click="displayArtistDetails(artist)">{{artist.name}}</span>
-      <span v-if="(index < artists.length - 1)">, </span>
+      <span :id="`trackArtist${index}`" class="clickable inline-display" @click.stop="displayArtistDetails(artist)"  :class="{'text-decoration-underline': underline}">{{artist.name}}</span><span v-if="(index < artists.length - 1)">, </span>
     </span>
   </span>
 </template>
@@ -15,6 +14,9 @@
   export default class ArtistList extends Vue {
     @Prop({required: true})
     artists;
+
+    @Prop({default: true})
+    underline;
 
     @Action('displayArtistDetails', {namespace: UI})
     displayArtistDetails;

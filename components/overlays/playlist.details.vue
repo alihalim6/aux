@@ -5,7 +5,7 @@
     </div>
 
     <v-card class="mt-3 pa-2" elevation="7" v-if="tracks.length">
-      <TrackList :tracks="tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true" :displayArtists="true"/>
+      <TrackList :tracks="tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
     </v-card>
   </section>
 </template>

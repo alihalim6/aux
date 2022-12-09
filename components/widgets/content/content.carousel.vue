@@ -182,11 +182,7 @@
     flex-direction: column;
     padding: 0px $base-padding;
   }
-
-  .record-icon {
-    color: #ed0000 !important;
-  }
-
+  
   .content-hover {
     z-index: 10;
     transform: scale(1.1) translateY(-8px);

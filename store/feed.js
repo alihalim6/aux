@@ -59,16 +59,14 @@ export const actions = {
 
     commit('addToFeed', activity);
 
-    if(!rootGetters[`${UI}/feed`].display){//only show toast if not already viewing feed
-      commit(`${UI}/setFeedAlert`, {
-        trackAddedToFeed: true,
-        img: activity.track.imgUrl.small,
-        track: activity.track,
-        addedByImg: activity.user.img, 
-        addedByName: activity.user.name
-      }, {root: true});
-    }
-
+    commit(`${UI}/setFeedAlert`, {
+      trackAddedToFeed: true,
+      img: activity.track.imgUrl.small,
+      track: activity.track,
+      addedByImg: activity.user.img, 
+      addedByName: activity.user.name
+    }, {root: true});
+    
     if(rootGetters[`${PLAYBACK_QUEUE}/queue`].length && storageGetBoolean(AUX_MODE)){
       dispatch(`${PLAYBACK_QUEUE}/setTracksToPlayNext`, {tracks: [activity.track], noConfirmationToast: true}, {root: true});
     }
@@ -103,15 +101,16 @@ export const actions = {
   },
 
   //reaction from another user
-  handleActivityReaction: ({commit}, reaction) => {
+  handleActivityReaction: ({commit, rootGetters}, reaction) => {
     commit(`${UI}/setFeedAlert`, {
       activityReaction: true,
       img: reaction.author.img, 
       track: reaction.activity.track,
       username: `${reaction.author.name}:`,
       text: reaction.message, 
+      timeout: 7000
     }, {root: true});
-
+  
     commit('addReactionToActivity', reaction);
   }
 };
@@ -134,14 +133,16 @@ export const mutations = {
     state.users = [];
   },
   addReactionToActivity(state, reaction){
-    const activity = state.feed.find(activity => activity.timestamp == reaction.activity.timestamp);
+    const activity = state.feed.find(activity => isSameTrack(activity.track, reaction.activity.track));
+    const timestamp = new Date(moment());
 
     if(activity){
       if(!activity.reactions){
         activity.reactions = [];
       }
 
-      activity.reactions = [{author: reaction.author.name, message: reaction.message, timestamp: new Date(moment())}, ...activity.reactions];
+      activity.timestamp = timestamp;//needed to trigger update of feed item's reactions/count
+      activity.reactions.unshift({author: reaction.author.name, message: reaction.message, timestamp});
     }
   }
 };

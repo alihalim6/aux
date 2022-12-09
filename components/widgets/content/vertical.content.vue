@@ -9,7 +9,7 @@
                 <v-img :src="item.imgUrl.large"></v-img>
               </v-card>
 
-              <div v-if="playlists" class="d-flex justify-space-between align-start fill-available mb-4">
+              <div v-if="playlists" class="d-flex align-start fill-available mb-4">
                 <v-card max-width="75%" elevation="7">
                   <v-img class="clickable" :src="item.imgUrl.large"></v-img>
                 </v-card>

@@ -19,14 +19,14 @@
         <div class="home-content" :id="`myAux${index}`" v-if="item.data.length">
           <div v-if="item.trackList">
             <PlayAllAndShuffle v-if="!item.fetchPending" :tracks="item.data" :collectionKey="item.key"/>
-            <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true"/>
+            <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
           </div>
           
           <ContentCarousel v-if="item.likedAlbums" :data="item.data" :vertical="true"/>
 
           <div v-if="item.topItems">
             <PlayAllAndShuffle v-if="!item.fetchPending" :tracks="item.topItems.tracks" :collectionKey="item.key"/>
-            <TrackList :tracks="item.topItems.tracks" :tracksFromDifferentAlbums="true" :displayArtists="true" :hideAlbums="true"/>
+            <TrackList :tracks="item.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
 
             <ContentCarousel :data="item.topItems.artists" :vertical="true" class="mt-15"/>
           </div>

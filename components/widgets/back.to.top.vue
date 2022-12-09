@@ -1,7 +1,7 @@
 <template>
   <div class="clickable back-to-top-container" :class="{'bottom-reached': bottomReached}" v-if="scrolledDown" @click.stop="backToTop()">
-    <div class="back-to-top">
-      <v-icon large color="black" aria-label="scroll to top of content">mdi-arrow-up</v-icon>
+    <div class="back-to-top blurred" :class="{'black-background': arrowColor == 'white'}">
+      <v-icon large :color="arrowColor" aria-label="scroll to top of content">mdi-arrow-up</v-icon>
     </div>
   </div>
 </template>
@@ -18,6 +18,9 @@
     @Prop({required: true})
     elementId;
 
+    @Prop({default: 'black'})
+    arrowColor;
+
     mounted(){
       this.element = document.getElementById(this.elementId);
 
@@ -26,6 +29,10 @@
         this.bottomReached = (e.target.scrollHeight - e.target.scrollTop) < (e.target.clientHeight + 50);
         
         this.$nuxt.$root.$emit('hideThreeDotMenu');
+
+        if(this.elementId.indexOf('overlayContent') > -1){
+          this.$nuxt.$root.$emit('scrolledDown', this.scrolledDown);
+        }
       });
     }
 
@@ -45,14 +52,13 @@
     z-index: 20;
 
     .back-to-top {
-      background-color: white;
-      padding: 12px;
+      padding: 6px;
       border-radius: 100%;
       box-shadow: 0px 3px 10px -1px rgb(0 0 0 / 80%);
     }
 
     .back-to-top:hover {
-      padding: 16px;
+      padding: 12px;
     }
   }
 

@@ -21,10 +21,30 @@
           <v-icon small class="live-info-icon" color="#888">mdi-help-circle-outline</v-icon>
         </div>
 
-        <div class="clickable profile-container" v-if="profile">
-          <v-img v-if="profile.img" :src="profile.img" class="round-img-icon"></v-img>
-          <div v-else class="round-profile-letter">{{`${profile.name.substring(0, 1).toUpperCase()}`}}</div>
-        </div>
+        <v-menu bottom left transition="slide-y-transition" z-index="2000" v-if="profile" :close-on-content-click="false" offset-y>
+          <template v-slot:activator="{on, attrs}">            
+            <div class="clickable profile-container" v-bind="attrs" v-on="on">
+              <v-img v-if="profile.img" :src="profile.img" class="round-img-icon"></v-img>
+              <div v-else class="round-profile-letter">{{`${profile.name.substring(0, 1)}`}}</div>
+            </div>
+          </template>
+
+          <v-list>
+            <v-list-item class="clickable menu-option-container">
+              <div class="aux-mode-toggle">
+                <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()" label="AUX Mode"></v-switch>
+                
+                <v-tooltip bottom color="#1DB954" max-width="200">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon small class="ml-1" color="#888" v-bind="attrs" v-on="on">mdi-help-circle-outline</v-icon>
+                  </template>
+
+                  <span>Automatically add tracks from other users to <span class="font-weight-bold">UP NEXT</span></span>
+                </v-tooltip>
+              </div>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </v-app-bar>
 
@@ -51,12 +71,16 @@
   import {UI, SPOTIFY, FEED, USER} from '~/store/constants';
   import {initSpotifyPlayer} from '~/utils/helpers';
   import io from '~/utils/io';
-
+  import {storageGet, storageGetBoolean, storageSet} from '~/utils/storage';
+  import {AUX_MODE} from '~/utils/constants';
+  
   @Component
   export default class App extends Vue {
     //TODO all v-imgs use lazy-src prop to show loader until img shows?
     //TODO adjust vuetify breakpoints so that full spotify logo still shows up until it really can't fit
     
+    auxModeOn;
+
     @Getter('isLoading', {namespace: UI})
     isLoading;
 
@@ -75,12 +99,26 @@
       const spotifyPlaybackSdk = document.createElement('script');
       spotifyPlaybackSdk.setAttribute('src', 'https://sdk.scdn.co/spotify-player.js');
       document.head.appendChild(spotifyPlaybackSdk);
+
+      const auxModeNotSet = !storageGet(AUX_MODE);
+
+      //default to ON if no preference set
+      if(auxModeNotSet){
+        this.auxModeOn = true;
+        storageSet(AUX_MODE, true);
+      }
+
+      this.auxModeOn = storageGetBoolean(AUX_MODE);
     }
 
     mounted(){
       window.onSpotifyWebPlaybackSDKReady = () => {
         initSpotifyPlayer();
       };
+    }
+
+    auxModeToggled(){
+      storageSet(AUX_MODE, this.auxModeOn);
     }
   }
 </script>
@@ -228,5 +266,23 @@
 
   .base-app-container {
     margin-top: calc(#{$app-header-height} + 10px);
+  }
+
+  .aux-mode-toggle {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+
+    .v-input--selection-controls {
+      margin-top: 0px;
+      padding: 16px 6px;
+      border-radius: 100%;
+    }
+
+    .v-label {
+      font-size: 12px;
+      color: $primary-theme-color;
+      padding-left: 4px;
+    }
   }
 </style>

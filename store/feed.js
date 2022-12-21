@@ -3,12 +3,15 @@ import moment from 'moment';
 import socket from '~/plugins/socket.client.js';
 import {AUX_MODE, SPOTIFY_GREEN} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
-import {isSameTrack} from '~/utils/helpers';
+import {isSameTrack, ignoredUsers} from '~/utils/helpers';
+import {httpClient} from '~/utils/api';
 
 export const state = () => {
   return {
     feed: [],
-    users: []
+    users: [
+     // {id: 12345, name: 'New-user123', img: ''},{id: 123456, name: 'zewmanSpotiyn', img: ''}
+    ]//////
   };
 };
 
@@ -51,6 +54,10 @@ export const actions = {
 
   //activity from another user
   handleActivity: ({commit, getters, rootGetters, dispatch}, activity) => {
+    if(ignoredUsers().find(userId => userId == activity.user.id)){
+      return;
+    }
+
     const trackAlreadyInFeed = getters.feed.find(feedActivity => isSameTrack(feedActivity.track, activity.track));
 
     if(trackAlreadyInFeed){
@@ -72,21 +79,20 @@ export const actions = {
     }
   },
 
-  handleLiveUser: ({commit, getters, rootGetters}, userProfile) => {
+  handleLiveUser: async ({commit, getters, rootGetters}, userProfile) => {
     const userAlreadyAddedIndex = getters.users.findIndex(user => user.id == userProfile.id);
     const userAlreadyAdded = userAlreadyAddedIndex > -1;
 
     //ignore current user's live status and other users already in array
     if((userProfile && rootGetters[`${USER}/profile`] && userProfile.id == rootGetters[`${USER}/profile`].id) || userAlreadyAdded){
-      if(userAlreadyAdded){
-        commit('updateUserBeacon', {index: userAlreadyAddedIndex, profile: userProfile});
-      }
-
       return;
     }
 
-    commit('addUser', {...userProfile, lastBeacon: Date.now()});
-    commit(`${UI}/setToast`, {img: userProfile.img, username: userProfile.name, text: 'is on', backgroundColor: SPOTIFY_GREEN}, {root: true});
+    if(userProfile){
+      const {data} = await httpClient.post('/passthru', {url: `/me/following/contains?ids=${userProfile.id}&type=user`});
+      commit('addUser', {...userProfile, following: data[0]});
+      commit(`${UI}/setToast`, {img: userProfile.img, username: userProfile.name, text: 'is on', backgroundColor: SPOTIFY_GREEN}, {root: true});
+    }
   },
   handleUserDisconnect:  ({commit, rootGetters}) => {
     //all users clear out list and re-signal self
@@ -121,10 +127,12 @@ export const mutations = {
   },
   addUser(state, user){
     state.users.push(user);
-  },
-  updateUserBeacon(state, params){
-    params.profile.lastBeacon = Date.now();
-    state.users.splice(params.index, 1, params.profile);
+
+    //distinctify; rather do this then trying to worry about why the socket sends multiple users at same time plus handleLiveUser() is async
+    //so can't reliably check if user is already in array in time
+    state.users = [...new Map(state.users.map(user => [user.id, user])).values()];
+
+    state.users = state.users.sort((a, b) => a.name.localeCompare(b.name));
   },
   removeUser(state, userIndex){
     state.users.splice(userIndex, 1);

@@ -6,7 +6,7 @@
       <div class="item-info-container">
         <div class="item-info">
           <div class="d-flex align-center" @click="itemInfoPressed(activity.track)">
-            <span class="clickable font-weight-bold" :class="{'transparent-bg-green-color': trackIsPlaying(activity.track)}">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
+            <span class="clickable font-weight-bold" :class="{'transparent-bg-track-playing-color': trackIsPlaying(activity.track)}">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
           </div>
         </div>
 
@@ -83,6 +83,9 @@
 
     @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
     playTrackNow;
+    
+    @Action('togglePlayback', {namespace: SPOTIFY})
+    togglePlayback;
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -112,8 +115,13 @@
       return `${minutesAgo < 1 ? 'just now' : `${minutesAgo}m`}`;
     }
 
-    itemInfoPressed(track){
-      this.playTrackNow(track);
+    async itemInfoPressed(track){
+      if(this.trackIsPlaying(track)){
+        await this.togglePlayback({item: track});
+      }
+      else{
+        this.playTrackNow(track);
+      }
     }
 
     trackIsPlaying(track){

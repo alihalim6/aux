@@ -5,7 +5,7 @@
         New & Recommended
         
         <div class="filter-container">
-          <div class="clickable filter-label" v-if="allItems.length" @click="displayAll()">See All</div>
+          <div class="clickable filter-label" v-if="allItems && allItems.length" @click="displayAll()">See All</div>
           <span class="filter-divider">/</span>
           <div class="clickable filter-label" @click="displayNewReleases()">New Releases Only</div>
         </div>

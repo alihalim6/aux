@@ -3,6 +3,7 @@ export const SPLASH = 'splash';
 export const APP = 'app';
 export const BASE_URL = (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://www.liveonaux.com');//TODO
 export const SPOTIFY_GREEN = '#1DB954';
+export const BLACK = '#000';
 
 export const AUTH = {
   ACCESS_TOKEN: 'accessToken',
@@ -15,6 +16,7 @@ export const AUTH = {
   SCOPES: `
     streaming 
     user-read-private 
+    user-follow-modify
     user-follow-read 
     user-library-modify 
     user-library-read 
@@ -37,6 +39,7 @@ export const AUTH = {
 };
 
 export const AUX_MODE = 'auxMode';
+export const IGNORED_USERS = 'ignoredUsers';
 
 export const MY_AUX = {
   LIKED_TRACKS: 'Liked Tracks',

@@ -1,6 +1,6 @@
 import {capitalCase} from 'capital-case';
 import {storageGet} from '~/utils/storage';
-import {AUTH} from '~/utils/constants';
+import {AUTH, IGNORED_USERS} from '~/utils/constants';
 import {refreshToken} from '~/auth';
 import {handleAuthError} from '~/utils/auth';
 import {httpClient} from '~/utils/api';
@@ -121,9 +121,14 @@ export const msToDuration = (ms) => {
 export const getItemDuration = async (item) => {
   //singles (with type 'album') don't have duration
   if(item.id && !item.duration_ms){
-    const { data } = await httpClient.post('/passthru', {url: `/albums/${item.id}/tracks`});
-
-    return data.items[0].duration_ms;
+    try {
+      const { data } = await httpClient.post('/passthru', {url: `/albums/${item.id}/tracks`});
+      return data.items[0].duration_ms;
+    }
+    catch(error){
+      handleApiError('There was an issue loading track duration information lorem ipsum...');
+      return 0;
+    }
   }
 
   return item.duration_ms;
@@ -203,4 +208,12 @@ export function isSameTrack(trackA, trackB){
   return (trackA.name == trackB.name) && 
         (trackA.duration_ms == trackB.duration_ms) && 
         (trackA.track_number == trackB.track_number);
+}
+
+export function ignoredUsers(){
+  if(process.client){
+    return storageGet(IGNORED_USERS) ? storageGet(IGNORED_USERS).split(',') : [];
+  }
+
+  return [];
 }

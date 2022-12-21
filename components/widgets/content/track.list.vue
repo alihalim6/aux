@@ -8,7 +8,7 @@
 
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums}">
               <v-hover v-slot="{hover}">
-                <span class="clickable track-name" :class="{'spotify-green-color': trackIsPlaying(track), 'lighter-black-color': hover}" @click.stop="trackNamePressed(track)">{{track.name}}</span>  
+                <span class="clickable track-name" :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" @click.stop="trackNamePressed(track)">{{track.name}}</span>  
               </v-hover>
 
               <div class="track-artists">

@@ -113,31 +113,41 @@
       }
       
       const likeType = this.item.type == 'album' ? 'albums' : 'tracks';
-      const {data} = await httpClient.post('/passthru', {url: `/me/${likeType}/contains?ids=${this.item.id}`});
-      const liked = data[0];
-      const modifyLikeUrl = `/me/${likeType}?ids=${this.item.id}`;
+      
+      try {
+        const {data} = await httpClient.post('/passthru', {url: `/me/${likeType}/contains?ids=${this.item.id}`});
+        const liked = data[0];
+        const modifyLikeUrl = `/me/${likeType}?ids=${this.item.id}`;
 
-      if(this.item.type != 'playlist'){//api does not seem to honor likes (https://github.com/spotify/web-api/issues/1251), so remove entire option for playlists
-        this.options.push(liked ? {
-          title: 'Remove from Likes',
-            fn: async () => {
-              await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'DELETE'});
-              this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.item);
-              this.setToast({text: REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN});
-            },
-            color: 'red'
-          } :  
-          {
-            title: 'Like',
-            fn: async () => {
-              await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'PUT', data: {public: this.item.public || true}});//public param for playlists (api defaults to true)
-              this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.item);
-              this.setToast({text: ADDED_TO_LIKES, backgroundColor: SPOTIFY_GREEN});
-            },
-            color: SPOTIFY_GREEN
-          }
-        );
+        if(this.item.type != 'playlist'){//api does not seem to honor likes (https://github.com/spotify/web-api/issues/1251), so hide option for playlists
+          const apiParams = {url: modifyLikeUrl, method: liked ? 'DELETE' : 'PUT'};
+          const toastParams = {text: liked ? ADDED_TO_LIKES : REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN};
+
+          const apiAndToast = async function(){
+            await httpClient.post('/passthru', apiParams);
+            this.setToast(toastParams);
+          };
+          
+          this.options.push(liked ? {
+            title: 'Remove from Likes',
+              fn: async () => {
+                await apiAndToast();
+                this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.item);
+              },
+              color: 'red'
+            } :  
+            {
+              title: 'Like',
+              fn: async () => {
+                await apiAndToast();
+                this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.item);
+              },
+              color: SPOTIFY_GREEN
+            }
+          );
+        }
       }
+      catch(error){}
     }
 
     getTracksToPlayNext(){

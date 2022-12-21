@@ -18,7 +18,7 @@
 
           <div class="no-prompt-graphic">
             <v-img src="http://www.clipartbest.com/cliparts/dT7/6xj/dT76xjjEc.gif"></v-img>
-            <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux_cord.png')"></v-img>
+            <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux.png')"></v-img>
           </div>
         </div>
       </div>
@@ -74,7 +74,7 @@
     right: 8px;
     max-width: 80vw;
     min-width: 40vw;
-    background-color: rgba(0, 0, 0, 0.28);
+    background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(24px);
     color: white;
     z-index: 300;

@@ -20,7 +20,7 @@ httpClient.interceptors.request.use(async config => {
 });
 
 httpClient.interceptors.response.use(async response => {
-  const errorMessage = response.data.error ? (response.data.error || response.data.error.message) : '';
+  const errorMessage = response.data.error ? (response.data.error || response.data.error.message) : 'Something went wrong lorem ipsum...';
 
   if(response.data.error && errorMessage){
     //TODO: seems to happen on first /playItem API call from sdk but it seems to work on next call and music plays, so for now ignore
@@ -30,9 +30,6 @@ httpClient.interceptors.response.use(async response => {
 
     if(errorMessage.indexOf('401') > 1){
       await attemptTokenRefresh();
-    }
-    else{
-      handleApiError(errorMessage);
     }
   }
 
@@ -51,9 +48,7 @@ async function attemptTokenRefresh(){
 }
 
 function handleApiError(error){
-  console.error(error);
-  //$nuxt.$store.dispatch('spotify/stopPlayback');
-  $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong lorem ipsum...'});
+  $nuxt.$store.commit('ui/setToast', {text: error || 'Something went wrong lorem ipsum...'});
 }
 
 export {httpClient, handleApiError};

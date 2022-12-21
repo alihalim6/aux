@@ -116,22 +116,23 @@ $section-title-font-size: 36px;
 }
 
 .round-img-icon {
-  $added-by-icon-size: 18px;
+  $icon-size: 18px;
 
   border-radius: 100%;
-  height: $added-by-icon-size;
-  max-width: $added-by-icon-size;
+  height: $icon-size;
+  max-width: $icon-size;
   color: $primary-theme-color;
   background-color: white;
 }
 
 .round-profile-letter {
   @extend .round-img-icon;
-  border: 1px solid $primary-theme-color;
+  border: 2px solid $primary-theme-color;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
+  padding: 9px;
+  font-weight: bold;
 }
 
 .scroll-shadow {

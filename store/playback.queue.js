@@ -2,6 +2,7 @@ import {SPOTIFY, UI} from './constants';
 import {SPOTIFY_GREEN} from '~/utils/constants';
 import {shuffleArray} from '~/utils/helpers';
 import {isSameTrack} from '~/utils/helpers';
+import {v4 as uuid} from 'uuid';
 
 export const state = () => {
   return {
@@ -27,8 +28,8 @@ export const getters = {
     return state.queue;
   },
   currentlyPlayingIndex(state, getters, rootState, rootGetters){
-    const currentlyPlayingUri = rootGetters[`${SPOTIFY}/currentlyPlayingItemUri`];
-    const index = getters.queue.findIndex(track => track.uri == currentlyPlayingUri);
+    const currentlyPlayingItem = rootGetters[`${SPOTIFY}/currentlyPlayingItem`];
+    const index = getters.queue.findIndex(track => track.feedId == currentlyPlayingItem.feedId);
     return index;
   },
   hasPreviousTrack: (state, getters) => {
@@ -99,25 +100,33 @@ export const actions = {
   }
 };
 
+//feedId: extra unique id in case same track is played more than once in a queue
+function setFeedIds(tracks){
+  return tracks.map(track => ({...track, feedId: uuid()}));
+}
+
 export const mutations = {
   startQueue(state, params){
-    state.queue = [...params.itemSet.slice(params.index)];
+    //tie first item in new queue to currentlyPlayingItem in spotify store with given feedId; rest of items get own id
+    const newQueue = params.itemSet.slice(params.index);
+    newQueue[0].feedId = params.feedId;
+    state.queue = [newQueue[0], ...setFeedIds(newQueue.slice(1))];
   },
   clearQueue(state){
     state.queue = [];
   },  
   removeFromQueue(state, track){
-    const trackIndex = state.queue.findIndex(queueTrack => queueTrack.uuid === track.uuid);
+    const trackIndex = state.queue.findIndex(queueTrack => queueTrack.feedId === track.feedId);
     state.queue.splice(trackIndex, 1);
   },
   setPlayNext(state, params){
-    state.queue.splice(params.currentIndex + 1, 0, ...params.tracks);
+    state.queue.splice(params.currentIndex + 1, 0, ...setFeedIds(params.tracks));
   },
   clearUpNext(state, currentIndex){
     state.queue = state.queue.slice(0, currentIndex + 1);
   },
   addToEndOfQueue(state, tracks){
-    state.queue.push(...tracks);
+    state.queue.push(...setFeedIds(tracks));
   },
   shuffleUpNext(state, params){
     state.queue.splice(...[params.currentIndex + 1, params.nextTracks.length].concat(shuffleArray(params.nextTracks)));

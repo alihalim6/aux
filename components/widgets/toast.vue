@@ -1,7 +1,6 @@
 <template>
   <v-snackbar 
     class="app-toast" 
-
     v-model="currentToast"
     :app="true" 
     top 
@@ -9,7 +8,7 @@
     max-width="420" 
     transition="slide-y-transition" 
     :color="toast.backgroundColor || 'red'"
-    :timeout="toast.timeout || 5000"
+    :timeout="timeout"
   >
     <div class="snackbar-container fill-available">
       <div class="d-flex align-center pr-3">
@@ -32,13 +31,22 @@
   @Component
   export default class Toast extends Vue {
     currentToast = null;
+    timeout = -1;
 
     @Getter('toast', {namespace: UI})
     toast;
 
     @Watch('toast')
-    toastChanged(newVal){
-      this.currentToast = {...newVal};
+    toastChanged(toast){
+      this.currentToast = {...toast};
+      this.resetTimeout();
+    }
+
+    //reset snackbar timer (value needs to change for vuetify to reset it)
+    async resetTimeout(){
+      this.timeout = 0;
+      await this.$nextTick();
+      this.timeout = this.currentToast.persistent ? -1 : 5000;
     }
 
     closeToast(){

@@ -30,7 +30,7 @@ $phrase-border-color: #aaaaaa;
 }
 
 .dashed-separator {
-  border-bottom: 1px dashed #eeeeee;
+  border-bottom: 1px dashed #efefef;
 } 
 
 .sub-padding-left {
@@ -67,6 +67,10 @@ $phrase-border-color: #aaaaaa;
 
 .not-clickable {
   cursor: none;
+}
+
+.cursor-auto {
+  cursor: auto;
 }
 
 .ellipses-text {
@@ -117,16 +121,16 @@ $phrase-border-color: #aaaaaa;
   margin: 0px !important;
 }
 
-.spotify-green-color {
-  color: $spotify-green;
-}
-
-.transparent-bg-green-color {
-  color: #11ff00;
+.transparent-bg-track-playing-color {
+  color: $primary-theme-color;
 }
 
 .lighter-black-color {
   color: #888888;
+}
+
+.spotify-green-color {
+  color: $spotify-green;
 }
 
 .blurred {
@@ -136,4 +140,8 @@ $phrase-border-color: #aaaaaa;
 
 .black-background {
   background-color: black;
+}
+
+.width-max-content {
+  width: max-content;
 }

@@ -1,7 +1,8 @@
-import {httpClient} from '~/utils/api';
+import {httpClient, handleApiError} from '~/utils/api';
 import {refreshToken, accessTokenExpired} from '~/auth';
 import {PLAYBACK_QUEUE, FEED} from './constants';
 import {shuffleArray} from '~/utils/helpers';
+import {v4 as uuid} from 'uuid';
 
 export const state = () => {
   return {
@@ -37,15 +38,21 @@ export const getters = {
 
 export const actions = {
   playItem: async ({commit, getters}, item) => {
-    await httpClient.post('/playItem', {
-      item, 
-      deviceId: getters.spotifyDeviceId, 
-      devicePlaybackTransferNeeded: getters.devicePlaybackTransferNeeded
-    });
+    try {
+      await httpClient.post('/playItem', {
+        item, 
+        deviceId: getters.spotifyDeviceId, 
+        devicePlaybackTransferNeeded: getters.devicePlaybackTransferNeeded
+      });
+    }
+    catch(error){
+      dispatch('stopPlayback');
+      handleApiError('There was an issue with playback lorem ipsum...');
+    }
 
     commit('setDevicePlaybackTransferNeeded', false);
   },
-  togglePlayback: async ({commit, getters, dispatch, rootGetters}, params) => {
+  togglePlayback: async ({commit, getters, dispatch}, params) => {
     try{
       let item = params.item;
       let itemSet = params.itemSet ? params.itemSet.filter(item => !item.isArtist && !item.isCollection) : [];
@@ -117,15 +124,16 @@ export const actions = {
         }
       }
       //playing new item
-      else{
-        //has to be first for icons to work right
-        commit('setCurrentlyPlayingItem', item);
+      else{ 
+        const feedId = params.doNotRestartQueue ? item.feedId : uuid();
+        //has to be at top of logic for icons to work right
+        commit('setCurrentlyPlayingItem', {item, feedId});
 
         dispatch(`${FEED}/addToFeed`, {track: item}, {root: true});
       
         if(!params.doNotRestartQueue){
           const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
-          dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet}, {root: true});
+          dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet, feedId}, {root: true});
         }
 
         const playerState = await player.getCurrentState();
@@ -198,8 +206,8 @@ export const mutations = {
   setCurrentlyPlayingItemUri(state, itemUri){
     state.currentlyPlayingItemUri = itemUri;
   },
-  setCurrentlyPlayingItem(state, item){
-    state.currentlyPlayingItem = item;
+  setCurrentlyPlayingItem(state, params){
+    state.currentlyPlayingItem = {...params.item, feedId: params.feedId};
   },
   setSpotifyPlayer(state, player){
     state.spotifyPlayer = player;

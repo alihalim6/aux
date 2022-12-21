@@ -1,17 +1,21 @@
 import {AUX_NAMESPACE} from './constants';
 
 export const storageGet = (item) => {
-  return window.localStorage.getItem(AUX_NAMESPACE + item);
+  return localStorage.getItem(AUX_NAMESPACE + item);
 };
 
 export const storageGetBoolean = (item) => {
-  return window.localStorage.getItem(AUX_NAMESPACE + item) == 'true';
+  return localStorage.getItem(AUX_NAMESPACE + item) == 'true';
 }
 
 export const storageSet = (item, value) => {
-  window.localStorage.setItem((AUX_NAMESPACE + item), value);
+  localStorage.setItem((AUX_NAMESPACE + item), value);
 };
 
 export const clearStorage = () => {
-  window.localStorage.clear();
+  Object.keys(localStorage).forEach(function(key){
+    if(key.indexOf(AUX_NAMESPACE) == 0){
+      localStorage.removeItem(key);
+    }
+  });
 };

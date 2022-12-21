@@ -89,6 +89,7 @@
   import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
   import {msToDuration, getItemDuration, setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class UpNextTracks extends Vue {
@@ -140,9 +141,10 @@
     }
 
     async fromAlbumPressed(album){
-      setItemMetaData([album]);
+      const fromAlbum = cloneDeep(album);//in case currently playing item is on same album (avoid vuex mutation error)
+      setItemMetaData([fromAlbum]);
       this.$nuxt.$emit('hideUpNext');
-      await this.displayDetailOverlays(album);
+      await this.displayDetailOverlays(fromAlbum);
     }
 
     clearUpNextPressed(){

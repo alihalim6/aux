@@ -1,7 +1,7 @@
 <template>
   <v-snackbar 
     class="clickable feed-alert-container"
-    v-model="showAlert"
+    v-model="currentAlert"
     right
     max-width="75vw"
     transition="slide-y-reverse-transition" 
@@ -34,7 +34,7 @@
       </span>
 
       <div class="d-flex align-center align-self-end" v-if="feedAlert.trackAddedToFeed">
-        <v-img v-if="feedAlert.addedByImg" :src="feedAlert.addedByImg" class="added-by-img"></v-img>
+        <v-img v-if="feedAlert.addedByImg" :src="feedAlert.addedByImg" class="round-img-icon"></v-img>
         <span class="added-by-name">{{feedAlert.addedByName}}</span>
       </div>
 
@@ -63,7 +63,7 @@
 
   @Component
   export default class FeedAlert extends Vue {
-    showAlert = false;
+    currentAlert = false;
     auxModeOn = false;
     repliedToReaction = false;
     timeout = -1;
@@ -93,8 +93,8 @@
     toggleReplyingToFeedReaction;
 
     @Watch('feedAlert')
-    alertChanged(newVal){
-      this.showAlert = newVal;
+    alertChanged(alert){
+      this.currentAlert = !!alert.track;
       this.auxModeOn = storageGetBoolean(AUX_MODE);
       this.repliedToReaction = false;
       this.resetTimeout();
@@ -113,7 +113,7 @@
     async resetTimeout(){
       this.timeout = 0;
       await this.$nextTick();
-      this.timeout = this.showAlert.timeout || 5000;
+      this.timeout = this.currentAlert.timeout || 5000;
     }
 
     trackInfoPressed(){
@@ -135,7 +135,7 @@
     }
     
     closeAlert(){
-      this.showAlert = false;
+      this.currentAlert = false;
     }
 
     async replyPressed(){
@@ -217,14 +217,6 @@
       background-color: $spotify-green;
       font-size: 12px !important;
       align-self: flex-start;
-    }
-
-    .added-by-img {
-      @extend .round-img-icon;
-      $added-by-img-size: 18px;
-
-      height: $added-by-img-size;
-      max-width: $added-by-img-size;
     }
 
     .added-by-name {

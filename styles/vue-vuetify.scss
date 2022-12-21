@@ -85,8 +85,13 @@ $feed-base-bottom: 15px;
 }
 
 .v-dialog {
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.52);
   box-shadow: none;
+  padding: 8px;
+
+  @media(max-width: $max-inner-width){ 
+    padding: 4px;
+  }
 }
 
 .v-sheet.v-card {
@@ -133,5 +138,5 @@ $feed-base-bottom: 15px;
 }
 
 .v-snack__content {
-  padding: 14px 8px;
+  padding: 14px 8px 14px 14px;
 }

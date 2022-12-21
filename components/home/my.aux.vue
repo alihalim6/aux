@@ -48,7 +48,6 @@
 
   @Component
   export default class MyAux extends Vue {
-    dataFetch;
     selectedTab = 0;
 
     defaultContent = {
@@ -101,8 +100,7 @@
     };
 
     async beforeMount(){
-      this.dataFetch = httpClient.get('/myAux');
-      const { data } = await this.dataFetch;
+      const { data } = await httpClient.get('/myAux');
       this.setProfile(data.profile);
       const topItems = setItemMetaData(data.topItems);
 
@@ -127,14 +125,6 @@
 
       this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
       this.$nuxt.$root.$on(LIKED_ITEM_EVENT, this.handleItemLikeStatus);
-    }
-
-    //proactive fetch of liked tracks in the background
-    async mounted(){
-      await this.dataFetch;
-      await this.fetchRemainingData(this.content[0].key);
-
-      this.$forceUpdate();
     }
 
     handleItemLikeStatus(item, removal){
@@ -178,7 +168,7 @@
             contentToFetchFor.fetchPending = false;
           }
           catch(error){
-            handleApiError(error);
+            handleApiError('There was an issue loading your all of your Liked Tracks lorem ipsum...');
             break;
           }
         }

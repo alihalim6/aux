@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="currently-playing-container" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
+  <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
     <div class="clickable view-feed-container" v-if="!upNextDisplaying" @click="feedIconPressed()">
       <v-btn rounded elevation="4" class="view-feed" aria-label="view feed">
         <v-icon small color="white">mdi-format-list-text</v-icon>
@@ -95,7 +95,7 @@
   import {Component, Vue, Getter, Watch, Action, Mutation} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
   import {msToDuration, getItemDuration, isSameTrack} from '~/utils/helpers';
-  import {httpClient} from '~/utils/api';
+  import {httpClient, handleApiError} from '~/utils/api';
   import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, SPOTIFY_GREEN, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
 
   @Component
@@ -280,14 +280,24 @@
       const modifyLikeUrl = `/me/tracks?ids=${this.currentlyPlayingItem.id}`;
 
       if(this.itemLiked){
-        await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'DELETE'});
-        this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.currentlyPlayingItem);
-        this.setToast({text: REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN});
+        try {
+          await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'DELETE'});
+          this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.currentlyPlayingItem);
+          this.setToast({text: REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN});
+        }
+        catch(error){
+          handleApiError('Oops! That like didn\'t go thru lorem ipsum...');
+        }
       }
       else{
-        await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'PUT'});
-        this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.currentlyPlayingItem);
-        this.setToast({text: ADDED_TO_LIKES, backgroundColor: SPOTIFY_GREEN});
+        try {
+          await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'PUT'});
+          this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.currentlyPlayingItem);
+          this.setToast({text: ADDED_TO_LIKES, backgroundColor: SPOTIFY_GREEN});
+        }
+        catch(error){
+          handleApiError('Oops! That un-like didn\'t go thru lorem ipsum...');
+        }
       }
     }
 
@@ -452,5 +462,12 @@
   .up-next-hidden {
     background-color: white !important;
     color: black !important;
+  }
+
+  .v-tooltip__content {
+    height: fit-content;
+    top: auto !important;
+    bottom: 28px;
+    padding: 8px 20px;
   }
 </style>

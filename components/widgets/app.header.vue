@@ -1,22 +1,22 @@
 <template>
-  <v-app-bar elevation="2" color="white" class="app-bar" short fixed>
-    <div class="logo-container" :class="{'smaller-logo-container': $vuetify.breakpoint.smAndDown}">
+  <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll>
+    <div class="logo-container">
       <div class="aux-logo-container">
-        <div class="outlined-phrase d-none d-md-inline">PASS THE</div>
+        <div class="outlined-phrase d-none d-sm-inline">PASS THE</div>
         <div class="inline-display main-label">AUX</div>
       </div>
 
-      <v-icon class="by-x">mdi-close</v-icon>
-
-      <v-img class="spotify-icon d-inline d-md-none" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
-      <v-img class="spotify-full d-none d-md-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
+      <div class="d-flex align-center ml-2">
+        <v-icon small class="by-x">mdi-close</v-icon>
+        <v-img class="spotify-icon d-inline d-sm-none" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
+        <v-img class="spotify-full d-none d-sm-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
+      </div>
     </div>
 
     <div class="user-container">
       <v-menu bottom left transition="slide-y-transition" z-index="900" :close-on-content-click="false" offset-y>
         <template v-slot:activator="{on, attrs}">            
           <div class="clickable on-air-container" v-bind="attrs" v-on="on">
-            <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
             <div class="users-on-air">{{liveUsers.length}}</div>
             <v-icon class="live-info-icon" color="black" large>mdi-chevron-down</v-icon>
           </div>
@@ -24,10 +24,12 @@
 
         <v-list>
           <v-list-item>
-            <div class="pt-4 pl-2 pr-6 d-flex flex-column">
-              <div v-if="liveUsers.length" class="following-on-container">
-                <span class="following-on">FOLLOWING ON</span>
-                <v-img class="spotify-img d-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
+            <div class="pt-4 pl-2 pr-6 d-flex flex-column width-100">
+              <div class="d-flex justify-end">
+                <div v-if="liveUsers.length" class="following-on-container">
+                  <span class="following-on">FOLLOWING ON</span>
+                  <v-img class="spotify-img d-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
+                </div>
               </div>
 
               <div v-if="liveUsers.length" class="cursor-auto">
@@ -136,14 +138,14 @@
 
       if(user.ignored){
         storageSet(IGNORED_USERS, [...ignoredUsers(), user.id]);
-        this.setToast({text: `Ignoring tracks played by ${user.name}`, backgroundColor: BLACK});
+        this.setToast({text: `Ignoring tracks played by ${user.name}`});
       }
       else{
         const userIdIndex = ignoredUsers().findIndex(userId => userId == user.id);
         const ignoredUserIds = ignoredUsers();
         ignoredUserIds.splice(userIdIndex, 1);
         storageSet(IGNORED_USERS, ignoredUserIds);
-        this.setToast({text: `No longer ignoring tracks played by ${user.name}`, backgroundColor: BLACK});
+        this.setToast({text: `No longer ignoring tracks played by ${user.name}`});
       }
     }
 
@@ -152,7 +154,7 @@
 
       try {
         await httpClient.post('/passthru', {url: `/me/following?ids=${user.id}&type=user`, method});
-        this.setToast({text: `${user.following ? 'Now following' : 'No longer following'} ${user.name} on Spotify`, backgroundColor: BLACK});
+        this.setToast({text: `${user.following ? 'Now following' : 'No longer following'} ${user.name} on Spotify!`});
       }
       catch(error){
         handleApiError(`Oops! That ${user.following ? 'follow' : 'unfollow'} didn't go thru lorem ipsum...`);
@@ -201,24 +203,19 @@
       }
 
       .by-x {
-        font-size: 32px;
         color: $primary-theme-color;
-        padding: 0px 10px;
+        padding-right: 4px;
       }
 
       .spotify-full {
-        width: 8em;
+        width: 4em;
       }
 
       .spotify-icon {
-        width: 2.5em;
-      }
-    }
+        $icon-size: 1.2em;
 
-    .smaller-logo-container {
-      .main-label {
-        @extend .outlined-phrase;
-        background-color: $secondary-theme-color !important;
+        width: $icon-size;
+        height: $icon-size;
       }
     }
 
@@ -235,10 +232,6 @@
 
         @media(max-width: $max-inner-width){
           margin-right: 10px;
-        }
-
-        .live-dot {
-          margin-right: -10px;
         }
 
         .users-on-air {
@@ -265,7 +258,6 @@
           height: 4px;
           width: 10px;
           bottom: -8px;
-          left: 26px;
           background-color: $spotify-green;
           animation: oscillate;
           animation-duration: 4s;
@@ -323,7 +315,8 @@
     justify-content: flex-start;
     font-weight: bold;
     margin-top: 24px;
-
+    border-top: 1px dashed #eee;
+    
     .v-input--selection-controls {
       margin-top: 0px;
       padding: 16px 0px;
@@ -333,6 +326,7 @@
     .v-label {
       @extend .menu-label;
       padding-left: 4px;
+      color: #666666 !important;
     }
   }
 
@@ -398,6 +392,7 @@
     .following-on {
       margin-right: 4px;
       white-space: nowrap;
+      color: #666666;
     }
 
     .v-image {

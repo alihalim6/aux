@@ -1,5 +1,4 @@
 import {SPOTIFY, UI} from './constants';
-import {SPOTIFY_GREEN} from '~/utils/constants';
 import {shuffleArray} from '~/utils/helpers';
 import {isSameTrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
@@ -50,10 +49,7 @@ export const getters = {
   }
 };
 
-const threeDotToast = {
-  backgroundColor: SPOTIFY_GREEN,
-  timeout: 2500
-};
+const THREE_DOT_TOAST_TIMEOUT = 2500;
 
 export const actions = {  
   startPlaybackQueue: ({commit, getters, dispatch}, params) => {
@@ -78,13 +74,13 @@ export const actions = {
   },
   addToEndOfQueue: ({commit}, tracks) => {
     commit('addToEndOfQueue', tracks);
-    commit(`${UI}/setToast`, {...threeDotToast, text: `Track${tracks.length > 1 ? 's' : ''} added to end of queue`}, {root: true});
+    commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${tracks.length > 1 ? 's' : ''} added to end of queue`}, {root: true});
   },
   setTracksToPlayNext: ({commit, getters}, params) => {
     commit('setPlayNext', {currentIndex: getters.currentlyPlayingIndex, tracks: params.tracks});
 
     if(!params.noConfirmationToast){
-      commit(`${UI}/setToast`, {...threeDotToast, text: `Track${params.tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
+      commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${params.tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
     }
   },
   shuffleUpNext: ({commit, getters}) => {

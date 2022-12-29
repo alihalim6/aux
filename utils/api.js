@@ -43,12 +43,12 @@ async function attemptTokenRefresh(){
     await refreshToken();
   }
   catch(error){
-    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong, please refresh the page lorem ipsum...'});
+    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong, please refresh the page lorem ipsum...', error: true});
   }
 }
 
 function handleApiError(error){
-  $nuxt.$store.commit('ui/setToast', {text: error || 'Something went wrong lorem ipsum...'});
+  $nuxt.$store.commit('ui/setToast', {text: error || 'Something went wrong lorem ipsum...', error: true});
 }
 
 export {httpClient, handleApiError};

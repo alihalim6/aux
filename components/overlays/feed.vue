@@ -1,31 +1,33 @@
 <template>
-  <div v-show="uiFeed.display" class="activity-feed">
-    <div class="feed-container scroll-shadow-on-transparent" id="feedContainer">
-      <div class="d-flex flex-column">
-        <div class="feed-title-container">
-          <v-icon class="close-button" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
-        </div>
-
-        <div class="activity-item" v-if="activityFeed.length">
-          <ActivityItem v-for="item in activityFeed" :key="item.track.id" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
-        </div>
-
-        <div v-else class="d-flex flex-column">
-          <div class="no-feed-prompt">
-            <div>Tracks that you and others play will show here.</div>
-            <div class="sub-prompt">Kick things off by playing something!  Invite others lorem ipsum...</div>
+  <v-slide-y-reverse-transition>
+    <div v-show="uiFeed.display" class="activity-feed">
+      <div class="feed-container scroll-shadow-on-transparent" id="feedContainer">
+        <div class="d-flex flex-column">
+          <div class="feed-title-container">
+            <v-icon class="close-button" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
           </div>
 
-          <div class="no-prompt-graphic">
-            <v-img src="http://www.clipartbest.com/cliparts/dT7/6xj/dT76xjjEc.gif"></v-img>
-            <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux.png')"></v-img>
+          <div class="activity-item" v-if="activityFeed.length">
+            <ActivityItem v-for="item in activityFeed" :key="item.track.id" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
+          </div>
+
+          <div v-else class="d-flex flex-column">
+            <div class="no-feed-prompt">
+              <div>Tracks that you and others play will show here.</div>
+              <div class="sub-prompt">Kick things off by playing something!  Invite others lorem ipsum...</div>
+            </div>
+
+            <div class="no-prompt-graphic">
+              <v-img src="http://www.clipartbest.com/cliparts/dT7/6xj/dT76xjjEc.gif"></v-img>
+              <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux.png')"></v-img>
+            </div>
           </div>
         </div>
+        
+        <BackToTop elementId="feedContainer" arrowColor="white"/>
       </div>
-      
-      <BackToTop elementId="feedContainer" arrowColor="white"/>
     </div>
-  </div>
+  </v-slide-y-reverse-transition>
 </template>
 
 <script>

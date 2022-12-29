@@ -9,7 +9,7 @@ import {v4 as uuid} from 'uuid';
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
   if(!items){
-    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong with the data lorem ipsum...'});
+    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong with the data lorem ipsum...', error: true});
     return;
   }
 

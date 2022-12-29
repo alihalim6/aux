@@ -4,8 +4,8 @@
 
     <div v-show="!isLoading" class="base-app-container">
       <NewAndRecommended/>
-      <MyAux/>
       <Playlists/>
+      <MyAux/>
       <LazyDetailOverlays/>
     </div>
 
@@ -55,6 +55,6 @@
 
 <style lang="scss">
   .base-app-container {
-    margin-top: calc(#{$app-header-height} + 28px);
+    margin-top: 24px;
   }
 </style>

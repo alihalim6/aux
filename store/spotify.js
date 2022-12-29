@@ -179,7 +179,7 @@ export const actions = {
     commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
     if(!noError){
-      commit('ui/setToast', {text: 'There was an issue playing music lorem ipsum...'}, {root: true});
+      commit('ui/setToast', {text: 'There was an issue playing music lorem ipsum...', error: true}, {root: true});
     }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){

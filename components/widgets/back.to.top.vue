@@ -1,7 +1,7 @@
 <template>
   <div class="clickable back-to-top-container" :class="{'bottom-reached': bottomReached}" v-if="scrolledDown" @click.stop="backToTop()">
     <div class="back-to-top blurred" :class="{'black-background': arrowColor == 'white'}">
-      <v-icon large :color="arrowColor" aria-label="scroll to top of content">mdi-arrow-up</v-icon>
+      <v-icon :color="arrowColor" aria-label="scroll to top of content">mdi-arrow-up</v-icon>
     </div>
   </div>
 </template>
@@ -52,13 +52,13 @@
     z-index: 20;
 
     .back-to-top {
-      padding: 6px;
+      padding: 2px;
       border-radius: 100%;
       box-shadow: 0px 3px 10px -1px rgb(0 0 0 / 80%);
     }
 
     .back-to-top:hover {
-      padding: 12px;
+      padding: 6px;
     }
   }
 

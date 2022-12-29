@@ -9,18 +9,18 @@
                 <v-img :src="item.imgUrl.large"></v-img>
               </v-card>
 
-              <div v-if="playlists" class="d-flex align-start fill-available mb-4">
-                <v-card max-width="75%" elevation="7">
+              <div v-if="playlists" class="align-start fill-available mb-4">
+                <v-card :max-width="playlists ? '100%' : '90%'" elevation="7">
                   <v-img class="clickable" :src="item.imgUrl.large"></v-img>
                 </v-card>
 
-                <v-icon v-if="alternateFormat" class="clickable ml-auto" large color="black">mdi-arrow-right</v-icon>
+                <v-icon v-if="alternateFormat && !playlists" class="clickable ml-auto" large color="black">mdi-arrow-right</v-icon>
               </div>
 
               <v-icon v-if="!playlists" class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
 
               <div class="d-flex flex-column">
-                <span class="clickable item-title" :class="{'smaller-title': alternateFormat, 'spotify-green-color': hover}">{{item.primaryLabel}}</span>
+                <span class="clickable item-title" :class="{'smaller-title': alternateFormat, 'lighter-black-color': hover}">{{item.primaryLabel}}</span>
                 <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
                 <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
               </div>

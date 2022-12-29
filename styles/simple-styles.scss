@@ -121,8 +121,8 @@ $phrase-border-color: #aaaaaa;
   margin: 0px !important;
 }
 
-.transparent-bg-track-playing-color {
-  color: $primary-theme-color;
+.feed-track-playing {
+  font-size: 16px;
 }
 
 .lighter-black-color {
@@ -144,4 +144,8 @@ $phrase-border-color: #aaaaaa;
 
 .width-max-content {
   width: max-content;
+}
+
+.width-100 {
+  width: 100%;
 }

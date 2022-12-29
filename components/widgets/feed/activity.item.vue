@@ -5,8 +5,8 @@
     <div class="feed-item fill-available">
       <div class="item-info-container">
         <div class="item-info">
-          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)">
-            <span class="clickable font-weight-bold" :class="{'transparent-bg-track-playing-color': trackIsPlaying(activity.track)}">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
+          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'feed-track-playing': trackIsPlaying(activity.track)}">
+            <span class="clickable font-weight-bold">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
           </div>
         </div>
 
@@ -137,7 +137,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-around;
-    margin-bottom: 24px;
+    margin-bottom: 8px;
 
     .track-img {
       $track-img-size: 28px;
@@ -172,7 +172,6 @@
         .item-info {
           display: -webkit-inline-box;
           flex-wrap: wrap;
-          padding-bottom: 6px;
           margin-bottom: 6px;
 
           .track-artists {

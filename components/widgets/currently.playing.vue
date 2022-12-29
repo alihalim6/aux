@@ -1,13 +1,10 @@
 <template>
   <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
     <div class="clickable view-feed-container" v-if="!upNextDisplaying" @click="feedIconPressed()">
-      <v-btn rounded elevation="4" class="view-feed" aria-label="view feed">
-        <v-icon small color="white">mdi-format-list-text</v-icon>
-      </v-btn>
-
       <div class="d-flex align-center ml-2">
         <v-icon x-small color="red">mdi-circle</v-icon>
-        <span class="on-air">ON AIR</span>
+        <div class="on-air">ON AIR</div>
+        <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
       </div>
     </div>
 
@@ -96,7 +93,7 @@
   import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
   import {msToDuration, getItemDuration, isSameTrack} from '~/utils/helpers';
   import {httpClient, handleApiError} from '~/utils/api';
-  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, SPOTIFY_GREEN, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
+  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
 
   @Component
   export default class CurrentlyPlaying extends Vue {
@@ -283,7 +280,7 @@
         try {
           await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'DELETE'});
           this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.currentlyPlayingItem);
-          this.setToast({text: REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN});
+          this.setToast({text: REMOVED_FROM_LIKES});
         }
         catch(error){
           handleApiError('Oops! That like didn\'t go thru lorem ipsum...');
@@ -293,7 +290,7 @@
         try {
           await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'PUT'});
           this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.currentlyPlayingItem);
-          this.setToast({text: ADDED_TO_LIKES, backgroundColor: SPOTIFY_GREEN});
+          this.setToast({text: ADDED_TO_LIKES});
         }
         catch(error){
           handleApiError('Oops! That un-like didn\'t go thru lorem ipsum...');
@@ -328,7 +325,7 @@
     background-color: $secondary-theme-color !important;
     box-shadow: 0px 4px 0px -2px rgb(0 0 0 / 17%), 0px -11px 7px -8px rgb(0 0 0 / 22%) !important;
     overflow: hidden;
-    padding: 6px 4px !important;
+    padding: 0px 4px !important;
 
     .view-feed-container {
       align-self: flex-end;
@@ -337,27 +334,38 @@
       padding-top: 2px;
       position: relative;
 
-      .view-feed {
-        color: white;
-        display: flex;
-        font-weight: bold;
-        z-index: 30;
-        background-color: $spotify-green !important;
-        padding: 12px !important;
-        height: unset !important;
-        min-width: unset !important;
+      &:hover {
+        .on-air-chevron {
+          transition: translate 0.5s ease-out;
+          transform: translateY(-3px);
+        }
       }
 
       .on-air {
-        font-size: 10px;
-        color: red;
+        font-size: 14px;
+        color: transparent;
         padding-left: 4px;
         font-weight: bold;
-      }
-    }
+        -webkit-background-clip: text;
+        background-clip: text;
+        background-size: cover;
+        background-image: url('~/assets/on_air_background.png');
+        animation: move-background 5s infinite forwards;
 
-    .view-feed-container:hover {
-      padding: 1px;
+        @keyframes move-background {
+          0% {
+            background-position: left 0%;
+          }
+
+          50% {
+            background-position: right 100%;
+          }
+
+          100% {
+            background-position: left 0%;
+          }
+        }
+      }
     }
 
     .currently-playing {

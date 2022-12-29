@@ -7,14 +7,14 @@
     width="100%" 
     max-width="420" 
     transition="slide-y-transition" 
-    :color="toast.backgroundColor || 'red'"
+    :color="toast.error ? 'red' : 'white'"
     :timeout="timeout"
   >
     <div class="snackbar-container fill-available">
       <div class="d-flex align-center pr-3">
         <v-img v-if="toast.img" :src="toast.img" class="snackbar-img"></v-img>
         
-        <span class="toast-text">
+        <span class="toast-text" :class="{'error-text': toast.error}">
           <span>{{toast.username}} </span><span>{{toast.text}}</span>
         </span>
       </div>
@@ -62,6 +62,10 @@
     .toast-text {
       font-weight: bold;
       padding: 4px;
+      color: black;
+    }
+
+    .error-text {
       color: white;
     }
   }

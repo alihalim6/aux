@@ -21,7 +21,7 @@
   import {Component, Vue, Prop, Getter, Mutation, Action} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI, USER} from '~/store/constants';
   import {httpClient} from '~/utils/api';
-  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, SPOTIFY_GREEN, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
+  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
 
   @Component
   export default class ThreeDotIcon extends Vue {
@@ -105,7 +105,7 @@
         const playNextIndex = this.options.findIndex(option => option.playNext);
 
         this.options.splice(playNextIndex, 0, {
-          title: 'Shuffle n\' Play',
+          title: 'Shuffle \'n\' Play',
           fn: async () => {
             await this.togglePlayback({item: this.item, shuffle: true});
           }
@@ -116,19 +116,18 @@
       
       try {
         const {data} = await httpClient.post('/passthru', {url: `/me/${likeType}/contains?ids=${this.item.id}`});
-        const liked = data[0];
+        const alreadyLiked = data[0];
         const modifyLikeUrl = `/me/${likeType}?ids=${this.item.id}`;
 
         if(this.item.type != 'playlist'){//api does not seem to honor likes (https://github.com/spotify/web-api/issues/1251), so hide option for playlists
-          const apiParams = {url: modifyLikeUrl, method: liked ? 'DELETE' : 'PUT'};
-          const toastParams = {text: liked ? ADDED_TO_LIKES : REMOVED_FROM_LIKES, backgroundColor: SPOTIFY_GREEN};
+          const apiParams = {url: modifyLikeUrl, method: alreadyLiked ? 'DELETE' : 'PUT'};
 
-          const apiAndToast = async function(){
+          const apiAndToast = async () => {
             await httpClient.post('/passthru', apiParams);
-            this.setToast(toastParams);
+            this.setToast({text: alreadyLiked ? REMOVED_FROM_LIKES : ADDED_TO_LIKES});
           };
           
-          this.options.push(liked ? {
+          this.options.push(alreadyLiked ? {
             title: 'Remove from Likes',
               fn: async () => {
                 await apiAndToast();
@@ -141,8 +140,7 @@
               fn: async () => {
                 await apiAndToast();
                 this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.item);
-              },
-              color: SPOTIFY_GREEN
+              }
             }
           );
         }

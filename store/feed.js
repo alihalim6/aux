@@ -1,7 +1,7 @@
 import {USER, UI, PLAYBACK_QUEUE} from './constants';
 import moment from 'moment';
 import socket from '~/plugins/socket.client.js';
-import {AUX_MODE, SPOTIFY_GREEN} from '~/utils/constants';
+import {AUX_MODE} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
 import {isSameTrack, ignoredUsers} from '~/utils/helpers';
 import {httpClient} from '~/utils/api';
@@ -10,7 +10,7 @@ export const state = () => {
   return {
     feed: [],
     users: [
-     // {id: 12345, name: 'New-user123', img: ''},{id: 123456, name: 'zewmanSpotiyn', img: ''}
+     {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'}
     ]//////
   };
 };
@@ -91,7 +91,7 @@ export const actions = {
     if(userProfile){
       const {data} = await httpClient.post('/passthru', {url: `/me/following/contains?ids=${userProfile.id}&type=user`});
       commit('addUser', {...userProfile, following: data[0]});
-      commit(`${UI}/setToast`, {img: userProfile.img, username: userProfile.name, text: 'is on', backgroundColor: SPOTIFY_GREEN}, {root: true});
+      commit(`${UI}/setToast`, {img: userProfile.img, username: userProfile.name, text: 'is on'}, {root: true});
     }
   },
   handleUserDisconnect:  ({commit, rootGetters}) => {

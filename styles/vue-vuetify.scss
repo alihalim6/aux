@@ -1,4 +1,4 @@
-//framework overrides
+//vue and vuetify framework overrides
 
 $alert-container-base-bottom: 10px;
 $feed-height: 63vh;
@@ -129,7 +129,7 @@ $feed-base-bottom: 15px;
   flex-direction: row !important;
   justify-content: space-between;
   align-items: center !important;
-  margin-top: 6px;
+  margin-top: 4px;
   padding: 4px 20px !important;
 }
 
@@ -139,4 +139,8 @@ $feed-base-bottom: 15px;
 
 .v-snack__content {
   padding: 14px 8px 14px 14px;
+}
+
+.v-menu__content {
+  max-width: 95%;
 }

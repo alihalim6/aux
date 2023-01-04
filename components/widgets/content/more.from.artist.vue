@@ -1,53 +1,55 @@
 <template>
-    <section>
-      <div v-if="!parentItem.isArtist" class="more-from-label">More from <span class="font-weight-bold">{{artist.name}}</span>:</div>
+  <section>
+    <div v-if="!parentItem.isArtist" class="more-from-label">More from <span class="font-weight-bold">{{artist.name}}</span>:</div>
 
-      <!-- TOP TRACKS -->  
-      <v-card class="more-from-artist-container" elevation="7" v-if="parentItem.details.artistTopTracks.length">
-        <div class="more-from-artist">
-          <span class="more-from-artist-title font-weight-bold top-tracks">Top Tracks</span>
-          <TrackList :tracks="parentItem.details.artistTopTracks" :tracksFromDifferentAlbums="true" :parentId="parentItem.id"/>
-        </div>
-      </v-card>
+    <!-- TOP TRACKS -->  
+    <v-card class="more-from-artist-container" elevation="7" v-if="parentItem.details.artistTopTracks.length">
+      <div class="more-from-artist">
+        <span class="more-from-artist-title font-weight-bold top-tracks">Top Tracks</span>
+        <TrackList :tracks="parentItem.details.artistTopTracks" :tracksFromDifferentAlbums="true" :parentId="parentItem.id"/>
+      </div>
+    </v-card>
 
-      <!-- TOP ALBUMS -->  
-      <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.artistAlbums.length">
-        <div class="more-from-artist">
-          <span class="more-from-artist-title font-weight-bold top-albums">Top Albums</span>
-          <ContentCarousel :data="parentItem.details.artistAlbums" :moreFromArtist="true"/>
-        </div>
-      </v-card>
+    <!-- TOP ALBUMS -->  
+    <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.artistAlbums.length">
+      <div class="more-from-artist">
+        <span class="more-from-artist-title font-weight-bold top-albums">Top Albums</span>
+        <ContentCarousel :data="parentItem.details.artistAlbums" :moreFromArtist="true"/>
+      </div>
+    </v-card>
 
-      <!-- RELATED ARTISTS -->  
-      <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.relatedArtists.length">
-        <div class="more-from-artist">
-          <span class="more-from-artist-title font-weight-bold related-artists">Similar Artists</span>
-          
-          <div class="related-artists-container">
-            <div 
-              v-for="(artist, index) in parentItem.details.relatedArtists" 
-              :key="artist.id" class="clickable artist-container dashed-separator" 
-              :class="{'no-bottom-border': (index === parentItem.details.relatedArtists.length - 1)}"
-              @click="displayArtistDetails(artist)">
+    <!-- RELATED ARTISTS -->  
+    <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.relatedArtists.length">
+      <div class="more-from-artist">
+        <span class="more-from-artist-title font-weight-bold related-artists">Similar Artists</span>
+        
+        <div class="related-artists-container">
+          <div 
+            v-for="(artist, index) in parentItem.details.relatedArtists" 
+            :key="artist.id"
+            :class="{'no-bottom-border': (index === parentItem.details.relatedArtists.length - 1)}"
+            @click="$nuxt.$root.$emit('displayArtistDetails', artist)">
+              <v-hover v-slot="{hover}">
+                <section class="clickable artist-container dashed-separator" >
+                  <v-img class="artist-image" :src="artist.imgUrl.medium"></v-img>
 
-              <v-img class="artist-image" :src="artist.imgUrl.medium"></v-img>
+                  <div class="artist-info">
+                    <div class="font-weight-bold" :class="{'lighter-black-color': hover}">{{artist.name}}</div>
+                    <div class="font-weight-regular artist-genres">{{artist.secondaryLabel}}</div>
+                  </div>
 
-              <div class="artist-info">
-                <div class="font-weight-bold">{{artist.name}}</div>
-                <div class="font-weight-regular artist-genres">{{artist.secondaryLabel}}</div>
-              </div>
-
-              <v-icon class="clickable ml-auto">mdi-arrow-right</v-icon>
-            </div>
+                  <v-icon class="clickable ml-auto">mdi-arrow-right</v-icon>
+                </section>
+              </v-hover>
           </div>
         </div>
-      </v-card>
+      </div>
+    </v-card>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Prop, Action} from 'nuxt-property-decorator';
-  import {UI} from '~/store/constants';
+  import {Component, Vue, Prop} from 'nuxt-property-decorator';
 
   @Component
   export default class MoreFromArtist extends Vue {
@@ -56,15 +58,12 @@
 
     @Prop({required: true})
     artist;
-
-    @Action('displayArtistDetails', {namespace: UI})
-    displayArtistDetails;
   }
 </script>
 
 <style lang="scss">
   @import '~/styles/main.scss';
-
+  
   .more-from-label {
     font-size: 20px;
     padding: 20px $base-padding 0px;

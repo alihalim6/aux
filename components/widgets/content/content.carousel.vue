@@ -10,7 +10,7 @@
                 class="clickable" 
                 :class="{'content-hover': hover && !vertical, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
               >
-                <v-img class="content-img" :src="item.imgUrl.medium" @click="displayDetailOverlays(item)">
+                <v-img class="content-img" :src="item.imgUrl.medium" @click="$nuxt.$root.$emit('displayDetailOverlays', item)">
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
@@ -40,7 +40,7 @@
 
 <script>
   import {Component, Vue, Prop, Action, Getter} from 'nuxt-property-decorator';
-  import {UI, SPOTIFY} from '~/store/constants';
+  import {SPOTIFY} from '~/store/constants';
   import {isSameTrack} from '~/utils/helpers';
 
   @Component
@@ -57,9 +57,6 @@
     @Prop({default: false})
     vertical;
 
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
-
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
@@ -68,7 +65,7 @@
         this.togglePlayback({item, itemSet: this.data});
       }
       else{
-        this.displayDetailOverlays(item);
+        this.$nuxt.$root.$emit('displayDetailOverlays', item);
       }
     }
 

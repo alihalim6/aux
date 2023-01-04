@@ -1,7 +1,7 @@
 export default {  
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'AUX - Listen to Spotify with Others',
+    title: 'AUX - Spotify Together',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -12,9 +12,6 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-
-  // Global CSS: https://go.nuxtjs.dev/config-css
-  css: ['@/styles/main.scss'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
@@ -57,7 +54,10 @@ export default {
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'en'
+      lang: 'en',
+      name: 'AUX',
+      short_name: 'AUX',
+      description: 'Spotify Together'
     }
   },
 

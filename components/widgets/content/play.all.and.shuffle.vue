@@ -9,13 +9,10 @@
   import {Component, Vue, Prop, Action, Watch} from 'nuxt-property-decorator';
   import {handleItemCollection, shuffleArray} from '~/utils/helpers';
   import {SPOTIFY} from '~/store/constants';
-  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class PlayAllAndShuffle extends Vue {
     playbackItem;
-    //local copy so as not to interfere with tracks that may be in store
-    componentTracks;
 
     @Prop({required: true})
     tracks;
@@ -29,8 +26,6 @@
     @Watch('tracks', {immediate: true})
     updateTracks(newVal, oldVal){
       if(newVal && !oldVal){
-        this.componentTracks = cloneDeep(this.tracks);
-
         this.playbackItem = {
           isCollection: true,
           uri: this.collectionKey,
@@ -38,9 +33,9 @@
           name: this.collectionKey
         };
 
-        this.setTracksCollection(this.componentTracks);
-        this.playbackItem.itemSet = this.componentTracks;
-        this.$nuxt.$emit('updateTracks', this.componentTracks);
+        this.setTracksCollection(this.tracks);
+        this.playbackItem.itemSet = this.tracks;
+        this.$nuxt.$emit('updateTracks', this.tracks);
       }
     }
     
@@ -51,7 +46,7 @@
     }
 
     async shuffleAndPlay(){
-      await this.togglePlayback({item: this.playbackItem, itemSet: shuffleArray(this.componentTracks)});
+      await this.togglePlayback({item: this.playbackItem, itemSet: shuffleArray(this.tracks)});
     }
   }
 </script>

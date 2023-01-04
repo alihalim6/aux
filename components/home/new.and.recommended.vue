@@ -36,9 +36,6 @@
     @Mutation('setLoading', {namespace: UI})
     setLoading;
 
-    @Mutation('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
-
     async beforeMount(){
       const { data } = await httpClient.get('/newAndRecommended');
       this.previewItems = setItemMetaData(data.previewItems);
@@ -49,7 +46,7 @@
     }
 
     displayAll(){
-      this.displayDetailOverlays({
+      this.$nuxt.$root.$emit('displayDetailOverlays', {
         ...this.baseOverlay,
         allNewAndRecommended: true,
         name: 'NEW AND RECOMMENDED',
@@ -58,7 +55,7 @@
     }
 
     displayNewReleases(){
-      this.displayDetailOverlays({
+      this.$nuxt.$root.$emit('displayDetailOverlays', {
         ...this.baseOverlay,
         newReleases: true,
         name: 'NEW RELEASES',

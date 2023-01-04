@@ -77,9 +77,6 @@
     @Getter('replyingToFeedReaction', {namespace: UI})
     replyingToFeedReaction;
 
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
-
     @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
     playTrackNow;
 
@@ -117,7 +114,7 @@
     }
 
     trackInfoPressed(){
-      this.displayDetailOverlays(this.feedAlert.track);
+      this.$nuxt.$root.$emit('displayDetailOverlays', this.feedAlert.track);
       this.closeAlert();
     }
 
@@ -154,7 +151,7 @@
 
 <style lang="scss">
   @import '~/styles/main.scss';
-
+  
   .feed-alert-container {
     $track-info-font-size: 12px;
     $secondary-text-color: #888888;

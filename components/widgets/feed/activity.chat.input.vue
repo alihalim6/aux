@@ -12,6 +12,7 @@
       @keyup.enter="chatMessageSubmitted"
       v-model="chatMessage"
       clearable
+      :maxlength="100"
     >
       <template v-slot:append-outer>
         <v-icon :color="submitIconColor" class="clickable mr-2" @click.stop="chatMessageSubmitted()">mdi-arrow-up-circle</v-icon>

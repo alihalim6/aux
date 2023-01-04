@@ -1,30 +1,34 @@
 <template>
   <section>
-    <v-dialog :value="detailOverlays.display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
-      <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="detailOverlays.currentIndex">
-          <v-carousel-item v-for="(item, index) in detailOverlays.items" :key="item.overlayId" transition="fade-transition">                    
+    <v-dialog :value="display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
+      <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex">
+          <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">                    
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
-            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="item.imgUrl && detailOverlays.currentIndex === index">
-              <div class="full-item-image-cta-outer" @click="displayFullItemImage(item.imgUrl.large)" v-if="!item.simpleOverlay">
+            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="item.imgUrl && currentIndex === index">
+              <div v-if="!item.details" class="loading-container">
+                <div class="blurred loading"></div>
+              </div>
+
+              <div class="full-item-image-cta-outer" @click="() => fullItemImage = item.imgUrl.large" v-if="item.details && !item.simpleOverlay">
                 <v-icon color="white" class="eye">mdi-eye</v-icon>
               </div>
 
-              <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay}" @click.stop>
-                <div class="inner-container">
+              <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" @click.stop>
+                <div class="inner-container" v-if="item.details">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
-                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBackDetailOverlays()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="detailOverlaysClose()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
+                    <v-icon class="close-button" large @click="closeOverlays()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
                   <div class="inner-image-cta-container" v-if="item.imgUrl && !item.simpleOverlay">
-                    <div class="clickable full-item-image-cta-inner" @click="displayFullItemImage(item.imgUrl.large)">
+                    <div class="clickable full-item-image-cta-inner" @click="() => fullItemImage = item.imgUrl.large">
                       {{item.isArtist ? 'Photo' : (item.albumType || 'Track') + ' Artwork'}}
                     </div>
                   </div>
 
                   <div class="d-flex justify-space-between align-center py-2">
-                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBackDetailOverlays()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="detailOverlaysClose()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
+                    <v-icon class="close-button" large @click="closeOverlays()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
@@ -48,7 +52,7 @@
               </div>
             </v-img>
 
-            <BackToTop :elementId="`overlayContent${index}`"/>
+            <BackToTop v-if="item.details" :elementId="`overlayContent${index}`"/>
           </v-carousel-item>
         </v-carousel>
     </v-dialog>
@@ -60,52 +64,84 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
+  import {Component, Vue, Mutation} from 'nuxt-property-decorator';
   import {UI} from '~/store/constants';
+  import {httpClient} from '~/utils/api';
+  import {setItemMetaData} from '~/utils/helpers';
+  import {v4 as uuid} from 'uuid';
 
   @Component
   export default class DetailOverlays extends Vue {
     scrolledDown = false;
-
-    @Getter('detailOverlays', {namespace: UI})
-    detailOverlays;
+    items = [];
+    display = false;
+    currentIndex = -1;
+    fullItemImage = '';
     
-    @Getter('fullItemImage', {namespace: UI})
-    fullItemImage;
-
-    @Getter('feed', {namespace: UI})
-    feed;
-    
-    @Mutation('closeDetailOverlays', {namespace: UI})
-    closeDetailOverlays;
-    
-    @Mutation('goBackDetailOverlays', {namespace: UI})
-    goBackDetailOverlays;
-    
-    @Mutation('displayFullItemImage', {namespace: UI})
-    displayFullItemImage;
-    
-    @Mutation('closeFullItemImage', {namespace: UI})
-    closeFullItemImage;
-
-    @Watch('detailOverlays', {deep: true})
-    detailOverlaysChanged(){
-      this.scrolledDown = false;
-    }
+    @Mutation('closeFeed', {namespace: UI})
+    closeFeed;
 
     beforeMount(){
       this.$nuxt.$root.$on('scrolledDown', scrolledDown => this.scrolledDown = scrolledDown);
+      this.$nuxt.$root.$on('displayDetailOverlays', this.displayDetailOverlays);
+      this.$nuxt.$root.$on('closeOverlays', this.closeOverlays);
+      
+      this.$nuxt.$root.$on('displayArtistDetails', async artist => {
+        const { data } = await httpClient.post('/artist', {itemId: artist.id});
+    
+        const artistToDisplay = {
+          ...artist,
+          images: data.artist.images,
+          genres: data.artist.genres
+        };
+        
+        this.displayDetailOverlays(setItemMetaData([artistToDisplay])[0]);
+      });
+    }
+
+    async displayDetailOverlays(item){
+      const detailsId = (item.isTrack ? item.album.id : item.id);
+      let detailsResponse = {};
+
+      this.items = [...this.items, {...item, overlayId: uuid()}];//needs to be 'overlayId' since child at least one child component (playlists) uses 'id' internally
+      this.currentIndex++;
+      this.display = true;
+
+      if(!item.data){
+        detailsResponse = await httpClient.post('/details', {
+          itemDetailsId: detailsId, 
+          isTrack: item.isTrack, 
+          isAlbum: item.isAlbum, 
+          isArtist: item.isArtist,
+          isPlaylist: item.isPlaylist,
+          singleArtistId: item.singleArtistId
+        });
+      }
+
+      this.items[this.items.length - 1].details = detailsResponse.data || item.data;
+      this.$forceUpdate();
+      this.closeFeed();
+      this.scrolledDown = false;
     }
 
     fullItemImageClose(){
-      this.closeFullItemImage();
+      this.fullItemImage = '';
 
       //prevent background scroll from being enabled on close of full item image
       document.documentElement.style.overflowY = 'hidden';
     }
 
-    detailOverlaysClose(){
-      this.closeDetailOverlays();
+    goBack(){
+      this.items.splice(this.currentIndex, 1);
+      this.currentIndex--;
+      this.scrolledDown = false;
+    }
+
+
+    closeOverlays(){
+      this.items = [];
+      this.display = false;
+      this.currentIndex = -1;
 
       //re-enable scroll
       document.documentElement.style.overflowY = '';
@@ -115,7 +151,7 @@
 
 <style lang="scss">
   @import '~/styles/simple-styles.scss';
-
+  
   $full-image-cta-breakpoint: 850px;
 
   .item-image {
@@ -125,6 +161,28 @@
     margin: 0 auto;
     border-radius: 4px;
     overflow: visible !important;
+
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100%;
+      
+      .loading {
+        animation-name: oscillate-loading;
+        animation-duration: 1s;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+        width: 50%;
+        height: 23px;
+      }
+
+      @keyframes oscillate-loading {
+        0% {transform: translateX(0);}
+        50% {transform: translateX(100%);} 
+        100% {transform: translateX(0);} 
+      }
+    }
 
     .full-item-image-cta-outer {
       position: absolute;
@@ -153,20 +211,11 @@
       border: unset;
       position: relative;
       height: 100%;
-      background-color: white;
+      background-color: transparent;
       max-width: unset;
       border: 2px solid $secondary-theme-color;
       border-radius: 4px;
-      animation-name: fade-in;
-      animation-duration: 675ms;
-      animation-timing-function: ease;
-      animation-delay: 560ms;
-      animation-fill-mode: forwards;
       overflow: scroll;
-
-      @keyframes fade-in {
-        to {opacity: 1;}
-      }
 
       .inner-container {
         max-width: $max-inner-width;
@@ -273,6 +322,19 @@
           }
         }
       }
+    }
+
+    .content-loaded {
+      background-color: white;
+      animation-name: fade-in;
+      animation-duration: 655ms;
+      animation-timing-function: ease;
+      animation-delay: 350ms;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes fade-in {
+      to {opacity: 1;}
     }
 
     .simple-overlay {

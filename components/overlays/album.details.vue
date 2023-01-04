@@ -15,33 +15,26 @@
     </div>
 
     <div v-if="album.total_tracks > 1">
-      <TrackList :tracks="overlayAlbum.details.albumTracks" :parentId="album.id"/>
+      <TrackList :tracks="album.details.albumTracks" :parentId="album.id"/>
     </div>
 
-    <MoreFromArtist v-if="album.singleTrack" :parentItem="overlayAlbum" :artist="album.artists[0]"/>
+    <MoreFromArtist v-if="album.singleTrack" :parentItem="album" :artist="album.artists[0]"/>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Prop, Mutation} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData, handleItemCollection} from '~/utils/helpers';
-  import {UI} from '~/store/constants';
-  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class AlbumDetails extends Vue {
     duration = 0;
-    overlayAlbum;
 
     @Prop({required: true})
     album;
 
-    @Mutation('updateOverlayItem', {namespace: UI})
-    updateOverlayItem;
-
     beforeMount(){
-      this.overlayAlbum = cloneDeep(this.album);
-      const albumDetails = this.overlayAlbum.details;
+      const albumDetails = this.album.details;
 
       if(this.album.singleTrack){
         this.duration = msToDuration(albumDetails.albumTracks[0].duration_ms);
@@ -68,8 +61,6 @@
         track.album = {...this.album};
         delete track.album.details;
       }
-
-      this.updateOverlayItem(this.overlayAlbum);
     }
   }
   </script>

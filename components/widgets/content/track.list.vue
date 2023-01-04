@@ -55,9 +55,6 @@
     @Prop({default: false})
     hideAlbums;
 
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
-
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
@@ -77,13 +74,13 @@
 
     trackImgPressed(track){
       if(this.tracksFromDifferentAlbums){
-        this.displayDetailOverlays(track);
+        this.$nuxt.$root.$emit('displayDetailOverlays', track);
       }
     }
 
     fromAlbumPressed(album){
       album = setItemMetaData([album])[0];
-      this.displayDetailOverlays(album);
+      this.$nuxt.$root.$emit('displayDetailOverlays', album);
     }
 
     trackNamePressed(track){

@@ -4,7 +4,7 @@
 
     <v-card elevation="7" class="pa-2">
       <v-tabs v-model="selectedTab" slider-color="black" grow color="rgba(0, 0, 0, 0.8)">
-        <v-tab v-for="(item, index) in content" :key="item.key">
+        <v-tab v-for="(item, index) in content" :key="item.label">
           <div class="unselected-tab" :class="{'selected-tab': selectedTab === index}">
             <span class="">{{item.label}}</span>
           </div>
@@ -28,9 +28,8 @@
 </template>
 
 <script>
-  import {Component, Prop, Vue, Action} from 'nuxt-property-decorator';
+  import {Component, Prop, Vue} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
-  import {UI} from '~/store/constants';
 
   @Component
   export default class AllNewAndRecommended extends Vue {
@@ -55,9 +54,6 @@
 
     @Prop({required: true})
     data;
-
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
 
     async beforeMount(){
       this.newAndRecommended = setItemMetaData(this.data);

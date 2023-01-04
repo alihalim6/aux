@@ -1,7 +1,14 @@
 <template>
   <section>
     <div v-if="data.length" class="vertical-content">
-      <div v-for="(item, index) in data" :key="item.uuid" class="pb-2 mb-4" :class="{'dashed-separator': index < (data.length - 1)}" elevation="3" @click="displayDetailOverlays(item)">        
+      <div 
+        v-for="(item, index) in data" 
+        :key="item.uuid" 
+        class="pb-2 mb-4" 
+        :class="{'dashed-separator': index < (data.length - 1)}" 
+        elevation="3" 
+        @click="$nuxt.$root.$emit('displayDetailOverlays', item)"
+      >        
         <v-hover v-slot="{hover}">
           <section>
             <div class="item-container" :class="{'flex-column': playlists}">  
@@ -45,8 +52,7 @@
 </template>
 
 <script>
-  import {Component, Prop, Vue, Action} from 'nuxt-property-decorator';
-  import {UI} from '~/store/constants';
+  import {Component, Prop, Vue} from 'nuxt-property-decorator';
 
   @Component
   export default class VerticalContent extends Vue {
@@ -58,9 +64,6 @@
 
     @Prop()
     playlists;
-
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
   }
 </script>
 

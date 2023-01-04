@@ -10,7 +10,7 @@
 
     <div class="currently-playing" v-if="!upNextDisplaying">
       <div class="d-flex">
-        <v-img @click="displayDetailOverlays(currentlyPlayingItem)" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium"></v-img>
+        <v-img @click="$nuxt.$root.$emit('displayDetailOverlays', currentlyPlayingItem)" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium"></v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
           <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
@@ -83,7 +83,7 @@
         </div>
       </div>
     </div>
-
+    
     <UpNextTracks/>
   </v-footer>
 </template>
@@ -145,9 +145,6 @@
 
     @Action('seekPlayback', {namespace: SPOTIFY})
     seekPlayback;
-
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
 
     @Mutation('displayFeed', {namespace: UI})
     displayFeed;

@@ -46,23 +46,20 @@
         </div>
       </div>
 
-      <TrackList :tracks="overlayTrack.details.albumTracks" :parentId="track.id"/>
+      <TrackList :tracks="track.details.albumTracks" :parentId="track.id"/>
     </div>
 
-    <MoreFromArtist v-if="(!track.album || track.album.total_tracks === 1)" :parentItem="overlayTrack" :artist="track.artists[0]"/>
+    <MoreFromArtist v-if="(!track.album || track.album.total_tracks === 1)" :parentItem="track" :artist="track.artists[0]"/>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Prop, Action, Mutation} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData} from '~/utils/helpers';
-  import {UI} from '~/store/constants';
-  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class TrackDetails extends Vue {
     duration = 0;
-    overlayTrack;
     multiTrackAlbum = false;
     trackAlbumArtistsLengthsDiffer = false;
     fromAlbum;
@@ -70,18 +67,11 @@
     @Prop({required: true})
     track;
 
-    @Mutation('updateOverlayItem', {namespace: UI})
-    updateOverlayItem;
-    
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
-
     beforeMount(){
-      this.overlayTrack = cloneDeep(this.track);
-      const trackDetails = this.overlayTrack.details;
+      const trackDetails = this.track.details;
 
       if(this.track.album){
-        setItemMetaData([this.overlayTrack.album]);
+        setItemMetaData([this.track.album]);
         this.albumDuration = msToDuration(trackDetails.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
       }
       
@@ -91,18 +81,20 @@
         setItemMetaData(trackDetails.relatedArtists);
       }
 
-      this.updateOverlayItem(this.overlayTrack);
       this.duration = msToDuration(this.track.duration_ms);
-      
       this.multiTrackAlbum = this.track.album && (this.track.album.total_tracks > 1);
 
       if(this.multiTrackAlbum){
         setItemMetaData(trackDetails.albumTracks);
-        trackDetails.albumTracks.forEach(track => track.imgUrl = this.overlayTrack.imgUrl);
-        trackDetails.albumTracks.forEach(track => track.fromCollection = [this.overlayTrack.album.uri]);
+
+        trackDetails.albumTracks.forEach(track => {
+          track.imgUrl = this.track.imgUrl;
+          track.fromCollection = [this.track.album.uri];
+          track.album = this.track.album;
+        });
 
         this.fromAlbum = {
-          ...this.overlayTrack.album,
+          ...this.track.album,
           details: {
             albumTracks: trackDetails.albumTracks
           }
@@ -114,7 +106,7 @@
 
     mounted(){
       if(this.multiTrackAlbum){
-        document.getElementById('fromAlbumInfo').style.backgroundImage = `url(${this.overlayTrack.imgUrl.large})`;
+        document.getElementById('fromAlbumInfo').style.backgroundImage = `url(${this.track.imgUrl.large})`;
       }
     }
   }

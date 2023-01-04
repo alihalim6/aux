@@ -1,6 +1,6 @@
 <template>    
   <section class="feed-item-container">
-    <v-img class="clickable track-img" :src="activity.track.imgUrl.small" @click.stop="displayDetailOverlays(activity.track)"></v-img>
+    <v-img class="clickable track-img" :src="activity.track.imgUrl.small" @click.stop="$nuxt.$root.$emit('displayDetailOverlays', activity.track)"></v-img>
 
     <div class="feed-item fill-available">
       <div class="item-info-container">
@@ -75,9 +75,6 @@
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
-
     @Action('addReactionToActivity', {namespace: FEED})
     addReactionToActivity;
 
@@ -132,7 +129,7 @@
 
 <style lang="scss">
   @import '~/styles/main.scss';
-
+  
   .feed-item-container {
     display: flex;
     align-items: flex-start;

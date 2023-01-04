@@ -86,10 +86,9 @@
 
 <script>
   import {Component, Vue, Getter, Watch, Action} from 'nuxt-property-decorator';
-  import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
+  import {PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
   import {msToDuration, getItemDuration, setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
-  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class UpNextTracks extends Vue {
@@ -104,9 +103,6 @@
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
-
-    @Action('displayDetailOverlays', {namespace: UI})
-    displayDetailOverlays;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
@@ -141,10 +137,9 @@
     }
 
     async fromAlbumPressed(album){
-      const fromAlbum = cloneDeep(album);//in case currently playing item is on same album (avoid vuex mutation error)
-      setItemMetaData([fromAlbum]);
+      setItemMetaData([album]);
       this.$nuxt.$emit('hideUpNext');
-      await this.displayDetailOverlays(fromAlbum);
+      this.$nuxt.$root.$emit('displayDetailOverlays', album)
     }
 
     clearUpNextPressed(){
@@ -156,7 +151,7 @@
 
 <style lang="scss">
   @import '~/styles/simple-styles.scss';
-
+  
   .up-next-list-container {
     width: 100%;
     height: 100%;
@@ -242,12 +237,12 @@
       align-items: center;
       font-weight: bold;
       width: 90vw;
-      margin-top: 36px;
+      margin-top: 40px;
       padding-bottom: 24px;
 
       .then-label {
         text-decoration: underline;
-        font-size: 16px;
+        font-size: 18px;
       }
 
       .then-track-container {

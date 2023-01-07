@@ -1,6 +1,6 @@
 import {httpClient, handleApiError} from '~/utils/api';
 import {refreshToken, accessTokenExpired} from '~/auth';
-import {PLAYBACK_QUEUE, FEED} from './constants';
+import {PLAYBACK_QUEUE, FEED, UI} from './constants';
 import {shuffleArray} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 
@@ -11,7 +11,8 @@ export const state = () => {
     currentlyPlayingItem: {},
     spotifyPlayer: {},
     devicePlaybackTransferNeeded: false,
-    audioPlaying: false
+    audioPlaying: false,
+    newApiPlayback: ''
   };
 };
 
@@ -33,6 +34,9 @@ export const getters = {
   },
   audioPlaying: (state) => {
     return state.audioPlaying;
+  },
+  newApiPlayback: (state) => {
+    return state.newApiPlayback;
   }
 };
 
@@ -155,6 +159,7 @@ export const actions = {
         await player.seek(0);
 
         commit('setAudioPlaying', true);
+        commit('setNewApiPlayback', feedId);
       }
 
       commit('setSpotifyPlayer', player);
@@ -179,7 +184,7 @@ export const actions = {
     commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
     if(!noError){
-      commit('ui/setToast', {text: 'There was an issue playing music lorem ipsum...', error: true}, {root: true});
+      commit(`${UI}/setToast`, {text: 'There was an issue playing music lorem ipsum...', error: true}, {root: true});
     }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){
@@ -223,6 +228,9 @@ export const mutations = {
   setAudioPlaying(state, playing){
     console.log(`setting audioPlaying to ${playing}`);
     state.audioPlaying = playing;
+  },
+  setNewApiPlayback(state, feedId){
+    state.newApiPlayback = feedId;
   }
 };
 //TODO try to handle external pausing (e.g. from headphone) - player_state_changed - compare if prev playing and now paused and vice versa

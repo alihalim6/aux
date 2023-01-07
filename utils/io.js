@@ -1,5 +1,6 @@
 import socket from '~/plugins/socket.client.js';
-import {FEED} from '../store/constants';
+import {FEED, USER, UI} from '~/store/constants';
+import {ignoredUsers} from '~/utils/helpers';
 
 function io(){
   socket.on('handleLiveUser', userProfile => {
@@ -16,6 +17,12 @@ function io(){
 
   socket.on('handleActivityReactionAdded', reaction => {
     $nuxt.$store.dispatch(`${FEED}/handleActivityReaction`, reaction);
+  });
+
+  socket.on('handleUserFollowed', ({followedById, followedByName, followedId}) => {
+    if(($nuxt.$store.getters[`${USER}/profile`].id == followedId) && !ignoredUsers().find(userId => userId == followedById)){
+      $nuxt.$store.commit(`${UI}/setToast`, {text: `${followedByName} just followed you on Spotify!`});
+    }
   });
 }
 

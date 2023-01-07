@@ -131,6 +131,9 @@
     @Getter('feed', {namespace: UI})
     feed;
 
+    @Getter('newApiPlayback', {namespace: SPOTIFY})
+    newApiPlayback;
+
     @Action('stopPlayback', {namespace: SPOTIFY})
     stopPlayback;
 
@@ -161,33 +164,40 @@
     //TODO: NOT 'OFF AIR' IF NOTHING PLAYING - ONLY WHEN NOTHING HAS BEEN PLAYED
 
     @Watch('audioPlaying')
-    async updatePlaybackIcon(){
+    async updatePlaybackIcon(playing){
       await this.$nextTick();
-      this.playbackIcon = this.currentlyPlayingItem.playbackIcon || 'play';
+      this.playbackIcon = this.currentlyPlayingItem.playbackIcon || (playing ? 'pause' : 'play');
     }
-    
+
     @Watch('currentlyPlayingItem')
-    async startPlayback(item){
+    async itemPlayingChanged(item){
       if(item && item.id){
         item.duration_ms = await getItemDuration(item);
 
         if(!item.duration){
           item.duration = msToDuration(item.duration_ms);
         }
-
+        
         this.initializeTiming(item);
+      }
+      else{
+        this.stopInterval();
+        this.initializeTiming();
+        this.playbackIcon = 'play';
+      }
+    }
+    
+    @Watch('newApiPlayback')
+    async startPlayback(){
+      const item = this.currentlyPlayingItem;
 
+      if(item && item.id){
         if(!this.playbackInterval){
           this.startInterval();
         }
 
         const {data} = await httpClient.post('/passthru', {url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data[0];
-      }
-      else{
-        this.stopInterval();
-        this.initializeTiming();
-        this.playbackIcon = 'play';
       }
     }
 

@@ -5,11 +5,12 @@ import {refreshToken} from '~/auth';
 import {handleAuthError} from '~/utils/auth';
 import {httpClient} from '~/utils/api';
 import {v4 as uuid} from 'uuid';
+import {UI} from '~/store/constants';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
   if(!items){
-    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong with the data lorem ipsum...', error: true});
+    $nuxt.$store.commit(`$${UI}/setToast`, {text: 'Something went wrong with the data lorem ipsum...', error: true});
     return;
   }
 

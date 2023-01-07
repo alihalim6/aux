@@ -28,6 +28,10 @@ export default function(){
         socket.broadcast.emit('handleActivityReactionAdded', reaction);
       });
 
+      socket.on('userFollowed', data => {
+        socket.broadcast.emit('handleUserFollowed', data);
+      });
+
       socket.on('disconnect', reason => {
         console.log(reason);
         

@@ -3,6 +3,7 @@ import axios from 'axios';
 import {refreshToken, accessTokenExpired} from '~/auth';
 import {storageGet} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
+import {UI} from '~/store/constants';
 
 const httpClient = axios.create({
   baseURL: `${BASE_URL}/api`
@@ -43,12 +44,12 @@ async function attemptTokenRefresh(){
     await refreshToken();
   }
   catch(error){
-    $nuxt.$store.commit('ui/setToast', {text: 'Something went wrong, please refresh the page lorem ipsum...', error: true});
+    $nuxt.$store.commit(`${UI}/setToast`, {text: 'Something went wrong, please refresh the page lorem ipsum...', error: true});
   }
 }
 
 function handleApiError(error){
-  $nuxt.$store.commit('ui/setToast', {text: error || 'Something went wrong lorem ipsum...', error: true});
+  $nuxt.$store.commit(`${UI}/setToast`, {text: error || 'Something went wrong lorem ipsum...', error: true});
 }
 
 export {httpClient, handleApiError};

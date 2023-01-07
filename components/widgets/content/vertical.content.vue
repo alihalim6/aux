@@ -29,7 +29,7 @@
               <div class="d-flex flex-column">
                 <span class="clickable item-title" :class="{'smaller-title': alternateFormat, 'lighter-black-color': hover}">{{item.primaryLabel}}</span>
                 <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-                <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
+                <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
               </div>
 
               <v-icon v-if="!alternateFormat" class="ml-auto" color="black">mdi-arrow-right</v-icon>
@@ -129,11 +129,11 @@
     }
 
     .smaller-detail {
-      font-size: 12px;
       align-items: flex-start;
 
       .v-icon {
         padding-top: 1px;
+        font-size: 20px;
       }
     }
   }

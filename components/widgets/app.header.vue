@@ -85,6 +85,7 @@
   import {AUX_MODE, SPLASH, IGNORED_USERS, BLACK} from '~/utils/constants';
   import {ignoredUsers} from '~/utils/helpers';
   import {httpClient, handleApiError} from '~/utils/api';
+  import socket from '~/plugins/socket.client.js';
 
   @Component
   export default class AppHeader extends Vue {
@@ -150,11 +151,16 @@
     }
 
     async followingUserToggled(user){
+      //user.following is v-modeled so value here is the result of the toggle
       const method = user.following ? 'PUT' : 'DELETE';
 
       try {
         await httpClient.post('/passthru', {url: `/me/following?ids=${user.id}&type=user`, method});
-        this.setToast({text: `${user.following ? 'Now following' : 'No longer following'} ${user.name} on Spotify!`});
+        this.setToast({text: `${user.following ? 'Now following' : 'No longer following'} ${user.name} on Spotify`});
+
+        if(user.following){
+          socket.emit('userFollowed', {followedById: this.profile.id, followedByName: this.profile.name, followedId: user.id});
+        }
       }
       catch(error){
         handleApiError(`Oops! That ${user.following ? 'follow' : 'unfollow'} didn't go thru lorem ipsum...`);

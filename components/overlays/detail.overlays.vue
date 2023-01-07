@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-dialog :value="display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
-      <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex">
+      <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex" :touchless="true">
           <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">                    
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
             <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="item.imgUrl && currentIndex === index">
@@ -9,7 +9,7 @@
                 <div class="blurred loading"></div>
               </div>
 
-              <div class="full-item-image-cta-outer" @click="() => fullItemImage = item.imgUrl.large" v-if="item.details && !item.simpleOverlay">
+              <div class="full-item-image-cta-outer" @click="() => fullItemImage = item.imgUrl.large" v-if="item.imgUrl.large && item.details && !item.simpleOverlay">
                 <v-icon color="white" class="eye">mdi-eye</v-icon>
               </div>
 
@@ -20,7 +20,7 @@
                     <v-icon class="close-button" large @click="closeOverlays()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
-                  <div class="inner-image-cta-container" v-if="item.imgUrl && !item.simpleOverlay">
+                  <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay">
                     <div class="clickable full-item-image-cta-inner" @click="() => fullItemImage = item.imgUrl.large">
                       {{item.isArtist ? 'Photo' : (item.albumType || 'Track') + ' Artwork'}}
                     </div>

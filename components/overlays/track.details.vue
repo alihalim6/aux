@@ -1,10 +1,10 @@
 <template>
   <section>
     <div class="sub-title-container">
-      <div class="secondary-label">
+      <div class="secondary-label align-center">
         <ArtistList :artists="track.artists"/>
         
-        <div v-if="!multiTrackAlbum">
+        <div v-if="!multiTrackAlbum" class="white-space-no-wrap">
           <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
           {{new Date(track.album ? track.album.release_date : track.release_date).getFullYear()}}
         </div>

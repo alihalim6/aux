@@ -9,8 +9,6 @@ export const state = () => {
     spotifyDeviceId: '',
     currentlyPlayingItemUri: '',//simple string so that watcher for this doesn't have to be deep on object (performance)
     currentlyPlayingItem: {},
-    spotifyPlayer: {},
-    devicePlaybackTransferNeeded: false,
     audioPlaying: false,
     newApiPlayback: ''
   };
@@ -26,12 +24,6 @@ export const getters = {
   currentlyPlayingItem: (state) => {
     return state.currentlyPlayingItem;
   },
-  spotifyPlayer: (state) => {
-    return state.spotifyPlayer;
-  },
-  devicePlaybackTransferNeeded: (state) => {
-    return state.devicePlaybackTransferNeeded;
-  },
   audioPlaying: (state) => {
     return state.audioPlaying;
   },
@@ -45,16 +37,13 @@ export const actions = {
     try {
       await httpClient.post('/playItem', {
         item, 
-        deviceId: getters.spotifyDeviceId, 
-        devicePlaybackTransferNeeded: getters.devicePlaybackTransferNeeded
+        deviceId: getters.spotifyDeviceId
       });
     }
     catch(error){
       dispatch('stopPlayback');
       handleApiError('There was an issue with playback lorem ipsum...');
     }
-
-    commit('setDevicePlaybackTransferNeeded', false);
   },
   togglePlayback: async ({commit, getters, dispatch}, params) => {
     try{
@@ -86,7 +75,7 @@ export const actions = {
         item = itemSet[0];
       }
 
-      const player = getters.spotifyPlayer;
+      const player = window.spotifyPlayer;
       const previouslyPlayingItem = getters.currentlyPlayingItem;
       let currentlyPlayingItemUri = getters.currentlyPlayingItemUri;
 
@@ -108,9 +97,12 @@ export const actions = {
       };
 
       if(previouslyPlayingItem.uri){
-        //these two lines are redundant (set icon for same item) if toggling item
         setPlaybackIcon(previouslyPlayingItem);
-        setPlaybackIcon(item);
+
+        if(startingNewTrack){
+          setPlaybackIcon(item);
+          commit('setAudioPlaying', true);
+        }
       }
       //if no prev item, we know the current item has just been toggled to start playing, so needs to show pause
       else if(getters.audioPlaying){
@@ -140,55 +132,41 @@ export const actions = {
           dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet: itemSet.length ? itemSet : [item], feedId}, {root: true});
         }
 
-        const playerState = await player.getCurrentState();
-
-        if(!playerState){
-          console.error('SDK player state not defined -- attempting to transfer playback to device and try to play item again...');
-          commit('setDevicePlaybackTransferNeeded', true);
-          await dispatch('playItem', item);
-        }
-
         if(accessTokenExpired()){
           await refreshToken(); 
         }
 
         await dispatch('playItem', item);
-
-        //TODO: try to start at beginning (Spotify starts in middle of song at times)
-        //NOT WORKING OR NOT CONSISTENT
-        await player.seek(0);
-
-        commit('setAudioPlaying', true);
         commit('setNewApiPlayback', feedId);
       }
-
-      commit('setSpotifyPlayer', player);
     }
     catch(error){
       console.log(error);
       dispatch('stopPlayback');
     }
   },
-  stopPlayback({commit, getters, dispatch}, noError){
-    const player = getters.spotifyPlayer;
-    const currentlyPlayingItem = getters.currentlyPlayingItem;
+  stopPlayback({commit, getters}, noError){
+    if(getters.currentlyPlayingUri){
+      const player = window.spotifyPlayer;
+      const currentlyPlayingItem = getters.currentlyPlayingItem;
 
-    if(player && player.pause){
-      player.pause();
-    }
+      if(player && player.pause){
+        player.pause();
+      }
 
-    commit('setItemPlaybackIcon', {item: currentlyPlayingItem, icon: 'play'});
-    commit('setAudioPlaying', false);
-    commit('setCurrentlyPlayingItem', {});
-    commit('setCurrentlyPlayingItemUri', '');
-    commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
+      commit('setItemPlaybackIcon', {item: currentlyPlayingItem, icon: 'play'});
+      commit('setAudioPlaying', false);
+      commit('setCurrentlyPlayingItem', {});
+      commit('setCurrentlyPlayingItemUri', '');
+      commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
-    if(!noError){
-      commit(`${UI}/setToast`, {text: 'There was an issue playing music lorem ipsum...', error: true}, {root: true});
+      if(!noError){
+        commit(`${UI}/setToast`, {text: 'There was an issue playing music lorem ipsum...', error: true}, {root: true});
+      }
     }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){
-    const player = getters.spotifyPlayer;
+    const player = window.spotifyPlayer;
 
     if(player && player.seek){
       try{
@@ -213,12 +191,6 @@ export const mutations = {
   },
   setCurrentlyPlayingItem(state, params){
     state.currentlyPlayingItem = {...params.item, feedId: params.feedId};
-  },
-  setSpotifyPlayer(state, player){
-    state.spotifyPlayer = player;
-  },
-  setDevicePlaybackTransferNeeded(state, needed){
-    state.devicePlaybackTransferNeeded = needed;
   },
   setItemPlaybackIcon(state, params){
     if(params.item){

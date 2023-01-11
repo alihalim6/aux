@@ -1,39 +1,43 @@
 <template>    
   <section class="feed-item-container">
-    <v-img class="clickable track-img" :src="activity.track.imgUrl.small" @click.stop="$nuxt.$root.$emit('displayDetailOverlays', activity.track)"></v-img>
+    <v-img class="clickable track-img" :src="activity.track.imgUrl.small" :class="{'skipped': activity.skipped && !activity.played}" @click.stop="$nuxt.$root.$emit('displayDetailOverlays', activity.track)"></v-img>
 
     <div class="feed-item fill-available">
       <div class="item-info-container">
-        <div class="item-info">
-          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'feed-track-playing': trackIsPlaying(activity.track)}">
+        <div class="track-info" :class="{'skipped': activity.skipped && !activity.played}">
+          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'feed-track-playing': isTrackPlaying(activity.track)}">
             <span class="clickable font-weight-bold">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
           </div>
+          
+          <v-progress-linear v-if="(!activity.skipped && !activity.played) || (activity.skipped && isTrackPlaying(activity.track))" class="aux-play-pending" stream reverse color="white" :buffer-value="0"></v-progress-linear>
         </div>
 
-        <div class="activity-info-container">
-          <div class="clickable added-by">
-            <!-- TODO followability (if not you)-->
-            <v-img v-if="activity.user.img" :src="activity.user.img" class="round-img-icon"></v-img>
-            <span :class="{'username-margin': activity.user.img}">{{activity.addedByCurrentUser ? 'You' : activity.user.name}}</span>
+        <section v-if="activity.played">
+          <div class="activity-info-container">
+            <div class="clickable added-by">
+              <!-- TODO followability (if not you)-->
+              <v-img v-if="activity.user.img" :src="activity.user.img" class="round-img-icon"></v-img>
+              <span :class="{'username-margin': activity.user.img}">{{activity.addedByCurrentUser ? 'You' : activity.user.name}}</span>
+            </div>
+
+            <timeago :datetime="activity.timestamp" :converter="activityTimestamp" :auto-update="true" class="font-weight-regular"></timeago>
           </div>
 
-          <timeago :datetime="activity.timestamp" :auto-update="true" class="font-weight-regular"></timeago>
-        </div>
+          <div class="d-flex flex-column">
+            <div class="reaction-activity-container" :class="{'vertically-hidden': !showReactions, 'scroll-shadow-on-transparent': activity.reactions && activity.reactions.length >= 5}">
+              <span v-for="reaction in activity.reactions" :key="reaction.timestamp.toString()">
+                <span class="font-weight-bold mr-1">{{reaction.author}}:</span>
+                <span class="mr-1">{{reaction.message}}</span>
+              </span>
+            </div>
 
-        <div class="d-flex flex-column">
-          <div class="reaction-activity-container" :class="{'vertically-hidden': !showReactions, 'scroll-shadow-on-transparent': activity.reactions && activity.reactions.length >= 5}">
-            <span v-for="(reaction, index) in activity.reactions" :key="index">
-              <span class="font-weight-bold mr-1">{{reaction.author}}:</span>
-              <span class="mr-1">{{reaction.message}}</span>
-            </span>
+            <FeedChatInput :activity="activity" :showReactions="showReactions"/>
           </div>
-
-          <ActivityChatInput :activity="activity" :showReactions="showReactions"/>
-        </div>
+        </section>
       </div>
     </div>
 
-    <div class="d-flex flex-column align-end">
+    <div class="d-flex flex-column align-end" :class="{'no-visibility': !activity.played}">
       <ThreeDotIcon :item="activity.track" icon-class="activity-item-three-dot"/>
 
       <div class="clickable reaction-toggle-container">
@@ -45,15 +49,16 @@
 </template>
 
 <script>
-  import {Component, Prop, Vue, Action, Getter, Mutation} from 'nuxt-property-decorator';
+  import {Component, Prop, Vue, Action, Getter, Mutation, Watch} from 'nuxt-property-decorator';
   import {UI, FEED, PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
-  import {differenceInMinutes, differenceInHours} from 'date-fns';
+  import {differenceInMinutes, differenceInHours, parseISO} from 'date-fns';
   import {isSameTrack} from '~/utils/helpers';
 
   @Component
-  export default class ActivityItem extends Vue {
+  export default class FeedItem extends Vue {
     chatMessage = '';
     showReactions = false;
+    trackIsPlaying = false;
 
     reactions = [
       {
@@ -87,6 +92,13 @@
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
 
+    @Watch('trackIsPlaying')
+    trackIsPlayingChanged(newValue, oldValue){
+      if(!oldValue && newValue){
+        this.showReactions = true;
+      }
+    }
+
     chatMessageSubmitted(){
       if(this.chatMessage.trim()){
         this.addReactionToActivity({activity: this.activity, message: this.chatMessage});
@@ -100,20 +112,19 @@
       this.$forceUpdate();
     }
 
-    //TODO: unused, remove logic where activity added
-    reactionTimestamp(date){
-      const hourOrMoreAgo = differenceInHours(new Date(), date);
+    activityTimestamp(date){
+      const hourOrMoreAgo = differenceInHours(new Date(), parseISO(date));
 
       if(hourOrMoreAgo){
-        return `${hourOrMoreAgo}h`;
+        return `${hourOrMoreAgo}h ago`;
       }
 
-      const minutesAgo = differenceInMinutes(new Date(), date);
-      return `${minutesAgo < 1 ? 'just now' : `${minutesAgo}m`}`;
+      const minutesAgo = differenceInMinutes(new Date(), parseISO(date));
+      return `${minutesAgo < 1 ? 'just now' : `${minutesAgo}m ago`}`;
     }
 
     async itemInfoPressed(track){
-      if(this.trackIsPlaying(track)){
+      if(this.isTrackPlaying(track)){
         await this.togglePlayback({item: track});
       }
       else{
@@ -121,8 +132,9 @@
       }
     }
 
-    trackIsPlaying(track){
-      return isSameTrack(track, this.currentlyPlayingItem);
+    isTrackPlaying(track){
+      this.trackIsPlaying = isSameTrack(track, this.currentlyPlayingItem);
+      return this.trackIsPlaying;
     }
   }
 </script>
@@ -166,14 +178,21 @@
         display: flex;
         flex-direction: column;
 
-        .item-info {
-          display: -webkit-inline-box;
-          flex-wrap: wrap;
+        .track-info {
+          display: flex;
+          align-items: center;
           margin-bottom: 6px;
 
           .track-artists {
             font-weight: normal;
             font-size: 12px;
+          }
+
+          .aux-play-pending {
+            margin-left: 12px;
+            margin-top: 4px;
+            width: 28px;
+            flex: none;
           }
         }
 
@@ -209,7 +228,7 @@
           display: flex;
           align-items: center;
           color: white;
-          margin-bottom: 2px;
+          margin-bottom: 6px;
 
           .username-margin {
             margin-left: 6px;
@@ -238,9 +257,14 @@
     }
 
     .reaction-count {
-      font-size: 12px;
+      font-size: 14px;
       margin-left: 4px;
       padding-bottom: 2px;
     }
+  }
+
+  .skipped {
+    opacity: 0.65;
+    font-style: italic;
   }
 </style>

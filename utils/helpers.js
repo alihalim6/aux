@@ -61,14 +61,10 @@ export const setItemMetaData = (items) => {
     else if(item.isArtist){  
       item.primaryLabel = item.name;
 
-      const genres = item.genres.map(genre => {
-        genre = capitalCase(genre);
-        //capitalCase turns r&b into R B, so account for that
-        return genre.indexOf('R B') > -1 ? genre.replace('R B', 'R&B') : genre;
-      });
+      const genres = item.genres.map(genre => genre.toUpperCase());
 
       if(genres.length){
-        item.secondaryLabel = genres.slice(0, 3).join('/');
+        item.secondaryLabel = genres.slice(0, 2).join('/');
       }
     }
     else if(item.isPlaylist){
@@ -155,16 +151,15 @@ export const initSpotifyPlayer = () => {
 
   function newPlayer(){
     return new Spotify.Player({
-      name: 'Aux',
+      name: 'AUX',
       getOAuthToken: callback => {callback(accessToken)},
       volume: 1
     });
   }
 
-  const player = newPlayer();
+  window.spotifyPlayer = newPlayer();
 
-  player.connect().then(connected => {
-    $nuxt.$store.commit('spotify/setSpotifyPlayer', player);
+  window.spotifyPlayer.connect().then(connected => {
     console.log(`Connected to Spotify player: ${connected}`);
 
     if(!connected){
@@ -173,23 +168,12 @@ export const initSpotifyPlayer = () => {
     }
   });
 
-  player.addListener('ready', async ({device_id}) => {
+  window.spotifyPlayer.addListener('ready', async ({device_id}) => {
     console.log(`Spotify player ready with device id ${device_id}`);
     $nuxt.$store.commit('spotify/setSpotifyDeviceId', device_id);
-
-    //TODO: comment out when listening to spotify on phone (this takes playback away)
-    //transfer playback to this device
-   /*  await httpClient.post('/passthru', {
-      url: '/me/player',
-      method: 'PUT',
-      data: {device_ids: [device_id]}
-    });
-
-    //TODO: calling for info/debugging purposes
-    await httpClient.post('/passthru', {url: '/me/player/devices'}); */
   });
 
-  player.addListener('authentication_error', async ({message}) => {
+  window.spotifyPlayer.addListener('authentication_error', async ({message}) => {
     console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
     retryPlayerInit();
   });

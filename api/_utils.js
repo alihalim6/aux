@@ -1,9 +1,12 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
 //TODO: make into class that is instantiated with config/token and just use class method that makes calls internally using token property
 export const httpClient = axios.create({
   baseURL: 'https://api.spotify.com/v1'
 });
+
+axiosRetry(httpClient, {retries: 2});
 
 export const apiConfig = (accessToken) => {
   return {

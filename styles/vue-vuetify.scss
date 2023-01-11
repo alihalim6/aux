@@ -144,3 +144,8 @@ $feed-base-bottom: 15px;
 .v-menu__content {
   max-width: 95%;
 }
+
+.v-tooltip__content {
+  padding: 8px 20px;
+  pointer-events: initial;
+}

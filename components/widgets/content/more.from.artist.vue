@@ -35,7 +35,7 @@
 
                   <div class="artist-info">
                     <div class="font-weight-bold" :class="{'lighter-black-color': hover}">{{artist.name}}</div>
-                    <div class="font-weight-regular artist-genres">{{artist.secondaryLabel}}</div>
+                    <div class="artist-genres">{{artist.secondaryLabel}}</div>
                   </div>
 
                   <v-icon class="clickable ml-auto">mdi-arrow-right</v-icon>
@@ -102,7 +102,8 @@
 
       .artist-genres {
         font-size: 12px;
-        color: #333333;
+        color: #888888;
+        font-weight: bold;
       }
     }
   }

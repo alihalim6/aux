@@ -3,17 +3,24 @@
     <div v-show="uiFeed.display" class="activity-feed">
       <div class="feed-container scroll-shadow-on-transparent" id="feedContainer">
         <div class="d-flex flex-column">
-          <div class="feed-title-container">
-            <v-icon class="close-button" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
+          <div class="feed-title-container" id="feedHeader">
+            <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
+
+            <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip">
+              <div class="mb-2">AUX activity in the last 24 hours.</div>
+              <div>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed. Otherwise it's a skip that's only visible in your feed.</div>
+            </v-tooltip>
+
+            <v-icon class="clickable feed-header-icon" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
           </div>
 
           <div class="activity-item" v-if="activityFeed.length">
-            <ActivityItem v-for="item in activityFeed" :key="item.track.id" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
+            <FeedItem v-for="item in activityFeed" :key="item.updateTimestamp" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
           </div>
 
           <div v-else class="d-flex flex-column">
             <div class="no-feed-prompt">
-              <div>Tracks that you and others play will show here.</div>
+              <div>Tracks that you and others play show here.</div>
               <div class="sub-prompt">Kick things off by playing something!  Invite others lorem ipsum...</div>
             </div>
 
@@ -31,16 +38,24 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
-  import {UI, USER, FEED} from '~/store/constants';
+  import {Component, Vue, Getter, Mutation, Watch, Action} from 'nuxt-property-decorator';
+  import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
+  import {isSameTrack} from '~/utils/helpers';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD} from '~/utils/constants';
 
   @Component
   export default class Feed extends Vue {
     liveStatusInterval;
+    secsOfTrackPlayed = 0;
+    skipOrPlay = {};
+    minSecsForPlay = PLAYED_NOT_SKIPPED_THRESHOLD;
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
+
+    @Mutation('setActivitySkippedOrPlayed', {namespace: FEED})
+    setActivitySkippedOrPlayed;
 
     @Getter('feed', {namespace: UI})
     uiFeed;
@@ -48,8 +63,20 @@
     @Getter('profile', {namespace: USER})
     profile;
 
+    @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
+    currentlyPlayingItem;
+
+    @Getter('audioPlaying', {namespace: SPOTIFY})
+    audioPlaying;
+
     @Getter('feed', {namespace: FEED})
     activityFeed;
+
+    @Getter('latestActivity', {namespace: FEED})
+    latestActivity;
+
+    @Action('addReactionToActivity', {namespace: FEED})
+    addReactionToActivity;
 
     @Watch('profile')
     currentUserProfileSet(){
@@ -59,9 +86,74 @@
         }, 5000);
       }
     }
+
+    @Watch('latestActivity')
+    latestActivityChanged(latestActivity){
+      const activityInFeed = this.activityFeed.find(feedActivity => isSameTrack(feedActivity.track, latestActivity.track));
+
+      const handleActivityAlreadyInFeed = () => {
+        //previously played, so just add repeat listen reaction
+        if(activityInFeed.played){
+          this.addReactionToActivity({activity: latestActivity, message: `${latestActivity.repeatingOwnTrack ? '' : 'also'} listening ${latestActivity.repeatingOwnTrack ? 'again' : ''}`});
+        }
+        //previously skipped, flag appropriately
+        else{
+          this.setActivitySkippedOrPlayed({activity: activityInFeed, played: true, updateOriginalTimestamp: true});
+        }
+      };
+
+      const handleNewFeedActivity = () => {
+        socket.emit('activityAdded', {...latestActivity, played: true});
+        this.setActivitySkippedOrPlayed({activity: activityInFeed, played: true});
+      };
+
+      const callback = latestActivity.trackAlreadyInFeed ? handleActivityAlreadyInFeed : handleNewFeedActivity;
+      this.checkForSkipOrPlay(callback, activityInFeed); 
+    }
+
+    resetSkipPlayCheck(){
+      this.secsOfTrackPlayed = 0;
+      clearInterval(this.skipOrPlay.interval);
+      this.skipOrPlay = {};
+    }
+
+    clearSkipPlayAndSkipLastActivity(){
+      this.setActivitySkippedOrPlayed({activity: this.skipOrPlay.activity, skipped: true});
+      this.resetSkipPlayCheck();
+    }
+ 
+    checkForSkipOrPlay(callback, activity){
+      if(this.skipOrPlay.interval){
+        this.clearSkipPlayAndSkipLastActivity();
+      }
+
+      this.skipOrPlay.activity = activity;
+
+      this.skipOrPlay.interval = setInterval(() => {
+        if(this.skipOrPlay.interval && (!this.currentlyPlayingItem || !this.currentlyPlayingItem.id)){
+          this.clearSkipPlayAndSkipLastActivity();
+          return;
+        }
+        
+        if(this.audioPlaying){
+          this.secsOfTrackPlayed++;
+
+          if(isSameTrack(this.currentlyPlayingItem, activity.track)){
+            if(this.secsOfTrackPlayed >= PLAYED_NOT_SKIPPED_THRESHOLD){
+              this.resetSkipPlayCheck();
+              callback();
+            }
+          }
+          else{
+            this.clearSkipPlayAndSkipLastActivity();
+          } 
+        }
+      }, 1000);
+    }
     
     unmounted(){
       clearInterval(this.liveStatusInterval);
+      clearInterval(this.skipOrPlay.interval);
     }
   }
 </script>
@@ -90,19 +182,23 @@
       overflow: scroll;
       font-weight: bold;
       margin: 0 auto;
-      max-width: $max-inner-width;
+      max-width: calc(#{$max-inner-width} - 250px);
       border-radius: 10px;
 
       .feed-title-container {
         margin: 6px 0px 16px;
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
         font-size: 24px;
-
-        .close-button {
-          align-self: flex-end;
+        
+        .feed-header-icon {
           color: $secondary-theme-color;
-          margin-right: 4px;
+          margin-right: 8px;
+        }
+
+        .feed-header-icon:hover {
+          transform: scale(1.1);
         }
       }
 
@@ -142,6 +238,14 @@
           }
         }
       }
+    }
+  }
+
+  .feed-title-container {
+    .v-tooltip__content {
+      font-size: 12px;
+      left: 10px !important;
+      max-width: 90%;
     }
   }
 </style>

@@ -2,27 +2,39 @@ import {httpClient, apiConfig} from './_utils';
 
 let accessToken;
 
+function callPlayApi(deviceId, requestBody){
+  return httpClient.put(`/me/player/play?device_id=${deviceId}`, requestBody, apiConfig(accessToken));
+}
+
 async function playItem(req, res){
   try{
     accessToken = req.headers['access-token'];
     const itemUri = req.body.item.uri;
+    const deviceId = req.body.deviceId;
     const requestBody = req.body.item.isTrack ? {uris: [itemUri]} : {context_uri: itemUri};
 
-    //needed for Spotify to consider this device active and able to play items (https://developer.spotify.com/documentation/web-api/reference/#/operations/transfer-a-users-playback) 
-    if(req.body.devicePlaybackTransferNeeded){
-      console.log('playback transfer requested for this device');
-      await httpClient.put('/me/player', {device_ids: [req.body.deviceId]}, apiConfig(accessToken));
+    try {
+      await callPlayApi(deviceId, requestBody);
     }
-    else{
-      console.log('no playback transfer needed for this device');
-    }
+    catch(error){
+      console.log(`issue playing: ${error.toString()}, transferring playback...`);
 
-    await httpClient.put(`/me/player/play?device_id=${req.body.deviceId}`, requestBody, apiConfig(accessToken));
+      try{
+        await httpClient.put('/me/player', {device_ids: [req.body.deviceId]}, apiConfig(accessToken));
+      }
+      catch(error){
+        console.log(`issue transferring playback: ${error.toString()}; throwing error`);
+        res.json({error: error.toString()});
+      }
+
+      await callPlayApi(deviceId, requestBody);
+    }
+        
     res.end();
   }
   catch(error){
-  console.log(error);
-   res.json({error: error.toString()});
+    console.log(error);
+    res.json({error: error.toString()});
   }
 };
 

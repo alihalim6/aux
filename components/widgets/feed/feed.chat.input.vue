@@ -5,7 +5,7 @@
       outlined 
       placeholder="Track talk..." 
       :hide-details="true" 
-      class="activity-chat-input" 
+      class="feed-chat-input" 
       :class="{'vertically-hidden': !showReactions, 'chat-input-on-white': chatOnFeedAlert}"
       :color="color"
       width="85%"
@@ -17,7 +17,7 @@
       <template v-slot:append-outer>
         <v-icon :color="submitIconColor" class="clickable mr-2" @click.stop="chatMessageSubmitted()">mdi-arrow-up-circle</v-icon>
         
-        <div class="reaction-container">
+        <div class="reaction-container" v-if="!chatOnFeedAlert">
           <div class="clickable reaction" :class="{'pt-1': index == 1}" v-for="(reaction, index) in reactions" :key="reaction.name" @click.stop="emojiReactionPressed(reaction.code)">{{String.fromCodePoint(reaction.code)}}</div>
         </div>
       </template>
@@ -30,7 +30,7 @@
   import {FEED} from '~/store/constants';
 
   @Component
-  export default class ActivityChatInput extends Vue {
+  export default class FeedChatInput extends Vue {
     chatMessage = '';
 
     reactions = [
@@ -87,7 +87,7 @@
 </script>
 
 <style lang="scss">
-  .activity-chat-input {    
+  .feed-chat-input {    
     font-size: $chat-font-size;
     align-items: center;
 

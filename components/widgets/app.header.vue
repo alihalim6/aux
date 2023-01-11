@@ -55,7 +55,7 @@
 
                 <div class="aux-mode-toggle">
                   <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()" label="AUX Mode"></v-switch>              
-                  <v-icon small class="ml-2" color="#888" id="auxModeTooltipIcon">mdi-help-circle-outline</v-icon>
+                  <v-icon small class="clickable ml-2" color="#888" id="auxModeTooltipIcon">mdi-help-circle-outline</v-icon>
 
                   <v-tooltip left color="#1DB954" attach="#footer" activator="#auxModeTooltipIcon" :open-on-hover="false">
                     <span>When <span class="font-weight-bold">AUX Mode</span> is on, tracks played by others are automatically added to your queue

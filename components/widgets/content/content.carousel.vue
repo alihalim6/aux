@@ -113,7 +113,8 @@
 
     .secondary-label {
       font-size: $secondary-label-font-size;
-      color: rgba(0,0,0,0.8);
+      color: #888888;
+      font-weight: bold;
       padding: 0px 8px 4px $label-left-padding;
     }
 
@@ -152,7 +153,7 @@
       @extend .primary-label;
       @extend .artist-secondary-label;
       padding-top: 0px;
-      font-weight: normal;
+      color: #888888;
       font-size: $secondary-label-font-size;
     }
 

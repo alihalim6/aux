@@ -3,7 +3,7 @@
     <div class="clickable view-feed-container" v-if="!upNextDisplaying" @click="feedIconPressed()">
       <div class="d-flex align-center ml-2">
         <v-icon x-small color="red">mdi-circle</v-icon>
-        <div class="on-air">ON AIR</div>
+        <div class="on-air">FEED</div>
         <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
       </div>
     </div>
@@ -15,7 +15,7 @@
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
           <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
 
-          <div class="d-flex">
+          <div class="d-flex mb-1">
             <v-slider 
               color="black" 
               track-color="#ccc" 
@@ -161,12 +161,9 @@
     @Mutation('setCurrentlyPlayingItem', {namespace: SPOTIFY})
     setCurrentlyPlayingItem;
     
-    //TODO: NOT 'OFF AIR' IF NOTHING PLAYING - ONLY WHEN NOTHING HAS BEEN PLAYED
-
     @Watch('audioPlaying')
     async updatePlaybackIcon(playing){
-      await this.$nextTick();
-      this.playbackIcon = this.currentlyPlayingItem.playbackIcon || (playing ? 'pause' : 'play');
+      this.playbackIcon = playing ? 'pause' : 'play';
     }
 
     @Watch('currentlyPlayingItem')
@@ -176,8 +173,8 @@
 
         if(!item.duration){
           item.duration = msToDuration(item.duration_ms);
-        }
-        
+        }        
+
         this.initializeTiming(item);
       }
       else{
@@ -213,7 +210,7 @@
 
     initializeTiming(item){
       this.playbackElapsed.ms = 0;
-      this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
+      this.playbackElapsed.display = msToDuration(0);
       this.playbackTotal.ms = item ? item.duration_ms : 0;
       this.playbackTotal.display = msToDuration(this.playbackTotal.ms);
     }
@@ -232,6 +229,8 @@
             else{
               this.stopPlayback(true);
             }
+
+            this.stopInterval();
           }
 
           this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
@@ -393,7 +392,7 @@
         flex-direction: column;
         min-width: $playback-container-size;
         max-width: $playback-container-size;
-        padding: $base-padding 0px $base-padding $base-padding;
+        padding: 0px 0px $base-padding $base-padding;
       
         .artists {
           font-size: 12px;
@@ -415,10 +414,6 @@
           color: $secondary-theme-color;
           background-color: $primary-theme-color;
           font-size: 16px;
-        }
-
-        .playback-toggle:hover {
-          padding: 10px;
         }
 
         .disabled-control {
@@ -443,7 +438,7 @@
     }
 
     .up-next-container {
-      padding: 10px 0px;
+      padding: 6px 0px;
       font-weight: bold;
       color: $primary-theme-color;
       display: flex;
@@ -479,10 +474,11 @@
     color: black !important;
   }
 
-  .v-tooltip__content {
-    height: fit-content;
-    top: auto !important;
-    bottom: 28px;
-    padding: 8px 20px;
+  .currently-playing-container {
+    .v-tooltip__content {
+      height: fit-content;
+      top: auto !important;
+      bottom: 28px;
+    }
   }
 </style>

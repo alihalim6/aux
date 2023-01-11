@@ -1,6 +1,7 @@
 <template>
   <v-snackbar 
-    class="clickable feed-alert-container"
+    class="feed-alert-container"
+    :class="{'clickable': !feedAlert.activityReaction}"
     v-model="currentAlert"
     right
     max-width="75vw"
@@ -41,7 +42,7 @@
       <div class="d-flex align-center align-self-end" v-if="feedAlert.activityReaction">
         <v-img :src="feedAlert.track.imgUrl.small" class="small-track-img"></v-img>
       
-        <span class="clickable reaction-track-info">
+        <span class="reaction-track-info" :class="{'clickable': !feedAlert.activityReaction}">
           {{feedAlert.track.primaryLabel}} /<span class="reaction-track-artists"> {{feedAlert.track.secondaryLabel}}</span>
         </span>
       </div>
@@ -49,7 +50,7 @@
       <span v-if="feedAlert.activityReaction && !repliedToReaction" @click="replyPressed()" class="clickable reaction-reply-label">Reply</span>
       
       <div class="align-self-end">
-        <ActivityChatInput v-show="replyingToFeedReaction" :activity="feedAlert" color="black" :chatOnFeedAlert="true" submitIconColor="black"/>
+        <FeedChatInput v-show="replyingToFeedReaction" :activity="feedAlert" color="black" :chatOnFeedAlert="true" submitIconColor="black"/>
       </div>
     </div>
   </v-snackbar>

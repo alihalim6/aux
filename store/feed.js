@@ -9,6 +9,7 @@ import {httpClient} from '~/utils/api';
 export const state = () => {
   return {
     feed: [],
+    latestActivity: {},
     users: [
      {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'}
     ]//////
@@ -19,6 +20,9 @@ export const getters = {
   feed: (state) => {
     return state.feed;
   },
+  latestActivity: (state) => {
+    return state.latestActivity;
+  },
   users: (state) => {
     return state.users;
   }
@@ -26,30 +30,27 @@ export const getters = {
 
 export const actions = {
   //activity from current user
-  addToFeed: ({commit, rootGetters, getters, dispatch}, params) => {
+  addToFeed: ({commit, rootGetters, getters}, params) => {
+    const timestamp = moment().toISOString();
+
     const activity = {
       user: rootGetters[`${USER}/profile`],
       track: {...params.track, originalListener: rootGetters[`${USER}/profile`].id},
-      timestamp: moment().toISOString()
+      timestamp,
+      updateTimestamp: timestamp //needed to trigger UI updates of feed items immediately
     };
 
     const trackAlreadyInFeed = getters.feed.find(activity => isSameTrack(activity.track, params.track));
+    let repeatingOwnTrack;
 
     if(trackAlreadyInFeed){
-      let repeatingOwnTrack = false;
-
-      //if listening to my own track again, NOOP
-      if(trackAlreadyInFeed.track.originalListener == rootGetters[`${USER}/profile`].id){
-        repeatingOwnTrack = true;
-      }
-
-      dispatch('addReactionToActivity', {activity: trackAlreadyInFeed, message: `${repeatingOwnTrack ? '' : 'also'} listening ${repeatingOwnTrack ? 'again' : ''}`});
+      repeatingOwnTrack = trackAlreadyInFeed.track.originalListener == rootGetters[`${USER}/profile`].id;
     }
     else{
       commit('addToFeed', {...activity, addedByCurrentUser: true});
     }
-
-    socket.emit('activityAdded', activity);
+  
+    commit('updateLatestActivity', {...activity, trackAlreadyInFeed, repeatingOwnTrack});
   },
 
   //activity from another user
@@ -142,15 +143,36 @@ export const mutations = {
   },
   addReactionToActivity(state, reaction){
     const activity = state.feed.find(activity => isSameTrack(activity.track, reaction.activity.track));
-    const timestamp = new Date(moment());
+    const timestamp = moment().toISOString();
 
     if(activity){
       if(!activity.reactions){
         activity.reactions = [];
       }
 
-      activity.timestamp = timestamp;//needed to trigger update of feed item's reactions/count
+      activity.updateTimestamp = timestamp;
       activity.reactions.unshift({author: reaction.author.name, message: reaction.message, timestamp});
+    }
+  },
+  updateLatestActivity(state, activity){
+    state.latestActivity = activity;
+  },
+  setActivitySkippedOrPlayed(state, params){
+    const activity = state.feed.find(acitvity => isSameTrack(acitvity.track, params.activity.track));
+
+    if(activity){
+      activity.updateTimestamp = moment().toISOString();
+
+      if(params.updateOriginalTimestamp){
+        activity.timestamp = moment().toISOString();
+      }
+
+      //we don't wanna falsify an activity that has already been set to played
+      if(!activity.played){
+        activity.played = params.played;
+      }
+
+      activity.skipped = params.skipped;
     }
   }
 };

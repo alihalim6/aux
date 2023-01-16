@@ -7,7 +7,7 @@ const getRecommendedTracks = async (topArtists) => {
   const seeds = getRecommendationSeeds(topArtists, topTracks.data);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=25&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`, apiConfig(accessToken)) :
+    await httpClient.get(`/recommendations?limit=30&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`, apiConfig(accessToken)) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -36,12 +36,12 @@ async function newAndRecommended(req, res){
     const recommendedTracks = await getRecommendedTracks(topArtists.data);
     const recommendedArtists = await getRecommendedArtists(topArtists.data);
     
-    const allItems = [...newReleases, ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 10)];
+    const allItems = [...newReleases, ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 7)];
     shuffleArray(allItems);
 
     res.json({
       allItems,
-      previewItems: [...Array.from(allItems)].splice(0, 25),
+      previewItems: [...Array.from(allItems)].splice(0, 30),
       newReleases
     });
   }

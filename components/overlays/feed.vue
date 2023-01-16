@@ -6,8 +6,8 @@
           <div class="feed-title-container" id="feedHeader">
             <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
 
-            <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip">
-              <div class="mb-2">AUX activity in the last 24 hours.</div>
+            <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
+              <div class="mb-2">Showing AUX activity in the last 24 hours.</div>
               <div>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed. Otherwise it's a skip that's only visible in your feed.</div>
             </v-tooltip>
 
@@ -87,6 +87,13 @@
       }
     }
 
+    @Watch('currentlyPlayingItem')
+    currentlyPlayingItemChanged(newItem, oldItem){
+      if(!newItem.id && oldItem.id && this.skipOrPlay.activity){
+        this.clearSkipPlayAndSkipLastActivity();
+      }
+    }
+    
     @Watch('latestActivity')
     latestActivityChanged(latestActivity){
       const activityInFeed = this.activityFeed.find(feedActivity => isSameTrack(feedActivity.track, latestActivity.track));
@@ -130,15 +137,11 @@
       this.skipOrPlay.activity = activity;
 
       this.skipOrPlay.interval = setInterval(() => {
-        if(this.skipOrPlay.interval && (!this.currentlyPlayingItem || !this.currentlyPlayingItem.id)){
-          this.clearSkipPlayAndSkipLastActivity();
-          return;
-        }
-        
-        if(this.audioPlaying){
+        if(this.audioPlaying && this.currentlyPlayingItem.feedId){
           this.secsOfTrackPlayed++;
-
-          if(isSameTrack(this.currentlyPlayingItem, activity.track)){
+          
+          //can't use isSameTrack() due to activity track not having duration/track number
+          if(this.currentlyPlayingItem.feedId == activity.track.feedId){
             if(this.secsOfTrackPlayed >= PLAYED_NOT_SKIPPED_THRESHOLD){
               this.resetSkipPlayCheck();
               callback();

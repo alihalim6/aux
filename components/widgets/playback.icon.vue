@@ -1,5 +1,6 @@
 <template>
     <section>
+      <!-- TRACK -->
       <v-icon 
         class="clickable" 
         :color="itemIsPlaying ? '#1DB954' : 'black'" 
@@ -11,6 +12,7 @@
         {{`mdi-${item.playbackIcon}`}}
       </v-icon>
 
+      <!-- COLLECTION -->
       <v-icon
         class="clickable collection-playback" 
         :class="[iconClass]" 
@@ -78,7 +80,7 @@
     }
 
     updateThisItem(){
-      //if playing track and then loading its album for e.g., make sure corresponding track has correct icon in resulting view;
+      //if playing track and then loading its album detail for e.g., make sure corresponding track has correct icon in track list;
       //can't rely on item uri as individual track and its counterpart on album have different uris
       this.itemIsPlaying = isSameTrack(this.item, this.currentlyPlayingItem);
 

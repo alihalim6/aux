@@ -1,6 +1,6 @@
 import {httpClient, handleApiError} from '~/utils/api';
 import {refreshToken, accessTokenExpired} from '~/auth';
-import {PLAYBACK_QUEUE, FEED, UI} from './constants';
+import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
 import {shuffleArray} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 
@@ -33,12 +33,17 @@ export const getters = {
 };
 
 export const actions = {
-  playItem: async ({commit, getters}, item) => {
+  playItem: async ({getters, rootGetters}, item) => {
+    if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
+      console.log('skipping Candace playback api call');
+      return;
+    }
+
     try {
-      await httpClient.post('/playItem', {
+    /*   await httpClient.post('/playItem', {
         item, 
         deviceId: getters.spotifyDeviceId
-      });
+      }); */
     }
     catch(error){
       dispatch('stopPlayback');
@@ -125,7 +130,7 @@ export const actions = {
         //has to be at top of logic for icons to work right
         commit('setCurrentlyPlayingItem', {item, feedId});
 
-        dispatch(`${FEED}/addToFeed`, {track: item}, {root: true});
+        dispatch(`${FEED}/addToFeed`, {track: item, feedId}, {root: true});
       
         if(!params.doNotRestartQueue){
           const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
@@ -146,7 +151,7 @@ export const actions = {
     }
   },
   stopPlayback({commit, getters}, noError){
-    if(getters.currentlyPlayingUri){
+    if(getters.currentlyPlayingItemUri){
       const player = window.spotifyPlayer;
       const currentlyPlayingItem = getters.currentlyPlayingItem;
 
@@ -193,9 +198,7 @@ export const mutations = {
     state.currentlyPlayingItem = {...params.item, feedId: params.feedId};
   },
   setItemPlaybackIcon(state, params){
-    if(params.item){
-      params.item.playbackIcon = params.icon
-    }
+    params.item.playbackIcon = params.icon
   },
   setAudioPlaying(state, playing){
     console.log(`setting audioPlaying to ${playing}`);

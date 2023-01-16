@@ -6,6 +6,7 @@ import {handleAuthError} from '~/utils/auth';
 import {httpClient} from '~/utils/api';
 import {v4 as uuid} from 'uuid';
 import {UI} from '~/store/constants';
+import {handleApiError} from '~/utils/api';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
@@ -119,7 +120,7 @@ export const getItemDuration = async (item) => {
   //singles (with type 'album') don't have duration
   if(item.id && !item.duration_ms){
     try {
-      const { data } = await httpClient.post('/passthru', {url: `/albums/${item.id}/tracks`});
+      const {data} = await httpClient.post('/passthru', {url: `/albums/${item.id}/tracks`});
       return data.items[0].duration_ms;
     }
     catch(error){
@@ -201,4 +202,12 @@ export function ignoredUsers(){
   }
 
   return [];
+}
+
+export async function setDuration(item){
+  item.duration_ms = await getItemDuration(item);
+
+  if(!item.duration){
+    item.duration = msToDuration(item.duration_ms);
+  }        
 }

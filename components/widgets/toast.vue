@@ -61,7 +61,7 @@
 
     .toast-text {
       font-weight: bold;
-      padding: 4px;
+      padding: 4px 4px 4px 8px;
       color: black;
     }
 

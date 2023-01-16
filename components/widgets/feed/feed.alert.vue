@@ -47,7 +47,7 @@
         </span>
       </div>
 
-      <span v-if="feedAlert.activityReaction && !repliedToReaction" @click="replyPressed()" class="clickable reaction-reply-label">Reply</span>
+      <span v-if="feedAlert.activityReaction && !repliedToReaction" @click="replyPressed()" class="clickable reaction-reply-label" :class="{'mb-4': replyingToFeedReaction}">Reply</span>
       
       <div class="align-self-end">
         <FeedChatInput v-show="replyingToFeedReaction" :activity="feedAlert" color="black" :chatOnFeedAlert="true" submitIconColor="black"/>
@@ -231,6 +231,7 @@
       align-self: flex-end;
       margin-top: 6px;
       margin-right: $reaction-emoji-margin;
+      text-decoration: underline;
     }
   }
 </style>

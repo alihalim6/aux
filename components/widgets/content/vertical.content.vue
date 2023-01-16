@@ -12,26 +12,26 @@
           <section>
             <div class="item-container" :class="{'flex-column': playlists}">  
               <v-card v-if="!playlists" max-width="40%" elevation="7">
-                <v-img :src="item.imgUrl.large" class="clickable" @click="$nuxt.$root.$emit('displayDetailOverlays', item)"></v-img>
+                <v-img :src="item.imgUrl.large" class="clickable" @click="displayItemDetails(item)"></v-img>
               </v-card>
 
               <div v-if="playlists" class="align-start fill-available mb-4">
                 <v-card :max-width="playlists ? '100%' : '90%'" elevation="7">
-                  <v-img class="clickable" @click="$nuxt.$root.$emit('displayDetailOverlays', item)" :src="item.imgUrl.large"></v-img>
+                  <v-img class="clickable" @click="displayItemDetails(item)" :src="item.imgUrl.large"></v-img>
                 </v-card>
 
-                <v-icon v-if="alternateFormat && !playlists" class="clickable ml-auto" @click="$nuxt.$root.$emit('displayDetailOverlays', item)" large color="black">mdi-arrow-right</v-icon>
+                <v-icon v-if="alternateFormat && !playlists" class="clickable ml-auto" @click="displayItemDetails(item)" large color="black">mdi-arrow-right</v-icon>
               </div>
 
               <v-icon v-if="!playlists" class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
 
               <div class="d-flex flex-column">
-                <span class="clickable item-title" @click="$nuxt.$root.$emit('displayDetailOverlays', item)" :class="{'smaller-title': alternateFormat, 'lighter-black-color': hover}">{{item.primaryLabel}}</span>
+                <span class="clickable item-title" @click="itemTitlePressed(item)" :class="{'smaller-title': alternateFormat, 'lighter-black-color': hover}">{{item.primaryLabel}}</span>
                 <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
                 <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
               </div>
 
-              <v-icon v-if="!alternateFormat" @click="$nuxt.$root.$emit('displayDetailOverlays', item)" class="clickable ml-auto" color="black">mdi-arrow-right</v-icon>
+              <v-icon v-if="!alternateFormat" @click="displayItemDetails(item)" class="clickable ml-auto" color="black">mdi-arrow-right</v-icon>
             </div>
 
             <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
@@ -51,7 +51,8 @@
 </template>
 
 <script>
-  import {Component, Prop, Vue} from 'nuxt-property-decorator';
+  import {Component, Prop, Vue, Action} from 'nuxt-property-decorator';
+  import {SPOTIFY} from '~/store/constants';
 
   @Component
   export default class VerticalContent extends Vue {
@@ -63,6 +64,22 @@
 
     @Prop()
     playlists;
+
+    @Action('togglePlayback', {namespace: SPOTIFY})
+    togglePlayback;
+
+    displayItemDetails(item){
+      this.$nuxt.$root.$emit('displayDetailOverlays', item);
+    }
+
+    async itemTitlePressed(item){
+      if(item.isCollection){
+        this.displayItemDetails(item);
+      }
+      else{
+        await this.togglePlayback({item});
+      }
+    }
   }
 </script>
 

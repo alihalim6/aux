@@ -35,7 +35,7 @@ export const actions = {
 
     const activity = {
       user: rootGetters[`${USER}/profile`],
-      track: {...params.track, originalListener: rootGetters[`${USER}/profile`].id},
+      track: {...params.track, originalListener: rootGetters[`${USER}/profile`].id, feedId: params.feedId},
       timestamp,
       updateTimestamp: timestamp //needed to trigger UI updates of feed items immediately
     };

@@ -3,8 +3,8 @@
       <div v-for="(track, index) in tracks" :key="track.uuid">
         <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
-            <v-img v-if="tracksFromDifferentAlbums" class="clickable track-album-img" @click="trackImgPressed(track)" :src="track.imgUrl.small"></v-img>
-            <div v-else class="track-number">{{track.track_number}}</div>
+            <v-img v-if="tracksFromDifferentAlbums && track.imgUrl" class="clickable track-album-img" @click="trackImgPressed(track)" :src="track.imgUrl.small"></v-img>
+            <div v-else class="track-number">{{track.track_number}}.</div>
 
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums}">
               <v-hover v-slot="{hover}">
@@ -104,14 +104,13 @@
       display: flex;
 
       .track-number {
-        border: 2px solid $primary-theme-color;
         min-width: $track-number-size;
         height: $track-number-size;
-        color: $primary-theme-color;
-        font-size: 12px;
+        color: #888888;
+        font-size: 18px;
         font-weight: 600;
         text-align: center;
-        padding: 2px 4px;
+        padding: 0px 4px;
         margin-right: 10px;
       }
 

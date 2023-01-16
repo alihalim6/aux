@@ -67,7 +67,7 @@
   import {Component, Vue, Mutation} from 'nuxt-property-decorator';
   import {UI} from '~/store/constants';
   import {httpClient} from '~/utils/api';
-  import {setItemMetaData} from '~/utils/helpers';
+  import {setItemMetaData, setDuration} from '~/utils/helpers';
   import {v4 as uuid} from 'uuid';
 
   @Component
@@ -102,6 +102,7 @@
     async displayDetailOverlays(item){
       const detailsId = (item.isTrack ? item.album.id : item.id);
       let detailsResponse = {};
+      await setDuration(item);
 
       this.items = [...this.items, {...item, overlayId: uuid()}];//needs to be 'overlayId' since child at least one child component (playlists) uses 'id' internally
       this.currentIndex++;

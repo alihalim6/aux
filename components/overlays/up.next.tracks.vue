@@ -30,7 +30,7 @@
     </div>
 
     <div class="next-track-container">
-      <v-card elevation="6" class="clickable mt-3" @click.stop="fromAlbumPressed(nextTrack.album)">
+      <v-card elevation="6" class="clickable mt-3" @click.stop="nextTrackArtworkPressed()">
         <v-img :src="nextTrack.imgUrl.medium" class="next-track-img"></v-img>
       </v-card>
 
@@ -89,6 +89,7 @@
   import {PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
   import {msToDuration, getItemDuration, setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
+  import cloneDeep from 'lodash.cloneDeep';
 
   @Component
   export default class UpNextTracks extends Vue {
@@ -145,6 +146,11 @@
     clearUpNextPressed(){
       this.clearUpNext();
       this.$nuxt.$emit('hideUpNext');
+    }
+
+    nextTrackArtworkPressed(){
+      this.$nuxt.$emit('hideUpNext');
+      this.$nuxt.$root.$emit('displayDetailOverlays', setItemMetaData(cloneDeep([this.nextTrack]))[0]);
     }
   }
 </script>

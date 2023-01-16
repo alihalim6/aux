@@ -10,7 +10,7 @@
 
     <div class="currently-playing" v-if="!upNextDisplaying">
       <div class="d-flex">
-        <v-img @click="$nuxt.$root.$emit('displayDetailOverlays', currentlyPlayingItem)" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium"></v-img>
+        <v-img @click="displayItemDetails()" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium"></v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
           <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
@@ -91,9 +91,10 @@
 <script>
   import {Component, Vue, Getter, Watch, Action, Mutation} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
-  import {msToDuration, getItemDuration, isSameTrack} from '~/utils/helpers';
+  import {msToDuration, setDuration, isSameTrack, setItemMetaData} from '~/utils/helpers';
   import {httpClient, handleApiError} from '~/utils/api';
   import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
+  import cloneDeep from 'lodash.cloneDeep';
 
   @Component
   export default class CurrentlyPlaying extends Vue {
@@ -158,9 +159,6 @@
     @Mutation('setToast', {namespace: UI})
     setToast;
 
-    @Mutation('setCurrentlyPlayingItem', {namespace: SPOTIFY})
-    setCurrentlyPlayingItem;
-    
     @Watch('audioPlaying')
     async updatePlaybackIcon(playing){
       this.playbackIcon = playing ? 'pause' : 'play';
@@ -168,13 +166,8 @@
 
     @Watch('currentlyPlayingItem')
     async itemPlayingChanged(item){
-      if(item && item.id){
-        item.duration_ms = await getItemDuration(item);
-
-        if(!item.duration){
-          item.duration = msToDuration(item.duration_ms);
-        }        
-
+      if(item.id){
+        await setDuration(item);
         this.initializeTiming(item);
       }
       else{
@@ -305,9 +298,13 @@
     }
 
     handleItemLikeStatus(item, liked){
-      if(this.currentlyPlayingItem && isSameTrack(this.currentlyPlayingItem, item)){
+      if(isSameTrack(this.currentlyPlayingItem, item)){
         this.itemLiked = liked;
       }
+    }
+
+    displayItemDetails(){
+      this.$nuxt.$root.$emit('displayDetailOverlays', setItemMetaData(cloneDeep([this.currentlyPlayingItem]))[0]);
     }
 
     unmounted(){

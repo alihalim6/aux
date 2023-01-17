@@ -40,10 +40,10 @@ export const actions = {
     }
 
     try {
-    /*   await httpClient.post('/playItem', {
+      await httpClient.post('/playItem', {
         item, 
         deviceId: getters.spotifyDeviceId
-      }); */
+      });
     }
     catch(error){
       dispatch('stopPlayback');

@@ -1,3 +1,5 @@
+import {BASE_URL} from "./utils/constants";
+
 export default {  
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -45,7 +47,7 @@ export default {
   ],
 
   env: {
-    WS_URL: process.env.WS_URL || 'http://localhost:3000'
+    WS_URL: BASE_URL
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

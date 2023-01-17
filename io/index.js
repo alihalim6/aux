@@ -7,7 +7,7 @@ export default function(){
   this.nuxt.hook('render:before', () => {
     const server = http.createServer(this.nuxt.renderer.app);
     const io = socketIO(server);
-
+console.log(process.env.BASE_URL)
     // overwrite nuxt.server.listen()
     this.nuxt.server.listen = () => new Promise(resolve => server.listen(process.env.PORT || 3000, process.env.BASE_URL || 'localhost', resolve));
     // close this server on 'close' event

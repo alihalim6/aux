@@ -29,7 +29,7 @@
 <script>
   import {Component, Vue} from 'nuxt-property-decorator';
   import {PLAYLISTS} from '~/utils/constants';
-  import {httpClient} from '~/utils/api';
+  import playlists from '~/api/playlists';
   import {setItemMetaData} from '~/utils/helpers';
 
   @Component
@@ -55,7 +55,7 @@
     ];
 
     async beforeMount(){
-      const { data } = await httpClient.get('/playlists');
+      const data = await playlists();
       
       this.content.forEach(playlistTab => {
         const playlist = data[playlistTab.type].filter(playlist => playlist);//spotify can send null playlists
@@ -79,7 +79,7 @@
       font-weight: bold;
 
       @media(min-width: 400px){
-        font-size: 18px;
+        font-size: 16px;
       }
     }
 
@@ -87,6 +87,8 @@
       color: $secondary-theme-color;
       background-color: $spotify-green;
       font-weight: bold;
+      padding: 4px;
+      border-radius: 4px;
     }
   }
 </style>

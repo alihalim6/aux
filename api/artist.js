@@ -1,15 +1,8 @@
-import {apiConfig, httpClient} from './_utils';
+import {httpClient} from './_utils';
 
-async function artist(req, res){
-  try{
-    const accessToken = req.headers['access-token'];
-    const artist = await httpClient.get(`/artists/${req.body.itemId}`, apiConfig(accessToken));
-
-    res.json({artist: artist.data});
-  }
-  catch(error){
-   res.error({error: error.toString()});
-  }
+async function artist(artistId){
+  const {data} = await httpClient.get(`/artists/${artistId}`);
+  return data;
 };
 
 export default artist;

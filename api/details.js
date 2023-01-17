@@ -1,61 +1,49 @@
-import {httpClient, apiConfig} from './_utils';
+import {httpClient} from './_utils';
 
-async function details(req, res){
-  try{
-    const accessToken = req.headers['access-token'];
-    let itemDetailsId = req.body.itemDetailsId;
-    const isAlbum = req.body.isAlbum;
-    const isTrack = req.body.isTrack;
-    const isArtist = req.body.isArtist;
-    const isPlaylist = req.body.isPlaylist;
-    const playlistTrackLimit = 50;
-    const singleArtistId = req.body.singleArtistId;
-    const defaultResponse = {data: {}};
+async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId}, itemId){
+  const playlistTrackLimit = 50;
+  const defaultResponse = {data: {}};
 
-    let artistAlbums = defaultResponse;
-    let artistTopTracks = defaultResponse;
-    let relatedArtists = defaultResponse;
-    let albumTracks = defaultResponse;
-    let playlistTracks = [];
-    let totalPlaylistTracks;
-    
-    if(isAlbum || isTrack){
-      albumTracks = await httpClient.get(`/albums/${itemDetailsId}/tracks?limit=50`, apiConfig(accessToken));
-    }
-    
-    if(isArtist || singleArtistId){
-      //get artist data as well for singles
-      if(singleArtistId){
-          itemDetailsId = singleArtistId;
-      }
-      
-      artistAlbums = await httpClient.get(`/artists/${itemDetailsId}/albums?limit=30&include_groups=album,compilation`, apiConfig(accessToken));
-      //Spotify sends back explicit and clean albums, so filter out clean ones
-      artistAlbums.data.items = [...new Map(artistAlbums.data.items.map(album => [album['name'], album])).values()];
-
-      artistTopTracks = await httpClient.get(`/artists/${itemDetailsId}/top-tracks?market=US`, apiConfig(accessToken));
-      relatedArtists = await httpClient.get(`/artists/${itemDetailsId}/related-artists`, apiConfig(accessToken));
-    }
-    
-    if(isPlaylist){
-      const { data } = await httpClient.get(`/playlists/${itemDetailsId}/tracks?limit=${playlistTrackLimit}`, apiConfig(accessToken));
-      playlistTracks = data.items;
-      totalPlaylistTracks = data.total;
-    }
-
-    res.json({
-      artistAlbums: artistAlbums.data.items,
-      artistTopTracks: artistTopTracks.data.tracks,
-      relatedArtists: relatedArtists.data.artists,
-      albumTracks: albumTracks.data.items,
-      playlistTracks,
-      totalPlaylistTracks,
-      playlistTrackLimit
-    });
+  let artistAlbums = defaultResponse;
+  let artistTopTracks = defaultResponse;
+  let relatedArtists = defaultResponse;
+  let albumTracks = defaultResponse;
+  let playlistTracks = [];
+  let totalPlaylistTracks;
+  
+  if(isAlbum || isTrack){
+    albumTracks = await httpClient.get(`/albums/${itemId}/tracks?limit=50`);
   }
-  catch(error){
-   res.json({error: error.toString()});
+  
+  if(isArtist || singleArtistId){
+    //get artist data as well for singles
+    if(singleArtistId){
+      itemId = singleArtistId;
+    }
+    
+    artistAlbums = await httpClient.get(`/artists/${itemId}/albums?limit=30&include_groups=album,compilation`);
+    //Spotify sends back explicit and clean albums, so filter out clean ones
+    artistAlbums.data.items = [...new Map(artistAlbums.data.items.map(album => [album['name'], album])).values()];
+
+    artistTopTracks = await httpClient.get(`/artists/${itemId}/top-tracks?market=US`);
+    relatedArtists = await httpClient.get(`/artists/${itemId}/related-artists`);
   }
+  
+  if(isPlaylist){
+    const {data} = await httpClient.get(`/playlists/${itemId}/tracks?limit=${playlistTrackLimit}`);
+    playlistTracks = data.items;
+    totalPlaylistTracks = data.total;
+  }
+
+  return {
+    artistAlbums: artistAlbums.data.items,
+    artistTopTracks: artistTopTracks.data.tracks,
+    relatedArtists: relatedArtists.data.artists,
+    albumTracks: albumTracks.data.items,
+    playlistTracks,
+    totalPlaylistTracks,
+    playlistTrackLimit
+  };
 };
 
 export default details;

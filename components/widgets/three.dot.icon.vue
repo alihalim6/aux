@@ -20,7 +20,7 @@
 <script>
   import {Component, Vue, Prop, Getter, Mutation, Action} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI, USER} from '~/store/constants';
-  import {httpClient} from '~/utils/api';
+  import spotify from '~/api/spotify';
   import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
 
   @Component
@@ -115,7 +115,7 @@
       const likeType = this.item.type == 'album' ? 'albums' : 'tracks';
       
       try {
-        const {data} = await httpClient.post('/passthru', {url: `/me/${likeType}/contains?ids=${this.item.id}`});
+        const data = spotify({url: `/me/${likeType}/contains?ids=${this.item.id}`});
         const alreadyLiked = data[0];
         const modifyLikeUrl = `/me/${likeType}?ids=${this.item.id}`;
 
@@ -123,7 +123,7 @@
           const apiParams = {url: modifyLikeUrl, method: alreadyLiked ? 'DELETE' : 'PUT'};
 
           const apiAndToast = async () => {
-            await httpClient.post('/passthru', apiParams);
+            await spotify(apiParams);
             this.setToast({text: alreadyLiked ? REMOVED_FROM_LIKES : ADDED_TO_LIKES});
           };
           

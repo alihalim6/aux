@@ -66,7 +66,8 @@
 <script>
   import {Component, Vue, Mutation} from 'nuxt-property-decorator';
   import {UI} from '~/store/constants';
-  import {httpClient} from '~/utils/api';
+  import artist from '~/api/artist';
+  import details from '~/api/details';
   import {setItemMetaData, setDuration} from '~/utils/helpers';
   import {v4 as uuid} from 'uuid';
 
@@ -77,6 +78,7 @@
     display = false;
     currentIndex = -1;
     fullItemImage = '';
+    processing = false;
     
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -86,13 +88,13 @@
       this.$nuxt.$root.$on('displayDetailOverlays', this.displayDetailOverlays);
       this.$nuxt.$root.$on('closeOverlays', this.closeOverlays);
       
-      this.$nuxt.$root.$on('displayArtistDetails', async artist => {
-        const { data } = await httpClient.post('/artist', {itemId: artist.id});
+      this.$nuxt.$root.$on('displayArtistDetails', async ({id}) => {
+        const artistDetails = await artist(id);
     
         const artistToDisplay = {
-          ...artist,
-          images: data.artist.images,
-          genres: data.artist.genres
+          ...artistDetails,
+          images: artistDetails.images,
+          genres: artistDetails.genres
         };
         
         this.displayDetailOverlays(setItemMetaData([artistToDisplay])[0]);
@@ -100,30 +102,27 @@
     }
 
     async displayDetailOverlays(item){
-      let detailsResponse = {};
-      await setDuration(item);
+      if(!this.processing){//TODO: multiple event hits
+        this.processing = true;
 
-      this.items = [...this.items, {...item, overlayId: uuid()}];//needs to be 'overlayId' since child at least one child component (playlists) uses 'id' internally
-      this.currentIndex++;
-      this.display = true;
+        let detailsResponse = {};
+        await setDuration(item);
 
-      if(!item.data){
-        const detailsId = (item.isTrack ? item.album.id : item.id);
-        
-        detailsResponse = await httpClient.post('/details', {
-          itemDetailsId: detailsId, 
-          isTrack: item.isTrack, 
-          isAlbum: item.isAlbum, 
-          isArtist: item.isArtist,
-          isPlaylist: item.isPlaylist,
-          singleArtistId: item.singleArtistId
-        });
+        this.items = [...this.items, {...item, overlayId: uuid()}];//needs to be 'overlayId' since child at least one child component (playlists) uses 'id' internally
+        this.currentIndex++;
+        this.display = true;
+
+        if(!item.data){
+          const itemId = (item.isTrack ? item.album.id : item.id);
+          detailsResponse = await details(item, itemId);
+        }
+
+        this.items[this.items.length - 1].details = detailsResponse || item.data;
+        this.$forceUpdate();
+        this.closeFeed();
+        this.scrolledDown = false;
+        this.processing = false;
       }
-
-      this.items[this.items.length - 1].details = detailsResponse.data || item.data;
-      this.$forceUpdate();
-      this.closeFeed();
-      this.scrolledDown = false;
     }
 
     fullItemImageClose(){

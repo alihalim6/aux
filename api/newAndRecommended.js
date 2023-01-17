@@ -1,13 +1,11 @@
-import {apiConfig, topItems, shuffleArray, getRecommendationSeeds, getATopArtist, httpClient} from './_utils';
-
-let accessToken;
+import {topItems, shuffleArray, getRecommendationSeeds, getATopArtist, httpClient} from './_utils';
 
 const getRecommendedTracks = async (topArtists) => {
-  const topTracks = await topItems('tracks', apiConfig(accessToken));
+  const topTracks = await topItems('tracks');
   const seeds = getRecommendationSeeds(topArtists, topTracks.data);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=30&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`, apiConfig(accessToken)) :
+    await httpClient.get(`/recommendations?limit=30&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -15,39 +13,30 @@ const getRecommendedArtists = async (topArtists) => {
   if(topArtists.items.length){
     const topArtist = await getATopArtist(topArtists);
     console.log(`top artist seed for related artists: ${topArtist.name}`);
-    return await httpClient.get(`/artists/${topArtist.id}/related-artists`, apiConfig(accessToken));
+    return await httpClient.get(`/artists/${topArtist.id}/related-artists`);
   }
 
-  return Promise.resolve({data: {
-    artists: []
-  }});
+  return Promise.resolve({data: {artists: []}});
 };
 
-async function newAndRecommended(req, res){
+async function newAndRecommended(){
   //TODO don't recommend if already follow an artist/like a track etc.
 
-  try{
-    accessToken = req.headers['access-token'];
+  const {data} = await httpClient.get('/browse/new-releases?limit=50');
+  const newReleases = data.albums.items;
 
-    const {data} = await httpClient.get('/browse/new-releases?limit=50', apiConfig(accessToken));
-    const newReleases = data.albums.items;
+  const topArtists = await topItems('artists');
+  const recommendedTracks = await getRecommendedTracks(topArtists.data);
+  const recommendedArtists = await getRecommendedArtists(topArtists.data);
+  
+  const allItems = [...newReleases, ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 7)];
+  shuffleArray(allItems);
 
-    const topArtists = await topItems('artists', apiConfig(accessToken));
-    const recommendedTracks = await getRecommendedTracks(topArtists.data);
-    const recommendedArtists = await getRecommendedArtists(topArtists.data);
-    
-    const allItems = [...newReleases, ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 7)];
-    shuffleArray(allItems);
-
-    res.json({
-      allItems,
-      previewItems: [...Array.from(allItems)].splice(0, 30),
-      newReleases
-    });
-  }
-  catch(error){
-   res.json({error: error.toString()});
-  }
-};
+  return {
+    allItems,
+    previewItems: [...Array.from(allItems)].splice(0, 30),
+    newReleases
+  };
+}
 
 export default newAndRecommended;

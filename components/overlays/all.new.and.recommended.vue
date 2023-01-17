@@ -72,7 +72,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   .unselected-tab {
     color: #888888;
     font-weight: bold;

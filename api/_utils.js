@@ -1,22 +1,56 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
+import {refreshToken, accessTokenExpired} from '~/auth';
+import {storageGet} from '~/utils/storage';
+import {AUTH} from '~/utils/constants';
+import {UI, SPOTIFY} from '~/store/constants';
 
 //TODO: make into class that is instantiated with config/token and just use class method that makes calls internally using token property
 export const httpClient = axios.create({
   baseURL: 'https://api.spotify.com/v1'
 });
 
-axiosRetry(httpClient, {retries: 2});
-
-export const apiConfig = (accessToken) => {
+httpClient.interceptors.request.use(async config => {
+  if(accessTokenExpired()){
+    await attemptTokenRefresh(); 
+  }
+    
   return {
+    ...config,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${accessToken}`
+      'Authorization': `Bearer ${storageGet(AUTH.ACCESS_TOKEN)}`
     },
     timeout: 60000//1 min
   };
-};
+});
+
+httpClient.interceptors.response.use(async response => {
+  if(response.data.error){
+    handleApiError();
+    return;
+  }
+
+  return response;
+}, () => {
+  handleApiError();
+});
+
+async function attemptTokenRefresh(){
+  try{
+    await refreshToken();
+  }
+  catch(error){
+    $nuxt.$store.commit(`${UI}/setToast`, {text: 'Something went wrong, please refresh the page lorem ipsum...', error: true});
+  }
+}
+
+axiosRetry(httpClient, {retries: 2});
+
+export function handleApiError(){
+  $nuxt.$store.commit(`${UI}/setToast`, {text: 'Something went wrong lorem ipsum...', error: true});
+  $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
+}
 
 export const topItems = async (topType, config) => {
   return await httpClient.get(`/me/top/${topType}`, config);

@@ -82,9 +82,10 @@
   import {Component, Vue, Getter, Watch, Mutation} from 'nuxt-property-decorator';
   import {FEED, USER, UI} from '~/store/constants';
   import {storageGet, storageGetBoolean, storageSet, clearStorage} from '~/utils/storage';
-  import {AUX_MODE, SPLASH, IGNORED_USERS, BLACK} from '~/utils/constants';
+  import {AUX_MODE, SPLASH, IGNORED_USERS} from '~/utils/constants';
   import {ignoredUsers} from '~/utils/helpers';
-  import {httpClient, handleApiError} from '~/utils/api';
+  import {handleApiError} from '~/api/_utils';
+  import spotify from '~/api/spotify';
   import socket from '~/plugins/socket.client.js';
 
   @Component
@@ -155,7 +156,7 @@
       const method = user.following ? 'PUT' : 'DELETE';
 
       try {
-        await httpClient.post('/passthru', {url: `/me/following?ids=${user.id}&type=user`, method});
+        await spotify({url: `/me/following?ids=${user.id}&type=user`, method});
         this.setToast({text: `${user.following ? 'Now following' : 'No longer following'} ${user.name} on Spotify`});
 
         if(user.following){

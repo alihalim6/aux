@@ -40,7 +40,9 @@
 
 <script>
   import {Component, Vue, Mutation} from 'nuxt-property-decorator';
-  import {httpClient, handleApiError} from '~/utils/api';
+  import {handleApiError} from '~/api/_utils';
+  import myAux from '~/api/myAux';
+  import spotify from '~/api/spotify';
   import {setItemMetaData, msToDuration} from '~/utils/helpers';
   import {MY_AUX, LIKED_ITEM_EVENT, REMOVED_LIKED_ITEM_EVENT} from '~/utils/constants';
   import {USER} from '~/store/constants';
@@ -100,7 +102,7 @@
     };
 
     async beforeMount(){
-      const { data } = await httpClient.get('/myAux');
+      const data = await myAux();
       this.setProfile(data.profile);
       const topItems = setItemMetaData(data.topItems);
 
@@ -139,7 +141,7 @@
       });
 
       if(contentWithItemType && contentWithItemType.data){
-        const { data } = contentWithItemType;
+        const data = contentWithItemType;
 
         if(removal){
           const itemIndex = data.findIndex(like => like.uuid == item.uuid);
@@ -159,7 +161,7 @@
           contentToFetchFor.fetchPending = true;
 
           try{
-            const { data } = await httpClient.post('/passthru', {
+            const data = await spotify({
               url: `/me/${contentToFetchFor.api}?limit=${contentToFetchFor.limit}&offset=${contentToFetchFor.offset}`
             });
 

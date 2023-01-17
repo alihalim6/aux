@@ -28,7 +28,7 @@
   import {Component, Vue, Mutation} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
   import {UI} from '~/store/constants';
-  import {httpClient} from '~/utils/api';
+  import newAndRecommended from '~/api/newAndRecommended';
 
   @Component
   export default class NewAndRecommended extends Vue {
@@ -48,12 +48,12 @@
     setLoading;
 
     async beforeMount(){
-      const {data} = await httpClient.get('/newAndRecommended');
-      this.previewItems = setItemMetaData(data.previewItems);
+      const {previewItems, newReleases, allItems} = await newAndRecommended();
+      this.previewItems = setItemMetaData(previewItems);
       this.setLoading(false);
       
-      this.newReleases = data.newReleases;
-      this.allItems = data.allItems;
+      this.newReleases = newReleases;
+      this.allItems = allItems;
 
       this.$nuxt.$root.$on('newAndRecoOverlayShown', () => this.overlayLoading = false);
     }

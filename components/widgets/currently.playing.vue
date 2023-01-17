@@ -92,7 +92,8 @@
   import {Component, Vue, Getter, Watch, Action, Mutation} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
   import {msToDuration, setDuration, isSameTrack, setItemMetaData} from '~/utils/helpers';
-  import {httpClient, handleApiError} from '~/utils/api';
+  import {handleApiError} from '~/api/_utils';
+  import spotify from '~/api/spotify';
   import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
   import cloneDeep from 'lodash.clonedeep';
 
@@ -186,7 +187,7 @@
           this.startInterval();
         }
 
-        const {data} = await httpClient.post('/passthru', {url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
+        const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data[0];
       }
     }
@@ -277,7 +278,7 @@
 
       if(this.itemLiked){
         try {
-          await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'DELETE'});
+          await spotify({url: modifyLikeUrl, method: 'DELETE'});
           this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.currentlyPlayingItem);
           this.setToast({text: REMOVED_FROM_LIKES});
         }
@@ -287,7 +288,7 @@
       }
       else{
         try {
-          await httpClient.post('/passthru', {url: modifyLikeUrl, method: 'PUT'});
+          await spotify({url: modifyLikeUrl, method: 'PUT'});
           this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.currentlyPlayingItem);
           this.setToast({text: ADDED_TO_LIKES});
         }

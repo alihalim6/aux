@@ -70,12 +70,6 @@ export default {
     }
   },
 
-  server: {
-    host: '0'
-  },
-
-  serverMiddleware: process.env.NODE_ENV === 'production' ? [] : ['~/api/v1'],
-
   vuetify: {
     customVariables: ['~/styles/variables.scss'],
     treeShake: true

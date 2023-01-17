@@ -4,7 +4,7 @@ import socket from '~/plugins/socket.client.js';
 import {AUX_MODE} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
 import {isSameTrack, ignoredUsers, setDuration} from '~/utils/helpers';
-import {httpClient} from '~/utils/api';
+import spotify from '~/api/spotify';
 
 export const state = () => {
   return {
@@ -92,7 +92,7 @@ export const actions = {
     }
 
     if(userProfile){
-      const {data} = await httpClient.post('/passthru', {url: `/me/following/contains?ids=${userProfile.id}&type=user`});
+      const data = spotify({url: `/me/following/contains?ids=${userProfile.id}&type=user`});
       commit('addUser', {...userProfile, following: data[0]});
       commit(`${UI}/setToast`, {img: userProfile.img, username: userProfile.name, text: 'is on'}, {root: true});
     }

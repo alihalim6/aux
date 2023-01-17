@@ -2,10 +2,10 @@ import {storageGet} from '~/utils/storage';
 import {AUTH, IGNORED_USERS} from '~/utils/constants';
 import {refreshToken} from '~/auth';
 import {handleAuthError} from '~/utils/auth';
-import {httpClient} from '~/utils/api';
+import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
 import {UI} from '~/store/constants';
-import {handleApiError} from '~/utils/api';
+import {handleApiError} from '~/api/_utils';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
@@ -120,7 +120,7 @@ export const getItemDuration = async (item) => {
 
   if((item.type == 'album' || trackWithAlbum) && item.id && !item.duration_ms){
     try {
-      const {data} = await httpClient.post('/passthru', {url: `/albums/${trackWithAlbum ? item.album.id : item.id}/tracks`});
+      const data = await spotify({url: `/albums/${trackWithAlbum ? item.album.id : item.id}/tracks`});
       return data.items[0].duration_ms;
     }
     catch(error){

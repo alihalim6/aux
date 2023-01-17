@@ -13,7 +13,7 @@
 <script>
   import {Component, Vue, Prop} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
-  import {httpClient} from '~/utils/api';
+  import spotify from '~/api/spotify';
 
   @Component
   export default class PlaylistDetails extends Vue {
@@ -29,8 +29,7 @@
 
       while(!this.allTracksRetrieved){
         if(this.tracks.length < totalPlaylistTracks){
-          const { data } = await httpClient.post('/passthru', {url: `/playlists/${this.playlist.id}/tracks?limit=${playlistTrackLimit}&offset=${this.tracks.length}`});
-
+          const data = await spotify({url: `/playlists/${this.playlist.id}/tracks?limit=${playlistTrackLimit}&offset=${this.tracks.length}`});
           this.tracks = [...this.tracks, ...data.items.map(this.setTrackData)];
         }
         else{

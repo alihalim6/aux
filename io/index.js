@@ -9,7 +9,8 @@ export default function(){
     const io = socketIO(server);
 
     // overwrite nuxt.server.listen()
-    this.nuxt.server.listen = () => new Promise(resolve => server.listen(process.env.PORT || 3000, 'https://www.liveonaux.com' || 'localhost', resolve));
+    this.nuxt.server.listen = () => new Promise(resolve => server.listen(port || 3000, process.env.HOST || 'localhost', resolve));
+
     // close this server on 'close' event
     this.nuxt.hook('close', () => new Promise(server.close));
 

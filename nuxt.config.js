@@ -45,8 +45,7 @@ export default {
   ],
 
   env: {
-    BASE_URL: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://www.liveonaux.com',
-    PORT: 3000
+    BASE_URL: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://www.liveonaux.com'
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -69,6 +68,10 @@ export default {
           fs: "empty"
       };
     }
+  },
+
+  server: {
+    host: '0'
   },
 
   serverMiddleware: process.env.NODE_ENV === 'production' ? [] : ['~/api/v1'],

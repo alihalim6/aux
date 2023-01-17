@@ -5,7 +5,7 @@
     <!-- TOP TRACKS -->  
     <v-card class="more-from-artist-container" elevation="7" v-if="parentItem.details.artistTopTracks.length">
       <div class="more-from-artist">
-        <div class="more-from-artist-title top-tracks font-weight-bold">Top Tracks</div>
+        <div class="more-from-artist-title mb-0 font-weight-bold">Top Tracks</div>
         <TrackList :tracks="parentItem.details.artistTopTracks" :tracksFromDifferentAlbums="true" :parentId="parentItem.id"/>
       </div>
     </v-card>
@@ -21,7 +21,7 @@
     <!-- RELATED ARTISTS -->  
     <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.relatedArtists.length">
       <div class="more-from-artist">
-        <div class="more-from-artist-title font-weight-bold">Similar Artists</div>
+        <div class="more-from-artist-title mb-2 font-weight-bold">Similar Artists</div>
         
         <div class="related-artists-container">
           <div 
@@ -77,10 +77,6 @@
     .more-from-artist-title {
       margin: 0px 0px 16px $base-padding;
       text-decoration: underline;
-    }
-
-    .top-tracks {
-      margin-bottom: 0px !important;
     }
   }
 

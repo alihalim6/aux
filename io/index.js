@@ -7,9 +7,9 @@ export default function(){
   this.nuxt.hook('render:before', () => {
     const server = http.createServer(this.nuxt.renderer.app);
     const io = socketIO(server);
-console.log(process.env.BASE_URL)
+
     // overwrite nuxt.server.listen()
-    this.nuxt.server.listen = () => new Promise(resolve => server.listen(process.env.PORT || 3000, process.env.BASE_URL || 'localhost', resolve));
+    this.nuxt.server.listen = () => new Promise(resolve => server.listen(process.env.PORT || 3000, 'https://www.liveonaux.com' || 'localhost', resolve));
     // close this server on 'close' event
     this.nuxt.hook('close', () => new Promise(server.close));
 

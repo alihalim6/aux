@@ -3,7 +3,7 @@ import moment from 'moment';
 import socket from '~/plugins/socket.client.js';
 import {AUX_MODE} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
-import {isSameTrack, ignoredUsers} from '~/utils/helpers';
+import {isSameTrack, ignoredUsers, setDuration} from '~/utils/helpers';
 import {httpClient} from '~/utils/api';
 
 export const state = () => {
@@ -30,12 +30,14 @@ export const getters = {
 
 export const actions = {
   //activity from current user
-  addToFeed: ({commit, rootGetters, getters}, params) => {
+  addToFeed: async ({commit, rootGetters, getters}, params) => {
     const timestamp = moment().toISOString();
+
+    await setDuration(params.track);
 
     const activity = {
       user: rootGetters[`${USER}/profile`],
-      track: {...params.track, originalListener: rootGetters[`${USER}/profile`].id, feedId: params.feedId},
+      track: {...params.track, originalListener: rootGetters[`${USER}/profile`].id},
       timestamp,
       updateTimestamp: timestamp //needed to trigger UI updates of feed items immediately
     };
@@ -167,7 +169,7 @@ export const mutations = {
         activity.timestamp = moment().toISOString();
       }
 
-      //we don't wanna falsify an activity that has already been set to played
+      //we don't wanna falsify (via undefined) an activity that has already been set to played
       if(!activity.played){
         activity.played = params.played;
       }

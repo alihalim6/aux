@@ -4,10 +4,18 @@
       <div class="home-content-title">
         New & Recommended
         
-        <div class="filter-container">
-          <div class="clickable filter-label" v-if="allItems && allItems.length" @click="displayAll()">See All</div>
+        <div class="filter-container" v-if="allItems && allItems.length" >
+          <div class="clickable filter-label" @click="displayAll()">
+            <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span>
+            <span v-else>See All</span>
+          </div>
+          
           <span class="filter-divider">/</span>
-          <div class="clickable filter-label" @click="displayNewReleases()">New Releases Only</div>
+          
+          <div class="clickable filter-label" @click="displayNewReleases()">
+            <span v-if="overlayLoading === NEW_RELEASES">...</span><!-- tried progress circular but it freezes for some reason -->
+            <span v-else>New Releases Only</span>
+          </div>
         </div>
       </div>
     </div>
@@ -27,6 +35,9 @@
     previewItems = [];
     newReleases = [];
     allItems = [];
+    NEW_AND_RECOMMENDED = 'NEW AND RECOMMENDED';
+    NEW_RELEASES = 'NEW RELEASES';
+    overlayLoading = false;
 
     baseOverlay = {
       simpleOverlay: true,
@@ -37,28 +48,42 @@
     setLoading;
 
     async beforeMount(){
-      const { data } = await httpClient.get('/newAndRecommended');
+      const {data} = await httpClient.get('/newAndRecommended');
       this.previewItems = setItemMetaData(data.previewItems);
       this.setLoading(false);
       
       this.newReleases = data.newReleases;
       this.allItems = data.allItems;
+
+      this.$nuxt.$root.$on('newAndRecoOverlayShown', () => this.overlayLoading = false);
+    }
+
+    displayOverlay({allNewAndRecommended, newReleases, name, data}){
+      this.overlayLoading = name;
+
+      setTimeout(() => {
+        this.$nuxt.$root.$emit('displayDetailOverlays', {
+          ...this.baseOverlay,
+          allNewAndRecommended,
+          newReleases,
+          name,
+          data
+        });
+      }, 20);
     }
 
     displayAll(){
-      this.$nuxt.$root.$emit('displayDetailOverlays', {
-        ...this.baseOverlay,
+      this.displayOverlay({
         allNewAndRecommended: true,
-        name: 'NEW AND RECOMMENDED',
+        name: this.NEW_AND_RECOMMENDED,
         data: this.allItems
       });
     }
 
     displayNewReleases(){
-      this.$nuxt.$root.$emit('displayDetailOverlays', {
-        ...this.baseOverlay,
+      this.displayOverlay({
         newReleases: true,
-        name: 'NEW RELEASES',
+        name: this.NEW_RELEASES,
         data: this.newReleases
       });
     }

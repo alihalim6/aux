@@ -2,12 +2,12 @@
   <section>
     <v-dialog :value="display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex" :touchless="true">
-          <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">                    
+          <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">        
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
-            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="item.imgUrl && currentIndex === index">
+            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="(item.simpleOverlay || item.imgUrl) && currentIndex === index">
               <div v-if="!item.details" class="loading-container">
                 <div class="blurred loading"></div>
-              </div>
+              </div>            
 
               <div class="full-item-image-cta-outer" @click="() => fullItemImage = item.imgUrl.large" v-if="item.imgUrl.large && item.details && !item.simpleOverlay">
                 <v-icon color="white" class="eye">mdi-eye</v-icon>
@@ -22,7 +22,7 @@
 
                   <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay">
                     <div class="clickable full-item-image-cta-inner" @click="() => fullItemImage = item.imgUrl.large">
-                      {{item.isArtist ? 'Photo' : (item.albumType || 'Track') + ' Artwork'}}
+                      {{item.isArtist ? 'PHOTO' : (item.albumType || 'TRACK') + ' ARTWORK'}}
                     </div>
                   </div>
 
@@ -43,7 +43,7 @@
                   </div>
 
                   <LazyAllNewAndRecommended v-if="item.allNewAndRecommended" :data="item.data"/>
-                  <LazyNewReleases v-if="item.newReleases" :initialData="item.data"/>
+                  <LazyNewReleases v-if="item.newReleases" :data="item.data"/>
                   <LazyTrackDetails v-if="item.isTrack" :track="item"/>
                   <LazyAlbumDetails v-if="item.isAlbum" :album="item"/>
                   <LazyArtistDetails v-if="item.isArtist" :artist="item"/>
@@ -100,7 +100,6 @@
     }
 
     async displayDetailOverlays(item){
-      const detailsId = (item.isTrack ? item.album.id : item.id);
       let detailsResponse = {};
       await setDuration(item);
 
@@ -109,6 +108,8 @@
       this.display = true;
 
       if(!item.data){
+        const detailsId = (item.isTrack ? item.album.id : item.id);
+        
         detailsResponse = await httpClient.post('/details', {
           itemDetailsId: detailsId, 
           isTrack: item.isTrack, 
@@ -248,8 +249,8 @@
 
             position: unset;
             display: none;
-            background-color: $secondary-theme-color;
-            color: $primary-theme-color;
+            background-color: $primary-theme-color;
+            color: $secondary-theme-color;
             padding: 8px;
             border-radius: 4px;
             right: 30px;

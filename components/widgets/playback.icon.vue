@@ -28,7 +28,7 @@
 <script>
   import {Component, Vue, Prop, Action, Getter, Watch, Mutation} from 'nuxt-property-decorator';
   import {SPOTIFY} from '~/store/constants';
-  import {isSameTrack} from '~/utils/helpers';
+  import {isSameTrack, setDuration} from '~/utils/helpers';
 
   @Component
   export default class PlaybackIcon extends Vue {
@@ -63,7 +63,8 @@
     
     @Watch('audioPlaying')   
     @Watch('currentlyPlayingItemUri')
-    playbackChanged(){
+    async playbackChanged(){
+      await setDuration(this.item);
       this.updateThisItem();
 
       //keep all playback icons up to date

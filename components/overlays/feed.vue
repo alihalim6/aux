@@ -105,6 +105,7 @@
         }
         //previously skipped, flag appropriately
         else{
+          socket.emit('activityAdded', {...activityInFeed, played: true});
           this.setActivitySkippedOrPlayed({activity: activityInFeed, played: true, updateOriginalTimestamp: true});
         }
       };
@@ -140,8 +141,7 @@
         if(this.audioPlaying && this.currentlyPlayingItem.feedId){
           this.secsOfTrackPlayed++;
           
-          //can't use isSameTrack() due to activity track not having duration/track number
-          if(this.currentlyPlayingItem.feedId == activity.track.feedId){
+          if(isSameTrack(this.currentlyPlayingItem, activity.track)){
             if(this.secsOfTrackPlayed >= PLAYED_NOT_SKIPPED_THRESHOLD){
               this.resetSkipPlayCheck();
               callback();
@@ -246,7 +246,7 @@
 
   .feed-title-container {
     .v-tooltip__content {
-      font-size: 12px;
+      font-size: 14px;
       left: 10px !important;
       max-width: 90%;
     }

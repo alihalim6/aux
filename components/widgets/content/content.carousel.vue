@@ -18,7 +18,7 @@
               </v-card>
 
               <div :class="{'pb-8': vertical}">
-                <div class="primary-container" :class="{'hovered-primary-container': hover && !vertical, 'hovered-primary-last-container': hover && index == data.length - 1}">
+                <div class="primary-container" :class="{'hovered-primary-container': hover && !vertical, 'hovered-primary-last-container': hover && !vertical && index == data.length - 1}">
                   <div class="clickable primary-label" @click.stop="primaryLabelPressed(item)" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">{{item.primaryLabel}}</div>
 
                   <ThreeDotIcon v-if="!item.isCollection" :item="item"/>

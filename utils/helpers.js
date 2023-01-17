@@ -1,4 +1,3 @@
-import {capitalCase} from 'capital-case';
 import {storageGet} from '~/utils/storage';
 import {AUTH, IGNORED_USERS} from '~/utils/constants';
 import {refreshToken} from '~/auth';
@@ -52,7 +51,7 @@ export const setItemMetaData = (items) => {
       }
 
       if(item.isAlbum){
-        item.albumType = (item.album_type == 'single' && item.total_tracks > 1) ? 'EP' : capitalCase(item.album_type);
+        item.albumType = (item.album_type == 'single' && item.total_tracks > 1) ? 'EP' : item.album_type.toUpperCase();
       }
 
       if(!item.fromCollection && item.isTrack && item.album && item.album.total_tracks > 1){
@@ -65,14 +64,14 @@ export const setItemMetaData = (items) => {
       const genres = item.genres.map(genre => genre.toUpperCase());
 
       if(genres.length){
-        item.secondaryLabel = genres.slice(0, 2).join('/');
+        item.secondaryLabel = genres.slice(0, 2).join(' / ');
       }
     }
     else if(item.isPlaylist){
       item.primaryLabel = item.name;
       item.secondaryLabel = item.description;
       item.numberOfTracks = `${item.tracks.total} Tracks`;
-      item.albumType = 'Playlist';
+      item.albumType = 'PLAYLIST';
     }
 
     item.singleTrack = (item.isAlbum && (item.total_tracks === 1)) || (item.isTrack && (!item.album || item.album.total_tracks === 1));
@@ -117,10 +116,11 @@ export const msToDuration = (ms) => {
 };
 
 export const getItemDuration = async (item) => {
-  //singles (with type 'album') don't have duration
-  if(item.id && !item.duration_ms){
+  const trackWithAlbum = (item.type == 'track') && item.album;
+
+  if((item.type == 'album' || trackWithAlbum) && item.id && !item.duration_ms){
     try {
-      const {data} = await httpClient.post('/passthru', {url: `/albums/${item.id}/tracks`});
+      const {data} = await httpClient.post('/passthru', {url: `/albums/${trackWithAlbum ? item.album.id : item.id}/tracks`});
       return data.items[0].duration_ms;
     }
     catch(error){
@@ -204,6 +204,7 @@ export function ignoredUsers(){
   return [];
 }
 
+//important for isSameTrack()
 export async function setDuration(item){
   item.duration_ms = await getItemDuration(item);
 

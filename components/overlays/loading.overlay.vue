@@ -31,7 +31,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 60vh;
+    height: 90%;
 
     .spinner-container {
       max-width: $container-size !important;

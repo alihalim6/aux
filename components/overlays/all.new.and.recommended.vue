@@ -65,6 +65,10 @@
         this.content[0].data = tracks;
       });
     }
+
+    mounted(){
+      this.$nuxt.$root.$emit('newAndRecoOverlayShown');
+    }
   }
 </script>
 

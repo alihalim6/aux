@@ -29,8 +29,8 @@ async function newAndRecommended(req, res){
   try{
     accessToken = req.headers['access-token'];
 
-    let newReleases = await httpClient.get('/browse/new-releases?limit=10', apiConfig(accessToken));
-    newReleases = newReleases.data.albums.items;
+    const {data} = await httpClient.get('/browse/new-releases?limit=50', apiConfig(accessToken));
+    const newReleases = data.albums.items;
 
     const topArtists = await topItems('artists', apiConfig(accessToken));
     const recommendedTracks = await getRecommendedTracks(topArtists.data);

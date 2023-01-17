@@ -198,7 +198,7 @@ export const mutations = {
     state.currentlyPlayingItem = {...params.item, feedId: params.feedId};
   },
   setItemPlaybackIcon(state, params){
-    params.item.playbackIcon = params.icon
+    params.item.playbackIcon = params.icon;
   },
   setAudioPlaying(state, playing){
     console.log(`setting audioPlaying to ${playing}`);

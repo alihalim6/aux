@@ -57,19 +57,10 @@
   @Component
   export default class FeedItem extends Vue {
     chatMessage = '';
-    showReactions = false;
-    trackIsPlaying = false;
+    //when reactions are added, whole component remounts so ensure reactions stays showing
+    showReactions = !!(this.activity.reactions && this.activity.reactions.length);
 
-    reactions = [
-      {
-        code: 0x1F525,
-        name: 'fire'
-      },
-      {
-        code: 0x1F612,
-        name: 'nah'
-      }
-    ];
+    trackIsPlaying = false;
 
     @Prop()
     activity;
@@ -94,11 +85,11 @@
 
     @Watch('trackIsPlaying')
     trackIsPlayingChanged(newValue, oldValue){
-      if(!oldValue && newValue){
+      if(newValue && !oldValue){
         this.showReactions = true;
       }
     }
-
+    
     chatMessageSubmitted(){
       if(this.chatMessage.trim()){
         this.addReactionToActivity({activity: this.activity, message: this.chatMessage});

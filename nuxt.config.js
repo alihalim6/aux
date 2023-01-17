@@ -49,6 +49,11 @@ export default {
     PORT: 3000
   },
 
+  server: {
+    host: '0.0.0.0',
+    port: process.env.PORT || 3000
+  },
+
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
 

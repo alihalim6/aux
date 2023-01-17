@@ -94,7 +94,7 @@
   import {msToDuration, setDuration, isSameTrack, setItemMetaData} from '~/utils/helpers';
   import {httpClient, handleApiError} from '~/utils/api';
   import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
-  import cloneDeep from 'lodash.cloneDeep';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class CurrentlyPlaying extends Vue {

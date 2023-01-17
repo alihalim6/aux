@@ -89,7 +89,7 @@
   import {PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
   import {msToDuration, getItemDuration, setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
-  import cloneDeep from 'lodash.cloneDeep';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class UpNextTracks extends Vue {

@@ -1,7 +1,6 @@
 export const AUX_NAMESPACE = 'aux.';
 export const SPLASH = 'splash';
 export const APP = 'app';
-export const BASE_URL = (process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.BASE_URL);
 export const PLAYED_NOT_SKIPPED_THRESHOLD = 15;
 
 export const AUTH = {
@@ -33,7 +32,7 @@ export const AUTH = {
   URL: {
     TOKEN: 'https://accounts.spotify.com/api/token',
     AUTHORIZE: 'https://accounts.spotify.com/authorize',
-    REDIRECT: BASE_URL
+    REDIRECT: process.env.BASE_URL
   }
 };
 

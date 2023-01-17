@@ -1,4 +1,3 @@
-import {BASE_URL} from './constants';
 import axios from 'axios';
 import {refreshToken, accessTokenExpired} from '~/auth';
 import {storageGet} from '~/utils/storage';
@@ -6,7 +5,7 @@ import {AUTH} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
 
 const httpClient = axios.create({
-  baseURL: `${BASE_URL}/api`
+  baseURL: `${process.env.BASE_URL}/api`
 });
 
 httpClient.interceptors.request.use(async config => {

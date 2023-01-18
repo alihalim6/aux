@@ -68,7 +68,7 @@
         </div>
       </div>
 
-      <div class="d-flex flex-column align-start"  @click.stop="viewUpNext()">
+      <div class="d-flex flex-column align-start" id="upNextToggle" @click.stop="viewUpNext()">
         <div class="up-next-container">
           <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
@@ -478,5 +478,9 @@
       top: auto !important;
       bottom: 30px;
     }
+  }
+
+  #upNextToggle {
+    margin-bottom: env(safe-area-inset-bottom);
   }
 </style>

@@ -5,16 +5,54 @@ $feed-height: 63vh;
 $feed-height-smaller: 95vh;
 $feed-base-bottom: 15px;
 
+//UNUSED: things didn't update correctly as playing/not playing toggled
+@mixin item-playing-styles($footer-height) {
+  .v-dialog--fullscreen, .v-dialog__content {
+    max-height: calc(100% - #{$footer-height});
+  }
+
+  .activity-feed {
+    max-height: calc(#{$feed-height}  - #{$footer-height});
+    bottom: calc(#{$feed-base-bottom} + #{$footer-height});
+
+    @media(max-width: $feed-size-threshold){
+      height: calc(100% - #{$footer-height});
+      width: 100vw;
+      max-height: none;
+      max-width: none;
+      bottom: $footer-height;
+      right: 0px;
+    }
+  }
+
+  .feed-alert-container {
+    max-height: calc(#{$feed-height}  - #{$footer-height});
+    bottom: calc(#{$alert-container-base-bottom} + #{$footer-height});
+  }
+
+  .up-next-hidden {
+    animation: slide-down-not-playing $up-next-slide-animation;
+
+    @keyframes slide-down-not-playing {
+      to {
+        max-height: $footer-height;
+        height: $footer-height;
+      }
+    }
+  }
+
+  .currently-playing-container {
+    max-height: $footer-height;
+    height: $footer-height;
+  }
+}
+
 .v-application {
   font-family: 'Public Sans', sans-serif !important;
 
-  .v-dialog--fullscreen {
+  .v-dialog--fullscreen, .v-dialog__content {
     overflow-y: hidden !important;
-    max-height: calc(100vh - #{$max-footer-height-not-playing});
-  }
-
-  .v-dialog__content {
-    max-height: calc(100vh - #{$max-footer-height-not-playing});
+    max-height: calc(100% - #{$max-footer-height-not-playing});
   }
 
   .activity-feed {
@@ -22,7 +60,7 @@ $feed-base-bottom: 15px;
     bottom: calc(#{$feed-base-bottom} + #{$max-footer-height-not-playing});
 
     @media(max-width: $feed-size-threshold){
-      height: calc(100vh - #{$max-footer-height-not-playing});
+      height: calc(100% - #{$max-footer-height-not-playing});
       width: 100vw;
       max-height: none;
       max-width: none;
@@ -48,7 +86,7 @@ $feed-base-bottom: 15px;
 
 .v-application.item-playing {
   .v-dialog--fullscreen, .v-dialog__content {
-    max-height: calc(100vh - #{$max-footer-height-playing});
+    max-height: calc(100% - #{$max-footer-height-playing});
   }
 
   .feed-alert-container {
@@ -60,7 +98,7 @@ $feed-base-bottom: 15px;
     bottom: calc(#{$feed-base-bottom} + #{$max-footer-height-playing});
 
     @media(max-width: $feed-size-threshold){
-      height: calc(100vh - #{$max-footer-height-playing});
+      height: calc(100% - #{$max-footer-height-playing});
       width: 100vw;
       max-height: none;
       max-width: none;

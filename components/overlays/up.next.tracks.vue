@@ -244,7 +244,7 @@
       font-weight: bold;
       width: 90vw;
       margin-top: 40px;
-      padding-bottom: 24px;
+      padding-bottom: 120px;
 
       .then-label {
         text-decoration: underline;

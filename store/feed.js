@@ -11,7 +11,7 @@ export const state = () => {
     feed: [],
     latestActivity: {},
     users: [
-     {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'}
+    // {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'}
     ]//////
   };
 };
@@ -86,8 +86,12 @@ export const actions = {
     const userAlreadyAddedIndex = getters.users.findIndex(user => user.id == userProfile.id);
     const userAlreadyAdded = userAlreadyAddedIndex > -1;
 
+    if(!rootGetters[`${USER}/profile`]){
+      return;
+    }
+
     //ignore current user's live status and other users already in array
-    if((userProfile && rootGetters[`${USER}/profile`] && userProfile.id == rootGetters[`${USER}/profile`].id) || userAlreadyAdded){
+    if((userProfile && userProfile.id == rootGetters[`${USER}/profile`].id) || userAlreadyAdded){
       return;
     }
 

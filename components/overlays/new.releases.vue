@@ -12,6 +12,7 @@
   import {Component, Vue, Prop} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
+  import cloneDeep from 'lodash.clonedeep';//prevent modification of parent new.and.recommended.vue data
 
   @Component
   export default class NewReleases extends Vue {
@@ -21,7 +22,7 @@
     data;
 
     beforeMount(){
-      this.newReleases = setItemMetaData(this.data);
+      this.newReleases = setItemMetaData(cloneDeep(this.data));
 
       this.newReleases.forEach(release => {
         if(release.release_date){

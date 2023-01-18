@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll>
+  <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll ref="appBar" :scroll-threshold="10">
     <div class="logo-container">
       <div class="aux-logo-container">
         <div class="outlined-phrase d-none d-sm-inline">PASS THE</div>
@@ -166,6 +166,14 @@
       catch(error){
         handleApiError(`Oops! That ${user.following ? 'follow' : 'unfollow'} didn't go thru lorem ipsum...`);
         user.following = !user.following;
+      }
+    }
+
+    onScroll(){
+      // @hack: https://github.com/vuetifyjs/vuetify/issues/9993
+      const {appBar} = this.$refs
+      if(appBar.currentScroll < appBar.currentThreshold) {
+        appBar.isActive = true;
       }
     }
   }

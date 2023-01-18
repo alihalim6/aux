@@ -30,7 +30,8 @@
 <script>
   import {Component, Prop, Vue} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
-
+  import cloneDeep from 'lodash.clonedeep';//prevent modification of parent new.and.recommended.vue data
+  
   @Component
   export default class AllNewAndRecommended extends Vue {
     selectedTab = 0;
@@ -56,7 +57,7 @@
     data;
 
     async beforeMount(){
-      this.newAndRecommended = setItemMetaData(this.data);
+      this.newAndRecommended = setItemMetaData(cloneDeep(this.data));
       this.content[0].data = this.newAndRecommended.filter(item => item.isTrack || item.singleTrack);//tracks
       this.content[1].data = this.newAndRecommended.filter(item => item.isAlbum && !item.singleTrack);//albums
       this.content[2].data = this.newAndRecommended.filter(item => item.isArtist);//artists

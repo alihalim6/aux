@@ -353,7 +353,7 @@
         -webkit-background-clip: text;
         background-clip: text;
         background-size: cover;
-        background-image: url('~/assets/on_air_background.png');
+        background-image: url('~/assets/feed_background.png');
         animation: move-background 5s infinite forwards;
 
         @keyframes move-background {

@@ -69,7 +69,7 @@
     togglePlayback;
 
     displayItemDetails(item){
-      this.$nuxt.$root.$emit('displayDetailOverlays', item);
+      this.$nuxt.$root.$emit('displayDetailOverlay', item);
     }
 
     async itemTitlePressed(item){

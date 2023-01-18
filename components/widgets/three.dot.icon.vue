@@ -1,7 +1,7 @@
 <template>
-  <v-menu bottom left transition="slide-x-transition" z-index="2000" :value="!hide">
+  <v-menu bottom left :transition="detailOverlay ? 'slide-x-reverse-transition' : 'slide-x-transition'" z-index="2000" :nudge-left="detailOverlay ? 100 : 0" :value="!hide">
     <template v-slot:activator="{on, attrs}">
-      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" v-if="!item.isArtist" color="black" :class="[iconClass]">mdi-dots-vertical</v-icon>
+      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" color="black" :class="[iconClass]">mdi-dots-vertical</v-icon>
     </template>
 
     <v-list>
@@ -21,7 +21,7 @@
   import {Component, Vue, Prop, Getter, Mutation, Action} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI, USER} from '~/store/constants';
   import spotify from '~/api/spotify';
-  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
+  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT, UNFOLLOWED, NOW_FOLLOWING} from '~/utils/constants';
 
   @Component
   export default class ThreeDotIcon extends Vue {
@@ -54,6 +54,9 @@
 
     @Prop()
     itemInQueue;
+
+    @Prop()
+    detailOverlay;
 
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
@@ -89,7 +92,14 @@
 
     async onPress(){
       this.hide = false;
-      this.options = [...this.defaultOptions];
+      
+      if(this.item.isArtist){
+        this.options = [];
+      }
+      else{
+        this.options = [...this.defaultOptions];
+      }
+
       this.disableQueueOptions = !this.currentlyPlayingItem.uri || this.currentlyPlayingItem.uri === this.item.uri;
 
       //for items already in queue, remove the option to add to end, and append option to remove from queue
@@ -111,41 +121,65 @@
           }
         });
       }
-      
-      const likeType = this.item.type == 'album' ? 'albums' : 'tracks';
-      
+            
       try {
-        const data = spotify({url: `/me/${likeType}/contains?ids=${this.item.id}`});
-        const alreadyLiked = data[0];
-        const modifyLikeUrl = `/me/${likeType}?ids=${this.item.id}`;
+        let apiParams = {};
 
-        if(this.item.type != 'playlist'){//api does not seem to honor likes (https://github.com/spotify/web-api/issues/1251), so hide option for playlists
-          const apiParams = {url: modifyLikeUrl, method: alreadyLiked ? 'DELETE' : 'PUT'};
-
-          const apiAndToast = async () => {
+        if(this.item.type != 'playlist'){//TOOD api does not seem to honor likes (https://github.com/spotify/web-api/issues/1251), so hide option for playlists
+          const apiAndToast = async (text) => {
             await spotify(apiParams);
-            this.setToast({text: alreadyLiked ? REMOVED_FROM_LIKES : ADDED_TO_LIKES});
+            this.setToast({text});
           };
-          
-          this.options.push(alreadyLiked ? {
-            title: 'Remove from Likes',
-              fn: async () => {
-                await apiAndToast();
-                this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.item);
-              },
-              color: 'red'
-            } :  
-            {
-              title: 'Like',
-              fn: async () => {
-                await apiAndToast();
-                this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.item);
+
+          if(this.item.isArtist){
+            const data = await spotify({url: `/me/following/contains?ids=${this.item.id}&type=artist`});
+            const followingArtist = data[0];
+            apiParams = {url: `/me/following?ids=${this.item.id}&type=artist`, method: followingArtist ? 'DELETE' : 'PUT'};
+
+            this.options.push(followingArtist ? {
+              title: 'Unfollow Artist',
+                fn: async () => {
+                  await apiAndToast(`${UNFOLLOWED} ${this.item.name} on Spotify`);
+                }
+              } :  
+              {
+                title: 'Follow Artist',
+                fn: async () => {
+                  await apiAndToast(`${NOW_FOLLOWING} ${this.item.name} on Spotify!`);
+                }
               }
-            }
-          );
+            );
+          }
+          else{    
+            const likeType = this.item.type == 'album' ? 'albums' : 'tracks';
+            const modifyLikeUrl = `/me/${likeType}?ids=${this.item.id}`;
+            const data = await spotify({url: `/me/${likeType}/contains?ids=${this.item.id}`});
+            const alreadyLiked = data[0];
+
+            apiParams = {url: modifyLikeUrl, method: alreadyLiked ? 'DELETE' : 'PUT'};
+
+            this.options.push(alreadyLiked ? {
+              title: 'Remove from Likes',
+                fn: async () => {
+                  await apiAndToast(REMOVED_FROM_LIKES);
+                  this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.item);
+                }
+              } :  
+              {
+                title: 'Like',
+                fn: async () => {
+                  await apiAndToast(ADDED_TO_LIKES);
+                  this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.item);
+                }
+              }
+            );
+          }
         }
       }
-      catch(error){}
+      catch(error){
+        console.log(error)
+        this.setToast({text: 'Sorry that didn\'t quite go thru, please try again lorem ipsum...', error: true});
+      }
     }
 
     getTracksToPlayNext(){

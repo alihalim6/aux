@@ -140,7 +140,7 @@
     async fromAlbumPressed(album){
       setItemMetaData([album]);
       this.$nuxt.$emit('hideUpNext');
-      this.$nuxt.$root.$emit('displayDetailOverlays', album)
+      this.$nuxt.$root.$emit('displayDetailOverlay', album)
     }
 
     clearUpNextPressed(){
@@ -150,7 +150,7 @@
 
     nextTrackArtworkPressed(){
       this.$nuxt.$emit('hideUpNext');
-      this.$nuxt.$root.$emit('displayDetailOverlays', setItemMetaData(cloneDeep([this.nextTrack]))[0]);
+      this.$nuxt.$root.$emit('displayDetailOverlay', setItemMetaData(cloneDeep([this.nextTrack]))[0]);
     }
   }
 </script>

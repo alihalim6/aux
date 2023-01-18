@@ -56,3 +56,6 @@ export const REMOVED_FROM_LIKES = 'Removed from Likes';
 export const ADDED_TO_LIKES = 'Added to Likes';
 export const LIKED_ITEM_EVENT = 'likedItem';
 export const REMOVED_LIKED_ITEM_EVENT = 'removedLikedItem';
+
+export const UNFOLLOWED = 'Unfollowed';
+export const NOW_FOLLOWING = 'Now following';

@@ -305,7 +305,7 @@
     }
 
     displayItemDetails(){
-      this.$nuxt.$root.$emit('displayDetailOverlays', setItemMetaData(cloneDeep([this.currentlyPlayingItem]))[0]);
+      this.$nuxt.$root.$emit('displayDetailOverlay', setItemMetaData(cloneDeep([this.currentlyPlayingItem]))[0]);
     }
 
     unmounted(){

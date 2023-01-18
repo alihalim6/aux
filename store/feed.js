@@ -92,7 +92,7 @@ export const actions = {
     }
 
     if(userProfile){
-      const data = spotify({url: `/me/following/contains?ids=${userProfile.id}&type=user`});
+      const data = await spotify({url: `/me/following/contains?ids=${userProfile.id}&type=user`});
       commit('addUser', {...userProfile, following: data[0]});
       commit(`${UI}/setToast`, {img: userProfile.img, username: userProfile.name, text: 'is on'}, {root: true});
     }

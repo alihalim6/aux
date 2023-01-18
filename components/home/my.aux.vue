@@ -141,7 +141,7 @@
       });
 
       if(contentWithItemType && contentWithItemType.data){
-        const data = contentWithItemType;
+        const {data} = contentWithItemType;
 
         if(removal){
           const itemIndex = data.findIndex(like => like.uuid == item.uuid);

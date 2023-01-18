@@ -34,7 +34,7 @@
 <script>
   import {Component, Vue, Prop, Action, Watch, Getter} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData, getItemDuration, isSameTrack} from '~/utils/helpers';
-  import {UI, SPOTIFY} from '~/store/constants';
+  import {SPOTIFY} from '~/store/constants';
 
   @Component
   export default class TrackList extends Vue {    
@@ -74,13 +74,13 @@
 
     trackImgPressed(track){
       if(this.tracksFromDifferentAlbums){
-        this.$nuxt.$root.$emit('displayDetailOverlays', track);
+        this.$nuxt.$root.$emit('displayDetailOverlay', track);
       }
     }
 
     fromAlbumPressed(album){
       album = setItemMetaData([album])[0];
-      this.$nuxt.$root.$emit('displayDetailOverlays', album);
+      this.$nuxt.$root.$emit('displayDetailOverlay', album);
     }
 
     trackNamePressed(track){

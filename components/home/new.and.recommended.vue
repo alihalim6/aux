@@ -62,7 +62,7 @@
       this.overlayLoading = name;
 
       setTimeout(() => {
-        this.$nuxt.$root.$emit('displayDetailOverlays', {
+        this.$nuxt.$root.$emit('displayDetailOverlay', {
           ...this.baseOverlay,
           allNewAndRecommended,
           newReleases,

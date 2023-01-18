@@ -6,7 +6,7 @@
       <NewAndRecommended/>
       <Playlists/>
       <MyAux/>
-      <LazyDetailOverlays/>
+      <LazyDetailOverlay/>
     </div>
 
     <LazyFeed/>

@@ -1,6 +1,6 @@
 <template>    
   <section class="feed-item-container">
-    <v-img class="clickable track-img" :src="activity.track.imgUrl.small" :class="{'skipped': activity.skipped && !activity.played}" @click.stop="$nuxt.$root.$emit('displayDetailOverlays', activity.track)"></v-img>
+    <v-img class="clickable track-img" :src="activity.track.imgUrl.small" :class="{'skipped': activity.skipped && !activity.played}" @click.stop="$nuxt.$root.$emit('displayDetailOverlay', activity.track)"></v-img>
 
     <div class="feed-item fill-available">
       <div class="item-info-container">

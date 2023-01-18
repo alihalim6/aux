@@ -115,7 +115,7 @@
     }
 
     trackInfoPressed(){
-      this.$nuxt.$root.$emit('displayDetailOverlays', this.feedAlert.track);
+      this.$nuxt.$root.$emit('displayDetailOverlay', this.feedAlert.track);
       this.closeAlert();
     }
 

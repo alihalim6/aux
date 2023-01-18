@@ -17,7 +17,7 @@
                 <div class="inner-container" v-if="item.details">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
                     <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="closeOverlays()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon class="close-button" large @click="closeOverlay()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
                   <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay">
@@ -28,7 +28,7 @@
 
                   <div class="d-flex justify-space-between align-center py-2">
                     <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="closeOverlays()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon class="close-button" large @click="closeOverlay()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
@@ -36,8 +36,8 @@
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
                       <div class="item-icon-container">
-                        <PlaybackIcon :item="item" icon-class="details-overlay-playback-button"/>
-                        <ThreeDotIcon :item="item" icon-class="details-overlay-dots-button"/>
+                        <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
+                        <ThreeDotIcon :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true"/>
                       </div>
                     </div>
                   </div>
@@ -72,7 +72,7 @@
   import {v4 as uuid} from 'uuid';
 
   @Component
-  export default class DetailOverlays extends Vue {
+  export default class DetailOverlay extends Vue {
     scrolledDown = false;
     items = [];
     display = false;
@@ -85,8 +85,8 @@
 
     beforeMount(){
       this.$nuxt.$root.$on('scrolledDown', scrolledDown => this.scrolledDown = scrolledDown);
-      this.$nuxt.$root.$on('displayDetailOverlays', this.displayDetailOverlays);
-      this.$nuxt.$root.$on('closeOverlays', this.closeOverlays);
+      this.$nuxt.$root.$on('displayDetailOverlay', this.displayDetailOverlay);
+      this.$nuxt.$root.$on('closeOverlay', this.closeOverlay);
       
       this.$nuxt.$root.$on('displayArtistDetails', async ({id}) => {
         const artistDetails = await artist(id);
@@ -97,11 +97,11 @@
           genres: artistDetails.genres
         };
         
-        this.displayDetailOverlays(setItemMetaData([artistToDisplay])[0]);
+        this.displayDetailOverlay(setItemMetaData([artistToDisplay])[0]);
       });
     }
 
-    async displayDetailOverlays(item){
+    async displayDetailOverlay(item){
       if(!this.processing){//TODO: multiple event hits
         this.processing = true;
 
@@ -139,7 +139,7 @@
     }
 
 
-    closeOverlays(){
+    closeOverlay(){
       this.items = [];
       this.display = false;
       this.currentIndex = -1;
@@ -302,22 +302,22 @@
               right: -$base-padding;
             }
 
-            .details-overlay-playback-button {
+            .detail-overlay-playback-button {
               @extend .action-button;
               font-size: $playback-size;
             }
 
-            .details-overlay-playback-button:hover {
+            .detail-overlay-playback-button:hover {
               font-size: $playback-size + 2px;
             }
 
-            .details-overlay-dots-button {
+            .detail-overlay-dots-button {
               @extend .action-button;
               font-size: $dots-size !important;
               padding-top: 6px;
             }
 
-            .details-overlay-dots-button:hover {
+            .detail-overlay-dots-button:hover {
               font-size: $dots-size + 2px !important;
             }
           }

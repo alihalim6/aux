@@ -10,7 +10,7 @@
                 class="clickable" 
                 :class="{'content-hover': hover && !vertical, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
               >
-                <v-img class="content-img" :src="item.imgUrl.medium" @click="$nuxt.$root.$emit('displayDetailOverlays', item)">
+                <v-img class="content-img" :src="item.imgUrl.medium" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
@@ -65,7 +65,7 @@
         this.togglePlayback({item, itemSet: this.data});
       }
       else{
-        this.$nuxt.$root.$emit('displayDetailOverlays', item);
+        this.$nuxt.$root.$emit('displayDetailOverlay', item);
       }
     }
 

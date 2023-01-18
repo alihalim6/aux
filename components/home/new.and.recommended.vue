@@ -2,7 +2,13 @@
   <section>
     <div class="title-container">
       <div class="home-content-title">
-        New & Recommended
+        <div class="d-flex align-center">
+          <span>New & Recommended</span>
+
+          <v-hover v-slot="{hover}">
+            <v-icon @click="refreshData()" class="clickable refresh-data" :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" color="#1DB954">mdi-refresh</v-icon>
+          </v-hover>
+        </div>
         
         <div class="filter-container" v-if="allItems && allItems.length" >
           <div class="clickable filter-label" @click="displayAll()">
@@ -38,6 +44,7 @@
     NEW_AND_RECOMMENDED = 'NEW AND RECOMMENDED';
     NEW_RELEASES = 'NEW RELEASES';
     overlayLoading = false;
+    refreshingData = false;
 
     baseOverlay = {
       simpleOverlay: true,
@@ -48,14 +55,17 @@
     setLoading;
 
     async beforeMount(){
-      const {previewItems, newReleases, allItems} = await newAndRecommended();
-      this.previewItems = setItemMetaData(previewItems);
+      await this.getData();
       this.setLoading(false);
-      
-      this.newReleases = newReleases;
-      this.allItems = allItems;
 
       this.$nuxt.$root.$on('newAndRecoOverlayShown', () => this.overlayLoading = false);
+    }
+
+    async getData(){
+      const {previewItems, newReleases, allItems} = await newAndRecommended();
+      this.previewItems = setItemMetaData(previewItems);
+      this.newReleases = newReleases;
+      this.allItems = allItems;
     }
 
     displayOverlay({allNewAndRecommended, newReleases, name, data}){
@@ -87,5 +97,27 @@
         data: this.newReleases
       });
     }
+
+    async refreshData(){
+      this.refreshingData = true;
+      await this.getData();
+      this.refreshingData = false;
+    }
   }
 </script>
+
+<style lang="scss">
+  .refresh-data {
+    margin-left: 12px;
+    font-size: 28px !important;
+  }
+
+  .refreshing-data {
+    animation: spin 0.5s infinite forwards linear;
+
+    @keyframes spin {
+      50% {transform: rotate(180deg);}
+      100% {transform: rotate(360deg);}
+    }
+  }
+</style>

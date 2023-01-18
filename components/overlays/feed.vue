@@ -201,7 +201,7 @@
         }
 
         .feed-header-icon:hover {
-          transform: scale(1.1);
+          @extend .hover-scale;
         }
       }
 

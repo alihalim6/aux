@@ -264,9 +264,19 @@ $section-title-font-size: 36px;
   $size: 30px;
 
   margin-top: -6px;
-  margin-left: 4px;
+  margin-left: 6px;
   width: $size;
   max-width: $size;
   height: $size;
   transform: rotate(-12deg);
+}
+
+.content-placeholder {
+  font-size: 120px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-left: $base-padding;
 }

@@ -2,7 +2,7 @@ import socket from '~/plugins/socket.client.js';
 import {FEED, USER, UI} from '~/store/constants';
 import {ignoredUsers} from '~/utils/helpers';
 
-function io(){
+function initSocketClient(){
   socket.on('handleLiveUser', userProfile => {
     $nuxt.$store.dispatch(`${FEED}/handleLiveUser`, userProfile);
   });
@@ -26,4 +26,4 @@ function io(){
   });
 }
 
-export default io;
+export default initSocketClient;

@@ -10,7 +10,7 @@
                 class="clickable" 
                 :class="{'content-hover': hover && !vertical, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
               >
-                <v-img class="content-img" :src="item.imgUrl.medium" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
+                <v-img class="content-img" :src="item.imgUrl[vertical ? 'large' : 'medium']" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
@@ -105,16 +105,6 @@
       min-width: $content-img-size;
       min-height: $content-img-size;
       max-height: $content-img-size;
-
-      .content-placeholder {
-        font-size: 120px;
-        font-weight: bold;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        height: 100%;
-        padding-left: $base-padding;
-      }
     }
 
     .secondary-label {

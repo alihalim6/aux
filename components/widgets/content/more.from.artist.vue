@@ -30,8 +30,13 @@
             :class="{'no-bottom-border': (index === parentItem.details.relatedArtists.length - 1)}"
             @click="$nuxt.$root.$emit('displayArtistDetails', artist)">
               <v-hover v-slot="{hover}">
-                <section class="clickable artist-container dashed-separator" >
-                  <v-img class="artist-image" :src="artist.imgUrl.medium"></v-img>
+                <section class="clickable artist-container dashed-separator">
+
+                  <v-img class="artist-image" :src="artist.imgUrl.medium">
+                    <template v-slot:placeholder>
+                      <span class="content-placeholder">{{artist.name.substring(0, 1)}}</span>
+                    </template>
+                  </v-img>
 
                   <div class="artist-info">
                     <div class="font-weight-bold" :class="{'lighter-black-color': hover}">{{artist.name}}</div>

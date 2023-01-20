@@ -5,7 +5,7 @@
           <v-hover v-slot="{hover}">
             <section>
               <v-card 
-                max-width="175" 
+                max-width="185" 
                 elevation="10" 
                 class="clickable" 
                 :class="{'content-hover': hover && !vertical, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
@@ -19,7 +19,10 @@
 
               <div :class="{'pb-8': vertical}">
                 <div class="primary-container" :class="{'hovered-primary-container': hover && !vertical, 'hovered-primary-last-container': hover && !vertical && index == data.length - 1}">
-                  <div class="clickable primary-label" @click.stop="primaryLabelPressed(item)" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">{{item.primaryLabel}}</div>
+                  <div class="d-flex align-start">
+                    <div class="clickable primary-label" @click.stop="primaryLabelPressed(item)" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">{{item.primaryLabel}}</div>
+                    <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
+                  </div>
 
                   <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
                 </div>
@@ -51,11 +54,14 @@
     @Prop({required: true})
     data;
   
-    @Prop({default: false})
+    @Prop()
     moreFromArtist;
 
-    @Prop({default: false})
+    @Prop()
     vertical;
+
+    @Prop()
+    newAndRecommended;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
@@ -80,7 +86,7 @@
   $label-left-padding: 6px;
   $secondary-label-font-size: 12px;
   $primary-label-font-size: 14px;
-  $content-img-partial-size: 175px;
+  $content-img-partial-size: 185px;
 
   .content-carousel {
     display: flex;

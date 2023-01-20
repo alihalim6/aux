@@ -12,21 +12,21 @@
         
         <div class="filter-container" v-if="allItems && allItems.length" >
           <div class="clickable filter-label" @click="displayAll()">
-            <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span>
+            <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->
             <span v-else>See All</span>
           </div>
           
           <span class="filter-divider">/</span>
           
           <div class="clickable filter-label" @click="displayNewReleases()">
-            <span v-if="overlayLoading === NEW_RELEASES">...</span><!-- tried progress circular but it freezes for some reason -->
+            <span v-if="overlayLoading === NEW_RELEASES">...</span>
             <span v-else>New Releases Only</span>
           </div>
         </div>
       </div>
     </div>
 
-    <ContentCarousel :data="previewItems"/>
+    <ContentCarousel :data="previewItems" :new-and-recommended="true"/>
   </section>
 </template>
 

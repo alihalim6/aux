@@ -22,14 +22,14 @@ const getRecommendedArtists = async (topArtists) => {
 async function newAndRecommended(){
   //TODO don't recommend if already follow an artist/like a track etc.
 
-  const {data} = await httpClient.get('/browse/new-releases?limit=50');
+  const {data} = await httpClient.get('/browse/new-releases?limit=25');
   const newReleases = data.albums.items;
 
   const topArtists = await topItems('artists');
   const recommendedTracks = await getRecommendedTracks(topArtists.data);
   const recommendedArtists = await getRecommendedArtists(topArtists.data);
   
-  const allItems = [...newReleases, ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 7)];
+  const allItems = [...newReleases.map(item => ({...item, isNew: true})), ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 7)];
   shuffleArray(allItems);
 
   return {

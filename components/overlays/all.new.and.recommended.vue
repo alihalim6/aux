@@ -16,7 +16,7 @@
           <div v-if="item.data.length">
             <div v-if="item.tracks">
               <PlayAllAndShuffle :tracks="item.data" collectionKey="newAndRecommended"/>
-              <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+              <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :new-and-recommended="true"/>
             </div>
 
             <ContentCarousel v-else :data="item.data" :vertical="true"/>
@@ -45,7 +45,7 @@
       },
       {
         data: [],
-        label: 'Albums'
+        label: 'New Albums'
       },
       {
         data: [],

@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="user-container">
+    <div class="menu-container">
       <v-menu bottom left transition="slide-y-transition" z-index="900" :close-on-content-click="false" offset-y>
         <template v-slot:activator="{on, attrs}">            
           <div class="clickable on-air-container" v-bind="attrs" v-on="on">
@@ -24,7 +24,7 @@
 
         <v-list>
           <v-list-item>
-            <div class="pt-4 pl-2 pr-6 d-flex flex-column width-100">
+            <div class="user-list width-100 scroll-shadow">
               <div class="d-flex justify-end">
                 <div v-if="liveUsers.length" class="following-on-container">
                   <span class="following-on">FOLLOWING ON</span>
@@ -92,6 +92,7 @@
   export default class AppHeader extends Vue {
     auxModeOn = true;
     liveUsers = [];
+    //isIos;
 
     @Getter('users', {namespace: FEED})
     users;
@@ -125,6 +126,13 @@
 
       this.auxModeOn = storageGetBoolean(AUX_MODE);
     }
+    
+  /*   mounted(){
+      if(window.navigator){
+        const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+        this.isIos = iosPlatforms.find(platform => window.navigator.userAgent.includes(platform));
+      }
+    } */
 
     auxModeToggled(){
       storageSet(AUX_MODE, this.auxModeOn);
@@ -234,7 +242,7 @@
       }
     }
 
-    .user-container {
+    .menu-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -383,7 +391,7 @@
   .live-user-container {
     display: flex;
     align-items: center;
-    margin: 14px 0px;
+    margin: 16px 0px;
     font-size: 14px;
   }
 
@@ -423,5 +431,13 @@
       width: 77px;
       height: 20px;
     }
+  }
+
+  .user-list {
+    padding: 16px 24px 0px 8px;
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
+    overflow: scroll;
   }
 </style>

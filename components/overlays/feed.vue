@@ -20,7 +20,7 @@
 
           <div v-else class="d-flex flex-column">
             <div class="no-feed-prompt">
-              <div>Tracks that you and others play show here.</div>
+              <div>Tracks that you and others play will show here.</div>
               <div class="sub-prompt">Kick things off by playing something!  Invite others lorem ipsum...</div>
             </div>
 
@@ -214,6 +214,7 @@
         font-size: 20px;
         font-weight: bold;
         line-height: 1.4;
+        padding: 0px 14px 0px 2px;
 
         .sub-prompt {
           font-size: 14px;

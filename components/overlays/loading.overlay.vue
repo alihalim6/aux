@@ -1,7 +1,7 @@
 <template>
   <section class="loading-container">
     <v-container class="spinner-container">
-      <div class="phrase">AUX</div>
+      <div class="phrase">PASS THE AUX</div>
 
       <ol class="track-list">
         <li v-for="n in 7" :key="n" :class="'animated-line-' + n">——————————</li>
@@ -22,7 +22,7 @@
 <style lang="scss">
   @import '@/styles/simple-styles.scss';
 
-  $container-size: 250px;
+  $container-size: 280px;
   $center-circle-subtract: 215px;
   $animated-line-delay-multiplier: 0.25s;
 
@@ -52,14 +52,15 @@
         }
 
         to {
-          transform: rotate(-360deg);
+          transform: rotate(360deg);
         }
       }
 
       .phrase {
         @extend .outlined-phrase;
-        font-size: 38px;
+        font-size: 26px;
         padding: 0px 10px 12px;
+        text-align: center;
       }
 
       .track-list {

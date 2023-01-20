@@ -259,3 +259,14 @@ $section-title-font-size: 36px;
 .menu-option-container:hover {
   background-color: rgba(0, 0, 0, 0.03);
 }
+
+.new-icon {
+  $size: 30px;
+
+  margin-top: -6px;
+  margin-left: 4px;
+  width: $size;
+  max-width: $size;
+  height: $size;
+  transform: rotate(-12deg);
+}

@@ -8,7 +8,10 @@
 
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums}">
               <v-hover v-slot="{hover}">
-                <span class="clickable track-name" :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" @click.stop="trackNamePressed(track)">{{track.name}}</span>  
+                <div class="d-flex align-start">
+                  <span class="clickable track-name" :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" @click.stop="trackNamePressed(track)">{{track.name}}</span>  
+                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
+                </div>
               </v-hover>
 
               <div class="track-artists">
@@ -18,7 +21,7 @@
               <div class="track-duration">{{track.duration}}</div>
 
               <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
-                From <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
+                <span class="font-italic">From</span> <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
                   {{track.album.name}}</div>
                   <v-icon small class="clickable">mdi-arrow-right</v-icon>
               </div>
@@ -49,11 +52,14 @@
     @Prop({required: false})
     parentId;
 
-    @Prop({default: false})
+    @Prop()
     tracksFromDifferentAlbums;
     
-    @Prop({default: false})
+    @Prop()
     hideAlbums;
+
+    @Prop()
+    newAndRecommended;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;

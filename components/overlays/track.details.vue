@@ -18,7 +18,7 @@
     <div class="from-album-container" v-if="multiTrackAlbum">
       <div class="font-weight-bold font-italic mb-1">FROM:</div>
       
-      <div class="from-album-info" id="fromAlbumInfo">
+      <div class="from-album-info" :id="`fromAlbumInfo${track.uuid}`">
         <div class="d-flex justify-space-between mb-3">
           <span>{{track.album.name}}</span>
 
@@ -106,7 +106,7 @@
 
     mounted(){
       if(this.multiTrackAlbum){
-        document.getElementById('fromAlbumInfo').style.backgroundImage = `url(${this.track.imgUrl.large})`;
+        document.getElementById(`fromAlbumInfo${this.track.uuid}`).style.backgroundImage = `url(${this.track.imgUrl.large})`;
       }
     }
   }

@@ -154,9 +154,10 @@
   @import '~/styles/simple-styles.scss';
   
   $full-image-cta-breakpoint: 850px;
+  $overlay-width: calc(#{$max-inner-width} - 150px);
 
   .item-image {
-    max-width: $max-inner-width !important;
+    max-width: $overlay-width !important;
     height: 100%;
     padding: $overlay-border-size;
     margin: 0 auto;
@@ -219,13 +220,13 @@
       overflow: scroll;
 
       .inner-container {
-        max-width: $max-inner-width;
+        max-width: $overlay-width;
         padding: $base-padding;
         margin: 0 auto;
         width: stretch;
 
         .scrolled-down-top-bar {
-          max-width: $max-inner-width;
+          max-width: $overlay-width;
           position: sticky;
           padding: 4px 0px;
           width: 100%;

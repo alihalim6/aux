@@ -11,7 +11,21 @@ export const state = () => {
     feed: [],
     latestActivity: {},
     users: [
-    // {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'}
+    {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'},
+    {id: 12312313, name: 'asddce asfwwd', img: ''},
+    {id: 12312312321, name: 'dadads', img: ''},
+    {id: 1212313, name: 'asfad', img: ''},
+    {id: 123123124, name: 'asqdq', img: ''},
+    {id: 53453, name: 'aad', img: ''},
+    {id: 453453, name: 'asdadas_dsaxada', img: ''},
+    {id: 3452, name: 'asda alkds la', img: ''},
+    {id: 234, name: '1kasn a', img: ''},
+    {id: 152422, name: 'lorem aksd ', img: ''},
+    {id: 65342, name: 'IE kd qasdas', img: ''},
+    {id: 1123131, name: 'OS j da', img: ''},
+    {id: 31432, name: '23musix', img: ''},
+    {id: 23123414, name: 'jamalCurrt', img: ''},
+    {id: 124566543, name: 'asdj d asd', img: ''}
     ]//////
   };
 };

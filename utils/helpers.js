@@ -119,7 +119,7 @@ export const msToDuration = (ms) => {
 export const getItemDuration = async (item) => {
   const trackWithAlbum = (item.type == 'track') && item.album;
 
-  if((item.type == 'album' || trackWithAlbum) && item.id && !item.duration_ms){
+  if(((item.type == 'album') || trackWithAlbum) && item.id && !item.duration_ms){
     try {
       const data = await spotify({url: `/albums/${trackWithAlbum ? item.album.id : item.id}/tracks`});
       return data.items[0].duration_ms;

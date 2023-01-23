@@ -3,6 +3,7 @@ import {refreshToken, accessTokenExpired} from '~/auth';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
 import {shuffleArray} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
+import startItemPlayback from '~/api/startItemPlayback';
 
 export const state = () => {
   return {
@@ -33,19 +34,20 @@ export const getters = {
 };
 
 export const actions = {
-  playItem: async ({getters, rootGetters}, item) => {
+  playItem: async ({getters, rootGetters, dispatch}, item) => {
     if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
       console.log('skipping Candace playback api call');
       return;
     }
 
     try {
-     /*  await playItem({
+      await startItemPlayback({
         item, 
         deviceId: getters.spotifyDeviceId
-      }); */
+      });
     }
     catch(error){
+      console.log(error)
       dispatch('stopPlayback');
       handleApiError('There was an issue with playback lorem ipsum...');
     }

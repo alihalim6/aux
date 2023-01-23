@@ -24,12 +24,12 @@
     playlist;
 
     async beforeMount(){
-      const { playlistTracks, totalPlaylistTracks, playlistTrackLimit } = this.playlist.details;
+      const { playlistTracks, totalPlaylistTracks, collectionTrackLimit } = this.playlist.details;
       this.tracks = playlistTracks.map(this.setTrackData).filter(track => track.id);
 
       while(!this.allTracksRetrieved){
         if(this.tracks.length < totalPlaylistTracks){
-          const data = await spotify({url: `/playlists/${this.playlist.id}/tracks?limit=${playlistTrackLimit}&offset=${this.tracks.length}`});
+          const data = await spotify({url: `/playlists/${this.playlist.id}/tracks?limit=${collectionTrackLimit}&offset=${this.tracks.length}`});
           this.tracks = [...this.tracks, ...data.items.map(this.setTrackData)];
         }
         else{

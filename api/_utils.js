@@ -27,7 +27,7 @@ httpClient.interceptors.request.use(async config => {
 
 httpClient.interceptors.response.use(async response => {
   if(response.data.error){
-    handleApiError();
+    handleApiError(response.data.error);
     return;
   }
 
@@ -47,8 +47,8 @@ async function attemptTokenRefresh(){
 
 axiosRetry(httpClient, {retries: 2});
 
-export function handleApiError(){
-  $nuxt.$store.commit(`${UI}/setToast`, {text: 'Something went wrong lorem ipsum...', error: true});
+export function handleApiError(message){
+  $nuxt.$store.commit(`${UI}/setToast`, {text: message || 'Something went wrong lorem ipsum...', error: true});
   $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
 }
 

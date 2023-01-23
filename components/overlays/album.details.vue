@@ -15,7 +15,7 @@
     </div>
 
     <div v-if="album.total_tracks > 1">
-      <TrackList :tracks="album.details.albumTracks" :parentId="album.id"/>
+      <TrackList :tracks="tracks" :parentId="album.id"/>
     </div>
 
     <MoreFromArtist v-if="album.singleTrack" :parentItem="album" :artist="album.artists[0]"/>
@@ -25,15 +25,18 @@
 <script>
   import {Component, Vue, Prop} from 'nuxt-property-decorator';
   import {msToDuration, setItemMetaData, handleItemCollection} from '~/utils/helpers';
+  import spotify from '~/api/spotify';
 
   @Component
   export default class AlbumDetails extends Vue {
     duration = 0;
+    tracks = [];
+    allTracksRetrieved = false;
 
     @Prop({required: true})
     album;
 
-    beforeMount(){
+    async beforeMount(){
       const albumDetails = this.album.details;
 
       if(this.album.singleTrack){
@@ -46,14 +49,24 @@
       }
       else{
         this.duration = msToDuration(albumDetails.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
-        setItemMetaData(albumDetails.albumTracks);
+        this.tracks = setItemMetaData(albumDetails.albumTracks);
 
         //set image for all tracks on album
-        albumDetails.albumTracks.forEach(track => track.imgUrl = this.album.imgUrl);
+        this.tracks.forEach(track => track.imgUrl = this.album.imgUrl);
+      }
+
+      while(!this.allTracksRetrieved){
+        if(this.tracks.length < albumDetails.totalAlbumTracks){
+          const {items} = await spotify({url: `/albums/${this.album.id}/tracks?limit=${albumDetails.collectionTrackLimit}&offset=${this.tracks.length}`});
+          this.tracks = [...this.tracks, ...setItemMetaData(items)];
+        }
+        else{
+          this.allTracksRetrieved = true;
+        }
       }
 
       //mark all album tracks as part of this album (collection)
-      for(const track of albumDetails.albumTracks){
+      for(const track of this.tracks){
         handleItemCollection(track, this.album.uri);
 
         //needed to display track detail when clicking album track on currently playing widget;

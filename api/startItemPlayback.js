@@ -4,8 +4,8 @@ function callPlayApi(deviceId, requestBody){
   return httpClient.put(`/me/player/play?device_id=${deviceId}`, requestBody);
 }
 
-async function playItem({item, deviceId}){
-  const requestBody = item.isTrack ? {uris: [itemUri]} : {context_uri: itemUri};
+async function startItemPlayback({item, deviceId}){
+  const requestBody = item.isTrack ? {uris: [item.uri]} : {context_uri: item.uri};
 
   try {
     await callPlayApi(deviceId, requestBody);
@@ -27,4 +27,4 @@ async function playItem({item, deviceId}){
   return;
 };
 
-export default playItem;
+export default startItemPlayback;

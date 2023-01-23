@@ -115,8 +115,8 @@
     shuffleUpNext;
 
     @Watch('nextTrack', {immediate: true})
-    async nextTrackChanged(){
-      if(this.nextTrack){
+    async nextTrackChanged(nextTrack){
+      if(nextTrack){
         this.nextTrack.duration_ms = await getItemDuration(this.nextTrack);
         this.nextTrack.duration = msToDuration(this.nextTrack.duration_ms);
         

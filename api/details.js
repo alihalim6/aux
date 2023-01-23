@@ -1,7 +1,7 @@
 import {httpClient} from './_utils';
 
 async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId}, itemId){
-  const playlistTrackLimit = 50;
+  const collectionTrackLimit = 50;
   const defaultResponse = {data: {}};
 
   let artistAlbums = defaultResponse;
@@ -10,9 +10,12 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
   let albumTracks = defaultResponse;
   let playlistTracks = [];
   let totalPlaylistTracks;
+  let totalAlbumTracks;
   
   if(isAlbum || isTrack){
-    albumTracks = await httpClient.get(`/albums/${itemId}/tracks?limit=50`);
+    const {data} = await httpClient.get(`/albums/${itemId}/tracks?limit=${collectionTrackLimit}`);
+    albumTracks = data.items;
+    totalAlbumTracks = data.total;
   }
   
   if(isArtist || singleArtistId){
@@ -30,7 +33,7 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
   }
   
   if(isPlaylist){
-    const {data} = await httpClient.get(`/playlists/${itemId}/tracks?limit=${playlistTrackLimit}`);
+    const {data} = await httpClient.get(`/playlists/${itemId}/tracks?limit=${collectionTrackLimit}`);
     playlistTracks = data.items;
     totalPlaylistTracks = data.total;
   }
@@ -39,10 +42,11 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
     artistAlbums: artistAlbums.data.items,
     artistTopTracks: artistTopTracks.data.tracks,
     relatedArtists: relatedArtists.data.artists,
-    albumTracks: albumTracks.data.items,
+    albumTracks,
+    totalAlbumTracks,
     playlistTracks,
     totalPlaylistTracks,
-    playlistTrackLimit
+    collectionTrackLimit
   };
 };
 

@@ -280,3 +280,30 @@ $section-title-font-size: 36px;
   height: 100%;
   padding-left: $base-padding;
 }
+
+.small-content-placeholder {
+  @extend .content-placeholder;
+  font-size: 12px;
+}
+
+.oscillating-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  
+  .loading {
+    animation-name: oscillate-loading;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    width: 50%;
+    height: 23px;
+  }
+
+  @keyframes oscillate-loading {
+    0% {transform: translateX(0);}
+    50% {transform: translateX(100%);} 
+    100% {transform: translateX(0);} 
+  }
+}

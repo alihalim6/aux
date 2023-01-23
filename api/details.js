@@ -21,7 +21,7 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
       itemId = singleArtistId;
     }
     
-    artistAlbums = await httpClient.get(`/artists/${itemId}/albums?limit=30&include_groups=album,compilation`);
+    artistAlbums = await httpClient.get(`/artists/${itemId}/albums?limit=50&include_groups=album,compilation`);
     //Spotify sends back explicit and clean albums, so filter out clean ones
     artistAlbums.data.items = [...new Map(artistAlbums.data.items.map(album => [album['name'], album])).values()];
 

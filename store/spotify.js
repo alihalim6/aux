@@ -1,5 +1,4 @@
 import {handleApiError} from '~/api/_utils';
-import playItem from '~/api/playItem';
 import {refreshToken, accessTokenExpired} from '~/auth';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
 import {shuffleArray} from '~/utils/helpers';

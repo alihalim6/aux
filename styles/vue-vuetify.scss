@@ -5,7 +5,9 @@ $feed-height: 63vh;
 $feed-height-smaller: 95vh;
 $feed-base-bottom: 15px;
 
+//TODO
 //UNUSED: things didn't update correctly as playing/not playing toggled
+//no block comment-out since that isn't respected and messes up compilation
 @mixin item-playing-styles($footer-height) {
   .v-dialog--fullscreen, .v-dialog__content {
     max-height: calc(100% - #{$footer-height});
@@ -15,7 +17,7 @@ $feed-base-bottom: 15px;
     max-height: calc(#{$feed-height}  - #{$footer-height});
     bottom: calc(#{$feed-base-bottom} + #{$footer-height});
 
-    @media(max-width: $feed-size-threshold){
+    @media(max-width: $device-size-threshold){
       height: calc(100% - #{$footer-height});
       width: 100vw;
       max-height: none;
@@ -59,7 +61,7 @@ $feed-base-bottom: 15px;
     max-height: calc(#{$feed-height}  - #{$max-footer-height-not-playing});
     bottom: calc(#{$feed-base-bottom} + #{$max-footer-height-not-playing});
 
-    @media(max-width: $feed-size-threshold){
+    @media(max-width: $device-size-threshold){
       height: calc(100% - #{$max-footer-height-not-playing});
       width: 100vw;
       max-height: none;
@@ -97,7 +99,7 @@ $feed-base-bottom: 15px;
   .activity-feed {
     bottom: calc(#{$feed-base-bottom} + #{$max-footer-height-playing});
 
-    @media(max-width: $feed-size-threshold){
+    @media(max-width: $device-size-threshold){
       height: calc(100% - #{$max-footer-height-playing});
       width: 100vw;
       max-height: none;

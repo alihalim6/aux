@@ -13,7 +13,9 @@
       </div>
     </div>
 
-    <div class="menu-container">
+    <Search v-if="!isLoading"/>
+
+    <div class="user-menu-container">
       <v-menu bottom left transition="slide-y-transition" z-index="900" :close-on-content-click="false" offset-y>
         <template v-slot:activator="{on, attrs}">            
           <div class="clickable on-air-container" v-bind="attrs" v-on="on">
@@ -99,6 +101,9 @@
 
     @Getter('profile', {namespace: USER})
     profile;
+
+    @Getter('isLoading', {namespace: UI})
+    isLoading;
 
     @Mutation('setToast', {namespace: UI})
     setToast;
@@ -208,7 +213,6 @@
       display: flex;
       justify-content: space-evenly;
       align-items: center;
-      margin: 0px $base-padding 0px 0px;
 
       .aux-logo-container {
         font-weight: 700;
@@ -242,7 +246,7 @@
       }
     }
 
-    .menu-container {
+    .user-menu-container {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -260,7 +264,7 @@
         .users-on-air {
           background-color: $primary-theme-color;
           color: $secondary-theme-color;
-          font-size: 38px;
+          font-size: 32px;
           font-weight: 600;
           line-height: 0.9;
           padding: 1px;

@@ -5,7 +5,7 @@
           <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">        
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
             <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="(item.simpleOverlay || item.imgUrl) && currentIndex === index">
-              <div v-if="!item.details" class="loading-container">
+              <div v-if="!item.details" class="oscillating-loading-container">
                 <div class="blurred loading"></div>
               </div>            
 
@@ -163,28 +163,6 @@
     margin: 0 auto;
     border-radius: 4px;
     overflow: visible !important;
-
-    .loading-container {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      height: 100%;
-      
-      .loading {
-        animation-name: oscillate-loading;
-        animation-duration: 1s;
-        animation-timing-function: ease-in-out;
-        animation-iteration-count: infinite;
-        width: 50%;
-        height: 23px;
-      }
-
-      @keyframes oscillate-loading {
-        0% {transform: translateX(0);}
-        50% {transform: translateX(100%);} 
-        100% {transform: translateX(0);} 
-      }
-    }
 
     .full-item-image-cta-outer {
       position: absolute;

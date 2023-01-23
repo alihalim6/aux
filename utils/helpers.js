@@ -75,7 +75,8 @@ export const setItemMetaData = (items) => {
     }
 
     item.singleTrack = (item.isAlbum && (item.total_tracks === 1)) || (item.isTrack && (!item.album || item.album.total_tracks === 1));
-    item.isCollection = (item.isAlbum && !item.singleTrack) || item.isPlaylist;
+    item.isMultitrackAlbum = (item.isAlbum && !item.singleTrack);
+    item.isCollection = item.isMultitrackAlbum || item.isPlaylist;
 
     if(item.singleTrack){
       item.singleArtistId = item.artists[0].id;

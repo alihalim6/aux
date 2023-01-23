@@ -5,7 +5,7 @@
     <div class="feed-item fill-available">
       <div class="item-info-container">
         <div class="track-info" :class="{'skipped': activity.skipped && !activity.played}">
-          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'feed-track-playing': isTrackPlaying(activity.track)}">
+          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'track-playing': isTrackPlaying(activity.track)}">
             <span class="clickable font-weight-bold">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
           </div>
           

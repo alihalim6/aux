@@ -76,7 +76,7 @@
       <div v-for="(track, index) in thenTracks" :key="index + track.uuid" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
-        <ThreeDotIcon :item="track" :itemInQueue="true" iconClass="up-next-three-dot"/>
+        <ThreeDotIcon :item="track" :itemInQueue="true" iconClass="up-next-three-dot" iconColor="white"/>
       </div>
     </div>
 
@@ -281,7 +281,6 @@
         .up-next-three-dot {
           display: flex;
           align-items: center;
-          color: white !important;
           padding: $track-item-padding 0px;
         }
       }

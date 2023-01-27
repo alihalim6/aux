@@ -75,6 +75,7 @@ export const setItemMetaData = (items) => {
     }
 
     item.singleTrack = (item.isAlbum && (item.total_tracks === 1)) || (item.isTrack && (!item.album || item.album.total_tracks === 1));
+    item.trackFromAlbum = item.isTrack && item.album && item.album.total_tracks > 1;
     item.isMultitrackAlbum = (item.isAlbum && !item.singleTrack);
     item.isCollection = item.isMultitrackAlbum || item.isPlaylist;
 
@@ -153,10 +154,16 @@ export const initSpotifyPlayer = () => {
 
   function newPlayer(){
     return new Spotify.Player({
-      name: 'AUX',
+      name: 'PASS THE AUX',
       getOAuthToken: callback => {callback(accessToken)},
       volume: 1
     });
+  }
+
+  if(window.spotifyPlayer){
+    window.spotifyPlayer.removeListener('ready');
+    window.spotifyPlayer.removeListener('authentication_error');
+    window.spotifyPlayer.disconnect();
   }
 
   window.spotifyPlayer = newPlayer();

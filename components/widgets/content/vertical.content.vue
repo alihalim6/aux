@@ -144,6 +144,7 @@
       align-items: center;
       font-weight: bold;
       color: #888888;
+      word-break: break-word;
     }
 
     .smaller-detail {

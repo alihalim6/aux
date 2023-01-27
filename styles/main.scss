@@ -135,6 +135,9 @@ $section-title-font-size: 36px;
   font-weight: bold;
 }
 
+
+//TODO cleanup shadows
+
 .scroll-shadow {
   //https://css-tricks.com/scroll-shadows-with-javascript/
   background:
@@ -284,6 +287,7 @@ $section-title-font-size: 36px;
 .small-content-placeholder {
   @extend .content-placeholder;
   font-size: 12px;
+  color: white;
 }
 
 .oscillating-loading-container {
@@ -306,4 +310,16 @@ $section-title-font-size: 36px;
     50% {transform: translateX(100%);} 
     100% {transform: translateX(0);} 
   }
+}
+
+.fade-in-animation {
+  animation-name: fade-in;
+  animation-duration: 655ms;
+  animation-timing-function: ease;
+  animation-delay: 350ms;
+  animation-fill-mode: forwards;
+}
+
+ @keyframes fade-in {
+  to {opacity: 1;}
 }

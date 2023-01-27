@@ -68,7 +68,10 @@
               </div>
 
               <div v-else>
-                <!-- mjcry -->
+                <div class="d-flex flex-column align-center">
+                  <span class="no-other-users-message">No one else is here.</span>
+                  <v-img class="no-other-users-img" :src="require('~/assets/no_other_users.png')"></v-img>
+                </div>
               </div>
             </div>
           </v-list-item>
@@ -443,5 +446,19 @@
     flex-direction: column;
     max-height: 400px;
     overflow: scroll;
+  }
+
+  .no-other-users-message {
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  .no-other-users-img {
+    $size: 68px;
+
+    width: $size;
+    max-width: $size;
+    height: auto;
+    margin-bottom: 16px;
   }
 </style>

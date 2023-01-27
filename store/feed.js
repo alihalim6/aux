@@ -3,15 +3,20 @@ import moment from 'moment';
 import socket from '~/plugins/socket.client.js';
 import {AUX_MODE} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
-import {isSameTrack, ignoredUsers, setDuration} from '~/utils/helpers';
+import {isSameTrack, ignoredUsers, setDuration, setItemMetaData} from '~/utils/helpers';
 import spotify from '~/api/spotify';
+import {auxApiClient} from '~/auth';
+
+function findActivityInFeed(feed, newTrack){
+  return feed.find(feedActivity => isSameTrack(feedActivity.track, newTrack));
+}
 
 export const state = () => {
   return {
     feed: [],
     latestActivity: {},
     users: [
-    {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'},
+    /* {id: 123456, name: 'music-listener', img: ''}, {id: 12345, name: 'CapitalletteruserLongnameCutmeOff', img: ''}, {id: 1234567, name: 'Word', img: 'https://i.picsum.photos/id/577/200/300.jpg?hmac=iZA0DWSu8zEDIuGdix5l4Jc7RXSJLZ7tR4s25w7Nc8I'},
     {id: 12312313, name: 'asddce asfwwd', img: ''},
     {id: 12312312321, name: 'dadads', img: ''},
     {id: 1212313, name: 'asfad', img: ''},
@@ -25,7 +30,7 @@ export const state = () => {
     {id: 1123131, name: 'OS j da', img: ''},
     {id: 31432, name: '23musix', img: ''},
     {id: 23123414, name: 'jamalCurrt', img: ''},
-    {id: 124566543, name: 'asdj d asd', img: ''}
+    {id: 124566543, name: 'asdj d asd', img: ''} */
     ]//////
   };
 };
@@ -46,27 +51,28 @@ export const actions = {
   //activity from current user
   addToFeed: async ({commit, rootGetters, getters}, params) => {
     const timestamp = moment().toISOString();
-
+    const loggedInUser = rootGetters[`${USER}/profile`];
     await setDuration(params.track);
 
     const activity = {
-      user: rootGetters[`${USER}/profile`],
-      track: {...params.track, originalListener: rootGetters[`${USER}/profile`].id},
+      user: loggedInUser,
+      track: params.track,
+      feedId: params.feedId,
       timestamp,
       updateTimestamp: timestamp //needed to trigger UI updates of feed items immediately
     };
 
-    const trackAlreadyInFeed = getters.feed.find(activity => isSameTrack(activity.track, params.track));
+    const activityAlreadyInFeed = findActivityInFeed(getters.feed, params.track);
     let repeatingOwnTrack;
 
-    if(trackAlreadyInFeed){
-      repeatingOwnTrack = trackAlreadyInFeed.track.originalListener == rootGetters[`${USER}/profile`].id;
+    if(activityAlreadyInFeed){
+      repeatingOwnTrack = activityAlreadyInFeed.user.id == loggedInUser.id;
     }
     else{
       commit('addToFeed', {...activity, addedByCurrentUser: true});
     }
   
-    commit('updateLatestActivity', {...activity, trackAlreadyInFeed, repeatingOwnTrack});
+    commit('updateLatestActivity', {...activity, activityAlreadyInFeed, repeatingOwnTrack});
   },
 
   //activity from another user
@@ -75,44 +81,52 @@ export const actions = {
       return;
     }
 
-    const trackAlreadyInFeed = getters.feed.find(feedActivity => isSameTrack(feedActivity.track, activity.track));
+    let showAlertAndCheckAuxMode = false;
 
-    if(trackAlreadyInFeed){
-      return;
+    const activityAlreadyInFeed = findActivityInFeed(getters.feed, activity.track);
+    
+    //handle someone else playing a track that you skipped previously
+    if(activityAlreadyInFeed && activityAlreadyInFeed.skipped && !activityAlreadyInFeed.played){
+      commit('setActivitySkippedOrPlayed', {activity, played: true, updateOriginalTimestamp: true, updateAddedBy: true});
+      showAlertAndCheckAuxMode = true;
+    }
+    else if(!activityAlreadyInFeed){
+      commit('addToFeed', activity);
+      showAlertAndCheckAuxMode = true;
     }
 
-    commit('addToFeed', activity);
-
-    commit(`${UI}/setFeedAlert`, {
-      trackAddedToFeed: true,
-      img: activity.track.imgUrl.small,
-      track: activity.track,
-      addedByImg: activity.user.img, 
-      addedByName: activity.user.name
-    }, {root: true});
-    
-    if(rootGetters[`${PLAYBACK_QUEUE}/queue`].length && storageGetBoolean(AUX_MODE)){
-      dispatch(`${PLAYBACK_QUEUE}/setTracksToPlayNext`, {tracks: [activity.track], noConfirmationToast: true}, {root: true});
+    if(showAlertAndCheckAuxMode){
+      commit(`${UI}/setFeedAlert`, {
+        trackAddedToFeed: true,
+        img: activity.track.imgUrl.small,
+        track: activity.track,
+        addedByImg: activity.user.img, 
+        addedByName: activity.user.name
+      }, {root: true});
+      
+      if(rootGetters[`${PLAYBACK_QUEUE}/queue`].length && storageGetBoolean(AUX_MODE)){
+        dispatch(`${PLAYBACK_QUEUE}/setTracksToPlayNext`, {tracks: [activity.track], noConfirmationToast: true}, {root: true});
+      }
     }
   },
 
   handleLiveUser: async ({commit, getters, rootGetters}, userProfile) => {
     const userAlreadyAddedIndex = getters.users.findIndex(user => user.id == userProfile.id);
     const userAlreadyAdded = userAlreadyAddedIndex > -1;
+    const loggedInUser = rootGetters[`${USER}/profile`];
 
-    if(!rootGetters[`${USER}/profile`]){
+    if(!loggedInUser){
       return;
     }
 
     //ignore current user's live status and other users already in array
-    if((userProfile && userProfile.id == rootGetters[`${USER}/profile`].id) || userAlreadyAdded){
+    if((userProfile && userProfile.id == loggedInUser.id) || userAlreadyAdded){
       return;
     }
 
     if(userProfile){
       const data = await spotify({url: `/me/following/contains?ids=${userProfile.id}&type=user`});
       commit('addUser', {...userProfile, following: data[0]});
-      commit(`${UI}/setToast`, {img: userProfile.img, username: userProfile.name, text: 'is on'}, {root: true});
     }
   },
   handleUserDisconnect:  ({commit, rootGetters}) => {
@@ -122,23 +136,65 @@ export const actions = {
   },
 
   //reaction from current user
-  addReactionToActivity: ({commit, rootGetters}, reaction) => {
-   commit('addReactionToActivity', {activity: reaction.activity, author: {name: 'You'}, message: reaction.message});
-   socket.emit('activityReactionAdded', {...reaction, author: rootGetters[`${USER}/profile`]});
+  addReactionToActivity: ({commit, getters, rootGetters}, reaction) => {
+    const loggedInUser = rootGetters[`${USER}/profile`];
+
+    commit('addReactionToActivity', {activity: reaction.activity, author: {name: 'You'}, message: reaction.message});
+    socket.emit('activityReactionAdded', {...reaction, author: loggedInUser});
+
+    const reactionActivity = findActivityInFeed(getters.feed, reaction.activity.track);
+    const timestamp = moment().toISOString();
+
+    auxApiClient().post('/feed/persistReaction', {
+      reaction: {
+        feedId: reactionActivity.feedId,
+        message: reaction.message,
+        author: loggedInUser.name,
+        timestamp,
+        updateTimestamp: timestamp
+      }
+    });
   },
 
   //reaction from another user
-  handleActivityReaction: ({commit, rootGetters}, reaction) => {
+  handleActivityReaction: ({commit}, reaction) => {
     commit(`${UI}/setFeedAlert`, {
       activityReaction: true,
       img: reaction.author.img, 
       track: reaction.activity.track,
       username: `${reaction.author.name}:`,
       text: reaction.message, 
-      timeout: 7000
     }, {root: true});
   
     commit('addReactionToActivity', reaction);
+  },
+  setActivitySkipped: async ({commit}, activity) => {
+    commit('setActivitySkippedOrPlayed', {activity, skipped: true});
+  },
+  setActivityPlayed: async ({commit}, activity) => {
+    commit('setActivitySkippedOrPlayed', {activity, played: true, updateOriginalTimestamp: true});
+    
+    await auxApiClient().post('/feed/persistActivity', {
+      activity: {
+        ...activity, 
+        track: activity.track.id, 
+        trackType: activity.track.type,
+        feedId: activity.feedId, 
+        played: true
+      }
+    });
+  },
+  setInitialFeed: async ({commit}, activities) => {
+    const initialFeed = await Promise.all(activities.map(async activity => {
+      const track = await spotify({url: `/${activity.trackType}s/${activity.track}`});
+
+      return {
+        ...activity,
+        track: setItemMetaData([track])[0]
+      };
+    }));
+
+    commit('setInitialFeed', initialFeed);
   }
 };
 
@@ -162,10 +218,11 @@ export const mutations = {
     state.users = [];
   },
   addReactionToActivity(state, reaction){
-    const activity = state.feed.find(activity => isSameTrack(activity.track, reaction.activity.track));
-    const timestamp = moment().toISOString();
+    const activity = findActivityInFeed(state.feed, reaction.activity.track);
 
     if(activity){
+      const timestamp = moment().toISOString();
+      
       if(!activity.reactions){
         activity.reactions = [];
       }
@@ -178,21 +235,29 @@ export const mutations = {
     state.latestActivity = activity;
   },
   setActivitySkippedOrPlayed(state, params){
-    const activity = state.feed.find(acitvity => isSameTrack(acitvity.track, params.activity.track));
+    const activity = findActivityInFeed(state.feed, params.activity.track);
 
     if(activity){
       activity.updateTimestamp = moment().toISOString();
 
       if(params.updateOriginalTimestamp){
-        activity.timestamp = moment().toISOString();
+        activity.timestamp = activity.updateTimestamp;
       }
 
-      //we don't wanna falsify (via undefined) an activity that has already been set to played
+      //we don't wanna falsify (i.e. if params.played is undefined) an activity that has already been set to played, so only set when not been set before
       if(!activity.played){
         activity.played = params.played;
       }
 
       activity.skipped = params.skipped;
+
+      if(params.updateAddedBy){
+        activity.addedByCurrentUser = false;
+        activity.user = params.activity.user;
+      }
     }
+  },
+  setInitialFeed(state, feed){
+    state.feed = feed;
   }
 };

@@ -1,7 +1,7 @@
 <template>
   <v-menu bottom left :transition="detailOverlay ? 'slide-x-reverse-transition' : 'slide-x-transition'" z-index="2000" :nudge-left="item.isArtist && detailOverlay ? 100 : 20" :value="!hide">
     <template v-slot:activator="{on, attrs}">
-      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" color="black" :class="[iconClass]">mdi-dots-vertical</v-icon>
+      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" :color="iconColor || 'black'" :class="[iconClass]">mdi-dots-vertical</v-icon>
     </template>
 
     <v-list>
@@ -57,6 +57,9 @@
 
     @Prop()
     detailOverlay;
+
+    @Prop()
+    iconColor;
 
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;

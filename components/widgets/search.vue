@@ -5,7 +5,7 @@
       dense 
       :placeholder="placeholder" 
       hide-details="auto" 
-      class="search-input" 
+      class="search-input search-field" 
       color="black"
       v-model="query"
       clearable
@@ -21,25 +21,26 @@
           dense 
           :placeholder="placeholder" 
           hide-details="auto" 
-          class="device-search-input" 
-          color="black"
+          class="device-search-input search-field" 
+          color="white"
           v-model="query"
           clearable
           :maxlength="maxLength"
           @focus="focused()"
+          dark
         >
         </v-text-field>
         <!--  -->
 
         <div class="d-flex align-center justify-space-between width-100">
-          <div v-for="(filter, index) in filters" :key="filter.label" @click.stop="filterPressed(filter)"  class="clickable filter" :class="{'selected-filter': filterType == filter.type}">{{filter.label}}</div>
+          <div v-for="filter in filters" :key="filter.label" @click.stop="filterPressed(filter)"  class="clickable filter" :class="{'selected-filter': filterType == filter.type}">{{filter.label}}</div>
         </div>
 
         <div v-if="validQuery() && !loadingResults && !results.length" class="result-message">Couldn't find anything for that search. Do try again you hear?</div>
         <div v-if="!loadingResults && !validQuery()" class="result-message"><div>Ready when you are.</div><div>3 character minumum.</div></div>
 
         <div v-if="loadingResults" class="oscillating-loading-container">
-          <div class="black-background loading mt-12 mb-8"></div>
+          <div class="white-background loading mt-12 mb-8"></div>
         </div>      
 
         <div class="d-flex justify-space-between my-8" v-for="item in results" :key="item.id" :class="{'track-playing': isTrackPlaying(item)}">
@@ -54,16 +55,16 @@
               <span class="clickable" @click.stop="primaryLabelPressed(item)">{{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span></span>
 
               <div v-if="item.isMultitrackAlbum" class="mt-2">
-                <v-icon color="black" small>mdi-music-circle</v-icon>
+                <v-icon class="number-of-tracks-icon" small>mdi-music-circle</v-icon>
                 <span class="number-of-tracks">{{item.numberOfTracks}}</span>
               </div>
             </div>
           </div>
 
-          <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
+          <ThreeDotIcon v-if="!item.isCollection" :item="item" iconColor="white"/>
         </div>
 
-        <BackToTop v-if="searchResultsId" :elementId="searchResultsId"/>
+        <BackToTop v-if="searchResultsId" :elementId="searchResultsId" arrowColor="white"/>
       </template>
     </v-text-field>
 
@@ -120,7 +121,7 @@
             const {tracks, albums} = data;
 
             if(this.filterType == 'track' || this.filterType == 'album'){
-              this.results = setItemMetaData([...tracks.items, ...albums.items]).filter(item => this.filterType == 'track' ? item.singleTrack : item.isCollection);
+              this.results = setItemMetaData([...tracks.items, ...albums.items]).filter(item => this.filterType == 'track' ? (item.singleTrack || item.trackFromAlbum) : item.isCollection);
             }
             else {
               const currentFilter = this.filters.find(filter => filter.type == this.filterType);
@@ -196,7 +197,7 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss">  
   @import '~/styles/main.scss';
   
   #searchContainer {
@@ -209,22 +210,37 @@
 
     .v-input__prepend-outer {
       display: none;
+      opacity: 0;
+    }
+
+    .search-field {
+      input {
+        font-weight: bold;
+        font-size: 14px;
+        color: black;
+      }
+
+      .v-input__control > .v-input__slot:before {
+        border-width: 1px;
+      }
     }
   }
 
   #searchContainer.searching {  
     .v-input__prepend-outer, .search-results {
-      @extend .scroll-shadow;
+      @extend .fade-in-animation;
+      animation-duration: 150ms;
+      animation-delay: 0s;
       display: block;
-      background-color: $secondary-theme-color;
-      color: $primary-theme-color;
+      background-color: $primary-theme-color;
+      color: $secondary-theme-color;
       font-weight: bold;
       border-radius: 4px;
       font-size: 14px;
       padding: $base-padding;
       left: 0px;
       top: 60px;
-      max-height: 400px;
+      max-height: 500px;
       width: 100%;
       overflow: scroll;
       position: absolute;
@@ -232,17 +248,12 @@
       z-index: 400;
 
       @media(min-width: $device-size-threshold){
+        max-height: 400px;
         top: 42px;
         height: auto;
         width: 320px;
       }
     }
-  }
-
-  .input-style {
-    font-weight: bold;
-    font-size: 14px;
-    color: black !important;
   }
 
   .search-input {
@@ -253,23 +264,23 @@
         display: inherit;
       }
     }
-
-    input {
-      @extend .input-style;
+    
+    .v-text-field > .v-input__control > .v-input__slot:before {
+      border-width: 1px;
     }
   }
 
   .device-search-input {
     margin-bottom: 18px;
 
+    input {
+      color: white !important;
+    }
+
     .v-input__control {
       display: inherit !important;
     }
-
-    input {
-      @extend .input-style;
-    }
-
+    
     @media(min-width: $device-size-threshold){
       display: none;
     }
@@ -285,26 +296,26 @@
   }
 
   .filter {
-    background-color: $secondary-theme-color;
-    color: $primary-theme-color;
+    background-color: $primary-theme-color;
+    color: $secondary-theme-color;
     padding: 4px 8px;
-    border: 2px solid $primary-theme-color;
+    border: 2px solid $secondary-theme-color;
     border-radius: 8px;
     font-size: 12px;
   }
 
   .selected-filter {
-    background-color: $primary-theme-color;
-    color: $secondary-theme-color;
+    background-color: $secondary-theme-color;
+    color: $primary-theme-color;
   }
 
   .result-message {
     font-size: 24px;
-    margin-top: 32px;
+    margin: 38px 0px 16px;
   }
 
   .result-img {
-    $size: 28px;
+    $size: 34px;
 
     max-width: $size;
     height: $size;
@@ -321,8 +332,12 @@
     font-size: 12px;
   }
 
+  .number-of-tracks-icon {
+    color: white !important;
+  }
+
   .number-of-tracks {
-    color: #888888;
+    color: $secondary-theme-color;
     font-size: 12px;
   }
 </style>

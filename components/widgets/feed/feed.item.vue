@@ -41,7 +41,7 @@
       <ThreeDotIcon :item="activity.track" icon-class="activity-item-three-dot"/>
 
       <div class="clickable reaction-toggle-container">
-        <v-icon color="white" small @click.stop="() => showReactions = !showReactions">mdi-chat-outline</v-icon>
+        <v-icon color="white" small @click.stop="() => showReactions = !showReactions">{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>
         <span v-if="activity.reactions && activity.reactions.length" class="reaction-count">{{activity.reactions.length}}</span>
       </div>
     </div>
@@ -140,7 +140,7 @@
     margin-bottom: 8px;
 
     .track-img {
-      $track-img-size: 28px;
+      $track-img-size: 38px;
 
       max-width: $track-img-size;
       height: $track-img-size;

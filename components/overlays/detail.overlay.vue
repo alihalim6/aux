@@ -311,16 +311,8 @@
     }
 
     .content-loaded {
+      @extend .fade-in-animation;
       background-color: white;
-      animation-name: fade-in;
-      animation-duration: 655ms;
-      animation-timing-function: ease;
-      animation-delay: 350ms;
-      animation-fill-mode: forwards;
-    }
-
-    @keyframes fade-in {
-      to {opacity: 1;}
     }
 
     .simple-overlay {

@@ -1,7 +1,17 @@
-import {storageGet, storageSet} from '~/utils/storage';
+import {storageGet, storageSet, storageGetAndRemove} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
 import axios from 'axios';
 import {initSpotifyPlayer} from '~/utils/helpers';
+
+//define at call-time so that render cycle on server doesn't error trying to access localStorage
+export function auxApiClient(){
+  return axios.create({
+    baseURL: process.env.BASE_URL,
+    headers: {
+      Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+    }
+  })
+}
 
 export const authorize = async () => {
   const state = Math.random().toString(36).substring(2, 15);
@@ -20,12 +30,14 @@ export const initToken = async () => {
 };
 
 export const refreshToken = async () => {
-  await axios.post(AUTH.URL.TOKEN, 
-    `grant_type=refresh_token&refresh_token=${storageGet(AUTH.REFRESH_TOKEN)}&client_id=${AUTH.CLIENT_ID}`, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
-    .then(response => setTokenData(response));
+  if(storageGet(AUTH.REFRESH_TOKEN)){//if refresh not already attempted
+    await axios.post(AUTH.URL.TOKEN, 
+      `grant_type=refresh_token&refresh_token=${storageGetAndRemove(AUTH.REFRESH_TOKEN)}&client_id=${AUTH.CLIENT_ID}`, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+      .then(response => setTokenData(response));
 
-  //set new player with new token
-  initSpotifyPlayer();
+    //set new player with new token
+    initSpotifyPlayer();
+  }
 };
 
 const setTokenData = (response) => {
@@ -37,10 +49,8 @@ const setTokenData = (response) => {
 
 export const accessTokenExpired = () => {
   const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
-  /* console.log(`tokenExpirationTime: ${tokenExpirationTime}`);
-  console.log(`Date.now() is ${Date.now()}`);
-  console.log(`token set at: ${parseInt(storageGet(AUTH.TOKEN_SET_AT))}; token expires/expired ${tokenExpirationTime - Date.now()}ms from now`); */
-  return (tokenExpirationTime < Date.now());
+  console.log(`token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
+  return tokenExpirationTime < Date.now();
 };
 
 const pkceVerifier = () => {

@@ -133,6 +133,10 @@ $phrase-border-color: #aaaaaa;
   color: $spotify-green;
 }
 
+.white-color {
+  color: white !important;
+}
+
 .blurred {
   background-color: transparent;
   backdrop-filter: blur(6px);
@@ -140,6 +144,10 @@ $phrase-border-color: #aaaaaa;
 
 .black-background {
   background-color: black;
+}
+
+.white-background {
+  background-color: white;
 }
 
 .width-max-content {

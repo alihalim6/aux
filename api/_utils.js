@@ -5,7 +5,6 @@ import {storageGet} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
 
-//TODO: make into class that is instantiated with config/token and just use class method that makes calls internally using token property
 export const httpClient = axios.create({
   baseURL: 'https://api.spotify.com/v1'
 });
@@ -27,14 +26,32 @@ httpClient.interceptors.request.use(async config => {
 
 httpClient.interceptors.response.use(async response => {
   if(response.data.error){
-    handleApiError(response.data.error);
-    return;
+    if(response.data.error.status == 401){
+      retryRequest(response.config);
+    }
+    else{
+      handleApiError(response.data.error);
+      return;
+    }
   }
 
   return response;
-}, () => {
-  handleApiError();
+}, error => {
+  if(error.response.status == 401){
+    retryRequest(error.config);
+  }
+  else{
+    handleApiError();
+  }
 });
+
+async function retryRequest(config){
+  if(!config._retry){
+    config._retry = true;
+    await attemptTokenRefresh();
+    return httpClient.request(config);
+  }
+}
 
 async function attemptTokenRefresh(){
   try{

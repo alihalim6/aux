@@ -4,6 +4,12 @@ export const storageGet = (item) => {
   return localStorage.getItem(AUX_NAMESPACE + item);
 };
 
+export const storageGetAndRemove = (item) => {
+  const itemToRemove = storageGet(item);
+  localStorage.removeItem(item);
+  return itemToRemove;
+};
+
 export const storageGetBoolean = (item) => {
   return localStorage.getItem(AUX_NAMESPACE + item) == 'true';
 }

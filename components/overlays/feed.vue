@@ -42,7 +42,9 @@
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
   import {isSameTrack} from '~/utils/helpers';
-  import {PLAYED_NOT_SKIPPED_THRESHOLD} from '~/utils/constants';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD, AUTH} from '~/utils/constants';
+  import {auxApiClient} from '~/auth';
+  import {storageSet} from '~/utils/storage';
 
   @Component
   export default class Feed extends Vue {
@@ -53,9 +55,6 @@
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
-
-    @Mutation('setActivitySkippedOrPlayed', {namespace: FEED})
-    setActivitySkippedOrPlayed;
 
     @Getter('feed', {namespace: UI})
     uiFeed;
@@ -78,17 +77,29 @@
     @Action('addReactionToActivity', {namespace: FEED})
     addReactionToActivity;
 
+    @Action('setActivitySkipped', {namespace: FEED})
+    setActivitySkipped;
+
+    @Action('setActivityPlayed', {namespace: FEED})
+    setActivityPlayed;
+
+    @Action('setInitialFeed', {namespace: FEED})
+    setInitialFeed;
+
     @Watch('profile')
     currentUserProfileSet(){
       if(this.profile){
         this.liveStatusInterval = setInterval(() => {
           socket.emit('userLive', {userProfile: this.profile});
         }, 5000);
+
+        this.initializeFeed();
       }
     }
 
     @Watch('currentlyPlayingItem')
     currentlyPlayingItemChanged(newItem, oldItem){
+      //if playback stopped while there was a skip-or-play pending, clear interval and set it skipped
       if(!newItem.id && oldItem.id && this.skipOrPlay.activity){
         this.clearSkipPlayAndSkipLastActivity();
       }
@@ -98,25 +109,37 @@
     latestActivityChanged(latestActivity){
       const activityInFeed = this.activityFeed.find(feedActivity => isSameTrack(feedActivity.track, latestActivity.track));
 
+      //TRACK IS ALREADY IN FEED
       const handleActivityAlreadyInFeed = () => {
         //previously played, so just add repeat listen reaction
         if(activityInFeed.played){
-          this.addReactionToActivity({activity: latestActivity, message: `${latestActivity.repeatingOwnTrack ? '' : 'also'} listening ${latestActivity.repeatingOwnTrack ? 'again' : ''}`});
+          this.addReactionToActivity({activity: activityInFeed, message: `${latestActivity.repeatingOwnTrack ? '' : 'also'} listening${latestActivity.repeatingOwnTrack ? ' again' : ''}`});
         }
-        //previously skipped, flag appropriately
+        //previously skipped, mark as played now
         else{
-          socket.emit('activityAdded', {...activityInFeed, played: true});
-          this.setActivitySkippedOrPlayed({activity: activityInFeed, played: true, updateOriginalTimestamp: true});
+          this.emitNewPlay(activityInFeed);
+          this.setActivityPlayed(activityInFeed);
         }
       };
 
+      //TRACK IS NEW TO FEED
       const handleNewFeedActivity = () => {
-        socket.emit('activityAdded', {...latestActivity, played: true});
-        this.setActivitySkippedOrPlayed({activity: activityInFeed, played: true});
+        this.emitNewPlay(latestActivity);
+        this.setActivityPlayed(latestActivity);
       };
 
-      const callback = latestActivity.trackAlreadyInFeed ? handleActivityAlreadyInFeed : handleNewFeedActivity;
-      this.checkForSkipOrPlay(callback, activityInFeed); 
+      const callback = latestActivity.activityAlreadyInFeed ? handleActivityAlreadyInFeed : handleNewFeedActivity;
+      this.checkForSkipOrPlay(callback, latestActivity); 
+    }
+
+    emitNewPlay(activity){
+      socket.emit('activityAdded', {...activity, played: true});
+    }
+
+    async initializeFeed(){
+      const {data} = await auxApiClient().post('/feed/initialize', {profile: this.profile});
+      storageSet(AUTH.AUX_API_TOKEN, data.token);
+      this.setInitialFeed(data.activities);
     }
 
     resetSkipPlayCheck(){
@@ -126,7 +149,7 @@
     }
 
     clearSkipPlayAndSkipLastActivity(){
-      this.setActivitySkippedOrPlayed({activity: this.skipOrPlay.activity, skipped: true});
+      this.setActivitySkipped(this.skipOrPlay.activity);
       this.resetSkipPlayCheck();
     }
  
@@ -154,7 +177,7 @@
       }, 1000);
     }
     
-    unmounted(){
+    beforeDestroy(){
       clearInterval(this.liveStatusInterval);
       clearInterval(this.skipOrPlay.interval);
     }

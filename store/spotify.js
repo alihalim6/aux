@@ -47,7 +47,7 @@ export const actions = {
       });
     }
     catch(error){
-      console.log(error)
+      console.error(error);
       dispatch('stopPlayback');
       handleApiError('There was an issue with playback lorem ipsum...');
     }
@@ -129,6 +129,7 @@ export const actions = {
       //playing new item
       else{ 
         const feedId = params.doNotRestartQueue ? item.feedId : uuid();
+
         //has to be at top of logic for icons to work right
         commit('setCurrentlyPlayingItem', {item, feedId});
 
@@ -136,11 +137,7 @@ export const actions = {
       
         if(!params.doNotRestartQueue){
           const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
-          dispatch(`${PLAYBACK_QUEUE}/startPlaybackQueue`, {index: currentlyPlayingItemIndex, itemSet: itemSet.length ? itemSet : [item], feedId}, {root: true});
-        }
-
-        if(accessTokenExpired()){
-          await refreshToken(); 
+          commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, itemSet: itemSet.length ? itemSet : [item], feedId}, {root: true});
         }
 
         await dispatch('playItem', item);

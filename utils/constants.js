@@ -1,6 +1,10 @@
 export const AUX_NAMESPACE = 'aux.';
+export const AUX_MODE = 'auxMode';
+export const IGNORED_USERS = 'ignoredUsers';
+
 export const SPLASH = 'splash';
 export const APP = 'app';
+
 export const PLAYED_NOT_SKIPPED_THRESHOLD = 15;
 
 export const AUTH = {
@@ -10,6 +14,7 @@ export const AUTH = {
   TOKEN_SET_AT: 'tokenSetAt',
   CODE_VERIFIER: 'codeVerifier',
   CLIENT_ID: '979fd17ac8d141b083cd596b15a5f6bd',
+  AUX_API_TOKEN: 'auxApiToken',
 
   SCOPES: `
     streaming 
@@ -35,9 +40,6 @@ export const AUTH = {
     REDIRECT: process.env.BASE_URL
   }
 };
-
-export const AUX_MODE = 'auxMode';
-export const IGNORED_USERS = 'ignoredUsers';
 
 export const MY_AUX = {
   LIKED_TRACKS: 'Liked Tracks',

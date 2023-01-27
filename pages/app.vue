@@ -37,15 +37,13 @@
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
-    async beforeMount(){
+    beforeMount(){
       initSocketClient();
       //add SDK to scripts
       const spotifyPlaybackSdk = document.createElement('script');
       spotifyPlaybackSdk.setAttribute('src', 'https://sdk.scdn.co/spotify-player.js');
       document.head.appendChild(spotifyPlaybackSdk);
-    }
 
-    mounted(){
       window.onSpotifyWebPlaybackSDKReady = () => {
         initSpotifyPlayer();
       };

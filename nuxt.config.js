@@ -41,11 +41,12 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
 
-    '~/io',
+    '~/socket',
   ],
 
   env: {
-    BASE_URL: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://www.liveonaux.com'
+    BASE_URL: process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://www.auxthepass.com',
+    AUX_SECRET: process.env.AUX_SECRET
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -74,4 +75,8 @@ export default {
     customVariables: ['~/styles/variables.scss'],
     treeShake: true
   },
+
+  serverMiddleware: {
+    '/feed': '~/serverMiddleware/feed.js'
+  }
 }

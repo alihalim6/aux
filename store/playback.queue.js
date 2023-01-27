@@ -52,9 +52,6 @@ export const getters = {
 const THREE_DOT_TOAST_TIMEOUT = 2500;
 
 export const actions = {  
-  startPlaybackQueue: ({commit, getters, dispatch}, params) => {
-    commit('startQueue', params);
-  },
   playPreviousTrack: ({dispatch, getters}) => {
     playTrackWithinQueue({
       getters,
@@ -96,7 +93,9 @@ export const actions = {
   }
 };
 
-//feedId: extra unique id in case same track is played more than once in a queue
+//feedId: extra unique id in case same track is played more than once in a queue;
+//for this store, it's at the track level (since that is what the queue works with)
+//but for the feed store, it's at the metadata level (for a little but of ease/cleanliness)
 function setFeedIds(tracks){
   return tracks.map(track => ({...track, feedId: uuid()}));
 }

@@ -49,6 +49,7 @@ async function retryRequest(config){
   if(!config._retry){
     config._retry = true;
     await attemptTokenRefresh();
+    console.log('retrying request after 401...');
     return httpClient.request(config);
   }
 }

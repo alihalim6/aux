@@ -140,7 +140,7 @@
     margin-bottom: 8px;
 
     .track-img {
-      $track-img-size: 38px;
+      $track-img-size: 32px;
 
       max-width: $track-img-size;
       height: $track-img-size;

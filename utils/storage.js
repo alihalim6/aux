@@ -6,7 +6,7 @@ export const storageGet = (item) => {
 
 export const storageGetAndRemove = (item) => {
   const itemToRemove = storageGet(item);
-  localStorage.removeItem(item);
+  localStorage.removeItem(AUX_NAMESPACE + item);
   return itemToRemove;
 };
 

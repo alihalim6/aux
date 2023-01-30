@@ -1,5 +1,5 @@
 import {MongoClient} from 'mongodb';
-import jwt from 'jsonwebtoken';
+import auth from './_auth';
 
 const bodyParser = require('body-parser')
 const app = require('express')();
@@ -10,11 +10,6 @@ app.use(bodyParser.json());
 
 app.post('/initialize', async (req, res) => {
   try{
-    if(!req.body.profile){
-      res.sendStatus(400);
-    }
-
-    const token = jwt.sign({id: req.body.profile.id}, process.env.AUX_SECRET, {expiresIn: '24h'});
     const activities = await database.collection('activities').find({}).toArray();
     const reactions = await database.collection('reactions').find({}).toArray();
     const sortedActivities = [];
@@ -39,10 +34,7 @@ app.post('/initialize', async (req, res) => {
       sortedActivities.unshift(activity);
     });
 
-    res.json({
-      activities: sortedActivities,
-      token
-    });
+    res.json({activities: sortedActivities});
   }
   catch(error){
     console.log(error)
@@ -50,47 +42,27 @@ app.post('/initialize', async (req, res) => {
   }
 });
 
-app.use((req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if(token == null){
-    return res.sendStatus(401);
-  }
-
-  jwt.verify(token, process.env.AUX_SECRET, err => {
-    if(err){
-      return res.sendStatus(403);
-    }
-
-    next();
-  });
-});
+app.use(auth);
 
 //'PROTECTED' routes
 
 app.post('/persistActivity', async (req, res) => {
-  try{
-    const activities = database.collection('activities');
-    await activities.insertOne(req.body.activity);
+  insertItem('activities', req.body.activity, res);
+});
+
+app.post('/persistReaction', (req, res) => {
+  insertItem('reactions', req.body.reaction, res);
+});
+
+async function insertItem(collection, item, res){
+   try{
+    const db = database.collection(collection);
+    await db.insertOne({...item, persistanceTimestamp: new Date()});
     res.end();
   }
   catch(error){
     res.sendStatus(500);
   }
-});
-
-app.post('/persistReaction', async (req, res) => {
-  try{
-    const reactions = database.collection('reactions');
-    await reactions.insertOne(req.body.reaction);
-    res.end();
-  }
-  catch(error){
-    res.sendStatus(500);
-  }
-});
-
-app.con
+}
 
 module.exports = app;

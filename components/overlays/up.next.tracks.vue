@@ -23,7 +23,11 @@
         </div>
 
          <div class="clickable up-next-action"> 
-          <span class="underlined" @click.stop="clearUpNextPressed()">CLEAR<span v-if="nextTracks.length > 1"> ALL</span></span>
+          <span class="underlined" @click.stop="clearUpNextPressed()">
+            <span v-if="nextTracks.length > 1">CLEAR ALL</span>
+            <span v-else>REMOVE</span>
+          </span>
+          
           <v-icon small class="pl-1" color="white">mdi-cancel</v-icon>
          </div>
       </div>

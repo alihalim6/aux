@@ -7,8 +7,8 @@
             <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
 
             <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
-              <div class="mb-2">Showing AUX activity in the last 24 hours.</div>
               <div>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed. Otherwise it's a skip that's only visible in your feed.</div>
+              <div class="footnote">Tracks stay in feed for 24h</div>
             </v-tooltip>
 
             <v-icon class="clickable feed-header-icon" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
@@ -42,9 +42,8 @@
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
   import {isSameTrack} from '~/utils/helpers';
-  import {PLAYED_NOT_SKIPPED_THRESHOLD, AUTH} from '~/utils/constants';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD} from '~/utils/constants';
   import {auxApiClient} from '~/auth';
-  import {storageSet} from '~/utils/storage';
 
   @Component
   export default class Feed extends Vue {
@@ -138,7 +137,6 @@
 
     async initializeFeed(){
       const {data} = await auxApiClient().post('/feed/initialize', {profile: this.profile});
-      storageSet(AUTH.AUX_API_TOKEN, data.token);
       this.setInitialFeed(data.activities);
     }
 
@@ -274,5 +272,11 @@
       left: 10px !important;
       max-width: 90%;
     }
+  }
+
+  .footnote {
+    font-size: 12px;
+    font-style: italic;
+    margin-top: 8px;
   }
 </style>

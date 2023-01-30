@@ -5,7 +5,8 @@
     :app="true" 
     top 
     width="100%" 
-    max-width="420" 
+    min-width="fit-content"
+    max-width="fit-content"
     transition="slide-y-transition" 
     :color="toast.error ? 'red' : 'white'"
     :timeout="timeout"

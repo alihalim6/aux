@@ -77,6 +77,7 @@ export default {
   },
 
   serverMiddleware: {
-    '/feed': '~/serverMiddleware/feed.js'
+    '/feed': '~/serverMiddleware/feed.js',
+    '/user': '~/serverMiddleware/user.js'
   }
 }

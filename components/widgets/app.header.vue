@@ -19,6 +19,7 @@
       <v-menu bottom left transition="slide-y-transition" z-index="900" :close-on-content-click="false" offset-y>
         <template v-slot:activator="{on, attrs}">            
           <div class="clickable on-air-container" v-bind="attrs" v-on="on">
+            <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
             <div class="users-on-air">{{liveUsers.length}}</div>
             <v-icon class="live-info-icon" color="black" large>mdi-chevron-down</v-icon>
           </div>
@@ -86,12 +87,13 @@
 <script>
   import {Component, Vue, Getter, Watch, Mutation} from 'nuxt-property-decorator';
   import {FEED, USER, UI} from '~/store/constants';
-  import {storageGet, storageGetBoolean, storageSet, clearStorage} from '~/utils/storage';
-  import {AUX_MODE, SPLASH, IGNORED_USERS} from '~/utils/constants';
+  import {storageSet, clearStorage} from '~/utils/storage';
+  import {AUX_MODE, SPLASH, IGNORED_USERS, AUTH} from '~/utils/constants';
   import {ignoredUsers} from '~/utils/helpers';
   import {handleApiError} from '~/api/_utils';
   import spotify from '~/api/spotify';
   import socket from '~/plugins/socket.client.js';
+  import {auxApiClient} from '~/auth';
 
   @Component
   export default class AppHeader extends Vue {
@@ -123,16 +125,14 @@
       });
     }
     
-    async beforeMount(){
-      const auxModeNotSet = !storageGet(AUX_MODE);
-
-      //default to ON if no preference set
-      if(auxModeNotSet){
-        this.auxModeOn = true;
-        storageSet(AUX_MODE, true);
+    @Watch('profile')
+    async currentUserProfileSet(){
+      if(this.profile){
+        const {data} = await auxApiClient().post('/user/initialize', {profile: this.profile});
+        storageSet(AUTH.AUX_API_TOKEN, data.token);
+        storageSet(AUX_MODE, data.auxModeOn);
+        this.auxModeOn = data.auxModeOn;
       }
-
-      this.auxModeOn = storageGetBoolean(AUX_MODE);
     }
     
   /*   mounted(){
@@ -144,6 +144,7 @@
 
     auxModeToggled(){
       storageSet(AUX_MODE, this.auxModeOn);
+      auxApiClient().post('/user/updateAuxMode', {profile: this.profile, auxModeOn: this.auxModeOn});
     }
 
     logoutPressed(){
@@ -287,7 +288,8 @@
           position: absolute;
           height: 4px;
           width: 10px;
-          bottom: -8px;
+          bottom: -6px;
+          left: 28px;
           background-color: $spotify-green;
           animation: oscillate-live;
           animation-duration: 4s;
@@ -460,5 +462,15 @@
     max-width: $size;
     height: auto;
     margin-bottom: 16px;
+  }
+
+  .here-now {
+    font-weight: bold;
+    font-size: 22px;
+  }
+
+  .live-dot {
+    margin-right: -8px;
+    margin-top: 2px;
   }
 </style>

@@ -14,8 +14,7 @@
 
         <section v-if="activity.played">
           <div class="activity-info-container">
-            <div class="clickable added-by">
-              <!-- TODO followability (if not you)-->
+            <div class="added-by">
               <v-img v-if="activity.user.img" :src="activity.user.img" class="round-img-icon"></v-img>
               <span :class="{'username-margin': activity.user.img}">{{activity.addedByCurrentUser ? 'You' : activity.user.name}}</span>
             </div>

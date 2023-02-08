@@ -25,6 +25,7 @@
 
     @Watch('tracks', {immediate: true})
     updateTracks(newVal, oldVal){
+      //doesn't work to check length (https://v2.vuejs.org/v2/api/#vm-watch) so this just runs on first load (undefined to defined)
       if(newVal && !oldVal){
         this.playbackItem = {
           isCollection: true,
@@ -35,7 +36,6 @@
 
         this.setTracksCollection(this.tracks);
         this.playbackItem.itemSet = this.tracks;
-        this.$nuxt.$emit('updateTracks', this.tracks);
       }
     }
     

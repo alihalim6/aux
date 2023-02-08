@@ -1,7 +1,15 @@
 <template>
   <section class="pt-1 pb-6">
     <div class="title-container mt-4">
-      <div class="home-content-title">Playlists</div>
+      <div class="home-content-title">
+        <div class="d-flex align-center">
+          <span>Playlists</span>
+
+          <v-hover v-slot="{hover}">
+            <v-icon @click="refreshData()" class="clickable refresh-data" :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" color="#1DB954">mdi-refresh</v-icon>
+          </v-hover>
+        </div>
+      </div>
       
       <div class="home-content d-flex">
         <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active vertical class="playlist-tabs">
@@ -13,7 +21,7 @@
         </v-tabs>
 
         <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs scroll-shadow" id="playlistTabContent">
-          <v-tab-item v-for="item in getContent()" :key="item.type">
+          <v-tab-item v-for="item in getTabContent()" :key="item.type">
             <div class="pa-2">
               <VerticalContent :data="item.data" :alternate-format="true" :playlists="true"/>
             </div>
@@ -35,6 +43,7 @@
   @Component
   export default class Playlists extends Vue {
     selectedTab = 0;
+    refreshingData = false;
 
     content = [
       {
@@ -55,6 +64,10 @@
     ];
 
     async beforeMount(){
+      await this.getData();
+    }
+
+    async getData(){
       const data = await playlists();
       
       this.content.forEach(playlistTab => {
@@ -63,8 +76,14 @@
       });
     }
 
-    getContent(){
+    getTabContent(){
       return this.content.filter(content => content.data.length);
+    }
+
+    async refreshData(){
+      this.refreshingData = true;
+      await this.getData();
+      this.refreshingData = false;
     }
   }
 </script>

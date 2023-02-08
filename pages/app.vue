@@ -21,21 +21,28 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
   import {UI, SPOTIFY} from '~/store/constants';
-  import {initSpotifyPlayer} from '~/utils/helpers';
   import initSocketClient from '~/utils/init.socket.client';
   
   @Component
   export default class App extends Vue {
     //TODO all v-imgs use lazy-src prop to show loader until img shows?
     //TODO adjust vuetify breakpoints so that full spotify logo still shows up until it really can't fit
+
+    sdkReady = false;
     
     @Getter('isLoading', {namespace: UI})
     isLoading;
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
+
+    @Getter('initialTrackPlayed', {namespace: SPOTIFY})
+    initialTrackPlayed;
+
+    @Mutation('setSdkReady', {namespace: SPOTIFY})
+    setSdkReady;
 
     beforeMount(){
       initSocketClient();
@@ -45,7 +52,7 @@
       document.head.appendChild(spotifyPlaybackSdk);
 
       window.onSpotifyWebPlaybackSDKReady = () => {
-        initSpotifyPlayer();
+        this.setSdkReady();
       };
     }
   }

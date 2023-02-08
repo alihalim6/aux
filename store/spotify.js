@@ -1,24 +1,21 @@
 import {handleApiError} from '~/api/_utils';
-import {refreshToken, accessTokenExpired} from '~/auth';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
-import {shuffleArray} from '~/utils/helpers';
+import {shuffleArray, initSpotifyPlayer} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 
 export const state = () => {
   return {
-    spotifyDeviceId: '',
     currentlyPlayingItemUri: '',//simple string so that watcher for this doesn't have to be deep on object (performance)
     currentlyPlayingItem: {},
     audioPlaying: false,
-    newApiPlayback: ''
+    newApiPlayback: '',
+    sdkReady: false,
+    playerInitialized: false
   };
 };
 
 export const getters = {
-  spotifyDeviceId: (state) => {
-    return state.spotifyDeviceId;
-  },
   currentlyPlayingItemUri: (state) => {
     return state.currentlyPlayingItemUri;
   },
@@ -30,6 +27,12 @@ export const getters = {
   },
   newApiPlayback: (state) => {
     return state.newApiPlayback;
+  },
+  sdkReady: (state) => {
+    return state.sdkReady;
+  },
+  playerInitialized: (state) => {
+    return state.playerInitialized;
   }
 };
 
@@ -41,9 +44,20 @@ export const actions = {
     }
 
     try {
+      let {deviceId} = getters.playerInitialized;
+      
+      if(getters.sdkReady){
+        if(!deviceId){
+          deviceId = await initSpotifyPlayer();
+        }
+      }
+      else{
+        throw new Error('sdk not ready...');
+      }
+
       await startItemPlayback({
         item, 
-        deviceId: getters.spotifyDeviceId
+        deviceId
       });
     }
     catch(error){
@@ -187,9 +201,6 @@ export const actions = {
 };
 
 export const mutations = {
-  setSpotifyDeviceId(state, deviceId){
-    state.spotifyDeviceId = deviceId;
-  },
   setCurrentlyPlayingItemUri(state, itemUri){
     state.currentlyPlayingItemUri = itemUri;
   },
@@ -205,6 +216,12 @@ export const mutations = {
   },
   setNewApiPlayback(state, feedId){
     state.newApiPlayback = feedId;
+  },
+  setSdkReady(state){
+    state.sdkReady = true;
+  },
+  setPlayerInitialized(state, deviceId){
+    state.playerInitialized = deviceId;
   }
 };
 //TODO try to handle external pausing (e.g. from headphone) - player_state_changed - compare if prev playing and now paused and vice versa

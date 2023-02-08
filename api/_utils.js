@@ -1,9 +1,11 @@
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import {refreshToken, accessTokenExpired} from '~/auth';
+import {refreshToken, accessTokenExpired, authorize} from '~/auth';
 import {storageGet} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
+
+export const PLAYBACK_API_PATH = '/me/player/play';
 
 export const httpClient = axios.create({
   baseURL: 'https://api.spotify.com/v1'
@@ -13,20 +15,28 @@ httpClient.interceptors.request.use(async config => {
   if(accessTokenExpired()){
     await attemptTokenRefresh(); 
   }
-    
+
+  const playbackRetry = config._retry && (config.url.indexOf(PLAYBACK_API_PATH) > -1);
+
   return {
     ...config,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${storageGet(AUTH.ACCESS_TOKEN)}`
     },
+    //ensure device id of newly authed player is used when retrying playback
+    url: playbackRetry ? `${PLAYBACK_API_PATH}?device_id=${$nuxt.$store.getters[`${SPOTIFY}/playerInitialized`].deviceId}` : config.url,
     timeout: 60000//1 min
   };
 });
 
+function shouldRetry(responseCode){
+  return responseCode == 401 || responseCode == 502;
+}
+
 httpClient.interceptors.response.use(async response => {
   if(response.data.error){
-    if(response.data.error.status == 401){
+    if(shouldRetry(response.data.error.status)){
       retryRequest(response.config);
     }
     else{
@@ -37,7 +47,7 @@ httpClient.interceptors.response.use(async response => {
 
   return response;
 }, error => {
-  if(error.response.status == 401){
+  if(shouldRetry(error.response.status)){
     retryRequest(error.config);
   }
   else{
@@ -49,8 +59,12 @@ async function retryRequest(config){
   if(!config._retry){
     config._retry = true;
     await attemptTokenRefresh();
-    console.log('retrying request after 401...');
+    console.log('retrying request after 401 or 502...');
     return httpClient.request(config);
+  }
+  else{
+    console.log('refresh/retry failed, need new token, sending back to splash...');
+    await authorize();
   }
 }
 
@@ -63,6 +77,7 @@ async function attemptTokenRefresh(){
   }
 }
 
+//TODO is this even doing anything?  502s seemed to only get attempted once until added to shouldRetry()...
 axiosRetry(httpClient, {retries: 2});
 
 export function handleApiError(message){

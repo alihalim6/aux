@@ -1,11 +1,12 @@
 import {USER, UI, PLAYBACK_QUEUE} from './constants';
 import moment from 'moment';
 import socket from '~/plugins/socket.client.js';
-import {AUX_MODE} from '~/utils/constants';
+import {AUX_MODE, AUTH} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
 import {isSameTrack, ignoredUsers, setDuration, setItemMetaData} from '~/utils/helpers';
 import spotify from '~/api/spotify';
 import {auxApiClient} from '~/auth';
+import {storageGet} from '~/utils/storage';
 
 function findActivityInFeed(feed, newTrack){
   return feed.find(feedActivity => isSameTrack(feedActivity.track, newTrack));
@@ -145,7 +146,7 @@ export const actions = {
     const reactionActivity = findActivityInFeed(getters.feed, reaction.activity.track);
     const timestamp = moment().toISOString();
 
-    auxApiClient().post('/feed/persistReaction', {
+    auxApiClient.post('/feed/persistReaction', {
       reaction: {
         feedId: reactionActivity.feedId,
         message: reaction.message,
@@ -153,11 +154,19 @@ export const actions = {
         timestamp,
         updateTimestamp: timestamp
       }
+    }, {    
+      headers: {
+        Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+      }
     });
   },
 
   //reaction from another user
   handleActivityReaction: ({commit}, reaction) => {
+    if(ignoredUsers().find(userId => userId == reaction.author.id)){
+      return;
+    }
+
     commit(`${UI}/setFeedAlert`, {
       activityReaction: true,
       img: reaction.author.img, 
@@ -174,13 +183,17 @@ export const actions = {
   setActivityPlayed: async ({commit}, activity) => {
     commit('setActivitySkippedOrPlayed', {activity, played: true, updateOriginalTimestamp: true});
     
-    await auxApiClient().post('/feed/persistActivity', {
+    await auxApiClient.post('/feed/persistActivity', {
       activity: {
         ...activity, 
         track: activity.track.id, 
         trackType: activity.track.type,
         feedId: activity.feedId, 
         played: true
+      }
+    }, {    
+      headers: {
+        Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
       }
     });
   },

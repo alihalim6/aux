@@ -4,7 +4,7 @@ import {refreshToken} from '~/auth';
 import {handleAuthError} from '~/utils/auth';
 import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
-import {UI} from '~/store/constants';
+import {UI, SPOTIFY} from '~/store/constants';
 import {handleApiError} from '~/api/_utils';
 
 //aux-ify some of the values we get from Spotify
@@ -14,7 +14,11 @@ export const setItemMetaData = (items) => {
     return;
   }
 
-  items.forEach(item => {
+  for(const item of items){
+    if(!item){
+      continue;
+    }
+
     item.playbackIcon = 'play';
     item.isAlbum = item.type === 'album';
     item.isArtist = item.type === 'artist';
@@ -82,7 +86,7 @@ export const setItemMetaData = (items) => {
     if(item.singleTrack){
       item.singleArtistId = item.artists[0].id;
     }
-  });
+  }
 
   return items;
 };
@@ -137,7 +141,7 @@ export const getItemDuration = async (item) => {
 const retryPlayerInit = async () => {
   try{
     await refreshToken();
-    initSpotifyPlayer();
+    await initSpotifyPlayer();
   }
   catch(error){
     handleAuthError('Couldn\'t init player.');
@@ -149,7 +153,7 @@ const retryPlayerInit = async () => {
 //TODO: tie this in as a way to be live on aux (from Spotify -- user who prefers their interface)?
 //EDIT: doesn't seem doable as we'd need a hook to know/display something has been played from elsewhere etc. 
 //EDIT: --> maybe sptofiy tracking object has this info
-export const initSpotifyPlayer = () => {
+export const initSpotifyPlayer = async () => {
   let accessToken = storageGet(AUTH.ACCESS_TOKEN);
 
   function newPlayer(){
@@ -168,23 +172,26 @@ export const initSpotifyPlayer = () => {
 
   window.spotifyPlayer = newPlayer();
 
-  window.spotifyPlayer.connect().then(connected => {
-    console.log(`Connected to Spotify player: ${connected}`);
+  const connected =  await window.spotifyPlayer.connect();
 
-    if(!connected){
-      console.log(`Retrying...`);
-      retryPlayerInit();
-    }
-  });
+  console.log(`Connected to Spotify player: ${connected}`);
 
-  window.spotifyPlayer.addListener('ready', async ({device_id}) => {
-    console.log(`Spotify player ready with device id ${device_id}`);
-    $nuxt.$store.commit('spotify/setSpotifyDeviceId', device_id);
-  });
-
-  window.spotifyPlayer.addListener('authentication_error', async ({message}) => {
-    console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
+  if(!connected){
+    console.log(`Retrying...`);
     retryPlayerInit();
+  }
+
+  return new Promise(function(resolve){
+    window.spotifyPlayer.addListener('ready', async ({device_id}) => {
+      console.log(`Spotify player ready with device id ${device_id}`);
+      $nuxt.$store.commit(`${SPOTIFY}/setPlayerInitialized`, {deviceId: device_id});
+      resolve(device_id);
+    });
+
+    window.spotifyPlayer.addListener('authentication_error', async ({message}) => {
+      console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
+      retryPlayerInit();
+    });
   });
 };
 

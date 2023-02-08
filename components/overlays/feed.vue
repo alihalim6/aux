@@ -42,8 +42,9 @@
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
   import {isSameTrack} from '~/utils/helpers';
-  import {PLAYED_NOT_SKIPPED_THRESHOLD} from '~/utils/constants';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD, AUTH} from '~/utils/constants';
   import {auxApiClient} from '~/auth';
+  import {storageGet} from '~/utils/storage';
 
   @Component
   export default class Feed extends Vue {
@@ -136,7 +137,12 @@
     }
 
     async initializeFeed(){
-      const {data} = await auxApiClient().post('/feed/initialize', {profile: this.profile});
+      const {data} = await auxApiClient.post('/feed/initialize', {profile: this.profile}, {    
+        headers: {
+          Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+        }
+      });
+
       this.setInitialFeed(data.activities);
     }
 

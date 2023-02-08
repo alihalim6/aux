@@ -105,19 +105,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-  .refresh-data {
-    margin-left: 12px;
-    font-size: 28px !important;
-  }
-
-  .refreshing-data {
-    animation: spin 0.5s infinite forwards linear;
-
-    @keyframes spin {
-      50% {transform: rotate(180deg);}
-      100% {transform: rotate(360deg);}
-    }
-  }
-</style>

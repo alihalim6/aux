@@ -27,7 +27,7 @@
                   <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
                 </div>
 
-                <div v-if="!moreFromArtist" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
+                <div v-if="!moreFromArtist && !noSecondaryLabel" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
 
                 <div class="secondary-label bottom-label">
                   <v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>
@@ -62,6 +62,9 @@
 
     @Prop()
     newAndRecommended;
+
+    @Prop()
+    noSecondaryLabel;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;

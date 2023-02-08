@@ -4,8 +4,8 @@
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex" :touchless="true">
           <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">        
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
-            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="(item.simpleOverlay || item.imgUrl) && currentIndex === index">
-              <div v-if="!item.details" class="loading-container">
+            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="currentIndex === index && (item.imgUrl || item.simpleOverlay)">
+              <div v-show="!item.details" class="loading-container">
                 <div class="blurred loading"></div>
               </div>            
 

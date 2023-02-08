@@ -5,30 +5,31 @@
     </div>
 
     <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
-      <v-tab v-for="(item, index) in getContent()" :key="item.key" @change="tabChanged">
+      <v-tab v-for="(tab, index) in getContent()" :key="tab.key" @change="tabChanged">
         <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
-          <span v-if="!item.fetchPending" :id="`myAuxTabLabel${index}`">{{item.label}}</span>
-          <v-progress-circular v-if="item.fetchPending" class="fetch-in-progress" indeterminate color="white"></v-progress-circular>
+          <span v-if="!tab.fetchPending" :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
+          <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" indeterminate color="white"></v-progress-circular>
         </div>
         <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
       </v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
-      <v-tab-item v-for="(item, index) in getContent()" :key="item.key">
-        <div class="home-content" :id="`myAux${index}`" v-if="item.data.length">
-          <div v-if="item.trackList">
-            <PlayAllAndShuffle v-if="!item.fetchPending" :tracks="item.data" :collectionKey="item.key"/>
-            <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+      <v-tab-item v-for="(tab, index) in getContent()" :key="tab.key">
+        <div class="home-content" :id="`myAux${index}`" v-if="tab.data.length">
+          <div v-if="tab.trackList">
+            <PlayAllAndShuffle v-if="!tab.fetchPending" :tracks="tab.data" :collectionKey="tab.key"/>
+            <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+            <div class="my-aux-footnote">{{tab.footnote}}</div>
           </div>
           
-          <ContentCarousel v-if="item.likedAlbums" :data="item.data" :vertical="true"/>
+          <ContentCarousel v-if="tab.likedAlbums" :data="tab.data" :vertical="true"/>
 
-          <div v-if="item.topItems">
-            <PlayAllAndShuffle v-if="!item.fetchPending" :tracks="item.topItems.tracks" :collectionKey="item.key"/>
-            <TrackList :tracks="item.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+          <div v-if="tab.topItems">
+            <PlayAllAndShuffle v-if="!tab.fetchPending" :tracks="tab.topItems.tracks" :collectionKey="tab.key"/>
+            <TrackList :tracks="tab.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
 
-            <ContentCarousel :data="item.topItems.artists" :vertical="true" class="mt-15"/>
+            <ContentCarousel :data="tab.topItems.artists" :vertical="true" class="mt-15" :no-secondary-label="true"/>
           </div>
         </div>
         
@@ -43,10 +44,11 @@
   import {handleApiError} from '~/api/_utils';
   import myAux from '~/api/myAux';
   import spotify from '~/api/spotify';
-  import {setItemMetaData, msToDuration} from '~/utils/helpers';
+  import {setItemMetaData, msToDuration, handleItemCollection} from '~/utils/helpers';
   import {MY_AUX, LIKED_ITEM_EVENT, REMOVED_LIKED_ITEM_EVENT} from '~/utils/constants';
   import {USER} from '~/store/constants';
   import {v4 as uuid} from 'uuid';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class MyAux extends Vue {
@@ -65,7 +67,8 @@
         key: 'recentlyPlayed',
         label: MY_AUX.RECENTLY_PLAYED,
         trackList: true,
-        id: uuid()
+        id: uuid(),
+        footnote: '*Recently played on Spotify'
       },
       {
         ...this.defaultContent,
@@ -148,7 +151,10 @@
           data.splice(itemIndex, 1);
         }
         else{
-          data.unshift(item);
+          //clone to handle bug where track in queue is liked and then Liked Tracks tab loaded for first time (track watcher ends up modifying item) 
+          const newlyLikedItem = cloneDeep(item);
+          handleItemCollection(newlyLikedItem, contentWithItemType.key);
+          data.unshift(newlyLikedItem); 
         }
       }
     }
@@ -227,5 +233,12 @@
   
   .color-black {
     color: black !important;
+  }
+
+  .my-aux-footnote {
+    color: #888888;
+    font-style: italic;
+    font-size: 12px;
+    margin-top: 36px;
   }
 </style>

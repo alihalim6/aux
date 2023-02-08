@@ -16,7 +16,7 @@
     <Search v-if="!isLoading"/>
 
     <div class="user-menu-container">
-      <v-menu bottom left transition="slide-y-transition" z-index="900" :close-on-content-click="false" offset-y>
+      <v-menu bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
         <template v-slot:activator="{on, attrs}">            
           <div class="clickable on-air-container" v-bind="attrs" v-on="on">
             <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
@@ -55,17 +55,6 @@
                   >
                   </v-switch>
                 </div>
-
-                <div class="aux-mode-toggle">
-                  <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()" label="AUX Mode"></v-switch>              
-                  <v-icon small class="clickable ml-2" color="#888" id="auxModeTooltipIcon">mdi-help-circle-outline</v-icon>
-
-                  <v-tooltip left color="#1DB954" attach="#footer" activator="#auxModeTooltipIcon" :open-on-hover="false">
-                    <span>When <span class="font-weight-bold">AUX Mode</span> is on, tracks played by others are automatically added to your queue
-                      <v-icon small class="ml-1" color="white">mdi-arrow-down</v-icon>
-                    </span>
-                  </v-tooltip>
-                </div>
               </div>
 
               <div v-else>
@@ -79,7 +68,34 @@
         </v-list>
       </v-menu>
 
-      <span class="clickable menu-label" @click="logoutPressed()">Logout</span>
+      <v-menu bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
+        <template v-slot:activator="{on, attrs}">            
+          <v-icon v-bind="attrs" v-on="on" color="#191414" class="clickable" large>mdi-menu</v-icon>
+        </template>
+
+        <v-list>
+          <v-list-item class="clickable menu-option-container">
+            <div class="aux-mode-toggle">
+              <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()" label="AUX Mode"></v-switch>              
+              <v-icon small class="clickable ml-2" color="#888" id="auxModeTooltipIcon">mdi-help-circle-outline</v-icon>
+
+              <v-tooltip left color="#1DB954" attach="#footer" activator="#auxModeTooltipIcon" :open-on-hover="false">
+                <span>When <span class="font-weight-bold">AUX Mode</span> is on, tracks played by others are automatically added to your queue
+                  <v-icon small class="ml-1" color="white">mdi-arrow-down</v-icon>
+                </span>
+              </v-tooltip>
+            </div>
+          </v-list-item>
+
+          <v-list-item class="clickable menu-option-container">
+            <span class="menu-label" @click="() => {}">Feedback/Contact</span>
+          </v-list-item>
+
+          <v-list-item class="clickable menu-option-container">
+            <span class="menu-label" @click="logoutPressed()">Logout</span>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </div>
   </v-app-bar>
 </template>
@@ -87,7 +103,7 @@
 <script>
   import {Component, Vue, Getter, Watch, Mutation} from 'nuxt-property-decorator';
   import {FEED, USER, UI} from '~/store/constants';
-  import {storageSet, clearStorage} from '~/utils/storage';
+  import {storageSet, clearStorage, storageGet} from '~/utils/storage';
   import {AUX_MODE, SPLASH, IGNORED_USERS, AUTH} from '~/utils/constants';
   import {ignoredUsers} from '~/utils/helpers';
   import {handleApiError} from '~/api/_utils';
@@ -99,7 +115,9 @@
   export default class AppHeader extends Vue {
     auxModeOn = true;
     liveUsers = [];
-    //isIos;
+    isIos;
+    isAndroid;
+    zIndex = 2000;
 
     @Getter('users', {namespace: FEED})
     users;
@@ -128,23 +146,31 @@
     @Watch('profile')
     async currentUserProfileSet(){
       if(this.profile){
-        const {data} = await auxApiClient().post('/user/initialize', {profile: this.profile});
+        const {data} = await auxApiClient.post('/user/initialize', {profile: this.profile});
         storageSet(AUTH.AUX_API_TOKEN, data.token);
         storageSet(AUX_MODE, data.auxModeOn);
         this.auxModeOn = data.auxModeOn;
       }
     }
     
-  /*   mounted(){
-      if(window.navigator){
+    mounted(){
+      if(navigator){
         const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
-        this.isIos = iosPlatforms.find(platform => window.navigator.userAgent.includes(platform));
+        this.isIos = iosPlatforms.find(platform => navigator.userAgent.includes(platform));
+
+        const ua = navigator.userAgent.toLowerCase();
+        this.isAndroid = ua.indexOf('android') > -1;
       }
-    } */
+    }
 
     auxModeToggled(){
       storageSet(AUX_MODE, this.auxModeOn);
-      auxApiClient().post('/user/updateAuxMode', {profile: this.profile, auxModeOn: this.auxModeOn});
+
+      auxApiClient.post('/user/updateAuxMode', {profile: this.profile, auxModeOn: this.auxModeOn}, {    
+        headers: {
+          Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+        }
+      });
     }
 
     logoutPressed(){
@@ -259,10 +285,10 @@
         display: flex;
         align-items: center;
         position: relative;
-        margin-right: 16px;
+        margin-right: 20px;
 
         @media(max-width: $max-inner-width){
-          margin-right: 10px;
+          margin-right: 14px;
         }
 
         .users-on-air {
@@ -346,8 +372,6 @@
     align-items: center;
     justify-content: flex-start;
     font-weight: bold;
-    margin-top: 24px;
-    border-top: 1px dashed #eee;
     
     .v-input--selection-controls {
       margin-top: 0px;
@@ -358,7 +382,6 @@
     .v-label {
       @extend .menu-label;
       padding-left: 4px;
-      color: #666666 !important;
     }
   }
 

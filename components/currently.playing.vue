@@ -474,7 +474,6 @@
 
   .currently-playing-container {
     .v-tooltip__content {
-      height: fit-content;
       top: auto !important;
       bottom: 30px;
     }

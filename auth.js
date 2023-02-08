@@ -3,15 +3,9 @@ import {AUTH} from '~/utils/constants';
 import axios from 'axios';
 import {initSpotifyPlayer} from '~/utils/helpers';
 
-//define at call-time so that render cycle on server doesn't error trying to access localStorage
-export function auxApiClient(){
-  return axios.create({
-    baseURL: process.env.BASE_URL,
-    headers: {
-      Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
-    }
-  })
-}
+export const auxApiClient = axios.create({
+  baseURL: process.env.BASE_URL
+});
 
 export const authorize = async () => {
   const state = Math.random().toString(36).substring(2, 15);
@@ -36,7 +30,7 @@ export const refreshToken = async () => {
       .then(response => setTokenData(response));
 
     //set new player with new token
-    initSpotifyPlayer();
+    await initSpotifyPlayer();
   }
 };
 
@@ -50,7 +44,8 @@ const setTokenData = (response) => {
 export const accessTokenExpired = () => {
   const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
   console.log(`token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
-  return tokenExpirationTime < Date.now();
+  console.log(`token is within 5 minutes of expiring or already expired: ${tokenExpirationTime < (Date.now() + 30000)}`);
+  return tokenExpirationTime < (Date.now() + 30000);//within 5 minutes of expiring or already expired
 };
 
 const pkceVerifier = () => {

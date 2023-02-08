@@ -20,7 +20,7 @@
         </span>
       </div>
 
-      <v-icon class="clickable" @click.stop="closeToast()" color="white" aria-label="close the toast message">mdi-close</v-icon>
+      <v-icon class="clickable" @click.stop="closeToast()" :color="toast.error ? 'white' : 'black'" aria-label="close the toast message">mdi-close</v-icon>
     </div>
   </v-snackbar>
 </template>
@@ -47,7 +47,7 @@
     async resetTimeout(){
       this.timeout = 0;
       await this.$nextTick();
-      this.timeout = this.currentToast.persistent ? -1 : 2200;
+      this.timeout = this.currentToast.error ? 5200 : 2200;
     }
 
     closeToast(){

@@ -61,10 +61,6 @@
       this.content[0].data = this.newAndRecommended.filter(item => item.isTrack || item.singleTrack);//tracks
       this.content[1].data = this.newAndRecommended.filter(item => item.isAlbum && !item.singleTrack);//albums
       this.content[2].data = this.newAndRecommended.filter(item => item.isArtist);//artists
-
-      this.$nuxt.$on('updateTracks', tracks => {
-        this.content[0].data = tracks;
-      });
     }
 
     mounted(){

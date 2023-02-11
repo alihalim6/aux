@@ -8,8 +8,8 @@
 
       <div class="d-flex align-center ml-2">
         <v-icon small class="by-x">mdi-close</v-icon>
-        <v-img class="spotify-icon d-inline d-sm-none" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
-        <v-img class="spotify-full d-none d-sm-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
+        <v-img class="spotify-icon d-inline d-md-none" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
+        <v-img class="spotify-full d-none d-md-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
       </div>
     </div>
 
@@ -183,14 +183,14 @@
 
       if(user.ignored){
         storageSet(IGNORED_USERS, [...ignoredUsers(), user.id]);
-        this.setToast({text: `Ignoring tracks played by ${user.name}`});
+        this.setToast({text: `Ignoring feed comments and tracks played by ${user.name}`});
       }
       else{
         const userIdIndex = ignoredUsers().findIndex(userId => userId == user.id);
         const ignoredUserIds = ignoredUsers();
         ignoredUserIds.splice(userIdIndex, 1);
         storageSet(IGNORED_USERS, ignoredUserIds);
-        this.setToast({text: `No longer ignoring tracks played by ${user.name}`});
+        this.setToast({text: `No longer ignoring feed comments and tracks played by ${user.name}`});
       }
     }
 

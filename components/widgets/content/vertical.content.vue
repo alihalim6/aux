@@ -36,7 +36,7 @@
 
             <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
               <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-              <timeago v-if="item.timeAgo" class="time-ago" :datetime="item.timeAgo"></timeago>
+              <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
 
               <div class="item-icon-container">
                 <PlaybackIcon v-if="!item.isCollection" :item="item" :itemSet="data"/>
@@ -52,10 +52,13 @@
 
 <script>
   import {Component, Prop, Vue, Action} from 'nuxt-property-decorator';
-  import {SPOTIFY} from '~/store/constants';
+  import {PLAYBACK_QUEUE} from '~/store/constants';
+  import {activityTimestamp} from '~/utils/helpers';
 
   @Component
   export default class VerticalContent extends Vue {
+    activityTimestamp = activityTimestamp;
+
     @Prop({required: true})
     data;
 
@@ -65,8 +68,8 @@
     @Prop()
     playlists;
 
-    @Action('togglePlayback', {namespace: SPOTIFY})
-    togglePlayback;
+    @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
+    playTrackNow;
 
     displayItemDetails(item){
       this.$nuxt.$root.$emit('displayDetailOverlay', item);
@@ -77,7 +80,7 @@
         this.displayItemDetails(item);
       }
       else{
-        await this.togglePlayback({item});
+        await this.playTrackNow(item);
       }
     }
   }

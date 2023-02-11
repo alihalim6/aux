@@ -173,9 +173,19 @@
       this.showSearchResults = true;
     }
 
-    searchIconPressed(){
+    async searchIconPressed(){
       this.closeFeed();
       this.showSearchResults = !this.showSearchResults;
+      await this.$nextTick();
+
+      if(this.showSearchResults){
+        const inputContainer = document.querySelector('.device-search-input');
+        const inputField = inputContainer.querySelector('input');
+
+        if(inputField){
+          inputField.focus();
+        }
+      }
     }
 
     filterPressed(filter){
@@ -183,11 +193,11 @@
     }
 
     primaryLabelPressed(item){
-      if(item.singleTrack){
-        this.playTrackNow(item);
+      if(item.isCollection){
+        this.$nuxt.$root.$emit('displayDetailOverlay', item);
       }
       else{
-        this.$nuxt.$root.$emit('displayDetailOverlay', item);
+        this.playTrackNow(item);
       }
     }
 

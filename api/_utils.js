@@ -2,7 +2,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import {refreshToken, accessTokenExpired, authorize} from '~/auth';
 import {storageGet} from '~/utils/storage';
-import {AUTH} from '~/utils/constants';
+import {AUTH, DEVICE_ID} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
 
 export const PLAYBACK_API_PATH = '/me/player/play';
@@ -11,12 +11,18 @@ export const httpClient = axios.create({
   baseURL: 'https://api.spotify.com/v1'
 });
 
+axiosRetry(httpClient, {retries: 2});
+
 httpClient.interceptors.request.use(async config => {
   if(accessTokenExpired()){
     await attemptTokenRefresh(); 
   }
 
   const playbackRetry = config._retry && (config.url.indexOf(PLAYBACK_API_PATH) > -1);
+
+  if(playbackRetry){
+    console.log(`retrying playback request with device id ${storageGet(DEVICE_ID)}`);
+  }
 
   return {
     ...config,
@@ -25,13 +31,13 @@ httpClient.interceptors.request.use(async config => {
       'Authorization': `Bearer ${storageGet(AUTH.ACCESS_TOKEN)}`
     },
     //ensure device id of newly authed player is used when retrying playback
-    url: playbackRetry ? `${PLAYBACK_API_PATH}?device_id=${$nuxt.$store.getters[`${SPOTIFY}/playerInitialized`].deviceId}` : config.url,
+    url: playbackRetry ? `${PLAYBACK_API_PATH}?device_id=${storageGet(DEVICE_ID)}` : config.url,
     timeout: 60000//1 min
   };
 });
 
 function shouldRetry(responseCode){
-  return responseCode == 401 || responseCode == 502;
+  return responseCode == 401 || responseCode.toString().indexOf('5') == 0;
 }
 
 httpClient.interceptors.response.use(async response => {
@@ -76,9 +82,6 @@ async function attemptTokenRefresh(){
     $nuxt.$store.commit(`${UI}/setToast`, {text: 'Something went wrong, please refresh the page lorem ipsum...', error: true});
   }
 }
-
-//TODO is this even doing anything?  502s seemed to only get attempted once until added to shouldRetry()...
-axiosRetry(httpClient, {retries: 2});
 
 export function handleApiError(message){
   $nuxt.$store.commit(`${UI}/setToast`, {text: message || 'Something went wrong lorem ipsum...', error: true});

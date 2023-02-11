@@ -1,11 +1,12 @@
-import {storageGet} from '~/utils/storage';
-import {AUTH, IGNORED_USERS} from '~/utils/constants';
+import {storageGet, storageSet} from '~/utils/storage';
+import {AUTH, IGNORED_USERS, DEVICE_ID} from '~/utils/constants';
 import {refreshToken} from '~/auth';
 import {handleAuthError} from '~/utils/auth';
 import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
-import {UI, SPOTIFY} from '~/store/constants';
+import {SPOTIFY, UI} from '~/store/constants';
 import {handleApiError} from '~/api/_utils';
+import {differenceInMinutes, differenceInHours, differenceInDays, parseISO} from 'date-fns';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
@@ -141,7 +142,6 @@ export const getItemDuration = async (item) => {
 const retryPlayerInit = async () => {
   try{
     await refreshToken();
-    await initSpotifyPlayer();
   }
   catch(error){
     handleAuthError('Couldn\'t init player.');
@@ -154,25 +154,25 @@ const retryPlayerInit = async () => {
 //EDIT: doesn't seem doable as we'd need a hook to know/display something has been played from elsewhere etc. 
 //EDIT: --> maybe sptofiy tracking object has this info
 export const initSpotifyPlayer = async () => {
-  let accessToken = storageGet(AUTH.ACCESS_TOKEN);
-
-  function newPlayer(){
-    return new Spotify.Player({
-      name: 'PASS THE AUX',
-      getOAuthToken: callback => {callback(accessToken)},
-      volume: 1
-    });
-  }
-
   if(window.spotifyPlayer){
     window.spotifyPlayer.removeListener('ready');
+    window.spotifyPlayer.removeListener('not_ready');
     window.spotifyPlayer.removeListener('authentication_error');
     window.spotifyPlayer.disconnect();
   }
 
-  window.spotifyPlayer = newPlayer();
+  window.spotifyPlayer = new Spotify.Player({
+    name: 'PASS THE AUX',
+    getOAuthToken: callback => {
+      //https://github.com/spotify/web-playback-sdk/issues/23
+      //apperently this function is called when sdk needs new token;
+      //can't be async so we'll have to hope our logic has a refresh one stored
+      callback(storageGet(AUTH.ACCESS_TOKEN));
+    },
+    volume: 1
+  });
 
-  const connected =  await window.spotifyPlayer.connect();
+  const connected = await window.spotifyPlayer.connect();
 
   console.log(`Connected to Spotify player: ${connected}`);
 
@@ -183,14 +183,32 @@ export const initSpotifyPlayer = async () => {
 
   return new Promise(function(resolve){
     window.spotifyPlayer.addListener('ready', async ({device_id}) => {
+      storageSet(DEVICE_ID, device_id);
+      resolve();
       console.log(`Spotify player ready with device id ${device_id}`);
-      $nuxt.$store.commit(`${SPOTIFY}/setPlayerInitialized`, {deviceId: device_id});
-      resolve(device_id);
     });
 
     window.spotifyPlayer.addListener('authentication_error', async ({message}) => {
       console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
       retryPlayerInit();
+    });
+
+    window.spotifyPlayer.addListener('not_ready', async () => {
+      console.error('Spotify player is offline...');
+    });
+    
+    window.spotifyPlayer.addListener('player_state_changed', async ({track_window: {current_track, next_tracks}, paused}) => {
+      //TODO: compare tracks and if different grab the new one and play track now
+
+      console.log(`player state change: paused -> ${paused}`);
+      console.log(`current track -> ${JSON.stringify(current_track ? current_track.name : 'nada')}`);
+      console.log(`number of next tracks -> ${next_tracks.length}`);
+
+      //keep playing if spotify paused due to there being no next tracks in its own queue
+      const spotifyPausedForNoNextTracks = paused && !next_tracks.length;
+      console.log(`spotifyPausedForNoNextTracks -> ${spotifyPausedForNoNextTracks}`);
+
+      $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !paused);
     });
   });
 };
@@ -226,4 +244,20 @@ export async function setDuration(item){
   if(!item.duration){
     item.duration = msToDuration(item.duration_ms);
   }        
+}
+
+export function activityTimestamp(date, showDays){
+  const now = new Date();
+  const hourOrMoreAgo = differenceInHours(now, parseISO(date));
+
+  if(hourOrMoreAgo){
+    if(hourOrMoreAgo >= 24 && showDays){
+      return `${differenceInDays(now, parseISO(date))}d ago`;
+    }
+
+    return `${hourOrMoreAgo}h ago`;
+  }
+
+  const minutesAgo = differenceInMinutes(now, parseISO(date));
+  return `${minutesAgo < 1 ? 'just now' : `${minutesAgo}m ago`}`;
 }

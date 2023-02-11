@@ -1,14 +1,13 @@
 <template>
-  <section class="pt-1 pb-6">
+  <section class="pt-1 pb-12">
     <div class="title-container mt-4">
       <div class="home-content-title">My Vibe</div>
     </div>
 
     <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
-      <v-tab v-for="(tab, index) in getContent()" :key="tab.key" @change="tabChanged">
+      <v-tab v-for="(tab, index) in getContent()" :key="tab.key" :disabled="getContent()[selectedTab].fetchPending" @change="tabChanged">
         <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
-          <span v-if="!tab.fetchPending" :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
-          <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" indeterminate color="white"></v-progress-circular>
+          <span :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
         </div>
         <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
       </v-tab>
@@ -18,7 +17,9 @@
       <v-tab-item v-for="(tab, index) in getContent()" :key="tab.key">
         <div class="home-content" :id="`myAux${index}`" v-if="tab.data.length">
           <div v-if="tab.trackList">
-            <PlayAllAndShuffle v-if="!tab.fetchPending" :tracks="tab.data" :collectionKey="tab.key"/>
+            <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
+            <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key"/>
+
             <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
             <div class="my-aux-footnote">{{tab.footnote}}</div>
           </div>
@@ -159,8 +160,8 @@
       }
     }
 
-    async fetchRemainingData(key){
-      const contentToFetchFor = key ? this.content.find(content => content.key = key) : this.content[this.selectedTab];
+    async fetchRemainingData(){
+      const contentToFetchFor = this.content[this.selectedTab];
 
       while(contentToFetchFor.api && contentToFetchFor.offset < contentToFetchFor.total){
         if(!contentToFetchFor.fetchPending){
@@ -185,7 +186,7 @@
 
     async tabChanged(){
       await this.$nextTick();
-      await this.fetchRemainingData();
+      this.fetchRemainingData();
     }
 
     getContent(){
@@ -205,18 +206,17 @@
       padding: 0px;
     }
 
-    .fetch-in-progress {
-      $icon-size: 16px !important;
-      width: $icon-size;
-      height: $icon-size;
-    }
-
     .selected-tab {
       background-color: $spotify-green;
       color: $secondary-theme-color;
       border: none;
       padding: 10px;
     }
+  }
+
+  .fetch-in-progress {
+    width: 100% !important;
+    margin: 16px auto;
   }
 
   .v-tab {

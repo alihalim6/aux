@@ -1,7 +1,6 @@
 import {storageGet, storageSet, storageGetAndRemove} from '~/utils/storage';
 import {AUTH} from '~/utils/constants';
 import axios from 'axios';
-import {initSpotifyPlayer} from '~/utils/helpers';
 
 export const auxApiClient = axios.create({
   baseURL: process.env.BASE_URL
@@ -28,10 +27,13 @@ export const refreshToken = async () => {
     await axios.post(AUTH.URL.TOKEN, 
       `grant_type=refresh_token&refresh_token=${storageGetAndRemove(AUTH.REFRESH_TOKEN)}&client_id=${AUTH.CLIENT_ID}`, {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
       .then(response => setTokenData(response));
-
-    //set new player with new token
-    await initSpotifyPlayer();
   }
+};
+
+export const accessTokenExpired = () => {
+  const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
+  console.log(`token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
+  return tokenExpirationTime < (Date.now() + 30000);//within 5 minutes of expiring or already expired
 };
 
 const setTokenData = (response) => {
@@ -39,13 +41,6 @@ const setTokenData = (response) => {
   storageSet(AUTH.REFRESH_TOKEN, response.data.refresh_token);
   storageSet(AUTH.TOKEN_EXPIRES_IN, (response.data.expires_in * 1000));//convert seconds to ms
   storageSet(AUTH.TOKEN_SET_AT, Date.now());
-};
-
-export const accessTokenExpired = () => {
-  const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
-  console.log(`token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
-  console.log(`token is within 5 minutes of expiring or already expired: ${tokenExpirationTime < (Date.now() + 30000)}`);
-  return tokenExpirationTime < (Date.now() + 30000);//within 5 minutes of expiring or already expired
 };
 
 const pkceVerifier = () => {

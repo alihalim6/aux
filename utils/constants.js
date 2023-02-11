@@ -7,6 +7,8 @@ export const APP = 'app';
 
 export const PLAYED_NOT_SKIPPED_THRESHOLD = 20;
 
+export const DEVICE_ID = 'deviceId';
+
 export const AUTH = {
   ACCESS_TOKEN: 'accessToken',
   REFRESH_TOKEN: 'refreshToken',

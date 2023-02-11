@@ -1,6 +1,6 @@
 <template>    
   <section class="feed-item-container">
-    <v-img class="clickable track-img" :src="activity.track.imgUrl.small" :class="{'skipped': activity.skipped && !activity.played}" @click.stop="$nuxt.$root.$emit('displayDetailOverlay', activity.track)"></v-img>
+    <v-img class="clickable track-img" v-if="activity.track.imgUrl" :src="activity.track.imgUrl.small || activity.track.imgUrl.large" :class="{'skipped': activity.skipped && !activity.played}" @click.stop="$nuxt.$root.$emit('displayDetailOverlay', activity.track)"></v-img>
 
     <div class="feed-item fill-available">
       <div class="item-info-container">
@@ -50,8 +50,7 @@
 <script>
   import {Component, Prop, Vue, Action, Getter, Mutation, Watch} from 'nuxt-property-decorator';
   import {UI, FEED, PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
-  import {differenceInMinutes, differenceInHours, parseISO} from 'date-fns';
-  import {isSameTrack} from '~/utils/helpers';
+  import {isSameTrack, activityTimestamp} from '~/utils/helpers';
 
   @Component
   export default class FeedItem extends Vue {
@@ -60,6 +59,7 @@
     showReactions = !!(this.activity.reactions && this.activity.reactions.length);
 
     trackIsPlaying = false;
+    activityTimestamp = activityTimestamp;
 
     @Prop()
     activity;
@@ -102,17 +102,6 @@
       this.$forceUpdate();
     }
 
-    activityTimestamp(date){
-      const hourOrMoreAgo = differenceInHours(new Date(), parseISO(date));
-
-      if(hourOrMoreAgo){
-        return `${hourOrMoreAgo}h ago`;
-      }
-
-      const minutesAgo = differenceInMinutes(new Date(), parseISO(date));
-      return `${minutesAgo < 1 ? 'just now' : `${minutesAgo}m ago`}`;
-    }
-
     async itemInfoPressed(track){
       if(this.isTrackPlaying(track)){
         await this.togglePlayback({item: track});
@@ -136,7 +125,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-around;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
 
     .track-img {
       $track-img-size: 32px;

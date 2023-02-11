@@ -3,6 +3,9 @@ import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
 import {shuffleArray, initSpotifyPlayer} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
+import {storageGet} from '~/utils/storage';
+import {DEVICE_ID} from '~/utils/constants';
+import spotify from '~/api/spotify';
 
 export const state = () => {
   return {
@@ -10,8 +13,7 @@ export const state = () => {
     currentlyPlayingItem: {},
     audioPlaying: false,
     newApiPlayback: '',
-    sdkReady: false,
-    playerInitialized: false
+    sdkReady: false
   };
 };
 
@@ -30,9 +32,6 @@ export const getters = {
   },
   sdkReady: (state) => {
     return state.sdkReady;
-  },
-  playerInitialized: (state) => {
-    return state.playerInitialized;
   }
 };
 
@@ -44,21 +43,19 @@ export const actions = {
     }
 
     try {
-      let {deviceId} = getters.playerInitialized;
-      
       if(getters.sdkReady){
-        if(!deviceId){
-          deviceId = await initSpotifyPlayer();
+        const {devices} = await spotify({url: '/me/player/devices'});
+
+        //must init player on first play due to browser audio context requirements
+        if(!storageGet(DEVICE_ID) || !devices.length || !devices.find(device => device.id == storageGet(DEVICE_ID))){
+          await initSpotifyPlayer();
         }
       }
       else{
         throw new Error('sdk not ready...');
       }
 
-      await startItemPlayback({
-        item, 
-        deviceId
-      });
+      await startItemPlayback(item);
     }
     catch(error){
       console.error(error);
@@ -219,9 +216,6 @@ export const mutations = {
   },
   setSdkReady(state){
     state.sdkReady = true;
-  },
-  setPlayerInitialized(state, deviceId){
-    state.playerInitialized = deviceId;
   }
 };
 //TODO try to handle external pausing (e.g. from headphone) - player_state_changed - compare if prev playing and now paused and vice versa

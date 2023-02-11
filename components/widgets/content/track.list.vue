@@ -137,6 +137,7 @@
 
         .track-name {
           font-weight: 600;
+          word-break: break-word;
         }
 
         .track-artists {

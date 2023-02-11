@@ -128,7 +128,7 @@
     .primary-container {
       display: flex;
       align-items: flex-start;
-      padding: 6px 6px 4px $label-left-padding;
+      padding: 12px 6px 4px $label-left-padding;
       justify-content: space-between;
 
       .primary-label {

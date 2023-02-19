@@ -94,8 +94,9 @@
   import {msToDuration, setDuration, isSameTrack, setItemMetaData} from '~/utils/helpers';
   import {handleApiError} from '~/api/_utils';
   import spotify from '~/api/spotify';
-  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
+  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT, DEVICE_ID} from '~/utils/constants';
   import cloneDeep from 'lodash.clonedeep';
+  import {storageGet} from '~/utils/storage';
 
   @Component
   export default class CurrentlyPlaying extends Vue {
@@ -133,8 +134,11 @@
     @Getter('feed', {namespace: UI})
     feed;
 
-    @Getter('newApiPlayback', {namespace: SPOTIFY})
-    newApiPlayback;
+    @Getter('newPlayback', {namespace: SPOTIFY})
+    newPlayback;
+
+    @Getter('player', {namespace: SPOTIFY})
+    player;
 
     @Action('stopPlayback', {namespace: SPOTIFY})
     stopPlayback;
@@ -163,32 +167,51 @@
     @Watch('audioPlaying')
     async updatePlaybackIcon(playing){
       this.playbackIcon = playing ? 'pause' : 'play';
+      this.$forceUpdate();
     }
 
     @Watch('currentlyPlayingItem')
     async itemPlayingChanged(item){
-      if(item.id){
+      this.stopInterval();
+
+      if(item.feedId){
         await setDuration(item);
         this.initializeTiming(item);
       }
+      //nothing playing
       else{
-        this.stopInterval();
         this.initializeTiming();
         this.playbackIcon = 'play';
       }
     }
     
-    @Watch('newApiPlayback')
+    @Watch('newPlayback')
     async startPlayback(){
       const item = this.currentlyPlayingItem;
 
-      if(item && item.id){
+      if(item && item.feedId){
         if(!this.playbackInterval){
           this.startInterval();
         }
 
         const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data[0];
+
+        if(this.hasNextTrack && this.nextTrack.type == 'track'){//queue api only takes track types
+          const currentState = await this.player.getCurrentState();
+
+          if(currentState){
+            const trackWindow = currentState.track_window;
+
+            if(!trackWindow.next_tracks.length){
+              console.log(`setting next track (${this.nextTrack.name}) on Spotify side...`);
+              spotify({url: `/me/player/queue?uri=${this.nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+            }
+            else if(trackWindow.next_tracks.length){
+              console.log(`Spotify has ${trackWindow.next_tracks[0].name} set to play next...`);
+            }
+          }
+        }
       }
     }
 
@@ -242,9 +265,9 @@
       this.stopInterval();
     }
 
-    async playbackToggled(){
+    playbackToggled(){
       if(this.currentlyPlayingItem.uri){
-        await this.togglePlayback({item: this.currentlyPlayingItem});
+        this.togglePlayback({item: this.currentlyPlayingItem});
       }
     }
 

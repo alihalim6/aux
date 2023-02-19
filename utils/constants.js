@@ -8,6 +8,7 @@ export const APP = 'app';
 export const PLAYED_NOT_SKIPPED_THRESHOLD = 20;
 
 export const DEVICE_ID = 'deviceId';
+export const AUX_DEVICE_NAME = 'PASS THE AUX';
 
 export const AUTH = {
   ACCESS_TOKEN: 'accessToken',

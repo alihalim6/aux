@@ -24,56 +24,20 @@
 
 <script>
   import {Component, Vue, Prop} from 'nuxt-property-decorator';
-  import {msToDuration, setItemMetaData, handleItemCollection} from '~/utils/helpers';
-  import spotify from '~/api/spotify';
+  import {processAlbum} from '~/utils/helpers';
 
   @Component
   export default class AlbumDetails extends Vue {
     duration = 0;
     tracks = [];
-    allTracksRetrieved = false;
 
     @Prop({required: true})
     album;
 
     async beforeMount(){
-      const albumDetails = this.album.details;
-
-      if(this.album.singleTrack){
-        this.duration = msToDuration(albumDetails.albumTracks[0].duration_ms);
-
-        //set data for 'more from artist' content
-        setItemMetaData(albumDetails.artistAlbums);
-        setItemMetaData(albumDetails.artistTopTracks);
-        setItemMetaData(albumDetails.relatedArtists);
-      }
-      else{
-        this.duration = msToDuration(albumDetails.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
-        this.tracks = setItemMetaData(albumDetails.albumTracks);
-
-        //set image for all tracks on album
-        this.tracks.forEach(track => track.imgUrl = this.album.imgUrl);
-      }
-
-      while(!this.allTracksRetrieved){
-        if(this.tracks.length < albumDetails.totalAlbumTracks){
-          const {items} = await spotify({url: `/albums/${this.album.id}/tracks?limit=${albumDetails.collectionTrackLimit}&offset=${this.tracks.length}`});
-          this.tracks = [...this.tracks, ...setItemMetaData(items)];
-        }
-        else{
-          this.allTracksRetrieved = true;
-        }
-      }
-
-      //mark all album tracks as part of this album (collection)
-      for(const track of this.tracks){
-        handleItemCollection(track, this.album.uri);
-
-        //needed to display track detail when clicking album track on currently playing widget;
-        //can't set whole album as that causes circular JSON error
-        track.album = {...this.album};
-        delete track.album.details;
-      }
+      const {duration, tracks} = await processAlbum(this.album);
+      this.duration = duration;
+      this.tracks = tracks;
     }
   }
   </script>

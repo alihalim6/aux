@@ -24,7 +24,7 @@
                     <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
                   </div>
 
-                  <ThreeDotIcon v-if="!item.isCollection" :item="item"/>
+                  <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>
                 </div>
 
                 <div v-if="!moreFromArtist && !noSecondaryLabel" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>

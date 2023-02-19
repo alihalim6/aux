@@ -24,7 +24,10 @@
   import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
   import {UI, SPOTIFY} from '~/store/constants';
   import initSocketClient from '~/utils/init.socket.client';
- 
+  import {storageSet} from '~/utils/storage';
+  import spotify from '~/api/spotify';
+  import {DEVICE_ID, AUX_DEVICE_NAME} from '~/utils/constants';
+
   @Component
   export default class App extends Vue {
     //TODO all v-imgs use lazy-src prop to show loader until img shows?
@@ -46,8 +49,15 @@
       spotifyPlaybackSdk.setAttribute('src', 'https://sdk.scdn.co/spotify-player.js');
       document.head.appendChild(spotifyPlaybackSdk);
 
-      window.onSpotifyWebPlaybackSDKReady = () => {
+      window.onSpotifyWebPlaybackSDKReady = async () => {
         this.setSdkReady();
+        
+        const {devices} = await spotify({url: '/me/player/devices'});
+        const auxDevice = devices.find(device => device.name == AUX_DEVICE_NAME);
+
+        if(auxDevice){
+          storageSet(DEVICE_ID, auxDevice.id);
+        }
       };
     }
   }

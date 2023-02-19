@@ -61,7 +61,7 @@
             </div>
           </div>
 
-          <ThreeDotIcon v-if="!item.isCollection" :item="item" iconColor="white"/>
+          <ThreeDotIcon v-if="!item.isPlaylist" :item="item" iconColor="white"/>
         </div>
 
         <BackToTop v-if="searchResultsId" :elementId="searchResultsId" arrowColor="white"/>
@@ -160,10 +160,6 @@
       return item.isPlaylist ? item.numberOfTracks : item.secondaryLabel;
     }
 
-    collectionWithTracks(item){
-      return item.isCollection && item.numberOfTracks;
-    }
-
     blurred(){
       this.showSearchResults = false;
     }
@@ -179,21 +175,26 @@
       await this.$nextTick();
 
       if(this.showSearchResults){
-        const inputContainer = document.querySelector('.device-search-input');
-        const inputField = inputContainer.querySelector('input');
-
-        if(inputField){
-          inputField.focus();
-        }
+        this.focus();
       }
     }
 
     filterPressed(filter){
       this.filterType = filter.type;
+      this.focus();
+    }
+
+    focus(){
+      const inputContainer = document.querySelector('.device-search-input');
+      const inputField = inputContainer.querySelector('input');
+
+      if(inputField){
+        inputField.focus();
+      }
     }
 
     primaryLabelPressed(item){
-      if(item.isCollection){
+      if(item.isCollection || item.isArtist){
         this.$nuxt.$root.$emit('displayDetailOverlay', item);
       }
       else{

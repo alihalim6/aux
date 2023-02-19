@@ -18,6 +18,10 @@ export const storageSet = (item, value) => {
   localStorage.setItem((AUX_NAMESPACE + item), value);
 };
 
+export const storageRemove = (item) => {
+  localStorage.removeItem(AUX_NAMESPACE + item);
+}
+
 export const clearStorage = () => {
   Object.keys(localStorage).forEach(function(key){
     if(key.indexOf(AUX_NAMESPACE) == 0){

@@ -1,7 +1,6 @@
 import {storageGet, storageSet} from '~/utils/storage';
-import {AUTH, IGNORED_USERS, DEVICE_ID} from '~/utils/constants';
-import {refreshToken} from '~/auth';
-import {handleAuthError} from '~/utils/auth';
+import {AUTH, IGNORED_USERS, DEVICE_ID, AUX_DEVICE_NAME} from '~/utils/constants';
+import {refreshToken, handleAuthError} from '~/auth';
 import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
 import {SPOTIFY, UI} from '~/store/constants';
@@ -154,15 +153,8 @@ const retryPlayerInit = async () => {
 //EDIT: doesn't seem doable as we'd need a hook to know/display something has been played from elsewhere etc. 
 //EDIT: --> maybe sptofiy tracking object has this info
 export const initSpotifyPlayer = async () => {
-  if(window.spotifyPlayer){
-    window.spotifyPlayer.removeListener('ready');
-    window.spotifyPlayer.removeListener('not_ready');
-    window.spotifyPlayer.removeListener('authentication_error');
-    window.spotifyPlayer.disconnect();
-  }
-
-  window.spotifyPlayer = new Spotify.Player({
-    name: 'PASS THE AUX',
+  const spotifyPlayer = new Spotify.Player({
+    name: AUX_DEVICE_NAME,
     getOAuthToken: callback => {
       //https://github.com/spotify/web-playback-sdk/issues/23
       //apperently this function is called when sdk needs new token;
@@ -172,7 +164,7 @@ export const initSpotifyPlayer = async () => {
     volume: 1
   });
 
-  const connected = await window.spotifyPlayer.connect();
+  const connected = await spotifyPlayer.connect();
 
   console.log(`Connected to Spotify player: ${connected}`);
 
@@ -182,32 +174,27 @@ export const initSpotifyPlayer = async () => {
   }
 
   return new Promise(function(resolve){
-    window.spotifyPlayer.addListener('ready', async ({device_id}) => {
+    spotifyPlayer.addListener('ready', async ({device_id}) => {
+      $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
       storageSet(DEVICE_ID, device_id);
       resolve();
       console.log(`Spotify player ready with device id ${device_id}`);
     });
 
-    window.spotifyPlayer.addListener('authentication_error', async ({message}) => {
+    spotifyPlayer.addListener('authentication_error', async ({message}) => {
       console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
       retryPlayerInit();
     });
 
-    window.spotifyPlayer.addListener('not_ready', async () => {
+    spotifyPlayer.addListener('not_ready', async () => {
       console.error('Spotify player is offline...');
     });
     
-    window.spotifyPlayer.addListener('player_state_changed', async ({track_window: {current_track, next_tracks}, paused}) => {
-      //TODO: compare tracks and if different grab the new one and play track now
-
-      console.log(`player state change: paused -> ${paused}`);
-      console.log(`current track -> ${JSON.stringify(current_track ? current_track.name : 'nada')}`);
-      console.log(`number of next tracks -> ${next_tracks.length}`);
+    spotifyPlayer.addListener('player_state_changed', async ({track_window: {next_tracks}, position, paused}) => {
+      //TODO: compare tracks/see if we're playing one or not, and if different grab the new one and play track now
 
       //keep playing if spotify paused due to there being no next tracks in its own queue
-      const spotifyPausedForNoNextTracks = paused && !next_tracks.length;
-      console.log(`spotifyPausedForNoNextTracks -> ${spotifyPausedForNoNextTracks}`);
-
+      const spotifyPausedForNoNextTracks = paused && !next_tracks.length && position == 0;
       $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !paused);
     });
   });
@@ -260,4 +247,52 @@ export function activityTimestamp(date, showDays){
 
   const minutesAgo = differenceInMinutes(now, parseISO(date));
   return `${minutesAgo < 1 ? 'just now' : `${minutesAgo}m ago`}`;
+}
+
+export async function processAlbum(album){
+  const albumDetails = album.details;
+  let allTracksRetrieved = false;
+  let duration = 0;
+  let tracks = [];
+
+  if(album.singleTrack){
+    duration = msToDuration(albumDetails.albumTracks[0].duration_ms);
+
+    //set data for 'more from artist' content
+    setItemMetaData(albumDetails.artistAlbums);
+    setItemMetaData(albumDetails.artistTopTracks);
+    setItemMetaData(albumDetails.relatedArtists);
+  }
+  else{
+    duration = msToDuration(albumDetails.albumTracks.reduce((total, track) => total + track.duration_ms, 0));
+    tracks = setItemMetaData(albumDetails.albumTracks);
+
+    //set image for all tracks on album
+    tracks.forEach(track => track.imgUrl = album.imgUrl);
+  }
+
+  while(!allTracksRetrieved){
+    if(tracks.length < albumDetails.totalAlbumTracks){
+      const {items} = await spotify({url: `/albums/${album.id}/tracks?limit=${albumDetails.collectionTrackLimit}&offset=${tracks.length}`});
+      tracks = [...tracks, ...setItemMetaData(items)];
+    }
+    else{
+      allTracksRetrieved = true;
+    }
+  }
+
+  //mark all album tracks as part of this album (collection)
+  for(const track of tracks){
+    handleItemCollection(track, album.uri);
+
+    //needed to display track detail when clicking album track on currently playing widget;
+    //can't set whole album as that causes circular JSON error
+    track.album = {...album};
+    delete track.album.details;
+  }
+
+  return {
+    duration,
+    tracks
+  }
 }

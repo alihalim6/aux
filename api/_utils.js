@@ -4,6 +4,7 @@ import {refreshToken, accessTokenExpired, authorize} from '~/auth';
 import {storageGet} from '~/utils/storage';
 import {AUTH, DEVICE_ID} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
+import {initSpotifyPlayer} from '~/utils/helpers';
 
 export const PLAYBACK_API_PATH = '/me/player/play';
 
@@ -11,14 +12,19 @@ export const httpClient = axios.create({
   baseURL: 'https://api.spotify.com/v1'
 });
 
+//sometimes this retries, sometimes my retry logic gets called, so keep this
 axiosRetry(httpClient, {retries: 2});
+
+function isPlaybackCall(config){
+  return config.url.indexOf(PLAYBACK_API_PATH) > -1;
+}
 
 httpClient.interceptors.request.use(async config => {
   if(accessTokenExpired()){
     await attemptTokenRefresh(); 
   }
 
-  const playbackRetry = config._retry && (config.url.indexOf(PLAYBACK_API_PATH) > -1);
+  const playbackRetry = config._retry && isPlaybackCall(config);
 
   if(playbackRetry){
     console.log(`retrying playback request with device id ${storageGet(DEVICE_ID)}`);
@@ -52,7 +58,14 @@ httpClient.interceptors.response.use(async response => {
   }
 
   return response;
-}, error => {
+}, async error => {
+  if(error.response.status == 404 && isPlaybackCall(error.config)){
+    console.log('404 on playback...initializing new player');
+    await initSpotifyPlayer();
+    await retryRequest(error.config);
+    return;
+  }
+
   if(shouldRetry(error.response.status)){
     retryRequest(error.config);
   }
@@ -65,7 +78,7 @@ async function retryRequest(config){
   if(!config._retry){
     config._retry = true;
     await attemptTokenRefresh();
-    console.log('retrying request after 401 or 502...');
+    console.log('retrying request...');
     return httpClient.request(config);
   }
   else{

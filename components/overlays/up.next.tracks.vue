@@ -34,7 +34,7 @@
     </div>
 
     <div class="next-track-container">
-      <v-card elevation="6" class="clickable mt-3" @click.stop="nextTrackArtworkPressed()">
+      <v-card elevation="6" class="clickable mt-10" @click.stop="nextTrackArtworkPressed()">
         <v-img :src="nextTrack.imgUrl.medium" class="next-track-img"></v-img>
       </v-card>
 

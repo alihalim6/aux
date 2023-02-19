@@ -8,9 +8,8 @@
   import {Component, Vue, Getter} from 'nuxt-property-decorator';
   import {storageGet} from '~/utils/storage';
   import {AUTH, SPLASH, APP} from '~/utils/constants';
-  import {initToken, accessTokenExpired, refreshToken} from '~/auth';
+  import {initToken, accessTokenExpired, refreshToken, handleAuthError} from '~/auth';
   import {UI} from '~/store/constants';
-  import {handleAuthError} from '~/utils/auth';
 
   @Component
   export default class Root extends Vue {

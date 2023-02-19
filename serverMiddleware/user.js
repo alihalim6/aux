@@ -24,7 +24,8 @@ app.post('/initialize', async (req, res) => {
 
     res.json({
       token,
-      auxModeOn
+      auxModeOn,
+      ignoredUsers: loggedInUser.ignoredUsers
     });
   }
   catch(error){
@@ -39,6 +40,16 @@ app.use(auth);
 app.post('/updateAuxMode', async (req, res) => {
   try{
     await users.updateOne({id: req.body.profile.id}, [{$set: {auxModeOn: req.body.auxModeOn}}]); 
+    res.end();
+  }
+  catch(error){
+    res.sendStatus(500);
+  }
+});
+
+app.post('/updateIgnoredUsers', async (req, res) => {
+  try{
+    await users.updateOne({id: req.body.profile.id}, [{$set: {ignoredUsers: req.body.ignoredUsers}}]); 
     res.end();
   }
   catch(error){

@@ -1,6 +1,7 @@
-import {storageGet, storageSet, storageGetAndRemove} from '~/utils/storage';
-import {AUTH} from '~/utils/constants';
+import {storageGet, storageSet, storageGetAndRemove, clearStorage} from '~/utils/storage';
+import {AUTH, SPLASH} from '~/utils/constants';
 import axios from 'axios';
+import {UI} from '~/store/constants';
 
 export const auxApiClient = axios.create({
   baseURL: process.env.BASE_URL
@@ -33,7 +34,19 @@ export const refreshToken = async () => {
 export const accessTokenExpired = () => {
   const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
   console.log(`token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
-  return tokenExpirationTime < (Date.now() + 30000);//within 5 minutes of expiring or already expired
+  return tokenExpirationTime < (Date.now() + 300000);//within 5 minutes of expiring or already expired
+};
+
+export const handleAuthError = (error) => {
+  console.error(`${error} / Sending back to Splash page.`);
+  $nuxt.$store.commit(`${UI}/setToast`, {text: 'Spotify needs you to log in again lorem ipsum...', error: true});
+  $nuxt.$root.$emit('closeOverlay');
+  $nuxt.$store.dispatch('spotify/stopPlayback');
+
+  //clear auth from storage too so that if user goes back in browser, still land on splash
+  clearStorage();
+
+  $nuxt.$router.push(SPLASH);
 };
 
 const setTokenData = (response) => {

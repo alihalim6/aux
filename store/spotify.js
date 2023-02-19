@@ -3,17 +3,17 @@ import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
 import {shuffleArray, initSpotifyPlayer} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
-import {storageGet} from '~/utils/storage';
+import {storageGet, storageRemove} from '~/utils/storage';
 import {DEVICE_ID} from '~/utils/constants';
-import spotify from '~/api/spotify';
 
 export const state = () => {
   return {
     currentlyPlayingItemUri: '',//simple string so that watcher for this doesn't have to be deep on object (performance)
     currentlyPlayingItem: {},
     audioPlaying: false,
-    newApiPlayback: '',
-    sdkReady: false
+    newPlayback: '',
+    sdkReady: false,
+    player: null
   };
 };
 
@@ -27,132 +27,82 @@ export const getters = {
   audioPlaying: (state) => {
     return state.audioPlaying;
   },
-  newApiPlayback: (state) => {
-    return state.newApiPlayback;
+  newPlayback: (state) => {
+    return state.newPlayback;
   },
   sdkReady: (state) => {
     return state.sdkReady;
-  }
+  },
+  player: (state) => {
+    return state.player;
+  } 
 };
 
 export const actions = {
-  playItem: async ({getters, rootGetters, dispatch}, item) => {
-    if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
-      console.log('skipping Candace playback api call');
-      return;
-    }
-
-    try {
-      if(getters.sdkReady){
-        const {devices} = await spotify({url: '/me/player/devices'});
-
-        //must init player on first play due to browser audio context requirements
-        if(!storageGet(DEVICE_ID) || !devices.length || !devices.find(device => device.id == storageGet(DEVICE_ID))){
-          await initSpotifyPlayer();
-        }
-      }
-      else{
-        throw new Error('sdk not ready...');
-      }
-
-      await startItemPlayback(item);
-    }
-    catch(error){
-      console.error(error);
-      dispatch('stopPlayback');
-      handleApiError('There was an issue with playback lorem ipsum...');
-    }
-  },
   togglePlayback: async ({commit, getters, dispatch}, params) => {
     try{
       let item = params.item;
-      let itemSet = params.itemSet ? params.itemSet.filter(item => !item.isArtist && !item.isCollection) : [];
-
-      //if album or playlist toggled, intercept logic to begin play from its first track instead of whole item (so that we can manage queue via tracks);
-      //collections need their details opened in order to be played since tracks available by that time (too messy/duplicative to approach otherwise)
-      if(item.isCollection){
-        const collectionUri = item.uri;
-        console.log(`collection toggled: ${item.name} - ${collectionUri}`);
-
-        if(item.isPlaylist){
-          itemSet = item.details.playlistTracks;
-        }
-        else if(item.isAlbum){
-          itemSet = item.details.albumTracks;
-        }
-        else{
-          itemSet = params.itemSet;
-        }
-
-        item = itemSet[0];
-      }
-
-      if(params.shuffle){
-        console.log('item set shuffled');
-        shuffleArray(itemSet);
-        item = itemSet[0];
-      }
-
-      const player = window.spotifyPlayer;
+      const player = getters.player;
       const previouslyPlayingItem = getters.currentlyPlayingItem;
       let currentlyPlayingItemUri = getters.currentlyPlayingItemUri;
-
-      const currentItemToggled = (item ? currentlyPlayingItemUri === item.uri : false);
-      const startingNewTrack = (previouslyPlayingItem && previouslyPlayingItem.uri !== item.uri);
+      const currentItemToggled = (item ? currentlyPlayingItemUri === item.feedId : false);
 
       console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
-
+  
       //if there was nothing playing and now there is, or if item playing has been toggled, flip the boolean
       if(!currentlyPlayingItemUri || currentItemToggled){
         commit('setAudioPlaying', !getters.audioPlaying);
       }
 
-      commit('setCurrentlyPlayingItemUri', item.uri);
-      currentlyPlayingItemUri = item.uri;
-
-      const setPlaybackIcon = (item) => {
-        commit('setItemPlaybackIcon', {item, icon: ((item.uri === currentlyPlayingItemUri) && (getters.audioPlaying || startingNewTrack)) ? 'pause' : 'play'});
-      };
-
-      if(previouslyPlayingItem.uri){
-        setPlaybackIcon(previouslyPlayingItem);
-
-        if(startingNewTrack){
-          setPlaybackIcon(item);
-          commit('setAudioPlaying', true);
-        }
-      }
-      //if no prev item, we know the current item has just been toggled to start playing, so needs to show pause
-      else if(getters.audioPlaying){
-        commit('setItemPlaybackIcon', {item, icon: 'pause'});
-      }
-
-      //toggled same item
       if(currentItemToggled){
-        try{
-          await player.togglePlay();
-        }
-        catch(error){
-          console.log(error);
-          dispatch('stopPlayback');
-        }
+        await player.togglePlay();
+        return;
       }
-      //playing new item
-      else{ 
-        const feedId = params.doNotRestartQueue ? item.feedId : uuid();
+      else {
+        commit('setAudioPlaying', true);
 
-        //has to be at top of logic for icons to work right
-        commit('setCurrentlyPlayingItem', {item, feedId});
+        let itemSet = [];
+
+        //if album or playlist toggled, intercept logic to begin play from its first track instead of whole item (so that we can manage queue via tracks)
+        if(item.isCollection){
+          const collectionUri = item.uri;
+          console.log(`collection toggled: ${item.name} - ${collectionUri}`);
+
+          if(item.isPlaylist){
+            itemSet = item.details.playlistTracks;
+          }
+          else if(item.isAlbum){
+            itemSet = item.details.albumTracks;
+          }
+          else{
+            itemSet = params.itemSet;
+          }
+
+          item = itemSet[0];
+        }
+        else if(params.itemSet){
+          itemSet = params.itemSet.filter(item => !item.isArtist && !item.isCollection);
+        }
+
+        if(params.shuffle){
+          console.log('item set shuffled');
+          shuffleArray(itemSet);
+          item = itemSet[0];
+        }
+
+        const feedId = params.playingTrackWithinExistingQueue ? item.feedId : uuid();
+        commit('setCurrentlyPlayingItem', {...item, feedId});
+        commit('setCurrentlyPlayingItemUri', feedId);
+        
+        await dispatch('playItem', {item, playingNextTrack: params.playingNextTrack});
+        commit('setNewPlayback', feedId);
 
         dispatch(`${FEED}/addToFeed`, {track: item, feedId}, {root: true});
       
-        if(!params.doNotRestartQueue){
+        if(!params.playingTrackWithinExistingQueue){
           const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
           commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, itemSet: itemSet.length ? itemSet : [item], feedId}, {root: true});
         }
-
-        await dispatch('playItem', item);
-        commit('setNewApiPlayback', feedId);
       }
     }
     catch(error){
@@ -160,9 +110,46 @@ export const actions = {
       dispatch('stopPlayback');
     }
   },
+  playItem: async ({getters, rootGetters, dispatch}, {item, playingNextTrack}) => {
+    if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
+      console.log('skipping Candace playback logic');
+      return;
+    }
+
+    try {
+      if(getters.sdkReady){
+        //must init player on first play via user interaction (not app load) due to browser audio context requirements
+        if(!storageGet(DEVICE_ID)){
+          await initSpotifyPlayer();
+        }
+      }
+      else{
+        throw new Error('sdk not ready...');
+      }
+
+      let currentState;
+      
+      if(playingNextTrack && getters.player){
+        currentState = await getters.player.getCurrentState();
+      }
+
+      if(currentState && currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
+        console.log(`using sdk player to play next track ${currentState.track_window.next_tracks[0].name}`);
+        await getters.player.nextTrack();
+      }
+      else {
+        await startItemPlayback(item);
+      }
+    }
+    catch(error){
+      console.error(error);
+      dispatch('stopPlayback');
+      handleApiError('There was an issue with playback lorem ipsum...');
+    }
+  },
   stopPlayback({commit, getters}, noError){
     if(getters.currentlyPlayingItemUri){
-      const player = window.spotifyPlayer;
+      const player = getters.player;
       const currentlyPlayingItem = getters.currentlyPlayingItem;
 
       if(player && player.pause){
@@ -177,11 +164,12 @@ export const actions = {
 
       if(!noError){
         commit(`${UI}/setToast`, {text: 'There was an issue playing music lorem ipsum...', error: true}, {root: true});
+        storageRemove(DEVICE_ID);
       }
     }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){
-    const player = window.spotifyPlayer;
+    const player = getters.player;
 
     if(player && player.seek){
       try{
@@ -201,8 +189,8 @@ export const mutations = {
   setCurrentlyPlayingItemUri(state, itemUri){
     state.currentlyPlayingItemUri = itemUri;
   },
-  setCurrentlyPlayingItem(state, params){
-    state.currentlyPlayingItem = {...params.item, feedId: params.feedId};
+  setCurrentlyPlayingItem(state, item){
+    state.currentlyPlayingItem = item;
   },
   setItemPlaybackIcon(state, params){
     params.item.playbackIcon = params.icon;
@@ -211,11 +199,13 @@ export const mutations = {
     console.log(`setting audioPlaying to ${playing}`);
     state.audioPlaying = playing;
   },
-  setNewApiPlayback(state, feedId){
-    state.newApiPlayback = feedId;
+  setNewPlayback(state, feedId){
+    state.newPlayback = feedId;
   },
   setSdkReady(state){
     state.sdkReady = true;
+  },
+  setPlayer(state, player){
+    state.player = player;
   }
 };
-//TODO try to handle external pausing (e.g. from headphone) - player_state_changed - compare if prev playing and now paused and vice versa

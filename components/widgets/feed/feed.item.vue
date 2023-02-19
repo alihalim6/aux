@@ -84,9 +84,8 @@
 
     @Watch('trackIsPlaying')
     trackIsPlayingChanged(newValue, oldValue){
-      if(newValue && !oldValue){
-        this.showReactions = true;
-      }
+      //show reactions for track playing and close the rest
+      this.showReactions = newValue && !oldValue;
     }
     
     chatMessageSubmitted(){

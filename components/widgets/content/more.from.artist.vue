@@ -38,7 +38,7 @@
                     </template>
                   </v-img>
 
-                  <div class="artist-info">
+                  <div class="mr-2">
                     <div class="font-weight-bold" :class="{'lighter-black-color': hover}">{{artist.name}}</div>
                     <div class="artist-genres">{{artist.secondaryLabel}}</div>
                   </div>

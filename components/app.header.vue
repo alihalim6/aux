@@ -101,8 +101,8 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Watch, Mutation} from 'nuxt-property-decorator';
-  import {FEED, USER, UI} from '~/store/constants';
+  import {Component, Vue, Getter, Watch, Mutation, Action} from 'nuxt-property-decorator';
+  import {FEED, USER, UI, SPOTIFY} from '~/store/constants';
   import {storageSet, clearStorage, storageGet} from '~/utils/storage';
   import {AUX_MODE, SPLASH, IGNORED_USERS, AUTH} from '~/utils/constants';
   import {ignoredUsers} from '~/utils/helpers';
@@ -131,6 +131,9 @@
     @Mutation('setToast', {namespace: UI})
     setToast;
 
+    @Action('stopPlayback', {namespace: SPOTIFY})
+    stopPlayback;
+
     @Watch('users', {immediate: true})
     async usersChanged(liveUsers){
       this.liveUsers = liveUsers.map(user => {
@@ -149,6 +152,7 @@
         const {data} = await auxApiClient.post('/user/initialize', {profile: this.profile});
         storageSet(AUTH.AUX_API_TOKEN, data.token);
         storageSet(AUX_MODE, data.auxModeOn);
+        storageSet(IGNORED_USERS, data.ignoredUsers || []);
         this.auxModeOn = data.auxModeOn;
       }
     }
@@ -174,6 +178,7 @@
     }
 
     logoutPressed(){
+      this.stopPlayback();
       clearStorage();
       $nuxt.$router.push(SPLASH);
     }
@@ -183,15 +188,21 @@
 
       if(user.ignored){
         storageSet(IGNORED_USERS, [...ignoredUsers(), user.id]);
-        this.setToast({text: `Ignoring feed comments and tracks played by ${user.name}`});
+        this.setToast({text: `Ignoring tracks and comments from ${user.name}`});
       }
       else{
         const userIdIndex = ignoredUsers().findIndex(userId => userId == user.id);
         const ignoredUserIds = ignoredUsers();
         ignoredUserIds.splice(userIdIndex, 1);
         storageSet(IGNORED_USERS, ignoredUserIds);
-        this.setToast({text: `No longer ignoring feed comments and tracks played by ${user.name}`});
+        this.setToast({text: `No longer ignoring tracks and comments from ${user.name}`});
       }
+
+      auxApiClient.post('/user/updateIgnoredUsers', {profile: this.profile, ignoredUsers: ignoredUsers()}, {
+        headers: {
+          Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+        }
+      });
     }
 
     async followingUserToggled(user){
@@ -226,7 +237,7 @@
   @import '~/styles/main.scss';
 
   .app-bar {
-    $phrase-border-size: 1px;
+    $phrase-border-size: 2px;
     
     height: $app-header-height !important;
     max-height: $app-header-height;

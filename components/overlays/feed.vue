@@ -7,11 +7,12 @@
             <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
 
             <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
-              <div>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed. Otherwise it's a skip that's only visible in your feed.</div>
+              <div v-if="isSplashPage()" @click.stop="splashTooltipLoginPressed()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
+              <div>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip only visible in your feed.</div>
               <div class="footnote">Tracks stay in feed for 24h</div>
             </v-tooltip>
 
-            <v-icon class="clickable feed-header-icon" large @click="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
+            <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
           </div>
 
           <div class="activity-item" v-if="activityFeed.length">
@@ -42,9 +43,9 @@
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
   import {isSameTrack} from '~/utils/helpers';
-  import {PLAYED_NOT_SKIPPED_THRESHOLD, AUTH} from '~/utils/constants';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD, AUTH, SPLASH} from '~/utils/constants';
   import {auxApiClient} from '~/auth';
-  import {storageGet} from '~/utils/storage';
+  import {authorize} from '~/auth';
 
   @Component
   export default class Feed extends Vue {
@@ -136,13 +137,18 @@
       socket.emit('activityAdded', {...activity, played: true});
     }
 
-    async initializeFeed(){
-      const {data} = await auxApiClient.post('/feed/initialize', {profile: this.profile}, {    
-        headers: {
-          Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
-        }
-      });
+    async beforeMount(){
+      if(this.isSplashPage()){
+        await this.initializeFeed();
+      }
+    }
 
+    isSplashPage(){
+      return this.$route.path == `/${SPLASH}`;
+    }
+
+    async initializeFeed(){
+      const {data} = await auxApiClient.post('/feed/initialize', {profile: this.profile, splash: this.isSplashPage()});
       this.setInitialFeed(data.activities);
     }
 
@@ -179,6 +185,10 @@
           } 
         }
       }, 1000);
+    }
+
+    splashTooltipLoginPressed(){
+      authorize();
     }
     
     beforeDestroy(){
@@ -283,6 +293,6 @@
   .footnote {
     font-size: 12px;
     font-style: italic;
-    margin-top: 8px;
+    margin-top: 16px;
   }
 </style>

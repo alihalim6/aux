@@ -46,7 +46,7 @@ export const handleAuthError = (error) => {
   //clear auth from storage too so that if user goes back in browser, still land on splash
   clearStorage();
 
-  $nuxt.$router.push(SPLASH);
+  $nuxt.$router.push({name: SPLASH, params: {loggedIn: true}});
 };
 
 const setTokenData = (response) => {

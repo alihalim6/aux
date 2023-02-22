@@ -133,6 +133,11 @@ export const actions = {
         currentState = await getters.player.getCurrentState();
       }
 
+      if(currentState){
+        console.log(`currentState next tracks length: ${currentState.track_window.next_tracks.length}`);
+        console.log(currentState.track_window.next_tracks[0], item);
+      }
+
       if(currentState && currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
         console.log(`using sdk player to play next track ${currentState.track_window.next_tracks[0].name}`);
         await getters.player.nextTrack();

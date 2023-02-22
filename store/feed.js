@@ -140,25 +140,26 @@ export const actions = {
   addReactionToActivity: ({commit, getters, rootGetters}, reaction) => {
     const loggedInUser = rootGetters[`${USER}/profile`];
 
-    commit('addReactionToActivity', {activity: reaction.activity, author: {name: 'You'}, message: reaction.message});
-    socket.emit('activityReactionAdded', {...reaction, author: loggedInUser});
+    commit('addReactionToActivity', {activity: reaction.activity, author: {name: reaction.splash ? 'aux visitor' : 'You'}, message: reaction.message});
+    
+    if(!reaction.splash){
+      socket.emit('activityReactionAdded', {...reaction, author: loggedInUser});
 
-    const reactionActivity = findActivityInFeed(getters.feed, reaction.activity.track);
-    const timestamp = moment().toISOString();
+      const reactionActivity = findActivityInFeed(getters.feed, reaction.activity.track);
 
-    auxApiClient.post('/feed/persistReaction', {
-      reaction: {
-        feedId: reactionActivity.feedId,
-        message: reaction.message,
-        author: loggedInUser.name,
-        timestamp,
-        updateTimestamp: timestamp
-      }
-    }, {    
-      headers: {
-        Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
-      }
-    });
+      auxApiClient.post('/feed/persistReaction', {
+        reaction: {
+          feedId: reactionActivity.feedId,
+          message: reaction.message,
+          author: loggedInUser.name,
+          timestamp: moment().toISOString()
+        }
+      }, {    
+        headers: {
+          Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+        }
+      });
+    }
   },
 
   //reaction from another user
@@ -198,14 +199,32 @@ export const actions = {
     });
   },
   setInitialFeed: async ({commit}, activities) => {
-    const initialFeed = await Promise.all(activities.map(async activity => {
-      const track = await spotify({url: `/${activity.trackType}s/${activity.track}`});
+    let isSplashFeed;
 
-      return {
-        ...activity,
-        track: setItemMetaData([track])[0]
-      };
+    const initialFeed = await Promise.all(activities.map(async activity => {
+      let track;
+
+      if(activity.splash){
+        isSplashFeed = true;
+        const timestamp = moment(Date.now() - activity.timestampAgo).toISOString();
+        activity.user.img = activity.user.imgPath ? `${process.env.BASE_URL}/fakes/${activity.user.imgPath}.png` : '';
+        activity.timestamp = timestamp;
+        activity.updateTimestamp = timestamp;
+
+        return activity;
+      }
+      else {
+        track = await spotify({url: `/${activity.trackType}s/${activity.track}`});
+          return {
+          ...activity,
+          track: setItemMetaData([track])[0]
+        };
+      }      
     }));
+
+    if(isSplashFeed){
+      initialFeed.sort((a, b) => a.timestampAgo - b.timestampAgo);
+    }
 
     commit('setInitialFeed', initialFeed);
   }

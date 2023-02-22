@@ -1,11 +1,17 @@
 <template>    
   <section class="feed-item-container">
-    <v-img class="clickable track-img" v-if="activity.track.imgUrl" :src="activity.track.imgUrl.small || activity.track.imgUrl.large" :class="{'skipped': activity.skipped && !activity.played}" @click.stop="$nuxt.$root.$emit('displayDetailOverlay', activity.track)"></v-img>
+    <v-img 
+      class="clickable track-img" 
+      v-if="activity.track.imgUrl" 
+      :src="activity.track.imgUrl.small || activity.track.imgUrl.large" 
+      :class="{'skipped': activity.skipped && !activity.played}" 
+      @click.stop="trackImgPressed()">
+    </v-img>
 
     <div class="feed-item fill-available">
       <div class="item-info-container">
         <div class="track-info" :class="{'skipped': activity.skipped && !activity.played}">
-          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'track-playing': isTrackPlaying(activity.track)}">
+          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'track-playing': !activity.splash && isTrackPlaying(activity.track)}">
             <span class="clickable font-weight-bold">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
           </div>
           
@@ -37,7 +43,7 @@
     </div>
 
     <div class="d-flex flex-column align-end" :class="{'no-visibility': !activity.played}">
-      <ThreeDotIcon :item="activity.track" icon-class="activity-item-three-dot"/>
+      <ThreeDotIcon v-if="!activity.splash" :item="activity.track" icon-class="activity-item-three-dot"/>
 
       <div class="clickable reaction-toggle-container">
         <v-icon color="white" small @click.stop="() => showReactions = !showReactions">{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>
@@ -49,7 +55,7 @@
 
 <script>
   import {Component, Prop, Vue, Action, Getter, Mutation, Watch} from 'nuxt-property-decorator';
-  import {UI, FEED, PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
+  import {UI, PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
   import {isSameTrack, activityTimestamp} from '~/utils/helpers';
 
   @Component
@@ -70,9 +76,6 @@
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
-    @Action('addReactionToActivity', {namespace: FEED})
-    addReactionToActivity;
-
     @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
     playTrackNow;
     
@@ -82,26 +85,21 @@
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
 
+    @Mutation('setToast', {namespace: UI})
+    setToast;
+
     @Watch('trackIsPlaying')
     trackIsPlayingChanged(newValue, oldValue){
       //show reactions for track playing and close the rest
       this.showReactions = newValue && !oldValue;
     }
-    
-    chatMessageSubmitted(){
-      if(this.chatMessage.trim()){
-        this.addReactionToActivity({activity: this.activity, message: this.chatMessage});
-        this.chatMessage = '';
-      }
-    }
-
-    emojiReactionPressed(code){
-      this.addReactionToActivity({activity: this.activity, message: String.fromCodePoint(code)});
-      this.chatMessage = '';
-      this.$forceUpdate();
-    }
 
     async itemInfoPressed(track){
+      if(this.activity.splash){
+        this.setToast({text: 'Gotta be logged in to play music!'});
+        return;
+      }
+      
       if(this.isTrackPlaying(track)){
         await this.togglePlayback({item: track});
       }
@@ -114,6 +112,15 @@
       this.trackIsPlaying = isSameTrack(track, this.currentlyPlayingItem);
       return this.trackIsPlaying;
     }
+
+    trackImgPressed(){
+      if(this.activity.splash){
+        this.setToast({text: 'Gotta be logged in to see track info!'});
+      }
+      else{
+        this.$nuxt.$root.$emit('displayDetailOverlay', this.activity.track);
+      }
+    }
   }
 </script>
 
@@ -124,7 +131,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-around;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
 
     .track-img {
       $track-img-size: 32px;

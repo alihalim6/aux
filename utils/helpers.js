@@ -211,7 +211,10 @@ export const shuffleArray = (array) => {
 };
 
 export function isSameTrack(trackA, trackB){
-  return (trackA.name == trackB.name) && 
+  const trackAName = trackA.name || trackA.primaryLabel;
+  const trackBName = trackB.name || trackB.primaryLabel;
+
+  return (trackAName == trackBName) && 
         (trackA.duration_ms == trackB.duration_ms) && 
         (trackA.track_number == trackB.track_number);
 }

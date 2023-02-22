@@ -26,6 +26,7 @@
               v-model="playbackElapsed.ms"
               :max="playbackTotal.ms"
               class="clickable d-flex align-center"
+              :class="{'disabled-control': !currentlyPlayingItem.uri}"
               @change="updateElapsedDisplay"
               @end="seek"
               aria-label="seek track"
@@ -203,11 +204,11 @@
           if(currentState){
             const trackWindow = currentState.track_window;
 
-            if(!trackWindow.next_tracks.length){
+            if(!trackWindow.next_tracks.length || (trackWindow.next_tracks[0].name != this.nextTrack.name)){
               console.log(`setting next track (${this.nextTrack.name}) on Spotify side...`);
               spotify({url: `/me/player/queue?uri=${this.nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
             }
-            else if(trackWindow.next_tracks.length){
+            else {
               console.log(`Spotify has ${trackWindow.next_tracks[0].name} set to play next...`);
             }
           }
@@ -367,32 +368,6 @@
           transform: translateY(-3px);
         }
       }
-
-      .on-air {
-        font-size: 14px;
-        color: transparent;
-        padding-left: 4px;
-        font-weight: bold;
-        -webkit-background-clip: text;
-        background-clip: text;
-        background-size: cover;
-        background-image: url('~/assets/feed_background.png');
-        animation: move-background 5s infinite forwards;
-
-        @keyframes move-background {
-          0% {
-            background-position: left 0%;
-          }
-
-          50% {
-            background-position: right 100%;
-          }
-
-          100% {
-            background-position: left 0%;
-          }
-        }
-      }
     }
 
     .currently-playing {
@@ -439,6 +414,7 @@
 
         .disabled-control {
           color: $off-color;
+          cursor: auto;
         }
 
         .playback-toggle.disabled-control {

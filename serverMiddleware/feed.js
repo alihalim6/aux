@@ -10,16 +10,17 @@ app.use(bodyParser.json());
 
 app.post('/initialize', async (req, res) => {
   try{
-    const activities = await database.collection('activities').find({}).toArray();
-    const reactions = await database.collection('reactions').find({}).toArray();
+    const activities = await database.collection(`${req.body.splash ? 'splashActivities' : 'activities'}`).find({}).toArray();
+    const reactions = await database.collection(`${req.body.splash ? 'splashReactions' : 'reactions'}`).find({}).toArray();
     const sortedActivities = [];
+    const profile = req.body.profile || {};
     
     activities.forEach(activity => {
-      activity.addedByCurrentUser = req.body.profile.id == activity.user.id;
+      activity.addedByCurrentUser = req.body.splash ? false : profile.id == activity.user.id;
 
       for (const reaction of reactions){        
         if(reaction.feedId == activity.feedId){
-          if(reaction.author == req.body.profile.name){
+          if(reaction.author == profile.name){
             reaction.author = 'You';
           }
 

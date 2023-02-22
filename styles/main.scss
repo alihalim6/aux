@@ -116,7 +116,7 @@ $section-title-font-size: 36px;
 }
 
 .round-img-icon {
-  $icon-size: 18px;
+  $icon-size: 22px;
 
   border-radius: 100%;
   height: $icon-size;
@@ -216,7 +216,7 @@ $section-title-font-size: 36px;
   padding: 4px 4px 4px 0px;
 
   .track-list-container {
-    padding: 0px;
+    padding: 0px $base-padding 0px 0px;
   }
 }
 
@@ -334,5 +334,31 @@ $section-title-font-size: 36px;
   @keyframes spin {
     50% {transform: rotate(180deg);}
     100% {transform: rotate(360deg);}
+  }
+}
+
+.on-air {
+  font-size: 14px;
+  color: transparent;
+  padding-left: 4px;
+  font-weight: bold;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: cover;
+  background-image: url('~/assets/feed_background.png');
+  animation: move-background 4s infinite forwards;
+
+  @keyframes move-background {
+    0% {
+      background-position: left 0%;
+    }
+
+    50% {
+      background-position: right 100%;
+    }
+
+    100% {
+      background-position: left 0%;
+    }
   }
 }

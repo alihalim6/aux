@@ -180,7 +180,7 @@
     logoutPressed(){
       this.stopPlayback();
       clearStorage();
-      $nuxt.$router.push(SPLASH);
+      $nuxt.$router.push({name: SPLASH, params: {loggedIn: true}});
     }
 
     ignoreUserToggled(user){

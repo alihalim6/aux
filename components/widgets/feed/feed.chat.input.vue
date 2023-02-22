@@ -28,6 +28,7 @@
 <script>
   import {Component, Prop, Vue, Action} from 'nuxt-property-decorator';
   import {FEED} from '~/store/constants';
+  import {SPLASH} from '~/utils/constants';
 
   @Component
   export default class FeedChatInput extends Vue {
@@ -64,7 +65,7 @@
 
     chatMessageSubmitted(){
       if(this.chatMessage.trim()){
-        this.addReactionToActivity({activity: this.activity, message: this.chatMessage});
+        this.addReactionToActivity({activity: this.activity, message: this.chatMessage, splash: this.isSplashPage()});
         this.handleFeedAlert();
         this.chatMessage = '';
       }
@@ -72,10 +73,14 @@
 
     emojiReactionPressed(code){
       const message = String.fromCodePoint(code);
-      this.addReactionToActivity({activity: this.activity, message});
+      this.addReactionToActivity({activity: this.activity, message, splash: this.isSplashPage()});
       this.handleFeedAlert(message);
       this.chatMessage = '';
       this.$forceUpdate();
+    }
+
+    isSplashPage(){
+      return this.$route.path == `/${SPLASH}`;
     }
 
     handleFeedAlert(message){

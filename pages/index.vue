@@ -56,7 +56,7 @@
       }
       //else splash page
       else{
-        this.$router.push(SPLASH);
+        this.$router.push({name: SPLASH, params: {loggedIn: true}});
       }
     }
   }

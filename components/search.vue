@@ -213,6 +213,7 @@
   
   #searchContainer {
     margin-top: 5px;
+    max-width: 114px;
 
     @media(min-width: $device-size-threshold){
       margin-top: 8px;

@@ -3,9 +3,10 @@ import {AUTH, IGNORED_USERS, DEVICE_ID, AUX_DEVICE_NAME} from '~/utils/constants
 import {refreshToken, handleAuthError} from '~/auth';
 import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
-import {SPOTIFY, UI} from '~/store/constants';
+import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
 import {handleApiError} from '~/api/_utils';
 import {differenceInMinutes, differenceInHours, differenceInDays, parseISO} from 'date-fns';
+import details from '~/api/details';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
@@ -138,6 +139,15 @@ export const getItemDuration = async (item) => {
   return item.duration_ms;
 };
 
+//important for isSameTrack()
+export async function setDuration(item){
+  item.duration_ms = await getItemDuration(item);
+
+  if(!item.duration){
+    item.duration = msToDuration(item.duration_ms);
+  }        
+}
+
 const retryPlayerInit = async () => {
   try{
     await refreshToken();
@@ -190,12 +200,18 @@ export const initSpotifyPlayer = async () => {
       console.error('Spotify player is offline...');
     });
     
-    spotifyPlayer.addListener('player_state_changed', async ({track_window: {next_tracks}, position, paused}) => {
-      //TODO: compare tracks/see if we're playing one or not, and if different grab the new one and play track now
+    spotifyPlayer.addListener('player_state_changed', async (currentState) => {
+      //TODO: compare tracks/see if their current track is different than ours -> grab theirs, auxify it and play track now
+      //theory being that the only way this listener is triggered and the current tracks are different would be something playing from spotify;
+      //there's no other way we wouldn't have already toggled that track and known about it
+      
+      if(!currentState){
+        return;
+      }
 
       //keep playing if spotify paused due to there being no next tracks in its own queue
-      const spotifyPausedForNoNextTracks = paused && !next_tracks.length && position == 0;
-      $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !paused);
+      const spotifyPausedForNoNextTracks = currentState.paused && !currentState.track_window.next_tracks.length && currentState.position == 0;
+      $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);
     });
   });
 };
@@ -227,15 +243,6 @@ export function ignoredUsers(){
   return [];
 }
 
-//important for isSameTrack()
-export async function setDuration(item){
-  item.duration_ms = await getItemDuration(item);
-
-  if(!item.duration){
-    item.duration = msToDuration(item.duration_ms);
-  }        
-}
-
 export function activityTimestamp(date, showDays){
   const now = new Date();
   const hourOrMoreAgo = differenceInHours(now, parseISO(date));
@@ -253,6 +260,10 @@ export function activityTimestamp(date, showDays){
 }
 
 export async function processAlbum(album){
+  if(!album.details){
+    album.details = await details(album, album.id);
+  }
+
   const albumDetails = album.details;
   let allTracksRetrieved = false;
   let duration = 0;

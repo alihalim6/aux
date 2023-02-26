@@ -122,7 +122,7 @@ $phrase-border-color: #aaaaaa;
 }
 
 .track-playing {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .lighter-black-color {
@@ -164,4 +164,12 @@ $phrase-border-color: #aaaaaa;
 
 .hover-scale {
   transform: scale(1.1);
+}
+
+.cream {
+  background-color: $cream;
+}
+
+.no-padding {
+  padding: 0px !important;
 }

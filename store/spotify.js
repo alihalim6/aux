@@ -1,6 +1,6 @@
 import {handleApiError} from '~/api/_utils';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
-import {shuffleArray, initSpotifyPlayer} from '~/utils/helpers';
+import {shuffleArray, initSpotifyPlayer, processAlbum} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
@@ -39,7 +39,7 @@ export const getters = {
 };
 
 export const actions = {
-  togglePlayback: async ({commit, getters, dispatch}, params) => {
+  togglePlayback: async ({commit, getters, dispatch, rootGetters}, params) => {
     try{
       let item = params.item;
       const player = getters.player;
@@ -72,6 +72,10 @@ export const actions = {
             itemSet = item.details.playlistTracks;
           }
           else if(item.isAlbum){
+            if(!item.details){
+              await processAlbum(item);
+            }
+
             itemSet = item.details.albumTracks;
           }
           else{
@@ -94,15 +98,17 @@ export const actions = {
         commit('setCurrentlyPlayingItem', {...item, feedId});
         commit('setCurrentlyPlayingItemUri', feedId);
         
-        await dispatch('playItem', {item, playingNextTrack: params.playingNextTrack});
+        itemSet = itemSet.length ? itemSet : [item];
+      
+        if(!params.playingTrackWithinExistingQueue){
+          const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);
+          commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, itemSet, feedId}, {root: true});
+        }
+
+        await dispatch('playItem', {item, playingNextTrack: params.playingNextTrack, itemSet, nextTrackButtonPressed: params.nextTrackButtonPressed});
         commit('setNewPlayback', feedId);
 
         dispatch(`${FEED}/addToFeed`, {track: item, feedId}, {root: true});
-      
-        if(!params.playingTrackWithinExistingQueue){
-          const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);        
-          commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, itemSet: itemSet.length ? itemSet : [item], feedId}, {root: true});
-        }
       }
     }
     catch(error){
@@ -110,7 +116,7 @@ export const actions = {
       dispatch('stopPlayback');
     }
   },
-  playItem: async ({getters, rootGetters, dispatch}, {item, playingNextTrack}) => {
+  playItem: async ({getters, rootGetters, dispatch}, {item, playingNextTrack, nextTrackButtonPressed}) => {
     if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
       console.log('skipping Candace playback logic');
       return;
@@ -127,24 +133,36 @@ export const actions = {
         throw new Error('sdk not ready...');
       }
 
-      let currentState;
+      if(playingNextTrack){
+        let currentState;
       
-      if(playingNextTrack && getters.player){
-        currentState = await getters.player.getCurrentState();
+        if(getters.player){
+          currentState = await getters.player.getCurrentState();
+        }
+
+        if(currentState){
+          console.log(`current Spotify track: ${currentState.track_window.current_track.name}`);
+          console.log(`next Spotify track: ${currentState.track_window.next_tracks[0] ? currentState.track_window.next_tracks[0].name : 'nada'}`);
+
+          if(currentState.track_window.current_track && currentState.track_window.current_track.uri == item.uri){
+            console.log(`letting Spotify play the current track: ${item.name}`);
+            return;
+          }
+
+          if(currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
+            console.log(`letting Spotify play the play next track: ${item.name}`);
+  ///////?TODO: let them play prev too if same prev pressed and same as item
+            if(nextTrackButtonPressed){
+              console.log('next button pressed, chaning tracks using sdk player...');
+              await getters.player.nextTrack();
+            }
+
+            return;
+          }
+        }
       }
 
-      if(currentState){
-        console.log(`currentState next tracks length: ${currentState.track_window.next_tracks.length}`);
-        console.log(currentState.track_window.next_tracks[0], item);
-      }
-
-      if(currentState && currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
-        console.log(`using sdk player to play next track ${currentState.track_window.next_tracks[0].name}`);
-        await getters.player.nextTrack();
-      }
-      else {
-        await startItemPlayback(item);
-      }
+      await startItemPlayback(item, rootGetters[`${PLAYBACK_QUEUE}/nextTrack`]);
     }
     catch(error){
       console.error(error);

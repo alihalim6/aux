@@ -1,5 +1,5 @@
 <template>
-  <section class="pt-1 pb-6">
+  <section class="mt-6 pt-1 pb-6 cream">
     <div class="title-container mt-4">
       <div class="home-content-title">
         <div class="d-flex align-center">
@@ -11,8 +11,8 @@
         </div>
       </div>
       
-      <div class="home-content d-flex">
-        <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active vertical class="playlist-tabs">
+      <div class="home-content d-flex cream no-padding">
+        <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active vertical class="playlist-tabs cream">
           <v-tab v-for="(item, index) in content" :key="item.type" class="justify-start">
             <div class="playlist-tab" :class="{'selected-tab': selectedTab === index}">
               <span>{{item.label}}</span>
@@ -20,7 +20,7 @@
           </v-tab>
         </v-tabs>
 
-        <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs scroll-shadow" id="playlistTabContent">
+        <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs scroll-shadow-on-cream" id="playlistTabContent">
           <v-tab-item v-for="item in getTabContent()" :key="item.type">
             <div class="pa-2">
               <VerticalContent :data="item.data" :alternate-format="true" :playlists="true"/>
@@ -109,5 +109,9 @@
       padding: 4px;
       border-radius: 4px;
     }
+  }
+
+  #playlistTabContent {
+    background-color: $cream;
   }
 </style>

@@ -19,7 +19,8 @@ function playTrackWithinQueue(params){
     item: queue[params.index], 
     itemSet: queue, 
     playingTrackWithinExistingQueue: true,
-    playingNextTrack: params.playingNextTrack
+    playingNextTrack: params.playingNextTrack,
+    nextTrackButtonPressed: params.nextTrackButtonPressed
   }, {root: true});
 }
 
@@ -60,12 +61,13 @@ export const actions = {
       index: getters.currentlyPlayingIndex - 1
     });
   },
-  playNextTrack: ({dispatch, getters}) => {
+  playNextTrack: ({dispatch, getters}, nextTrackButtonPressed) => {
     playTrackWithinQueue({
       getters,
       dispatch,
       index: getters.currentlyPlayingIndex + 1,
-      playingNextTrack: true
+      playingNextTrack: true,
+      nextTrackButtonPressed
     });
   },
   clearUpNext: ({getters, commit}) => {

@@ -1,5 +1,5 @@
 <template>
-  <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums}">
+  <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums, 'disable-tracks': disableTracks}">
       <div v-for="(track, index) in tracks.filter(track => track.uuid)" :key="track.uuid">
         <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
@@ -36,7 +36,7 @@
 
 <script>
   import {Component, Vue, Prop, Action, Watch, Getter} from 'nuxt-property-decorator';
-  import {msToDuration, setItemMetaData, getItemDuration, isSameTrack} from '~/utils/helpers';
+  import {setDuration, setItemMetaData, isSameTrack} from '~/utils/helpers';
   import {SPOTIFY} from '~/store/constants';
 
   @Component
@@ -49,7 +49,7 @@
     @Prop({required: true})
     tracks;
 
-    @Prop({required: false})
+    @Prop()
     parentId;
 
     @Prop()
@@ -61,6 +61,9 @@
     @Prop()
     newAndRecommended;
 
+    @Prop()
+    disableTracks;
+
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
@@ -70,8 +73,7 @@
     })
     async tracksChanged(){
       for(const track of this.tracks){
-        track.duration_ms = await getItemDuration(track);
-        track.duration = msToDuration(track.duration_ms);
+        await setDuration(track);
       }
 
       //seems to be needed in order to show durations after adding the async call above
@@ -164,5 +166,10 @@
         font-size: 14px;
       }
     }
+  }
+
+  .disable-tracks {
+    pointer-events: none;
+    opacity: 0.5;
   }
 </style>

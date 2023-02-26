@@ -20,7 +20,7 @@
             <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
             <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key"/>
 
-            <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+            <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :disable-tracks="tab.fetchPending"/>
             <div class="my-aux-footnote">{{tab.footnote}}</div>
           </div>
           
@@ -111,7 +111,13 @@
       const topItems = setItemMetaData(data.topItems);
 
       this.content.forEach(item => {
-        item.data = this.mapData(data[item.key].items);
+        const items = data[item.key].items;
+
+        if(item.trackList){
+          items.filter(item => item.track);
+        }
+
+        item.data = this.mapData(items);
         item.total = data[item.key].total;
         //lazy loading/pagination
         item.limit = item.offset = data[item.key].limit;
@@ -171,6 +177,10 @@
             const data = await spotify({
               url: `/me/${contentToFetchFor.api}?limit=${contentToFetchFor.limit}&offset=${contentToFetchFor.offset}`
             });
+
+            if(contentToFetchFor.trackList){
+              data.items = data.items.filter(item => item.track);
+            }
 
             contentToFetchFor.data = [...contentToFetchFor.data, ...this.mapData(data.items)];
             contentToFetchFor.offset += data.items.length;

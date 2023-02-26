@@ -84,14 +84,14 @@
       </div>
     </div>
 
-    <BackToTop elementId="upNextListContainer" arrowColor="white"/>
+    <BackToTop elementId="upNextListContainer" arrowColor="#1DB954"/>
   </section>
 </template>
 
 <script>
   import {Component, Vue, Getter, Watch, Action} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
-  import {msToDuration, getItemDuration, setItemMetaData} from '~/utils/helpers';
+  import {setDuration, setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
   import cloneDeep from 'lodash.clonedeep';
 
@@ -121,8 +121,7 @@
     @Watch('nextTrack', {immediate: true})
     async nextTrackChanged(nextTrack){
       if(nextTrack){
-        this.nextTrack.duration_ms = await getItemDuration(this.nextTrack);
-        this.nextTrack.duration = msToDuration(this.nextTrack.duration_ms);
+        await setDuration(this.nextTrack);
         
         if(this.multiTrackAlbum()){
           this.nextTrack.album.releaseDate = moment(this.nextTrack.album.release_date).format('MMMM DD YYYY') || moment(this.nextTrack.album.release_date).format('YYYY') || '';
@@ -235,7 +234,7 @@
         }
      
         .info-value {
-          transform: scaleY(1.7);
+          transform: scaleY(2);
           padding: 2px 1px;
         }
       }

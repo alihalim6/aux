@@ -20,7 +20,7 @@ app.post('/initialize', async (req, res) => {
 
       for (const reaction of reactions){        
         if(reaction.feedId == activity.feedId){
-          if(reaction.author == profile.name){
+          if(!req.body.splash && reaction.author == profile.name){
             reaction.author = 'You';
           }
 

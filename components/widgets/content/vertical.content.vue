@@ -16,7 +16,7 @@
               </v-card>
 
               <div v-if="playlists" class="align-start fill-available mb-4">
-                <v-card :max-width="playlists ? '100%' : '90%'" elevation="7">
+                <v-card max-width="90%" elevation="7">
                   <v-img class="clickable" @click="displayItemDetails(item)" :src="item.imgUrl.large"></v-img>
                 </v-card>
 

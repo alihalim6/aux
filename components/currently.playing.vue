@@ -60,7 +60,7 @@
             <v-icon 
               class="clickable queue-control" 
               :class="{'no-visibility': !hasNextTrack}" 
-              @click.stop="playNextTrack()"
+              @click.stop="playNextTrack(true)"
               aria-label="skip to next track"
             >
               mdi-skip-next
@@ -95,9 +95,8 @@
   import {msToDuration, setDuration, isSameTrack, setItemMetaData} from '~/utils/helpers';
   import {handleApiError} from '~/api/_utils';
   import spotify from '~/api/spotify';
-  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT, DEVICE_ID} from '~/utils/constants';
+  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT} from '~/utils/constants';
   import cloneDeep from 'lodash.clonedeep';
-  import {storageGet} from '~/utils/storage';
 
   @Component
   export default class CurrentlyPlaying extends Vue {
@@ -197,22 +196,6 @@
 
         const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data[0];
-
-        if(this.hasNextTrack && this.nextTrack.type == 'track'){//queue api only takes track types
-          const currentState = await this.player.getCurrentState();
-
-          if(currentState){
-            const trackWindow = currentState.track_window;
-
-            if(!trackWindow.next_tracks.length || (trackWindow.next_tracks[0].name != this.nextTrack.name)){
-              console.log(`setting next track (${this.nextTrack.name}) on Spotify side...`);
-              spotify({url: `/me/player/queue?uri=${this.nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
-            }
-            else {
-              console.log(`Spotify has ${trackWindow.next_tracks[0].name} set to play next...`);
-            }
-          }
-        }
       }
     }
 

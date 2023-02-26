@@ -4,14 +4,14 @@
       class="clickable track-img" 
       v-if="activity.track.imgUrl" 
       :src="activity.track.imgUrl.small || activity.track.imgUrl.large" 
-      :class="{'skipped': activity.skipped && !activity.played}" 
+      :class="{'skipped':skippedNotPlayed()}" 
       @click.stop="trackImgPressed()">
     </v-img>
 
     <div class="feed-item fill-available">
-      <div class="item-info-container">
-        <div class="track-info" :class="{'skipped': activity.skipped && !activity.played}">
-          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'track-playing': !activity.splash && isTrackPlaying(activity.track)}">
+      <div class="item-info-container" :class="{'mb-6':skippedNotPlayed()}">
+        <div class="track-info" :class="{'skipped':skippedNotPlayed()}">
+          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'track-playing font-italic': !activity.splash && isTrackPlaying(activity.track)}">
             <span class="clickable font-weight-bold">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
           </div>
           
@@ -31,7 +31,7 @@
           <div class="d-flex flex-column">
             <div class="reaction-activity-container" :class="{'vertically-hidden': !showReactions, 'scroll-shadow-on-transparent': activity.reactions && activity.reactions.length >= 5}">
               <span v-for="reaction in activity.reactions" :key="reaction.timestamp.toString()">
-                <span class="font-weight-bold mr-1">{{reaction.author}}:</span>
+                <span class="reaction-author">{{reaction.author}}:</span>
                 <span class="mr-1">{{reaction.message}}</span>
               </span>
             </div>
@@ -121,6 +121,10 @@
         this.$nuxt.$root.$emit('displayDetailOverlay', this.activity.track);
       }
     }
+
+    skippedNotPlayed(){
+      return this.activity.skipped && !this.activity.played;
+    }
   }
 </script>
 
@@ -131,7 +135,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-around;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 
     .track-img {
       $track-img-size: 32px;
@@ -251,5 +255,11 @@
   .skipped {
     opacity: 0.65;
     font-style: italic;
+  }
+
+  .reaction-author {
+    color: #fffbcc;
+    font-weight: bold;
+    margin-right: 4px;
   }
 </style>

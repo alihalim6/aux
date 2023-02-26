@@ -106,18 +106,19 @@
         this.processing = true;
 
         let detailsResponse = {};
+        const itemDetails = item.data || item.details;
         await setDuration(item);
 
         this.items = [...this.items, {...item, overlayId: uuid()}];//needs to be 'overlayId' since child at least one child component (playlists) uses 'id' internally
         this.currentIndex++;
         this.display = true;
 
-        if(!item.data){
+        if(!itemDetails){
           const itemId = (item.isTrack ? item.album.id : item.id);
           detailsResponse = await details(item, itemId);
         }
 
-        this.items[this.items.length - 1].details = detailsResponse || item.data;
+        this.items[this.items.length - 1].details = itemDetails || detailsResponse;
         this.$forceUpdate();
         this.closeFeed();
         this.scrolledDown = false;

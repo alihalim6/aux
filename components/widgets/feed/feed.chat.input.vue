@@ -95,6 +95,7 @@
   .feed-chat-input {    
     font-size: $chat-font-size;
     align-items: center;
+    margin-bottom: 24px !important;
 
     fieldset {
       border-color: white;

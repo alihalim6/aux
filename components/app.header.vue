@@ -87,12 +87,12 @@
             </div>
           </v-list-item>
 
-          <v-list-item class="clickable menu-option-container">
-            <span class="menu-label" @click="() => {}">Feedback/Contact</span>
+          <v-list-item class="clickable menu-option-container" @click="() => {}">
+            <span class="menu-label">Feedback/Contact</span>
           </v-list-item>
 
-          <v-list-item class="clickable menu-option-container">
-            <span class="menu-label" @click="logoutPressed()">Logout</span>
+          <v-list-item class="clickable menu-option-container" @click="logoutPressed()">
+            <span class="menu-label">Logout</span>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -178,7 +178,7 @@
     }
 
     logoutPressed(){
-      this.stopPlayback();
+      this.stopPlayback(true);
       clearStorage();
       $nuxt.$router.push({name: SPLASH, params: {loggedIn: true}});
     }

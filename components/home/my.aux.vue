@@ -1,42 +1,43 @@
 <template>
   <section class="pt-1 pb-12">
-    <div class="title-container mt-4">
+    <div class="content-container mt-4">
       <div class="home-content-title">My Vibe</div>
-    </div>
 
-    <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
-      <v-tab v-for="(tab, index) in getContent()" :key="tab.key" :disabled="getContent()[selectedTab].fetchPending" @change="tabChanged">
-        <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
-          <span :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
-        </div>
-        <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
-      </v-tab>
-    </v-tabs>
+      <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
+        <v-tab v-for="(tab, index) in getContent()" :key="tab.key" :disabled="getContent()[selectedTab].fetchPending" @change="tabChanged">
+          <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
+            <span :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
+          </div>
 
-    <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
-      <v-tab-item v-for="(tab, index) in getContent()" :key="tab.key">
-        <div class="home-content" :id="`myAux${index}`" v-if="tab.data.length">
-          <div v-if="tab.trackList">
-            <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
-            <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key"/>
+          <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
+        </v-tab>
+      </v-tabs>
 
-            <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :disable-tracks="tab.fetchPending"/>
-            <div class="my-aux-footnote">{{tab.footnote}}</div>
+      <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
+        <v-tab-item v-for="(tab, index) in getContent()" :key="tab.key">
+          <div class="home-content" :id="`myAux${index}`" v-if="tab.data.length">
+            <div v-if="tab.trackList">
+              <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
+              <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key"/>
+
+              <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :disable-tracks="tab.fetchPending"/>
+              <div class="my-aux-footnote">{{tab.footnote}}</div>
+            </div>
+            
+            <ContentCarousel v-if="tab.likedAlbums" :data="tab.data" :vertical="true"/>
+
+            <div v-if="tab.topItems">
+              <PlayAllAndShuffle v-if="!tab.fetchPending" :tracks="tab.topItems.tracks" :collectionKey="tab.key"/>
+              <TrackList :tracks="tab.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+
+              <ContentCarousel :data="tab.topItems.artists" :vertical="true" class="mt-15" :no-secondary-label="true"/>
+            </div>
           </div>
           
-          <ContentCarousel v-if="tab.likedAlbums" :data="tab.data" :vertical="true"/>
-
-          <div v-if="tab.topItems">
-            <PlayAllAndShuffle v-if="!tab.fetchPending" :tracks="tab.topItems.tracks" :collectionKey="tab.key"/>
-            <TrackList :tracks="tab.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
-
-            <ContentCarousel :data="tab.topItems.artists" :vertical="true" class="mt-15" :no-secondary-label="true"/>
-          </div>
-        </div>
-        
-        <BackToTop :elementId="`myAux${index}`"/>
-      </v-tab-item>
-    </v-tabs-items>
+          <BackToTop :elementId="`myAux${index}`"/>
+        </v-tab-item>
+      </v-tabs-items>
+    </div>
   </section>
 </template>
 
@@ -62,15 +63,6 @@
     };
 
     content = [
-      //apparently API doesn't return total for this
-      {
-        data: [],
-        key: 'recentlyPlayed',
-        label: MY_AUX.RECENTLY_PLAYED,
-        trackList: true,
-        id: uuid(),
-        footnote: '*Recently played on Spotify'
-      },
       {
         ...this.defaultContent,
         key: 'likedTracks',
@@ -79,6 +71,15 @@
         api: 'tracks',
         type: 'track',
         id: uuid()
+      },
+      //apparently API doesn't return total for this TODO recheck
+      {
+        data: [],
+        key: 'recentlyPlayed',
+        label: MY_AUX.RECENTLY_PLAYED,
+        trackList: true,
+        id: uuid(),
+        footnote: '*Recently played on Spotify'
       },
       {
         ...this.defaultContent,
@@ -122,6 +123,8 @@
         //lazy loading/pagination
         item.limit = item.offset = data[item.key].limit;
       });
+
+      await this.fetchRemainingData();
 
       //data structure for top items response is different than the others, so no mapping needed
       this.content = [...this.content, {

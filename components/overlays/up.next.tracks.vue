@@ -129,6 +129,9 @@
 
         this.$forceUpdate();
       }
+      else {
+        this.$nuxt.$emit('hideUpNext');
+      }
     }
 
     multiTrackAlbum(){
@@ -234,7 +237,7 @@
         }
      
         .info-value {
-          transform: scaleY(2);
+          transform: scaleY(1.7);
           padding: 2px 1px;
         }
       }
@@ -259,7 +262,7 @@
         $track-item-padding: 4px;
 
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         justify-content: space-around;
         margin: 4px 0px;
 

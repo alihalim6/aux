@@ -60,7 +60,7 @@
             <v-icon 
               class="clickable queue-control" 
               :class="{'no-visibility': !hasNextTrack}" 
-              @click.stop="playNextTrack(true)"
+              @click.stop="playNextTrack()"
               aria-label="skip to next track"
             >
               mdi-skip-next

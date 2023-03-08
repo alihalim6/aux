@@ -10,37 +10,28 @@
       >        
         <v-hover v-slot="{hover}">
           <section>
-            <div class="item-container" :class="{'flex-column': playlists}">  
-              <v-card v-if="!playlists" max-width="40%" elevation="7">
+            <div class="item-container">  
+              <v-card max-width="40%" elevation="7">
                 <v-img :src="item.imgUrl.large" class="clickable" @click="displayItemDetails(item)"></v-img>
               </v-card>
 
-              <div v-if="playlists" class="align-start fill-available mb-4">
-                <v-card max-width="90%" elevation="7">
-                  <v-img class="clickable" @click="displayItemDetails(item)" :src="item.imgUrl.large"></v-img>
-                </v-card>
-
-                <v-icon v-if="alternateFormat && !playlists" class="clickable ml-auto" @click="displayItemDetails(item)" large color="black">mdi-arrow-right</v-icon>
-              </div>
-
-              <v-icon v-if="!playlists" class="divider" :class="{'smaller-divider': alternateFormat}">mdi-slash-forward</v-icon>
+              <v-icon class="divider">mdi-slash-forward</v-icon>
 
               <div class="d-flex flex-column">
-                <span class="clickable item-title" @click="itemTitlePressed(item)" :class="{'smaller-title': alternateFormat, 'lighter-black-color': hover}">{{item.primaryLabel}}</span>
-                <span v-if="!alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
-                <div class="item-detail" :class="{'smaller-detail': alternateFormat}"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
+                <span class="clickable item-title" @click="itemTitlePressed(item)" :class="{'lighter-black-color': hover}">{{item.primaryLabel}}</span>
+                <span class="item-detail">{{item.secondaryLabel}}</span>
+                <div class="item-detail"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
               </div>
 
-              <v-icon v-if="!alternateFormat" @click="displayItemDetails(item)" class="clickable ml-auto" color="black">mdi-arrow-right</v-icon>
+              <v-icon @click="displayItemDetails(item)" class="clickable ml-auto" color="black">mdi-arrow-right</v-icon>
             </div>
 
-            <div class="bottom-container" :class="{'alternate-bottom-container': alternateFormat}">
-              <span v-if="alternateFormat" class="item-detail" :class="{'smaller-detail': alternateFormat}">{{item.secondaryLabel}}</span>
+            <div class="bottom-container">
               <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
 
               <div class="item-icon-container">
-                <PlaybackIcon v-if="!item.isPlaylist" :item="item" :itemSet="data"/>
-                <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>
+                <PlaybackIcon :item="item" :itemSet="data"/>
+                <ThreeDotIcon :item="item"/>
               </div>
             </div>
           </section>
@@ -61,12 +52,6 @@
 
     @Prop({required: true})
     data;
-
-    @Prop()
-    alternateFormat;
-
-    @Prop()
-    playlists;
 
     @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
     playTrackNow;
@@ -103,20 +88,12 @@
         margin-left: 8px;
       }
 
-      .smaller-divider {
-        font-size: 20px;
-      }
-
       .item-title {
         font-size: 22px;
         line-height: 1.3;
         padding-bottom: 2px;
         font-weight: bold;
         word-break: break-word;
-      }
-
-      .smaller-title {
-        font-size: 16px;
       }
     }
 
@@ -135,11 +112,6 @@
       }
     }
 
-    .alternate-bottom-container {
-      max-width: unset;
-      padding: $base-padding;
-    }
-
     .item-detail {
       font-size: 14px;
       padding-bottom: 2px;
@@ -148,15 +120,6 @@
       font-weight: bold;
       color: #888888;
       word-break: break-word;
-    }
-
-    .smaller-detail {
-      align-items: flex-start;
-
-      .v-icon {
-        padding-top: 1px;
-        font-size: 20px;
-      }
     }
   }
 </style>

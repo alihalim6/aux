@@ -1,5 +1,5 @@
 <template>
-  <section class="track-list-container" :class="{'mt-0': tracksFromDifferentAlbums, 'disable-tracks': disableTracks}">
+  <section class="track-list-container" :class="{'mixed-track-list': tracksFromDifferentAlbums, 'disable-tracks': disableTracks}">
       <div v-for="(track, index) in tracks.filter(track => track.uuid)" :key="track.uuid">
         <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
           <div class="left-container">
@@ -15,7 +15,7 @@
               </v-hover>
 
               <div class="track-artists">
-                <ArtistList :artists="track.artists" :underline="false"/>
+                <ArtistList :artists="track.artists"/>
               </div>             
               
               <div class="track-duration">{{track.duration}}</div>
@@ -104,7 +104,7 @@
 <style lang="scss">
   .track-list-container {
     margin: 18px auto 0px;
-    padding: 0px $base-padding;
+    padding: 0px 8px;
 
     .left-container {
       $track-number-size: 25px;
@@ -114,7 +114,7 @@
       .track-number {
         min-width: $track-number-size;
         height: $track-number-size;
-        color: #888888;
+        color: #aaaaaa;
         font-size: 18px;
         font-weight: 600;
         text-align: center;
@@ -143,13 +143,15 @@
         }
 
         .track-artists {
-          font-weight: normal;
           font-size: 12px;
+          color: #666666;
+          font-weight: bold;
         }
 
         .track-duration {
-          color: #888888;
+          color: #999999;
           font-size: 12px;
+          margin-top: 4px;
         }
 
         .track-from-album-container {
@@ -171,5 +173,10 @@
   .disable-tracks {
     pointer-events: none;
     opacity: 0.5;
+  }
+
+  .mixed-track-list {
+    margin-top: 0px;
+    padding: 0px $base-padding;
   }
 </style>

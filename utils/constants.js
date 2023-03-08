@@ -52,9 +52,9 @@ export const MY_AUX = {
 };
 
 export const PLAYLISTS = {
-  FEATURED: 'Featured',
-  BY_ME: 'By Me',
-  LIKED: 'Liked'
+  FEATURED: 'FEATURED',
+  BY_ME: 'BY ME',
+  LIKED: 'LIKED'
 };
 
 export const REMOVED_FROM_LIKES = 'Removed from Likes';

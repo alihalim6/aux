@@ -12,15 +12,12 @@ export const state = () => {
 //playingTrackWithinExistingQueue: track ends or 'next' pressed, so just move within queue without restarting it;
 //otherwise if user clicks play on an item ('jumps'), queue set clean (started) from that item on forward
 
-function playTrackWithinQueue(params){
-  const queue = params.getters.queue;
-
-  params.dispatch(`${SPOTIFY}/togglePlayback`, {
-    item: queue[params.index], 
-    itemSet: queue, 
+function playTrackWithinQueue({dispatch, getters, index, ...rest}){
+  dispatch(`${SPOTIFY}/togglePlayback`, {
+    item: getters.queue[index], 
+    itemSet: getters.queue, 
     playingTrackWithinExistingQueue: true,
-    playingNextTrack: params.playingNextTrack,
-    nextTrackButtonPressed: params.nextTrackButtonPressed
+    ...rest
   }, {root: true});
 }
 
@@ -61,13 +58,11 @@ export const actions = {
       index: getters.currentlyPlayingIndex - 1
     });
   },
-  playNextTrack: ({dispatch, getters}, nextTrackButtonPressed) => {
+  playNextTrack: ({dispatch, getters}) => {
     playTrackWithinQueue({
       getters,
       dispatch,
-      index: getters.currentlyPlayingIndex + 1,
-      playingNextTrack: true,
-      nextTrackButtonPressed
+      index: getters.currentlyPlayingIndex + 1
     });
   },
   clearUpNext: ({getters, commit}) => {

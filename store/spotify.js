@@ -8,7 +8,7 @@ import {DEVICE_ID} from '~/utils/constants';
 
 export const state = () => {
   return {
-    currentlyPlayingItemUri: '',//simple string so that watcher for this doesn't have to be deep on object (performance)
+    currentlyPlayingItemUri: '',//simple string (changed to be feedId down the road) so that watcher for this doesn't have to be deep on object (performance)
     currentlyPlayingItem: {},
     audioPlaying: false,
     newPlayback: '',
@@ -39,7 +39,7 @@ export const getters = {
 };
 
 export const actions = {
-  togglePlayback: async ({commit, getters, dispatch, rootGetters}, params) => {
+  togglePlayback: async ({commit, getters, dispatch}, params) => {
     try{
       let item = params.item;
       const player = getters.player;
@@ -99,13 +99,14 @@ export const actions = {
         commit('setCurrentlyPlayingItemUri', feedId);
         
         itemSet = itemSet.length ? itemSet : [item];
-      
+        const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);
+
         if(!params.playingTrackWithinExistingQueue){
-          const currentlyPlayingItemIndex = itemSet.findIndex(setItem => setItem.id === item.id);
           commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, itemSet, feedId}, {root: true});
         }
 
-        await dispatch('playItem', {item, playingNextTrack: params.playingNextTrack, itemSet, nextTrackButtonPressed: params.nextTrackButtonPressed});
+        await dispatch('playItem', {item, itemSet, currentlyPlayingItemIndex, itemSet});
+
         commit('setNewPlayback', feedId);
 
         dispatch(`${FEED}/addToFeed`, {track: item, feedId}, {root: true});
@@ -116,7 +117,7 @@ export const actions = {
       dispatch('stopPlayback');
     }
   },
-  playItem: async ({getters, rootGetters, dispatch}, {item, playingNextTrack, nextTrackButtonPressed}) => {
+  playItem: async ({getters, rootGetters, dispatch}, {item, currentlyPlayingItemIndex, itemSet}) => {
     if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
       console.log('skipping Candace playback logic');
       return;
@@ -133,36 +134,13 @@ export const actions = {
         throw new Error('sdk not ready...');
       }
 
-      if(playingNextTrack){
-        let currentState;
-      
-        if(getters.player){
-          currentState = await getters.player.getCurrentState();
-        }
+      const tracksOnly = !itemSet.find(item => item.type == 'album');
+      const nextTracks = tracksOnly ? itemSet.slice(currentlyPlayingItemIndex + 1, 21) : null;
 
-        if(currentState){
-          console.log(`current Spotify track: ${currentState.track_window.current_track.name}`);
-          console.log(`next Spotify track: ${currentState.track_window.next_tracks[0] ? currentState.track_window.next_tracks[0].name : 'nada'}`);
-
-          if(currentState.track_window.current_track && currentState.track_window.current_track.uri == item.uri){
-            console.log(`letting Spotify play the current track: ${item.name}`);
-            return;
-          }
-
-          if(currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
-            console.log(`letting Spotify play the play next track: ${item.name}`);
-  ///////?TODO: let them play prev too if same prev pressed and same as item
-            if(nextTrackButtonPressed){
-              console.log('next button pressed, chaning tracks using sdk player...');
-              await getters.player.nextTrack();
-            }
-
-            return;
-          }
-        }
-      }
-
-      await startItemPlayback(item, rootGetters[`${PLAYBACK_QUEUE}/nextTrack`]);
+      //send up to next 20 tracks in queue (good for avg album);
+      //prevents Spotify from having no next tracks as often because when we allow them to play 2nd of the two we were sending originally,
+      //they had no knowledge of what was after that in queue (as expected) --> thus sdk is used more (what we want) instead of api call due to them having next track more often
+      await startItemPlayback(item, nextTracks);
     }
     catch(error){
       console.error(error);
@@ -172,12 +150,7 @@ export const actions = {
   },
   stopPlayback({commit, getters}, noError){
     if(getters.currentlyPlayingItemUri){
-      const player = getters.player;
       const currentlyPlayingItem = getters.currentlyPlayingItem;
-
-      if(player && player.pause){
-        player.pause();
-      }
 
       commit('setItemPlaybackIcon', {item: currentlyPlayingItem, icon: 'play'});
       commit('setAudioPlaying', false);
@@ -189,6 +162,8 @@ export const actions = {
         commit(`${UI}/setToast`, {text: 'There was an issue playing music lorem ipsum...', error: true}, {root: true});
         storageRemove(DEVICE_ID);
       }
+
+      commit('disconnectPlayer');
     }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){
@@ -230,5 +205,9 @@ export const mutations = {
   },
   setPlayer(state, player){
     state.player = player;
+  },
+  disconnectPlayer(state){
+    state.player.removeListener('player_state_changed');
+    state.player.disconnect();
   }
 };

@@ -2,11 +2,6 @@
   <v-app class="justify-space-between">
     <div class="splash-content">
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
-        <span class="pass-the-aux">
-          <span class="first-slash">/</span><span class="second-slash">/</span><span class="third-slash">/</span>
-          <span class="pass-p">P</span>ASS THE AUX
-        </span>
-        
         <div class="clickable login" @click="loginClicked()">
           <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
           <span class="login-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
@@ -16,22 +11,32 @@
       <div class="big-p">P</div>
 
       <div class="info-container">
-        <div v-for="(point, index) in bulletPoints" :key="index" class="bullet-point">
+        <div class="bullet-point">
           <span class="slash">/</span> 
-          <span>{{point}}</span>
+          <span>Your Spotify library + new releases, featured playlists, and recommendations.</span>
         </div>
 
-        <span class="bullet-point align-self-center mt-4">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
+        <div class="bullet-point">
+          <span class="slash">/</span> 
+          <span>See and play what others are listening to.</span>
+        </div>
+
+        <div class="bullet-point">
+          <span class="slash">/</span> 
+          <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
+        </div>
+
+        <span class="bullet-point align-self-center mt-6">All with a shared <span class="on-air bullet-point-on-air">FEED</span>!</span>
 
         <div class="made-info">
-          <span>Made by </span>
-          <a class="made-by-link" href="https://www.instagram.com/alihalim2yl/" target="_blank">Ali Halim</a>
-          <span>using</span>
+          <span>Created by Ali Halim using</span>
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's official API.</a>
         </div>
 
         <span class="premium-only">Works for Spotify Premium users only.</span>
       </div>
+
+      <v-img class="animated-phrase splash-animation" :src="require('~/assets/pass_the_aux_green.png')"></v-img>
     </div>
 
     <div class="bottom-content">
@@ -50,13 +55,6 @@
 
   @Component
   export default class Splash extends Vue {
-    bulletPoints = [
-      'Your Spotify library + new releases, featured playlists, and recommendations.',
-      'See and play what others are listening to.',
-      'AUX Mode automatically adds tracks played by others to your queue (this can be toggled off).',
-      'Comment and react.'
-    ];
-
     @Mutation('setLoading', {namespace: UI})
     setLoading;
 
@@ -87,6 +85,7 @@
     align-items: center;
     font-weight: bold;
     color: $primary-theme-color;
+    position: relative;
   }
 
   $phrase-border-size: 8px;
@@ -120,17 +119,11 @@
     flex-direction: column;
     animation-delay: 830ms;
     margin-top: -134px;
-    max-width: 600px;
-  }
+    width: -webkit-fill-available;
 
-  .pass-the-aux {
-    font-size: 20px;
-    font-style: italic;
-    margin-left: $header-margin;
-
-     @media(min-width: $splash-device-size-threshold){
-       font-size: 26px;
-     }
+    @media(min-width: 700px){
+      max-width: 58%;
+    }
   }
 
   $bullet-point-font-size: 16px;
@@ -140,7 +133,7 @@
     align-items: center;
     font-size: $bullet-point-font-size;
     align-self: flex-start;
-    margin-top: 20px;
+    margin-top: 4px;
   }
 
   .slash {
@@ -159,7 +152,7 @@
 
   .made-info {
     font-size: 14px;
-    margin-top: 130px;
+    margin-top: 200px;
     align-self: center;
     color: #888888;
     white-space: nowrap;
@@ -177,12 +170,10 @@
 
   .splash-header {
     width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     padding: 16px 0px;
     position: fixed;
     z-index: 2;
+    display: flex;
   }
 
   .login {
@@ -192,8 +183,9 @@
     font-size: 12px;
     border-radius: 22px;
     align-self: flex-end;
+    margin-left: auto;
     margin-right: $header-margin;
-    padding: 6px 14px;
+    padding: 8px 14px;
 
     @media(min-width: $splash-device-size-threshold){
       font-size: 16px;
@@ -241,5 +233,20 @@
 
   .second-slash {
     color: $spotify-green;
+  }
+
+  .splash-animation {
+    bottom: calc(#{$max-footer-height-not-playing} + 100px);
+    width: 75%;
+    position: relative;
+    margin: 0 auto;
+    max-width: 515px;
+    animation: blink 0.75s infinite linear;
+  }
+
+  @keyframes blink {
+    0% {opacity: 1;}
+    12% {opacity: 0;}
+    33% {opacity: 1;}
   }
 </style>

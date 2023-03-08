@@ -7,9 +7,8 @@
             <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
 
             <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
-              <div v-if="isSplashPage()" @click.stop="splashTooltipLoginPressed()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
-              <div>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip only visible in your feed.</div>
-              <div class="footnote">Tracks stay in feed for 24h</div>
+              <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
+              <div>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</div>
             </v-tooltip>
 
             <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
@@ -22,7 +21,7 @@
           <div v-else class="d-flex flex-column">
             <div class="no-feed-prompt">
               <div>Tracks that you and others play will show here.</div>
-              <div class="sub-prompt">Kick things off by playing something!  Invite others lorem ipsum...</div>
+              <div class="sub-prompt">Nothing's been played in the last 24hrs. Kick things off by playing something!  Invite others lorem ipsum...</div>
             </div>
 
             <div class="no-prompt-graphic">
@@ -43,9 +42,8 @@
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
   import {isSameTrack} from '~/utils/helpers';
-  import {PLAYED_NOT_SKIPPED_THRESHOLD, AUTH, SPLASH} from '~/utils/constants';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD, SPLASH} from '~/utils/constants';
   import {auxApiClient} from '~/auth';
-  import {authorize} from '~/auth';
 
   @Component
   export default class Feed extends Vue {
@@ -56,6 +54,9 @@
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
+
+    @Mutation('clearOldActivity', {namespace: FEED})
+    clearOldActivity;
 
     @Getter('feed', {namespace: UI})
     uiFeed;
@@ -140,7 +141,12 @@
     async beforeMount(){
       if(this.isSplashPage()){
         await this.initializeFeed();
+        return;
       }
+
+      setInterval(() => {
+        this.clearOldActivity();
+      }, 3.6e+6);//1hr
     }
 
     isSplashPage(){
@@ -185,10 +191,6 @@
           } 
         }
       }, 1000);
-    }
-
-    splashTooltipLoginPressed(){
-      authorize();
     }
     
     beforeDestroy(){
@@ -258,27 +260,6 @@
           margin-top: 8px;
         }
       }
-
-      .no-prompt-graphic {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin-top: 30px;
-        position: relative;
-        overflow-x: hidden;
-
-        .animated-phrase {
-          position: absolute;
-          left: 100%;
-          animation: blimp-scroll 3.5s infinite forwards linear;
-
-          @keyframes blimp-scroll {
-            0% {transform: translateX(0);}
-            100% {transform: translateX(-205%);}
-          }
-        }
-      }
     }
   }
 
@@ -288,11 +269,5 @@
       left: 10px !important;
       max-width: 90%;
     }
-  }
-
-  .footnote {
-    font-size: 12px;
-    font-style: italic;
-    margin-top: 16px;
   }
 </style>

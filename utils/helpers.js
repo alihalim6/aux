@@ -200,11 +200,7 @@ export const initSpotifyPlayer = async () => {
       console.error('Spotify player is offline...');
     });
     
-    spotifyPlayer.addListener('player_state_changed', async (currentState) => {
-      //TODO: compare tracks/see if their current track is different than ours -> grab theirs, auxify it and play track now
-      //theory being that the only way this listener is triggered and the current tracks are different would be something playing from spotify;
-      //there's no other way we wouldn't have already toggled that track and known about it
-      
+    spotifyPlayer.addListener('player_state_changed', async (currentState) => {      
       if(!currentState){
         return;
       }

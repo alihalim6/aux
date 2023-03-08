@@ -1,6 +1,6 @@
 <template>
-  <section class="mt-6 pt-1 pb-6 cream">
-    <div class="title-container mt-4">
+  <section class="mt-6 pt-1 pb-6">
+    <div class="content-container mt-4">
       <div class="home-content-title">
         <div class="d-flex align-center">
           <span>Playlists</span>
@@ -11,22 +11,43 @@
         </div>
       </div>
       
-      <div class="home-content d-flex cream no-padding">
-        <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active vertical class="playlist-tabs cream">
+      <div class="home-content no-padding">
+        <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
           <v-tab v-for="(item, index) in content" :key="item.type" class="justify-start">
             <div class="playlist-tab" :class="{'selected-tab': selectedTab === index}">
               <span>{{item.label}}</span>
             </div>
+
+            <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
           </v-tab>
         </v-tabs>
 
-        <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs scroll-shadow-on-cream" id="playlistTabContent">
-          <v-tab-item v-for="item in getTabContent()" :key="item.type">
-            <div class="pa-2">
-              <VerticalContent :data="item.data" :alternate-format="true" :playlists="true"/>
+        <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs overflow-scroll-shadow" id="playlistTabContent">
+          <v-tab-item v-for="content in getTabContent()" :key="content.type">
+            <div v-for="item in content.data" :key="item.uuid">
+              <v-hover v-slot="{hover}">
+                <v-card elevation="7" class="clickable playlist-container" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
+                  <v-img :src="item.imgUrl.large" class="playlist-img">
+                    <template v-slot:placeholder>
+                      <span class="content-placeholder">{{item.name.substring(0, 1)}}</span>
+                    </template>
+                  </v-img>
+
+                  <div class="playlist-info" :style="{'background-image': `url(${item.imgUrl.large})`}" :class="{'playlist-hovered': hover}">
+                    <div class="d-flex flex-column align-start justify-space-between height-100 width-100">
+                      <div class="d-flex flex-column">
+                        <span class="playlist-title">{{item.primaryLabel}}</span>
+                        <span class="playlist-description">{{item.secondaryLabel}}</span>
+                      </div>
+
+                      <div class="number-of-playlist-tracks">{{item.numberOfTracks}}</div>
+                    </div>
+                  </div>
+                </v-card>
+              </v-hover>
             </div>
 
-            <BackToTop elementId="playlistTabContent"/>
+            <BackToTop elementId="playlistTabContent" arrowColor="#1DB954"/>
           </v-tab-item>
         </v-tabs-items>
       </div>
@@ -89,29 +110,84 @@
 </script>
 
 <style lang="scss">
-  .playlist-tabs {
-    max-width: 150px;
-    padding: 4px 4px 4px 0px;
+  .playlist-tab {
+    color: $filter-label-color;
+    font-weight: bold;
+  }
 
-    .playlist-tab {
-      color: $filter-label-color;
-      font-weight: bold;
+  .selected-tab {
+    color: $secondary-theme-color;
+    background-color: $spotify-green;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 4px;
+  }
 
-      @media(min-width: 400px){
-        font-size: 16px;
-      }
-    }
+  .playlist-info {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: $secondary-theme-color;
+    background-size: auto;
+    background-position-y: center;
+    background-blend-mode: overlay;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: -webkit-fill-available;
+    padding: 18px 20px; 
 
-    .selected-tab {
-      color: $secondary-theme-color;
-      background-color: $spotify-green;
-      font-weight: bold;
-      padding: 4px;
-      border-radius: 4px;
+    @media(min-width: $device-size-threshold){
+      padding: 48px 20px 16px;
+      background-color: rgba(0, 0, 0, 0.9);
     }
   }
 
-  #playlistTabContent {
-    background-color: $cream;
+  .playlist-img {
+    @media(min-width: $device-size-threshold){
+      max-width: 50%;
+    }
+  }
+
+  .playlist-hovered {
+    @media(min-width: $device-size-threshold){
+      background-image: none;
+      background-color: $secondary-theme-color;;
+      color: $primary-theme-color;
+    }
+  }
+
+  .number-of-playlist-tracks {
+    font-size: 20px;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+
+  .playlist-title {
+    font-size: 16px;
+
+    @media(min-width: $device-size-threshold){
+      font-size: 26px;
+    }
+  }
+
+  .playlist-description {
+    font-size: 12px;
+    margin-bottom: 12px;
+    color: $spotify-green;
+    word-break: break-word;
+
+    @media(min-width: $device-size-threshold){
+      font-size: 16px;
+    }
+  }
+
+  .playlist-container {
+    margin: 8px 8px 24px;
+    flex-direction: column;
+    display: flex;
+
+    @media(min-width: $device-size-threshold){
+      flex-direction: row;
+    }
   }
 </style>

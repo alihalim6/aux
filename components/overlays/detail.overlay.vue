@@ -70,6 +70,7 @@
   import details from '~/api/details';
   import {setItemMetaData, setDuration} from '~/utils/helpers';
   import {v4 as uuid} from 'uuid';
+  import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class DetailOverlay extends Vue {
@@ -106,7 +107,7 @@
         this.processing = true;
 
         let detailsResponse = {};
-        const itemDetails = item.data || item.details;
+        const itemDetails = item.data || cloneDeep(item.details);
         await setDuration(item);
 
         this.items = [...this.items, {...item, overlayId: uuid()}];//needs to be 'overlayId' since child at least one child component (playlists) uses 'id' internally
@@ -114,7 +115,7 @@
         this.display = true;
 
         if(!itemDetails){
-          const itemId = (item.isTrack ? item.album.id : item.id);
+          const itemId = (item.isTrack && item.album ? item.album.id : item.id);
           detailsResponse = await details(item, itemId);
         }
 

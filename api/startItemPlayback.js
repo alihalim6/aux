@@ -2,11 +2,11 @@ import {storageGet} from '~/utils/storage';
 import {httpClient, PLAYBACK_API_PATH} from './_utils';
 import {DEVICE_ID} from '~/utils/constants';
 
-async function startItemPlayback(item, nextTrack){
+async function startItemPlayback(item, nextTracks){
   let requestBody = {uris: [item.uri]};
 
-  if(nextTrack){
-    requestBody.uris.push(nextTrack.uri);
+  if(nextTracks){
+    requestBody.uris.push.apply(requestBody.uris, nextTracks.map(track => track.uri));
   }
 
   if(item.uri.indexOf('album') > 0){

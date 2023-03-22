@@ -11,6 +11,7 @@
                 @click.stop="playAllPressed()"
               >
                 <v-icon class="feed-header-icon mr-1" small aria-label="play all tracks in feed">mdi-play</v-icon>
+                <span class="play-all-label" :class="{'text-decoration-underline': hover}">PLAY ALL</span>
               </div>
             </v-hover>
 

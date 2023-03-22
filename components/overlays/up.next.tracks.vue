@@ -161,9 +161,7 @@
   }
 </script>
 
-<style lang="scss">
-  @import '~/styles/simple-styles.scss';
-  
+<style lang="scss">  
   .up-next-list-container {
     width: 100%;
     height: 100%;

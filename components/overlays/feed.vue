@@ -4,14 +4,26 @@
       <div class="feed-container scroll-shadow-on-transparent" id="feedContainer">
         <div class="d-flex flex-column">
           <div class="feed-title-container" id="feedHeader">
-            <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
+            <v-hover v-slot="{hover}">
+              <div 
+                v-show="activityFeed.length" 
+                class="clickable d-flex align-center" 
+                @click.stop="playAllPressed()"
+              >
+                <v-icon class="feed-header-icon mr-1" small aria-label="play all tracks in feed">mdi-play</v-icon>
+              </div>
+            </v-hover>
 
-            <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
-              <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
-              <div>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</div>
-            </v-tooltip>
+            <div>
+              <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
 
-            <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
+              <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
+                <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
+                <div>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</div>
+              </v-tooltip>
+
+              <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
+            </div>
           </div>
 
           <div class="activity-item" v-if="activityFeed.length">
@@ -58,6 +70,9 @@
     @Mutation('clearOldActivity', {namespace: FEED})
     clearOldActivity;
 
+    @Mutation('setToast', {namespace: UI})
+    setToast;
+
     @Getter('feed', {namespace: UI})
     uiFeed;
 
@@ -87,6 +102,9 @@
 
     @Action('setInitialFeed', {namespace: FEED})
     setInitialFeed;
+
+    @Action('togglePlayback', {namespace: SPOTIFY})
+    togglePlayback;
 
     @Watch('profile')
     currentUserProfileSet(){
@@ -192,6 +210,15 @@
         }
       }, 1000);
     }
+
+    playAllPressed() {
+      if(this.isSplashPage()){
+        this.setToast({text: 'Gotta be logged in to play music!'});
+      }
+      else{
+        this.togglePlayback({item: this.activityFeed.map(activity => activity).reverse()[0].track, itemSet: this.activityFeed.map(activity => activity.track).reverse(), playingAllFeed: true});
+      }
+    }
     
     beforeDestroy(){
       clearInterval(this.liveStatusInterval);
@@ -201,14 +228,12 @@
 </script>
 
 <style lang="scss">
-  @import '~/styles/simple-styles.scss';
-
   .activity-feed {
     height: 100%;
-    padding: 0px 0px 12px 12px;
+    padding: 0px 0px 12px 16px;
     position: fixed;
     right: 8px;
-    max-width: 80vw;
+    max-width: 50vw;
     min-width: 40vw;
     background-color: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(24px);
@@ -224,14 +249,13 @@
       overflow: scroll;
       font-weight: bold;
       margin: 0 auto;
-      max-width: calc(#{$max-inner-width} - 250px);
       border-radius: 10px;
 
       .feed-title-container {
-        margin: 6px 0px 16px;
+        margin: 6px 0px 24px;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: space-between;
         font-size: 24px;
         
         .feed-header-icon {
@@ -269,5 +293,9 @@
       left: 10px !important;
       max-width: 90%;
     }
+  }
+
+  .play-all-label {
+    font-size: 14px;
   }
 </style>

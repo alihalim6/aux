@@ -10,14 +10,14 @@
               </div>            
 
               <div class="full-item-image-cta-outer" @click="() => fullItemImage = item.imgUrl.large" v-if="item.imgUrl.large && item.details && !item.simpleOverlay">
-                <v-icon color="white" class="eye">mdi-eye</v-icon>
+                <v-icon color="white" small class="eye">mdi-eye</v-icon>
               </div>
 
               <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" @click.stop>
                 <div class="inner-container" v-if="item.details">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
                     <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
-                    <v-icon class="close-button" large @click="closeOverlay()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon class="close-button" large @click="closeOverlay()" aria-label="close overlay">mdi-close</v-icon>
                   </div>
 
                   <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay">
@@ -102,12 +102,13 @@
       });
     }
 
-    async displayDetailOverlay(item){
+    async displayDetailOverlay(itemToDisplay){
       if(!this.processing){//TODO: multiple event hits
         this.processing = true;
+        const item = cloneDeep(itemToDisplay);
 
         let detailsResponse = {};
-        const itemDetails = item.data || cloneDeep(item.details);
+        const itemDetails = item.data || item.details;
         await setDuration(item);
 
         this.items = [...this.items, {...item, overlayId: uuid()}];//needs to be 'overlayId' since child at least one child component (playlists) uses 'id' internally
@@ -153,9 +154,6 @@
 </script>
 
 <style lang="scss">
-  @import '~/styles/simple-styles.scss';
-  @import '~/styles/main.scss';
-  
   $full-image-cta-breakpoint: 850px;
   $overlay-width: calc(#{$max-inner-width} - 150px);
 
@@ -174,7 +172,7 @@
 
     .full-item-image-cta-outer {
       position: absolute;
-      height: 60px;
+      height: 48px;
       width: 25px;
       background-color: $primary-theme-color;
       right: -21px;
@@ -183,10 +181,6 @@
       display: flex;
       justify-content: center;
       border: 2px solid $primary-theme-color;
-
-      .eye {
-        transform: rotate(90deg);
-      }
 
       @media (max-width: $full-image-cta-breakpoint) {
         display: none;

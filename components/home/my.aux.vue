@@ -191,6 +191,7 @@
           }
           catch(error){
             handleApiError('There was an issue loading your all of your Liked Tracks lorem ipsum...');
+            contentToFetchFor.fetchPending = false;
             break;
           }
         }
@@ -209,8 +210,6 @@
 </script>
 
 <style lang="scss">
-  @import '~/styles/variables.scss';
-
   .tab-container {
     padding-left: $home-content-padding;
     max-width: calc(100vw - #{$home-content-padding});

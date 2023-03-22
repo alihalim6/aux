@@ -2,7 +2,7 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import {refreshToken, accessTokenExpired} from '~/auth';
 import {storageGet} from '~/utils/storage';
-import {AUTH, DEVICE_ID, SPLASH} from '~/utils/constants';
+import {AUTH, DEVICE_ID} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
 import {initSpotifyPlayer} from '~/utils/helpers';
 
@@ -83,7 +83,7 @@ async function retryRequest(config){
   }
   else{
     console.log('refresh/retry failed, need new token, sending back to splash...');
-    $nuxt.$router.push(SPLASH);
+    $nuxt.$router.go('/');
   }
 }
 

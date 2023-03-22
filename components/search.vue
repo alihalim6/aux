@@ -36,7 +36,7 @@
           <div v-for="filter in filters" :key="filter.label" @click.stop="filterPressed(filter)"  class="clickable filter" :class="{'selected-filter': filterType == filter.type}">{{filter.label}}</div>
         </div>
 
-        <div v-if="validQuery() && !loadingResults && !results.length" class="result-message">Couldn't find anything for that search. Do try again you hear?</div>
+        <div v-if="validQuery() && !loadingResults && !results.length" class="result-message">Couldn't find anything for that search. Do try again, ya hear?</div>
         <div v-if="!loadingResults && !validQuery()" class="result-message"><div>Ready when you are.</div><div>3 character minumum.</div></div>
 
         <div v-if="loadingResults" class="oscillating-loading-container">
@@ -52,7 +52,9 @@
             </v-img>
 
             <div class="d-flex flex-column">
-              <span class="clickable" @click.stop="primaryLabelPressed(item)">{{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span></span>
+              <span class="clickable result-name" @click.stop="primaryLabelPressed(item)">
+                {{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span><span v-if="item.explicit" class="explicit">E</span>
+              </span>
 
               <div v-if="item.isMultitrackAlbum" class="mt-2">
                 <v-icon class="number-of-tracks-icon" small>mdi-music-circle</v-icon>
@@ -79,6 +81,7 @@
   import {handleApiError} from '~/api/_utils';
   import {setItemMetaData, isSameTrack} from '~/utils/helpers';
   import {SPOTIFY, UI, PLAYBACK_QUEUE} from '~/store/constants';
+  import spotify from '~/api/spotify';
 
   @Component
   export default class Search extends Vue {
@@ -119,9 +122,12 @@
           try{
             const data = await search(this.query, this.filterType);
             const {tracks, albums} = data;
+            const tracksOrAlbums = this.filterType == 'track' || this.filterType == 'album';
 
-            if(this.filterType == 'track' || this.filterType == 'album'){
-              this.results = setItemMetaData([...tracks.items, ...albums.items]).filter(item => this.filterType == 'track' ? (item.singleTrack || item.trackFromAlbum) : item.isCollection);
+            if(tracksOrAlbums){
+              this.results = setItemMetaData([...tracks.items, ...albums.items]).filter(item => {
+                return this.filterType == 'track' ? (item.singleTrack || item.trackFromAlbum) : item.isCollection;
+              });
             }
             else {
               const currentFilter = this.filters.find(filter => filter.type == this.filterType);
@@ -129,6 +135,22 @@
             }
 
             this.loadingResults = false;
+
+            if(tracksOrAlbums) {
+              this.results = await Promise.all(this.results.map(async searchResult => {
+                if(searchResult.isCollection) {
+                  try{
+                    const {items} = await spotify({url: `/albums/${searchResult.id}/tracks`});
+                    searchResult.explicit = !!items.find(item => item.explicit);
+                  }
+                  catch(error){
+                    console.error(`failed to get tracks for searched albums to mark appropriate ones as explicit: ${error}`);
+                  }
+                }
+
+                return searchResult;
+              }));
+            }
           }
           catch(error){
             handleApiError('Ran into an issue while searching lorem ipsum...');
@@ -208,9 +230,7 @@
   }
 </script>
 
-<style lang="scss">  
-  @import '~/styles/main.scss';
-  
+<style lang="scss">    
   #searchContainer {
     margin-top: 5px;
     max-width: 114px;
@@ -351,5 +371,9 @@
   .number-of-tracks {
     color: $secondary-theme-color;
     font-size: 12px;
+  }
+
+  .result-name {
+    line-height: 1.3;
   }
 </style>

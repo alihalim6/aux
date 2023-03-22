@@ -8,7 +8,7 @@
     min-width="fit-content"
     max-width="fit-content"
     transition="slide-y-transition" 
-    :color="toast.error ? 'red' : 'white'"
+    :color="toast.error ? 'red' : '#191414'"
     :timeout="timeout"
   >
     <div class="snackbar-container fill-available">
@@ -20,7 +20,7 @@
         </span>
       </div>
 
-      <v-icon class="clickable" @click.stop="closeToast()" :color="toast.error ? 'white' : 'black'" aria-label="close the toast message">mdi-close</v-icon>
+      <v-icon class="clickable" @click.stop="closeToast()" color="white" aria-label="close the toast message">mdi-close</v-icon>
     </div>
   </v-snackbar>
 </template>
@@ -64,7 +64,7 @@
     .toast-text {
       font-weight: bold;
       padding: 4px 4px 4px 8px;
-      color: black;
+      color: white;
     }
 
     .error-text {

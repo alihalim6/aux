@@ -41,6 +41,10 @@
           this.playlist.details.playlistTracks = this.tracks;
         }
       }
+
+      this.$nuxt.$root.$on('trackAddedToPlaylist', function({track}){
+        this.tracks.push(track);
+      }.bind(this));
     }
 
     setTrackData(item){

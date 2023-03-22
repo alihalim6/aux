@@ -3,7 +3,7 @@ import {AUTH, IGNORED_USERS, DEVICE_ID, AUX_DEVICE_NAME} from '~/utils/constants
 import {refreshToken, handleAuthError} from '~/auth';
 import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
-import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
+import {SPOTIFY, UI} from '~/store/constants';
 import {handleApiError} from '~/api/_utils';
 import {differenceInMinutes, differenceInHours, differenceInDays, parseISO} from 'date-fns';
 import details from '~/api/details';
@@ -207,7 +207,7 @@ export const initSpotifyPlayer = async () => {
 
       //keep playing if spotify paused due to there being no next tracks in its own queue
       const spotifyPausedForNoNextTracks = currentState.paused && !currentState.track_window.next_tracks.length && currentState.position == 0;
-      $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);
+      $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);//needed to react to headphones being taken off etc.
     });
   });
 };
@@ -223,12 +223,16 @@ export const shuffleArray = (array) => {
 };
 
 export function isSameTrack(trackA, trackB){
-  const trackAName = trackA.name || trackA.primaryLabel;
-  const trackBName = trackB.name || trackB.primaryLabel;
+  if(trackA && trackB){
+    const trackAName = trackA.name || trackA.primaryLabel;
+    const trackBName = trackB.name || trackB.primaryLabel;
 
-  return (trackAName == trackBName) && 
-        (trackA.duration_ms == trackB.duration_ms) && 
-        (trackA.track_number == trackB.track_number);
+    return (trackAName == trackBName) && 
+          (trackA.duration_ms == trackB.duration_ms) && 
+          (trackA.track_number == trackB.track_number);
+  }
+
+  return false;
 }
 
 export function ignoredUsers(){

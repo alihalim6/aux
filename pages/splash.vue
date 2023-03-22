@@ -26,14 +26,14 @@
           <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
         </div>
 
-        <span class="bullet-point align-self-center mt-6">All with a shared <span class="on-air bullet-point-on-air">FEED</span>!</span>
+        <span class="bullet-point align-self-center mt-6">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
 
         <div class="made-info">
           <span>Created by Ali Halim using</span>
-          <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's official API.</a>
+          <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's official API</a>
         </div>
 
-        <span class="premium-only">Works for Spotify Premium users only.</span>
+        <span class="premium-only">Works for Spotify Premium users only</span>
       </div>
 
       <v-img class="animated-phrase splash-animation" :src="require('~/assets/pass_the_aux_green.png')"></v-img>
@@ -73,7 +73,6 @@
 
 <style lang="scss">
   @import url('https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Public+Sans:wght@400;700&display=swap');
-  @import '~/styles/main.scss';
 
   $header-margin: 5%;
   $splash-device-size-threshold: 430px;
@@ -139,6 +138,8 @@
   .slash {
     font-size: 45px;
     margin-right: 8px;
+    transform: scaleX(1.4);
+    color: $spotify-green;
   }
 
   .bullet-point-on-air {
@@ -241,7 +242,7 @@
     position: relative;
     margin: 0 auto;
     max-width: 515px;
-    animation: blink 0.75s infinite linear;
+    animation: blink 1s infinite linear;
   }
 
   @keyframes blink {

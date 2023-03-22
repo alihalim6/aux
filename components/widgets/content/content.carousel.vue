@@ -4,23 +4,34 @@
         <div v-for="(item, index) in data" :key="item.uuid">
           <v-hover v-slot="{hover}">
             <section>
+              <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
+
               <v-card 
                 max-width="185" 
                 elevation="10" 
                 class="clickable" 
-                :class="{'content-hover': hover && !vertical, 'spaced-content': moreFromArtist, 'no-max-width': vertical, 'last-item': !vertical && (index == data.length - 1)}"
+                :class="{'content-hover': hover && !vertical, 'spaced-content': moreFromArtist || addToPlaylist, 'no-max-width': vertical, 'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)}"
               >
-                <v-img class="content-img" v-if="item.imgUrl" :src="item.imgUrl[vertical ? 'large' : 'medium']" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
+                <v-img class="content-img" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
                 </v-img>
               </v-card>
 
-              <div :class="{'pb-8': vertical}">
+              <div v-if="addToPlaylist" class="clickable add-button">
+                <v-icon color="white" large @click="addTrackToPlaylist(item)" aria-label="add track to playlist">mdi-plus</v-icon>
+              </div>
+
+              <div :class="{'pb-8': vertical}" v-if="!addToPlaylist">
                 <div class="primary-container" :class="{'hovered-primary-container': hover && !vertical, 'hovered-primary-last-container': hover && !vertical && index == data.length - 1}">
                   <div class="d-flex align-start">
-                    <div class="clickable primary-label" @click.stop="primaryLabelPressed(item)" :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">{{item.primaryLabel}}</div>
+                    <div 
+                      class="clickable primary-label" 
+                      @click.stop="primaryLabelPressed(item)" 
+                      :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">
+                        {{item.primaryLabel}}<span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
+                      </div>
                     <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
                   </div>
 
@@ -58,6 +69,9 @@
     moreFromArtist;
 
     @Prop()
+    addToPlaylist;
+
+    @Prop()
     vertical;
 
     @Prop()
@@ -81,6 +95,20 @@
     itemIsPlaying(item){
       return isSameTrack(item, this.currentlyPlayingItem);
     }
+
+    carouselImgSrc(item) {
+      //💩 code don't care :)
+
+      if(this.addToPlaylist) {
+        return item.imgUrl.medium || item.imgUrl.large;
+      }
+
+      return item.imgUrl[this.vertical ? 'large' : 'medium'];
+    }
+
+    addTrackToPlaylist(playlist) {
+      this.$nuxt.$emit('addTrackToPlaylist', playlist);
+    } 
   }
 </script>
 
@@ -183,5 +211,24 @@
   .content-hover {
     z-index: 10;
     transform: scale(1.1) translateY(-8px);
+  }
+
+  .add-to-playlist-title {
+    font-size: 16px;
+    background-color: $primary-theme-color;
+    color: $secondary-theme-color;
+    font-style: italic;
+    text-align: center;
+    max-width: $content-img-size;
+    padding: 8px;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+
+  .add-button {
+    background-color: $primary-theme-color;
+    border-radius: 100%;
+    width: fit-content;
+    margin: 18px auto 32px;
   }
 </style>

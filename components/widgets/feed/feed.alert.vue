@@ -150,9 +150,7 @@
   }
 </script>
 
-<style lang="scss">
-  @import '~/styles/main.scss';
-  
+<style lang="scss">  
   .feed-alert-container {
     $track-info-font-size: 12px;
     $secondary-text-color: #888888;

@@ -234,8 +234,6 @@
 </script>
 
 <style lang="scss">
-  @import '~/styles/main.scss';
-
   .app-bar {
     $phrase-border-size: 2px;
     
@@ -254,6 +252,7 @@
       display: flex;
       justify-content: space-evenly;
       align-items: center;
+      margin-top: 1px;
 
       .aux-logo-container {
         font-weight: 700;

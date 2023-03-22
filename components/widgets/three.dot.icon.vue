@@ -19,7 +19,7 @@
 
 <script>
   import {Component, Vue, Prop, Getter, Mutation, Action} from 'nuxt-property-decorator';
-  import {PLAYBACK_QUEUE, SPOTIFY, UI, USER} from '~/store/constants';
+  import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
   import spotify from '~/api/spotify';
   import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT, UNFOLLOWED, NOW_FOLLOWING} from '~/utils/constants';
   import details from '~/api/details';
@@ -74,9 +74,6 @@
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
-
-    @Getter('profile', {namespace: USER})
-    profile;
 
     @Mutation('removeFromQueue', {namespace: PLAYBACK_QUEUE})
     removeFromQueue;
@@ -170,7 +167,7 @@
               }
             );
           }
-          else{    
+          else{ 
             const likeType = this.threeDotItem.type == 'album' ? 'albums' : 'tracks';
             const modifyLikeUrl = `/me/${likeType}?ids=${this.threeDotItem.id}`;
             const data = await spotify({url: `/me/${likeType}/contains?ids=${this.threeDotItem.id}`});
@@ -202,12 +199,21 @@
                 }
               });
             }
+
+            if(this.threeDotItem.type == 'track') {
+              this.options.push({
+                title: 'Add to Playlist...',
+                fn: () => {
+                  this.$nuxt.$root.$emit('addToPlaylist', this.threeDotItem);
+                }
+              });
+            }
           }
         }
       }
       catch(error){
         console.log(error)
-        this.setToast({text: 'Sorry that didn\'t quite go thru, please try again lorem ipsum...', error: true});
+        this.setToast({text: 'Something went wrong lorem ipsum...', error: true});//could happen on load of three dot options not necessarily an action so keep generic
       }
     }
 

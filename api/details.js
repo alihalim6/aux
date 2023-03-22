@@ -25,10 +25,6 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
     }
     
     artistAlbums = await httpClient.get(`/artists/${itemId}/albums?limit=50&include_groups=album,compilation`);
-    //Spotify sends back explicit and clean albums, so filter out clean ones
-    //TODO not reliable -- MOTM II is clean on artist details
-    artistAlbums.data.items = [...new Map(artistAlbums.data.items.map(album => [album['name'], album])).values()];
-
     artistTopTracks = await httpClient.get(`/artists/${itemId}/top-tracks?market=US`);
     relatedArtists = await httpClient.get(`/artists/${itemId}/related-artists`);
   }

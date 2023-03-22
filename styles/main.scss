@@ -1,6 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700&display=swap');
 @import './vue-vuetify.scss';
-@import './simple-styles.scss';
 
 $section-title-font-size: 36px;
 
@@ -263,9 +261,8 @@ $section-title-font-size: 36px;
 }
 
 .new-icon {
-  $size: 30px;
+  $size: 24px;
 
-  margin-top: -6px;
   margin-left: 6px;
   width: $size;
   max-width: $size;
@@ -375,10 +372,10 @@ $section-title-font-size: 36px;
 
 .animated-phrase {
   position: absolute;
-  animation: blimp-scroll 8s infinite forwards linear;
+  animation: blimp-scroll 5s infinite forwards linear;
 
   @keyframes blimp-scroll {
-    0% {transform: translateX(205%);}
+    0% {transform: translateX(200%);}
     100% {transform: translateX(-205%);}
   }
 }

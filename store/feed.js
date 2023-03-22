@@ -73,7 +73,7 @@ export const actions = {
       commit('addToFeed', {...activity, addedByCurrentUser: true});
     }
   
-    commit('updateLatestActivity', {...activity, activityAlreadyInFeed, repeatingOwnTrack});
+    commit('updateLatestActivity', {...activity, activityAlreadyInFeed: !!activityAlreadyInFeed, repeatingOwnTrack});
   },
 
   //activity from another user
@@ -215,10 +215,8 @@ export const actions = {
       }
       else {
         track = await spotify({url: `/${activity.trackType}s/${activity.track}`});
-          return {
-          ...activity,
-          track: setItemMetaData([track])[0]
-        };
+        activity.track = setItemMetaData([track])[0];
+        return activity;
       }      
     }));
 
@@ -226,7 +224,7 @@ export const actions = {
       initialFeed.sort((a, b) => a.timestampAgo - b.timestampAgo);
     }
 
-    commit('setInitialFeed', initialFeed);
+    commit('setInitialFeed', initialFeed.filter(activity => !ignoredUsers().find(userId => userId == activity.user.id)));
   }
 };
 

@@ -10,7 +10,7 @@
 
     <div class="currently-playing" v-if="!upNextDisplaying">
       <div class="d-flex">
-        <v-img @click="displayItemDetails()" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium"></v-img>
+        <v-img @click="displayItemDetails()" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium || currentlyPlayingItem.imgUrl.large"></v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
           <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
@@ -60,7 +60,7 @@
             <v-icon 
               class="clickable queue-control" 
               :class="{'no-visibility': !hasNextTrack}" 
-              @click.stop="playNextTrack()"
+              @click.stop="playNextTrack(true)"
               aria-label="skip to next track"
             >
               mdi-skip-next
@@ -77,7 +77,7 @@
             <span class="clickable min-width-fit" :class="{'no-next-track': !hasNextTrack}">UP NEXT: </span>
 
             <div v-if="hasNextTrack" class="clickable track-sneak-peek">
-              <v-img class="track-img" :src="nextTrack.imgUrl.medium"></v-img>
+              <v-img class="track-img" :src="nextTrack.imgUrl.medium || currentlyPlayingItem.imgUrl.large"></v-img>
               <span class="ellipses-text">{{nextTrack.primaryLabel}} /<span class="track-artists"> {{nextTrack.secondaryLabel}}</span></span>
             </div>
           </div>
@@ -221,7 +221,7 @@
         if(this.audioPlaying){
           this.playbackElapsed.ms += 1000;
 
-          if(this.playbackElapsed.ms >= this.playbackTotal.ms){
+          if(this.playbackElapsed.ms > this.playbackTotal.ms){
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack){
@@ -282,8 +282,9 @@
 
     async trackLikeToggled(){
       const modifyLikeUrl = `/me/tracks?ids=${this.currentlyPlayingItem.id}`;
+      this.itemLiked = !this.itemLiked;
 
-      if(this.itemLiked){
+      if(!this.itemLiked){
         try {
           await spotify({url: modifyLikeUrl, method: 'DELETE'});
           this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.currentlyPlayingItem);
@@ -291,6 +292,7 @@
         }
         catch(error){
           handleApiError('Oops! That like didn\'t go thru lorem ipsum...');
+          this.itemLiked = true;
         }
       }
       else{
@@ -301,6 +303,7 @@
         }
         catch(error){
           handleApiError('Oops! That un-like didn\'t go thru lorem ipsum...');
+          this.itemLiked = false;
         }
       }
     }
@@ -354,7 +357,7 @@
     }
 
     .currently-playing {
-      $item-img-size: 120px;
+      $item-img-size: 100px;
 
       display: flex;
       flex-direction: column;
@@ -389,7 +392,7 @@
 
         .playback-toggle {
           border-radius: 100%;
-          padding: 8px;
+          padding: 4px;
           color: $secondary-theme-color;
           background-color: $primary-theme-color;
           font-size: 16px;

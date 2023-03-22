@@ -9,7 +9,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }, { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700&display=swap' }
     ]
   },
 
@@ -28,20 +28,16 @@ export default {
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
-    // https://go.nuxtjs.dev/typescript
-    '@nuxt/typescript-build',
-
     '@nuxtjs/vuetify',
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
 
     '~/socket',
+    '@nuxtjs/style-resources',
   ],
 
   env: {
@@ -64,11 +60,14 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build`
   build: {
-    extend(config, ctx){
+    extend(config){
       config.node = {
           fs: "empty"
       };
-    }
+    },
+    scss: {
+      implementation: require('sass'),
+    },
   },
 
   vuetify: {
@@ -79,5 +78,9 @@ export default {
   serverMiddleware: {
     '/feed': '~/serverMiddleware/feed.js',
     '/user': '~/serverMiddleware/user.js'
+  },
+
+  styleResources: {
+    scss: ['./styles/variables.scss', './styles/main.scss', './styles/simple-styles.scss']
   }
 }

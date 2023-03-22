@@ -16,6 +16,8 @@
 
     <LoadingOverlay v-if="isLoading"/>    
     <FeedAlert/>
+    <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
+    <AddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
     <Toast/>
   </v-app>
 </template>
@@ -32,6 +34,8 @@
   export default class App extends Vue {
     //TODO all v-imgs use lazy-src prop to show loader until img shows?
     //TODO adjust vuetify breakpoints so that full spotify logo still shows up until it really can't fit
+
+    trackToAddToPlaylist = null;
     
     @Getter('isLoading', {namespace: UI})
     isLoading;
@@ -59,6 +63,9 @@
           storageSet(DEVICE_ID, auxDevice.id);
         }
       };
+
+      this.$nuxt.$root.$on('addToPlaylist', trackToAdd => this.trackToAddToPlaylist = trackToAdd);
+      this.$nuxt.$root.$on('closeAddToPlaylistModal', () => this.trackToAddToPlaylist = null);
     }
   }
 </script>

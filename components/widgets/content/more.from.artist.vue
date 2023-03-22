@@ -11,10 +11,10 @@
     </v-card>
 
     <!-- TOP ALBUMS -->  
-    <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.artistAlbums.length">
+    <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="artistAlbums.length">
       <div class="more-from-artist">
         <div class="more-from-artist-title font-weight-bold">Top Albums</div>
-        <ContentCarousel :data="parentItem.details.artistAlbums" :moreFromArtist="true"/>
+        <ContentCarousel :data="artistAlbums" :moreFromArtist="true"/>
       </div>
     </v-card>
 
@@ -55,20 +55,39 @@
 
 <script>
   import {Component, Vue, Prop} from 'nuxt-property-decorator';
+  import spotify from '~/api/spotify';
 
   @Component
   export default class MoreFromArtist extends Vue {
+    artistAlbums = [];
+
     @Prop({required: true})
     parentItem;
 
     @Prop({required: true})
     artist;
+
+    beforeMount(){
+      this.artistAlbums = this.parentItem.details.artistAlbums;
+    }
+
+    async mounted(){
+      //reassignment to get object value updates to feed down thru to content carousel
+      this.artistAlbums = await Promise.all(this.artistAlbums.map(async album => {
+        try{
+          const {items} = await spotify({url: `/albums/${album.id}/tracks`});
+          album.explicit = !!items.find(item => item.explicit);
+          return album;
+        }
+        catch(error){
+          console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
+        }
+      }));
+    }
   }
 </script>
 
-<style lang="scss">
-  @import '~/styles/main.scss';
-  
+<style lang="scss">  
   .more-from-label {
     font-size: 20px;
     padding: 20px $base-padding 0px;

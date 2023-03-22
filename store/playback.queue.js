@@ -58,11 +58,13 @@ export const actions = {
       index: getters.currentlyPlayingIndex - 1
     });
   },
-  playNextTrack: ({dispatch, getters}) => {
+  playNextTrack: ({dispatch, getters}, nextTrackButtonPressed) => {
     playTrackWithinQueue({
       getters,
       dispatch,
-      index: getters.currentlyPlayingIndex + 1
+      index: getters.currentlyPlayingIndex + 1,
+      playingNextTrack: true,
+      nextTrackButtonPressed
     });
   },
   clearUpNext: ({getters, commit}) => {
@@ -102,7 +104,7 @@ function setFeedIds(tracks){
 export const mutations = {
   startQueue(state, params){
     //tie first item in new queue to currentlyPlayingItem in spotify store with given feedId; rest of items get own id
-    const newQueue = params.itemSet.slice(params.index);
+    const newQueue = params.queue.slice(params.index);
     newQueue[0].feedId = params.feedId;
     state.queue = [newQueue[0], ...setFeedIds(newQueue.slice(1))];
   },

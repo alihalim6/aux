@@ -56,10 +56,11 @@
 </template>
 
 <script>
-  import {Component, Vue} from 'nuxt-property-decorator';
+  import {Component, Mutation, Vue} from 'nuxt-property-decorator';
   import {PLAYLISTS} from '~/utils/constants';
   import playlists from '~/api/playlists';
   import {setItemMetaData} from '~/utils/helpers';
+  import {USER} from '~/store/constants';
 
   @Component
   export default class Playlists extends Vue {
@@ -84,8 +85,22 @@
       }
     ];
 
+    @Mutation('setUserPlaylists', {namespace: USER})
+    setUserPlaylists;
+
     async beforeMount(){
       await this.getData();
+      
+      this.$nuxt.$root.$on('trackAddedToPlaylist', function({playlist}){
+        const myPlaylists = this.content.filter(({type}) => type == 'byMe' || type == 'liked').map(({data}) => data);
+        
+        for(const myPlaylist of [...myPlaylists[0], ...myPlaylists[1]]){
+          if(myPlaylist.id == playlist.id){
+            myPlaylist.numberOfTracks = `${++myPlaylist.tracks.total} Tracks`;
+            break;
+          }
+        }
+      }.bind(this));
     }
 
     async getData(){

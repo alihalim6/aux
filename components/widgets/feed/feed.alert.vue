@@ -147,6 +147,10 @@
         this.resetTimeout();
       }
     }
+
+    beforeDestroy(){
+      this.$nuxt.$root.$off('feedAlertChatSubmitted');
+    }
   }
 </script>
 

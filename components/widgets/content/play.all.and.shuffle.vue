@@ -20,6 +20,9 @@
     @Prop({required: true})
     collectionKey;
 
+    @Prop()
+    myAuxLikedTracks;
+
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
@@ -46,7 +49,12 @@
     }
 
     async shuffleAndPlay(){
-      await this.togglePlayback({item: this.playbackItem, itemSet: shuffleArray(this.tracks)});
+      if(this.myAuxLikedTracks){
+        this.$nuxt.$emit('playPreShuffledLikes', this.playbackItem);
+      }
+      else{
+        await this.togglePlayback({item: this.playbackItem, itemSet: shuffleArray(this.tracks)});
+      }
     }
   }
 </script>

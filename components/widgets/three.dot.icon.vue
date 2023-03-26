@@ -261,6 +261,10 @@
     addToEndPressed(){
       this.addToEndOfQueue(this.getTracksToPlayNext());
     }
+
+    beforeDestroy(){
+      this.$nuxt.$root.$off('hideThreeDotMenu');
+    }
   }
 </script>
 

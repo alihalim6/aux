@@ -23,22 +23,27 @@
 
     mounted(){
       this.element = document.getElementById(this.elementId);
+      this.element.addEventListener('scroll', this.handleScroll);
+    }
 
-      this.element.addEventListener('scroll', (e) => {
-        this.scrolledDown = e.target.scrollTop > 150;
-        this.bottomReached = (e.target.scrollHeight - e.target.scrollTop) < (e.target.clientHeight + 50);
-        
-        this.$nuxt.$root.$emit('hideThreeDotMenu');
+    handleScroll(e){
+      this.scrolledDown = e.target.scrollTop > 150;
+      this.bottomReached = (e.target.scrollHeight - e.target.scrollTop) < (e.target.clientHeight + 50);
+      
+      this.$nuxt.$root.$emit('hideThreeDotMenu');
 
-        if(this.elementId.indexOf('overlayContent') > -1){
-          this.$nuxt.$root.$emit('scrolledDown', this.scrolledDown);
-        }
-      });
+      if(this.elementId.indexOf('overlayContent') > -1){
+        this.$nuxt.$root.$emit('scrolledDown', this.scrolledDown);
+      }
     }
 
     async backToTop(){
       await this.$nextTick();
       this.element.scrollTop = 0;
+    }
+
+    beforeDestroy(){
+      this.element.removeEventListener('scroll', this.handleScroll);
     }
   }
 </script>

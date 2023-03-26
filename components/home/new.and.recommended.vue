@@ -103,5 +103,9 @@
       await this.getData();
       this.refreshingData = false;
     }
+
+    beforeDestroy(){
+      this.$nuxt.$root.$off('newAndRecoOverlayShown');
+    }
   }
 </script>

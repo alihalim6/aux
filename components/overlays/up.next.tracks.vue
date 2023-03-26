@@ -77,11 +77,13 @@
     <div class="then-container" v-if="thenTracks.length">
       <span class="then-label">THEN</span>
 
-      <div v-for="(track, index) in thenTracks" :key="index + track.uuid" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
+      <div v-for="track in thenTracks" :key="track.feedId" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
         <ThreeDotIcon :item="track" :itemInQueue="true" iconClass="up-next-three-dot" iconColor="white"/>
       </div>
+
+      <span v-show="restOfQueueLength" class="plus-more">+ {{restOfQueueLength }} MORE... </span>
     </div>
 
     <BackToTop elementId="upNextListContainer" arrowColor="#1DB954"/>
@@ -105,6 +107,9 @@
 
     @Getter('thenTracks', {namespace: PLAYBACK_QUEUE})
     thenTracks;
+
+    @Getter('restOfQueueLength', {namespace: PLAYBACK_QUEUE})
+    restOfQueueLength;
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
@@ -140,7 +145,7 @@
 
     async nextTrackPressed(track, itemSet){
       this.$nuxt.$emit('hideUpNext');
-      await this.togglePlayback({item: track, itemSet});
+      await this.togglePlayback({item: track, itemSet, playingTrackWithinExistingQueue: true});
     }
 
     async fromAlbumPressed(album){
@@ -289,5 +294,12 @@
         }
       }
     }
+  }
+
+  .plus-more {
+    font-size: 20px;
+    font-style: italic;
+    font-weight: bold;
+    margin-top: 16px;
   }
 </style>

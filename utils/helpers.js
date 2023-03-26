@@ -214,9 +214,18 @@ export const initSpotifyPlayer = async () => {
 
 //https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 export const shuffleArray = (array) => {
-  for(let i = array.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+  let currentIndex = array.length,  randomIndex;
+
+  // While there remain elements to shuffle.
+  while (currentIndex != 0) {
+
+    // Pick a remaining element.
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
   }
 
   return array;
@@ -310,3 +319,9 @@ export async function processAlbum(album){
     tracks
   }
 }
+
+//https://www.30secondsofcode.org/js/s/take-until/
+export const takeUntil = (arr, fn) => {
+  for (const [i, val] of arr.entries()) if (fn(val)) return arr.slice(0, i);
+  return arr;
+};

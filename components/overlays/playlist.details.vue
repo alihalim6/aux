@@ -55,5 +55,9 @@
 
       return setItemMetaData([item.track])[0];
     }
+
+    beforeDestroy() {
+      this.$nuxt.$root.$off('trackAddedToPlaylist');
+    }
   }
 </script>

@@ -69,8 +69,8 @@
         </div>
       </div>
 
-      <div class="d-flex flex-column align-start" id="upNextToggle" @click.stop="viewUpNext()">
-        <div class="up-next-container">
+      <div class="d-flex flex-column align-start" id="upNextToggle">
+        <div class="up-next-container" @click.stop="viewUpNext()">
           <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
           <div class="d-inline-flex align-center">
@@ -320,6 +320,9 @@
 
     beforeDestroy(){
       this.stopInterval();
+      this.$nuxt.$off('hideUpNext');
+      this.$nuxt.$root.$off(REMOVED_LIKED_ITEM_EVENT);
+      this.$nuxt.$root.$off(LIKED_ITEM_EVENT);
     }
   }
 </script>

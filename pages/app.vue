@@ -67,6 +67,11 @@
       this.$nuxt.$root.$on('addToPlaylist', trackToAdd => this.trackToAddToPlaylist = trackToAdd);
       this.$nuxt.$root.$on('closeAddToPlaylistModal', () => this.trackToAddToPlaylist = null);
     }
+
+    beforeDestroy(){
+      this.$nuxt.$root.$off('addToPlaylist');
+      this.$nuxt.$root.$off('closeAddToPlaylistModal');
+    }
   }
 </script>
 

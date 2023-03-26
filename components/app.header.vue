@@ -2,8 +2,8 @@
   <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll ref="appBar" :scroll-threshold="10">
     <div class="logo-container">
       <div class="aux-logo-container">
-        <div class="outlined-phrase d-none d-sm-inline">PASS THE</div>
-        <div class="inline-display main-label">AUX</div>
+        <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
+        <div class="inline-display outlined-phrase main-label">AUX</div>
       </div>
 
       <div class="d-flex align-center ml-2">
@@ -235,16 +235,24 @@
 
 <style lang="scss">
   .app-bar {
-    $phrase-border-size: 2px;
+    $rose-red: #f81c03;
+    $cream: #fffff1;
     
     height: $app-header-height !important;
     max-height: $app-header-height;
     z-index: 30 !important;
 
-    @supports(-webkit-text-stroke: $phrase-border-size $primary-theme-color) {
+    @supports(-webkit-text-stroke: 2px $cream) {
       .outlined-phrase {
-        -webkit-text-stroke: $phrase-border-size $primary-theme-color;
-        -webkit-text-fill-color: $secondary-theme-color;
+        -webkit-text-stroke: 2px $cream;
+        -webkit-text-fill-color: $cream;
+      }
+    }
+
+    @supports(-webkit-text-stroke: 1px $rose-red) {
+      .outlined-pass-phrase {
+        -webkit-text-stroke: 1px $rose-red;
+        -webkit-text-fill-color: $rose-red;
       }
     }
 
@@ -256,16 +264,30 @@
 
       .aux-logo-container {
         font-weight: 700;
-        font-size: 26px;
+        font-style: italic;
+        display: flex;
+        align-items: center;
         
-        .outlined-phrase {
-          color: $secondary-theme-color;
+        .pass-the-phrase {
+          color: $rose-red;
+          transform: rotate(-80deg) scaleY(1.5);
+          font-size: 10px;
+          white-space: nowrap;
         }
 
         .main-label {
-          background-color: $primary-theme-color;
-          color: $secondary-theme-color;
-          border-radius: 2px;
+          background-color: $rose-red;
+          color: $cream;
+          transform: skewX(-9.9deg);
+          font-size: 26px;
+          margin-left: -19px;
+          padding: 0px 6px;
+          letter-spacing: 4px;
+          line-height: 1.7;
+
+            @media(max-width: $max-inner-width){ 
+              font-size: 22px;
+            }
         }
       }
 
@@ -275,7 +297,7 @@
       }
 
       .spotify-full {
-        width: 4em;
+        width: 4.5em;
       }
 
       .spotify-icon {

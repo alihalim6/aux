@@ -18,7 +18,7 @@
           <div class="home-content" :id="`myAux${index}`" v-if="tab.data.length">
             <div v-if="tab.trackList">
               <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
-              <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key"/>
+              <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key" :my-aux-liked-tracks="tab.key == 'likedTracks'"/>
 
               <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :disable-tracks="tab.fetchPending"/>
               <div class="my-aux-footnote">{{tab.footnote}}</div>
@@ -42,19 +42,20 @@
 </template>
 
 <script>
-  import {Component, Vue, Mutation} from 'nuxt-property-decorator';
+  import {Component, Vue, Mutation, Action} from 'nuxt-property-decorator';
   import {handleApiError} from '~/api/_utils';
   import myAux from '~/api/myAux';
   import spotify from '~/api/spotify';
-  import {setItemMetaData, msToDuration, handleItemCollection} from '~/utils/helpers';
+  import {setItemMetaData, msToDuration, handleItemCollection, shuffleArray} from '~/utils/helpers';
   import {MY_AUX, LIKED_ITEM_EVENT, REMOVED_LIKED_ITEM_EVENT} from '~/utils/constants';
-  import {USER} from '~/store/constants';
+  import {SPOTIFY, USER} from '~/store/constants';
   import {v4 as uuid} from 'uuid';
   import cloneDeep from 'lodash.clonedeep';
 
   @Component
   export default class MyAux extends Vue {
     selectedTab = 0;
+    preShuffledLikes = [];
 
     defaultContent = {
       data: [],
@@ -96,6 +97,9 @@
     @Mutation('setProfile', {namespace: USER})
     setProfile;
 
+    @Action('togglePlayback', {namespace: SPOTIFY})
+    togglePlayback;
+
     mapData(data){
       return data.map(item => {
         return {
@@ -112,10 +116,10 @@
       const topItems = setItemMetaData(data.topItems);
 
       this.content.forEach(item => {
-        const items = data[item.key].items;
+        let items = data[item.key].items;
 
         if(item.trackList){
-          items.filter(item => item.track);
+          items = items.filter(item => item.track);
         }
 
         item.data = this.mapData(items);
@@ -140,6 +144,14 @@
 
       this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
       this.$nuxt.$root.$on(LIKED_ITEM_EVENT, this.handleItemLikeStatus);
+
+      //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
+      this.$nuxt.$on('playPreShuffledLikes', async playbackItem => {
+        console.log('playing preshuffled tracks');
+        await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
+        //set a new shuffle for next time
+        this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
+      });
     }
 
     handleItemLikeStatus(item, removal){
@@ -169,6 +181,7 @@
       }
     }
 
+    //confirmed works for albums
     async fetchRemainingData(){
       const contentToFetchFor = this.content[this.selectedTab];
 
@@ -187,6 +200,15 @@
 
             contentToFetchFor.data = [...contentToFetchFor.data, ...this.mapData(data.items)];
             contentToFetchFor.offset += data.items.length;
+
+            //pre-shuffle likes after they're all fetched to try and help with performance when shuffle clicked;
+            //this of course blocks the pending overlay to clear until shuffling is done but we're taking our chances that user 
+            //won't be waiting for that to clear then immediately click shuffle; instead, more likely is that by the time user gets down to
+            //likes, the fetching and pre-shuffling will be done already
+            if(contentToFetchFor.trackList && contentToFetchFor.offset == contentToFetchFor.total){
+              this.preShuffledLikes = shuffleArray([...contentToFetchFor.data]);
+            }
+
             contentToFetchFor.fetchPending = false;
           }
           catch(error){
@@ -205,6 +227,11 @@
 
     getContent(){
       return this.content.filter(content => content.data.length);
+    }
+
+    beforeDestroy(){
+      this.$nuxt.$root.$off(REMOVED_LIKED_ITEM_EVENT);
+      this.$nuxt.$root.$off(LIKED_ITEM_EVENT);
     }
   }
 </script>

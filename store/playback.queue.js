@@ -5,7 +5,8 @@ import {v4 as uuid} from 'uuid';
 
 export const state = () => {
   return {
-    queue: []
+    queue: [],
+    restOfQueue: []
   };
 };
 
@@ -21,9 +22,17 @@ function playTrackWithinQueue({dispatch, getters, index, ...rest}){
   }, {root: true});
 }
 
+const QUEUE_LENGTH_LIMIT = 51;
+
 export const getters = {
   queue: (state) => {
     return state.queue;
+  },
+  restOfQueue: (state) => {
+    return state.restOfQueue;
+  },
+  restOfQueueLength: (state) => {
+    return state.restOfQueue.length;
   },
   currentlyPlayingIndex(state, getters, rootState, rootGetters){
     const currentlyPlayingItem = rootGetters[`${SPOTIFY}/currentlyPlayingItem`];
@@ -91,6 +100,14 @@ export const actions = {
 
     dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true});
     dispatch('playNextTrack');
+  },
+  checkForEndOfQueue: ({getters, commit}) => {
+    //if about to play last track in main queue and there are tracks in rest of queue, add from latter to former;
+    //checking then tracks instead of next tracks because at this point, if the condition is true, we'd be moving from 2nd to last
+    //to last track in main queue, which is when we need to take action
+    if(!getters.thenTracks.length && getters.restOfQueue.length){
+      commit('addFromRestOfQueueToMain');
+    }
   }
 };
 
@@ -98,33 +115,68 @@ export const actions = {
 //for this store, it's at the track level (since that is what the queue works with)
 //but for the feed store, it's at the metadata level (for a little but of ease/cleanliness)
 function setFeedIds(tracks){
-  return tracks.map(track => ({...track, feedId: uuid()}));
+  for(const track of tracks){
+    track.feedId = uuid();
+  }
+
+  return tracks;
 }
 
 export const mutations = {
   startQueue(state, params){
+    let newQueue = params.queue.slice(params.index);
+
     //tie first item in new queue to currentlyPlayingItem in spotify store with given feedId; rest of items get own id
-    const newQueue = params.queue.slice(params.index);
     newQueue[0].feedId = params.feedId;
-    state.queue = [newQueue[0], ...setFeedIds(newQueue.slice(1))];
+    newQueue = [newQueue[0], ...setFeedIds(newQueue.slice(1))];
+    //separating these into two different commits didn't help up next show faster
+    state.queue = newQueue.slice(0, QUEUE_LENGTH_LIMIT);
+    state.restOfQueue = newQueue.slice(QUEUE_LENGTH_LIMIT);
   },
   clearQueue(state){
     state.queue = [];
+    state.restOfQueue = [];
   },  
   removeFromQueue(state, track){
-    const trackIndex = state.queue.findIndex(queueTrack => queueTrack.feedId === track.feedId);
-    state.queue.splice(trackIndex, 1);
+    let trackIndex = state.queue.findIndex(queueTrack => queueTrack.feedId === track.feedId);
+
+    if(trackIndex > -1){
+      state.queue.splice(trackIndex, 1);
+    }
+    else{
+      trackIndex = state.restOfQueue.findIndex(queueTrack => queueTrack.feedId === track.feedId);
+      state.restOfQueue.splice(trackIndex, 1);
+    }
   },
   setPlayNext(state, params){
+    //not worried about rest of queue here; if set track(s) that puts queue over limit, not a big deal, not likely to be a huge amount;
+    //would get messy trying to siphon the added tracks into the main but only up to the limit
     state.queue.splice(params.currentIndex + 1, 0, ...setFeedIds(params.tracks));
   },
   clearUpNext(state, currentIndex){
     state.queue = state.queue.slice(0, currentIndex + 1);
+    state.restOfQueue = [];
   },
   addToEndOfQueue(state, tracks){
-    state.queue.push(...setFeedIds(tracks));
+    if(state.restOfQueue.length){
+      state.restOfQueue.push(...setFeedIds(tracks));
+    }
+    else{
+      state.queue.push(...setFeedIds(tracks));
+    }
   },
   shuffleUpNext(state, params){
-    state.queue.splice(...[params.currentIndex + 1, params.nextTracks.length].concat(shuffleArray(params.nextTracks)));
+    let shuffledQueue = [...state.queue, ...state.restOfQueue];
+    //https://stackoverflow.com/questions/51287428/how-does-the-spread-syntax-affect-array-splice (the simpler syntax gets funky to work with (creates nested array))
+    shuffledQueue.splice(...[params.currentIndex + 1, (params.nextTracks.length + state.restOfQueue.length)].concat(shuffleArray([...params.nextTracks, ...state.restOfQueue])));
+
+    if(shuffledQueue.length > QUEUE_LENGTH_LIMIT){
+      state.restOfQueue = shuffledQueue.slice(QUEUE_LENGTH_LIMIT);
+    }
+
+    state.queue = shuffledQueue.slice(0, QUEUE_LENGTH_LIMIT);
+  },
+  addFromRestOfQueueToMain(state){
+    state.queue.push.apply(state.queue, state.restOfQueue.splice(0, QUEUE_LENGTH_LIMIT));
   }
 };

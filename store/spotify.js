@@ -1,6 +1,6 @@
 import {handleApiError} from '~/api/_utils';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
-import {shuffleArray, initSpotifyPlayer, processAlbum} from '~/utils/helpers';
+import {shuffleArray, initSpotifyPlayer, processAlbum, takeUntil} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
@@ -62,7 +62,6 @@ export const actions = {
 
         let queue = [];
 
-        //if album or playlist toggled, intercept logic to begin play from its first track instead of whole item (so that we can manage queue via tracks)
         if(item.isCollection){
           const collectionUri = item.uri;
           console.log(`collection toggled: ${item.name} - ${collectionUri}`);
@@ -96,18 +95,20 @@ export const actions = {
         const feedId = playingTrackWithinExistingQueue || item.feedId ? item.feedId : uuid();
         commit('setCurrentlyPlayingItem', {...item, feedId});
         commit('setCurrentlyPlayingItemUri', feedId);
-        
-        queue = queue.length ? queue : [item];
-        const currentlyPlayingItemIndex = queue.findIndex(setItem => setItem.id === item.id);
 
-        if(!playingTrackWithinExistingQueue){
-          commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, feedId}, {root: true});
-        }
+        const currentlyPlayingItemIndex = item.queueIndex || queue.findIndex(setItem => setItem.uuid === item.uuid);
+        queue = queue.length ? queue : [item];
 
         await dispatch('playItem', {item, queue, currentlyPlayingItemIndex, playingNextTrack, nextTrackButtonPressed});
 
-        commit('setNewPlayback', feedId);
+        if(playingTrackWithinExistingQueue){  
+          dispatch(`${PLAYBACK_QUEUE}/checkForEndOfQueue`, null, {root: true});
+        }
+        else{
+          commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, feedId}, {root: true});
+        }
 
+        commit('setNewPlayback', feedId);
         dispatch(`${FEED}/addToFeed`, {track: item, feedId}, {root: true});
       }
     }
@@ -162,13 +163,14 @@ export const actions = {
         }
       }
 
-      const tracksOnly = !queue.find(item => item.type == 'album');
-      const nextTracks = tracksOnly ? queue.slice(currentlyPlayingItemIndex + 1, 21) : null;
-
-      //send up to next 20 tracks in queue (good for avg album);
+      //send as many tracks as possible;
       //prevents Spotify from having no next tracks as often because when we allow them to play 2nd of the two we were sending originally,
-      //they had no knowledge of what was after that in queue (as expected) --> thus sdk is used more (what we want) instead of api call due to them having next track more often
-      await startItemPlayback(item, nextTracks);
+      //they had no knowledge of what was after that in queue (as expected);
+      //doing it this way leads to sdk is used more (what we want) instead of api call due to them having correct next track more often;
+
+      //has to use passed in queue instead of rootGetters due to getter timing not being reliable
+
+      await startItemPlayback(item, takeUntil(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album'));
     }
     catch(error){
       console.error(error);

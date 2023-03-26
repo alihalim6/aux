@@ -5,13 +5,17 @@
         <div class="d-flex flex-column">
           <div class="feed-title-container" id="feedHeader">
             <v-hover v-slot="{hover}">
-              <div 
-                v-show="activityFeed.length" 
-                class="clickable d-flex align-center" 
-                @click.stop="playAllPressed()"
-              >
-                <v-icon class="feed-header-icon mr-1" small aria-label="play all tracks in feed">mdi-play</v-icon>
-                <span class="play-all-label" :class="{'text-decoration-underline': hover}">PLAY ALL</span>
+              <div class="d-flex align-center">
+                <div 
+                  v-show="activityFeed.length" 
+                  class="clickable d-flex align-center" 
+                  @click.stop="playAllPressed()"
+                >
+                  <v-icon class="feed-header-icon mr-1" small aria-label="play all tracks in feed">mdi-play</v-icon>
+                  <span class="play-all-label" :class="{'text-decoration-underline': hover}">PLAY ALL</span>
+                </div>
+
+                <v-icon class="ml-2" color="white" small>mdi-transfer-up</v-icon>
               </div>
             </v-hover>
 
@@ -19,8 +23,9 @@
               <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
 
               <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
-                <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
-                <div>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</div>
+                <span v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</span>
+                <span>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</span>
+                <div class="mt-2">Tracks played more than 24h ago are cleared on page refresh / every so often.</div>
               </v-tooltip>
 
               <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
@@ -165,7 +170,7 @@
 
       setInterval(() => {
         this.clearOldActivity();
-      }, 3.6e+6);//1hr
+      }, 1.8e+6);//30 mins
     }
 
     isSplashPage(){

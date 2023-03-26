@@ -9,7 +9,7 @@
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums}">
               <v-hover v-slot="{hover}">
                 <div class="d-flex align-start">
-                  <span class="clickable track-name" :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" @click.stop="trackNamePressed(track)">{{track.name}}</span>  
+                  <span class="clickable track-name" :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" @click.stop="trackNamePressed(track, index)">{{track.name}}</span>  
                   <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
                 </div>
               </v-hover>
@@ -91,8 +91,8 @@
       this.$nuxt.$root.$emit('displayDetailOverlay', album);
     }
 
-    trackNamePressed(track){
-      this.togglePlayback({item: track, itemSet: this.tracks});
+    trackNamePressed(track, index){
+      this.togglePlayback({item: {...track, queueIndex: index}, itemSet: this.tracks});
     }
 
     trackIsPlaying(track){

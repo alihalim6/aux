@@ -61,6 +61,10 @@
     closeModal(){
       this.$nuxt.$emit('closeAddToPlaylistModal');
     }
+
+    beforeDestroy(){
+      this.$nuxt.$root.$off('addTrackToPlaylist');
+    }
   }
 </script>
 

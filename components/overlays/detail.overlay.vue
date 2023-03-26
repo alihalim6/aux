@@ -150,6 +150,13 @@
       //re-enable scroll
       document.documentElement.style.overflowY = '';
     }
+
+    beforeDestroy(){
+      this.$nuxt.$root.$off('scrolledDown');
+      this.$nuxt.$root.$off('displayDetailOverlay');
+      this.$nuxt.$root.$off('closeOverlay');
+      this.$nuxt.$root.$off('displayArtistDetails');
+    }
   }
 </script>
 

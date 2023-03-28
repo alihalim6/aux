@@ -233,7 +233,7 @@
 <style lang="scss">    
   #searchContainer {
     margin-top: 5px;
-    max-width: 114px;
+    max-width: 78px;
 
     @media(min-width: $device-size-threshold){
       margin-top: 8px;
@@ -321,6 +321,7 @@
   .search-icon {
     color: black !important;
     border-bottom: 2px solid $primary-theme-color;
+    margin-left: 8px;
 
     @media(min-width: $device-size-threshold){
       display: none !important;

@@ -109,6 +109,10 @@ export const actions = {
         dispatch(`${PLAYBACK_QUEUE}/setTracksToPlayNext`, {tracks: [activity.track], noConfirmationToast: true}, {root: true});
       }
     }
+
+    if(!rootGetters[`${UI}/feed`].display){
+      commit(`${UI}/unseenActivity`, true, {root: true});
+    }
   },
 
   handleLiveUser: async ({commit, getters, rootGetters}, userProfile) => {

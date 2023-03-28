@@ -8,8 +8,8 @@
 
       <div class="d-flex align-center ml-2">
         <v-icon small class="by-x">mdi-close</v-icon>
-        <v-img class="spotify-icon d-inline d-md-none" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
-        <v-img class="spotify-full d-none d-md-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
+        <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon d-inline d-md-none" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
+        <v-img @click="spotifyLogoPressed()" class="clickable spotify-full d-none d-md-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
       </div>
     </div>
 
@@ -153,7 +153,7 @@
         storageSet(AUTH.AUX_API_TOKEN, data.token);
         storageSet(AUX_MODE, data.auxModeOn);
         storageSet(IGNORED_USERS, data.ignoredUsers || []);
-        this.auxModeOn = data.auxModeOn;
+        this.auxModeOn = data.auxModeOn;        
       }
     }
     
@@ -230,13 +230,17 @@
         appBar.isActive = true;
       }
     }
+
+    spotifyLogoPressed(){
+      window.open('https://www.spotify.com', '_blank');
+    }
   }
 </script>
 
 <style lang="scss">
   .app-bar {
     $rose-red: #f81c03;
-    $cream: #fffff1;
+    $cream: #fcfce0;
     
     height: $app-header-height !important;
     max-height: $app-header-height;
@@ -264,7 +268,6 @@
 
       .aux-logo-container {
         font-weight: 700;
-        font-style: italic;
         display: flex;
         align-items: center;
         
@@ -273,6 +276,7 @@
           transform: rotate(-80deg) scaleY(1.5);
           font-size: 10px;
           white-space: nowrap;
+          font-style: italic;
         }
 
         .main-label {

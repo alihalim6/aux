@@ -5,6 +5,7 @@
         <v-icon x-small color="red">mdi-circle</v-icon>
         <div class="on-air">FEED</div>
         <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
+        <v-icon v-show="showUnseenDot" large class="unseen-activity-dot" color="#36a8ff">mdi-circle-small</v-icon>
       </div>
     </div>
 
@@ -15,7 +16,7 @@
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
           <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
 
-          <div class="d-flex mb-1">
+          <div class="d-flex align-center mb-1">
             <v-slider 
               color="black" 
               track-color="#ccc" 
@@ -35,7 +36,14 @@
               <template v-slot:append><span class="playback-time">{{playbackTotal.display}}</span></template>
             </v-slider>
 
-            <v-icon v-if="currentlyPlayingItem.uri" class="clickable pl-3" @click.stop="trackLikeToggled()" color="#1DB954">mdi-heart{{itemLiked ? '' : '-outline'}}</v-icon>
+            <div class="position-relative">
+              <v-icon v-if="currentlyPlayingItem.uri" class="clickable pl-3" @click.stop="trackLikeToggled()" color="#1DB954">mdi-heart{{itemLiked ? '' : '-outline'}}</v-icon>
+
+              <div v-show="showRepeat" class="clickable small-circle repeat" :class="{'repeat-set': setToRepeatTrack}" @click.stop="toggleTrackRepeat()">
+                <span class="small-circle-top-letters">RE</span>
+                <span class="small-circle-bottom-letters">PEAT</span>
+              </div>
+            </div>
           </div>
 
           <div class="d-flex justify-center">
@@ -105,6 +113,8 @@
     upNextDisplaying = false;
     upNextHidden = true;
     itemLiked = false;
+    showUnseenDot = null;
+    showRepeat = false;
 
     playbackElapsed = {
       ms: 0,
@@ -140,6 +150,9 @@
     @Getter('player', {namespace: SPOTIFY})
     player;
 
+    @Getter('setToRepeatTrack', {namespace: SPOTIFY})
+    setToRepeatTrack;
+
     @Action('stopPlayback', {namespace: SPOTIFY})
     stopPlayback;
 
@@ -154,6 +167,9 @@
 
     @Action('seekPlayback', {namespace: SPOTIFY})
     seekPlayback;
+
+    @Action('toggleTrackRepeat', {namespace: SPOTIFY})
+    toggleTrackRepeat;
 
     @Mutation('displayFeed', {namespace: UI})
     displayFeed;
@@ -173,6 +189,7 @@
     @Watch('currentlyPlayingItem')
     async itemPlayingChanged(item){
       this.stopInterval();
+      this.showRepeat = false;
 
       if(item.feedId){
         await setDuration(item);
@@ -196,7 +213,13 @@
 
         const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data[0];
+        this.showRepeat = true;
       }
+    }
+
+    @Watch('feed', {deep: true})
+    feedChanged(newVal){
+      this.showUnseenDot = newVal.unseenActivity;
     }
 
     beforeMount(){
@@ -224,8 +247,12 @@
           if(this.playbackElapsed.ms > this.playbackTotal.ms){
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
-            if(this.hasNextTrack){
+            if(this.hasNextTrack && !this.setToRepeatTrack){
               this.playNextTrack();
+            }
+            else if(this.setToRepeatTrack){
+              this.repeatCurrentTrack();
+              return;
             }
             else{
               this.stopPlayback(true);
@@ -237,6 +264,11 @@
           this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
         }
       }, 1000);
+    }
+
+    async repeatCurrentTrack(){
+      await this.itemPlayingChanged(this.currentlyPlayingItem);
+      await this.startPlayback();
     }
 
     stopInterval(){
@@ -469,5 +501,30 @@
 
   #upNextToggle {
     margin-bottom: env(safe-area-inset-bottom);
+  }
+
+  .unseen-activity-dot {
+    position: absolute !important;
+    top: -4px;
+    right: -9px;
+  }
+
+  .repeat {
+    $color: #aaaaaa;
+
+    color: $color;
+    border: 2px solid $color;
+    position: absolute;
+    right: -5px;
+    top: 32px;
+    transform: scale(0.83);
+    padding: 6px 5px !important;
+  }
+
+  .repeat-set {
+    border: none;
+    color: white;
+    border: 2px solid $spotify-green;
+    background-color: $spotify-green;
   }
 </style>

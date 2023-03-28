@@ -2,7 +2,7 @@ export const state = () => {
   return {
     toast: {},
     loading: true,
-    feed: {display: false},
+    feed: {display: false, unseenActivity: false},
     feedAlert: {},
     replyingToFeedReaction: false
   };
@@ -35,6 +35,7 @@ export const mutations = {
   },
   displayFeed(state){
     state.feed.display = true;
+    state.feed.unseenActivity = false;
   },
   closeFeed(state){
     state.feed.display = false;
@@ -46,5 +47,8 @@ export const mutations = {
   },
   toggleReplyingToFeedReaction(state){
     state.replyingToFeedReaction = !state.replyingToFeedReaction;
+  },
+  unseenActivity(state, unseen){
+    state.feed.unseenActivity = unseen;
   }
 };

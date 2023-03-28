@@ -90,6 +90,9 @@
     @Mutation('toggleReplyingToFeedReaction', {namespace: UI})
     toggleReplyingToFeedReaction;
 
+    @Mutation('unseenActivity', {namespace: UI})
+    unseenActivity;
+
     @Watch('feedAlert')
     alertChanged(alert){
       this.currentAlert = !!alert.track;
@@ -122,6 +125,7 @@
     playActivityTrack(){
       this.playTrackNow(this.feedAlert.track);
       this.closeAlert();
+      this.unseenActivity(false);
     }
 
     alertPressed(){

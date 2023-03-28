@@ -61,6 +61,8 @@ const THREE_DOT_TOAST_TIMEOUT = 2500;
 
 export const actions = {  
   playPreviousTrack: ({dispatch, getters}) => {
+    dispatch(`${SPOTIFY}/toggleTrackRepeat`, false, {root: true});
+
     playTrackWithinQueue({
       getters,
       dispatch,
@@ -68,6 +70,8 @@ export const actions = {
     });
   },
   playNextTrack: ({dispatch, getters}, nextTrackButtonPressed) => {
+    dispatch(`${SPOTIFY}/toggleTrackRepeat`, false, {root: true});
+
     playTrackWithinQueue({
       getters,
       dispatch,

@@ -15,7 +15,7 @@
                   <span class="play-all-label" :class="{'text-decoration-underline': hover}">PLAY ALL</span>
                 </div>
 
-                <v-icon class="ml-2" color="white" small>mdi-transfer-up</v-icon>
+                <v-icon class="ml-2" color="white" small>mdi-sort-descending</v-icon>
               </div>
             </v-hover>
 
@@ -25,7 +25,7 @@
               <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
                 <span v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</span>
                 <span>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</span>
-                <div class="mt-2">Tracks played more than 24h ago are cleared on page refresh / every so often.</div>
+                <div class="mt-2">Tracks played more than 24h ago are cleared on app refresh / every so often.</div>
               </v-tooltip>
 
               <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
@@ -241,7 +241,7 @@
     right: 8px;
     max-width: 50vw;
     min-width: 40vw;
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: rgba(0, 0, 0, 0.27);
     backdrop-filter: blur(24px);
     color: white;
     z-index: 300;

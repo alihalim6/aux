@@ -30,7 +30,7 @@
 
         <div class="made-info">
           <span>Created by Ali Halim using</span>
-          <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's official API</a>
+          <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's API</a>
         </div>
 
         <span class="premium-only">Works for Spotify Premium users only</span>

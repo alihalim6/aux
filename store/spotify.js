@@ -5,6 +5,7 @@ import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
 import {DEVICE_ID} from '~/utils/constants';
+import spotify from '~/api/spotify';
 
 export const state = () => {
   return {
@@ -13,7 +14,8 @@ export const state = () => {
     audioPlaying: false,
     newPlayback: '',
     sdkReady: false,
-    player: null
+    player: null,
+    setToRepeatTrack: false
   };
 };
 
@@ -35,7 +37,10 @@ export const getters = {
   },
   player: (state) => {
     return state.player;
-  } 
+  },
+  setToRepeatTrack: (state) => {
+    return state.setToRepeatTrack;
+  }
 };
 
 export const actions = {
@@ -51,6 +56,10 @@ export const actions = {
       //if there was nothing playing and now there is, or if item playing has been toggled, flip the boolean
       if(!currentlyPlayingItemUri || currentItemToggled){
         commit('setAudioPlaying', !getters.audioPlaying);
+
+        if(player && !currentlyPlayingItemUri){
+          await player.setVolume(1);
+        }
       }
 
       if(currentItemToggled){
@@ -118,11 +127,6 @@ export const actions = {
     }
   },
   playItem: async ({getters, rootGetters, dispatch}, {item, queue, currentlyPlayingItemIndex, playingNextTrack, nextTrackButtonPressed}) => {
-    if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
-      console.log('skipping Candace playback logic');
-      return;
-    }
-
     try {
       if(getters.sdkReady){
         //must init player on first play via user interaction (not app load) due to browser audio context requirements
@@ -132,6 +136,11 @@ export const actions = {
       }
       else{
         throw new Error('sdk not ready...');
+      }
+
+      if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
+        console.log('skipping Candace playback logic');
+        return;
       }
 
       if(playingNextTrack){
@@ -183,8 +192,7 @@ export const actions = {
       const currentlyPlayingItem = getters.currentlyPlayingItem;
 
       if(getters.player){
-        //disconnect in case spotify still automatically plays next track due to previously sending multiple 
-        //uris then stopping (e.g. clearing up next tracks)
+        //pause instead of disconnect so that on resume, we avoid a 404 and having to init a whole new player
         getters.player.pause();
       }
       
@@ -197,6 +205,11 @@ export const actions = {
       if(!noError){
         commit(`${UI}/setToast`, {text: 'There was an issue lorem ipsum...', error: true}, {root: true});
         storageRemove(DEVICE_ID);
+      }
+
+      //try to avoid rogue plays from Spotify side from being heard if we stop playback but they continue and override our player pause
+      if(getters.player){
+        getters.player.setVolume(0);
       }
     }
   },
@@ -214,7 +227,12 @@ export const actions = {
         dispatch('stopPlayback');
       }
     }
-  }
+  },
+  async toggleTrackRepeat({getters, commit}, value){
+    const repeatTrack = (value != undefined) ? value : !getters.setToRepeatTrack;
+    commit('setTrackRepeat', repeatTrack);
+    await spotify({url: `/me/player/repeat?state=${repeatTrack ? 'track' : 'off'}`, method: 'PUT'});
+  },
 };
 
 export const mutations = {
@@ -228,7 +246,7 @@ export const mutations = {
     params.item.playbackIcon = params.icon;
   },
   setAudioPlaying(state, playing){
-    console.log(`setting audioPlaying to ${playing}`);
+    //console.log(`setting audioPlaying to ${playing}`);
     state.audioPlaying = playing;
   },
   setNewPlayback(state, feedId){
@@ -239,5 +257,8 @@ export const mutations = {
   },
   setPlayer(state, player){
     state.player = player;
+  },
+  setTrackRepeat(state, value){
+    state.setToRepeatTrack = value;
   }
 };

@@ -6,10 +6,10 @@ async function startItemPlayback(item, nextTracks){
   let requestBody = {uris: [item.uri]};
 
   if(nextTracks){
+    console.log(`next tracks: ${nextTracks.map(track => track.name)}`);
     requestBody.uris.push.apply(requestBody.uris, nextTracks.map(track => track.uri));
   }
-
-  if(item.uri.indexOf('album') > 0){
+  else{
     requestBody = {context_uri: item.uri};
   }
 

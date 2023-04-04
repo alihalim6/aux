@@ -23,9 +23,9 @@
               <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" aria-label="feed tooltip">mdi-help-circle-outline</v-icon>
 
               <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
-                <span v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</span>
+                <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
                 <span>Once you listen to :{{minSecsForPlay}} of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</span>
-                <div class="mt-2">Tracks played more than 24h ago are cleared on app refresh / every so often.</div>
+                <div class="mt-2">Tracks played more than 24h ago are removed on app reload / every so often.</div>
               </v-tooltip>
 
               <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
@@ -38,13 +38,13 @@
 
           <div v-else class="d-flex flex-column">
             <div class="no-feed-prompt">
-              <div>Tracks that you and others play will show here.</div>
+              <div>Tracks that you and others play show here.</div>
               <div class="sub-prompt">Nothing's been played in the last 24hrs. Kick things off by playing something!  Invite others lorem ipsum...</div>
             </div>
 
             <div class="no-prompt-graphic">
-              <v-img src="http://www.clipartbest.com/cliparts/dT7/6xj/dT76xjjEc.gif"></v-img>
-              <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux.png')"></v-img>
+              <v-img src="/world.gif"></v-img>
+              <v-img class="animated-phrase" src="/pass_the_aux.png"></v-img>
             </div>
           </div>
         </div>

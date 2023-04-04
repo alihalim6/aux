@@ -73,15 +73,6 @@
         type: 'track',
         id: uuid()
       },
-      //apparently API doesn't return total for this TODO recheck
-      {
-        data: [],
-        key: 'recentlyPlayed',
-        label: MY_AUX.RECENTLY_PLAYED,
-        trackList: true,
-        id: uuid(),
-        footnote: '*Recently played on Spotify'
-      },
       {
         ...this.defaultContent,
         key: 'likedAlbums',
@@ -90,6 +81,15 @@
         api: 'albums',
         type: 'album',
         id: uuid()
+      },
+      //apparently API doesn't return total for this TODO recheck
+      {
+        data: [],
+        key: 'recentlyPlayed',
+        label: MY_AUX.RECENTLY_PLAYED,
+        trackList: true,
+        id: uuid(),
+        footnote: '*Recently played on Spotify'
       }
     ];
 
@@ -111,47 +111,57 @@
     };
 
     async beforeMount(){
-      const data = await myAux();
-      this.setProfile(data.profile);
-      const topItems = setItemMetaData(data.topItems);
+      try {
+        const data = await myAux();
 
-      this.content.forEach(item => {
-        let items = data[item.key].items;
-
-        if(item.trackList){
-          items = items.filter(item => item.track);
+        if(data.profile.product != 'premium'){
+          this.$nuxt.error({message: 'Unfortuantely, AUX can only support Spotify Premium users at this time. Sorry about that!', notPremium: true, actionButtonLabel: 'GO BACK TO SPOTIFY LOGIN'});
         }
+        
+        this.setProfile(data.profile);
+        const topItems = setItemMetaData(data.topItems);
 
-        item.data = this.mapData(items);
-        item.total = data[item.key].total;
-        //lazy loading/pagination
-        item.limit = item.offset = data[item.key].limit;
-      });
+        this.content.forEach(item => {
+          let items = data[item.key].items;
 
-      await this.fetchRemainingData();
+          if(item.trackList){
+            items = items.filter(item => item.track);
+          }
 
-      //data structure for top items response is different than the others, so no mapping needed
-      this.content = [...this.content, {
-        key: 'topItems',
-        label: MY_AUX.TOP_ITEMS,
-        data: topItems,
-        id: uuid(),
-        topItems: {
-          tracks: topItems.filter(item => item.isTrack || item.singleTrack),
-          artists: topItems.filter(item => item.isArtist)
-        }
-      }];
+          item.data = this.mapData(items);
+          item.total = data[item.key].total;
+          //lazy loading/pagination
+          item.limit = item.offset = data[item.key].limit;
+        });
 
-      this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
-      this.$nuxt.$root.$on(LIKED_ITEM_EVENT, this.handleItemLikeStatus);
+        await this.fetchRemainingData();
 
-      //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
-      this.$nuxt.$on('playPreShuffledLikes', async playbackItem => {
-        console.log('playing preshuffled tracks');
-        await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
-        //set a new shuffle for next time
-        this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
-      });
+        //data structure for top items response is different than the others, so no mapping needed
+        this.content = [...this.content, {
+          key: 'topItems',
+          label: MY_AUX.TOP_ITEMS,
+          data: topItems,
+          id: uuid(),
+          topItems: {
+            tracks: topItems.filter(item => item.isTrack || item.singleTrack),
+            artists: topItems.filter(item => item.isArtist)
+          }
+        }];
+
+        this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
+        this.$nuxt.$root.$on(LIKED_ITEM_EVENT, this.handleItemLikeStatus);
+
+        //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
+        this.$nuxt.$on('playPreShuffledLikes', async playbackItem => {
+          console.log('playing preshuffled tracks');
+          await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
+          //set a new shuffle for next time
+          this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
+        });
+      }
+      catch(error){
+        console.error(error);
+      }
     }
 
     handleItemLikeStatus(item, removal){
@@ -212,7 +222,7 @@
             contentToFetchFor.fetchPending = false;
           }
           catch(error){
-            handleApiError('There was an issue loading your all of your Liked Tracks lorem ipsum...');
+            handleApiError('There was an issue loading your all of your Liked Songs lorem ipsum...');
             contentToFetchFor.fetchPending = false;
             break;
           }

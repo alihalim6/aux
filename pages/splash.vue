@@ -2,9 +2,9 @@
   <v-app class="justify-space-between">
     <div class="splash-content">
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
-        <div class="clickable login" @click="loginClicked()">
-          <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
-          <span class="login-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
+        <div class="clickable nav-button login" @click="loginClicked()">
+          <v-img class="spotify-icon" src="/Spotify_Logo_Icon.png"></v-img>
+          <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
         </div>
       </div>
 
@@ -13,7 +13,7 @@
       <div class="info-container">
         <div class="bullet-point">
           <span class="slash">/</span> 
-          <span>Your Spotify library + new releases, featured playlists, and recommendations.</span>
+          <span>Enjoy your Spotify library + new releases, featured playlists, and recommendations.</span>
         </div>
 
         <div class="bullet-point">
@@ -29,14 +29,21 @@
         <span class="bullet-point align-self-center mt-6">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
 
         <div class="made-info">
-          <span>Created by Ali Halim using</span>
+          <span>Created by</span>
+          <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank">Ali Halim</a>
+          <span>using</span>
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's API</a>
         </div>
 
         <span class="premium-only">Works for Spotify Premium users only</span>
+        
+        <div class="mobile-friendly">
+          <v-icon color="#191414">mdi-cellphone-text</v-icon>
+          <span>friendly</span>
+        </div>
       </div>
 
-      <v-img class="animated-phrase splash-animation" :src="require('~/assets/pass_the_aux_green.png')"></v-img>
+      <v-img class="animated-phrase splash-animation" src="/pass_the_aux_green.png"></v-img>
     </div>
 
     <div class="bottom-content">
@@ -58,8 +65,26 @@
     @Mutation('setLoading', {namespace: UI})
     setLoading;
 
+    @Mutation('setPwaInstallEvent', {namespace: UI})
+    setPwaInstallEvent;
+
     @Getter('feed', {namespace: UI})
     feed;
+
+    beforeMount(){
+      window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        this.setPwaInstallEvent(e);
+        // Optionally, send analytics event that PWA install promo was shown.
+        console.log(`'beforeinstallprompt' event was fired.`);
+      });
+
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA was installed...make api call to store');
+      });
+    }
 
     mounted(){
       this.setLoading(false);
@@ -100,7 +125,7 @@
       -webkit-text-stroke: $phrase-border-size $spotify-green;
       -webkit-background-clip: text;
       background-clip: text;
-      background-image: url('~/assets/roses.png');
+      background-image: url('/roses.png');
       font-size: 375px;
       color: transparent;
       font-family: 'Arvo', serif;
@@ -176,35 +201,13 @@
     z-index: 2;
     display: flex;
   }
-
+  
   .login {
-    display: flex;
-    align-items: center;
-    background-color: $primary-theme-color;
-    font-size: 12px;
-    border-radius: 22px;
-    align-self: flex-end;
-    margin-left: auto;
     margin-right: $header-margin;
-    padding: 8px 14px;
 
     @media(min-width: $splash-device-size-threshold){
       font-size: 16px;
     }
-  }
-
-  .login:hover {
-    background-color: $secondary-theme-color;
-    border: 2px solid $primary-theme-color;
-    padding: 6px 12px;
-
-    .login-label {
-      color: $primary-theme-color;
-    }
-  }
-
-  .login-label {
-    color: $secondary-theme-color;
   }
 
   .spotify-icon {
@@ -237,7 +240,7 @@
   }
 
   .splash-animation {
-    bottom: calc(#{$max-footer-height-not-playing} + 100px);
+    bottom: calc(#{$max-footer-height-not-playing} + 150px);
     width: 75%;
     position: relative;
     margin: 0 auto;
@@ -249,5 +252,15 @@
     0% {opacity: 1;}
     12% {opacity: 0;}
     33% {opacity: 1;}
+  }
+
+  .mobile-friendly {
+    width: -webkit-fill-available;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaaaaa;
+    margin-top: 18px;
   }
 </style>

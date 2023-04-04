@@ -3,7 +3,7 @@ export const AUX_MODE = 'auxMode';
 export const IGNORED_USERS = 'ignoredUsers';
 
 export const SPLASH = 'splash';
-export const APP = 'app';
+export const APP = 'live';
 
 export const PLAYED_NOT_SKIPPED_THRESHOLD = 20;
 
@@ -45,7 +45,7 @@ export const AUTH = {
 };
 
 export const MY_AUX = {
-  LIKED_TRACKS: 'Liked Tracks',
+  LIKED_TRACKS: 'Liked Songs',
   LIKED_ALBUMS: 'Liked Albums',
   RECENTLY_PLAYED: 'Recently Played',
   TOP_ITEMS: 'Top Tracks/Artists'
@@ -57,8 +57,8 @@ export const PLAYLISTS = {
   LIKED: 'LIKED'
 };
 
-export const REMOVED_FROM_LIKES = 'Removed from Likes';
-export const ADDED_TO_LIKES = 'Added to Likes';
+export const REMOVED_FROM_LIKES = 'Removed from Liked Songs';
+export const ADDED_TO_LIKES = 'Added to Liked Songs';
 export const LIKED_ITEM_EVENT = 'likedItem';
 export const REMOVED_LIKED_ITEM_EVENT = 'removedLikedItem';
 

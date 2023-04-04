@@ -5,16 +5,24 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter, Action, Watch} from 'nuxt-property-decorator';
   import {storageGet} from '~/utils/storage';
   import {AUTH, SPLASH, APP} from '~/utils/constants';
   import {initToken, accessTokenExpired, refreshToken, handleAuthError} from '~/auth';
-  import {UI} from '~/store/constants';
+  import {UI, SPOTIFY} from '~/store/constants';
 
   @Component
   export default class Root extends Vue {
     @Getter('isLoading', {namespace: UI})
     isLoading;
+
+    @Action('stopPlayback', {namespace: SPOTIFY})
+    stopPlayback;
+
+    @Watch('$route')
+    routeChanged(){
+      this.stopPlayback(true);
+    }
 
     async beforeMount(){
       //query params mean you've been sent here from Spotify via redirect_uri after authenticating 
@@ -28,7 +36,7 @@
           handleAuthError(error);
         }
 
-        //clean up url on return from Spotify
+        //clean up url and get rid of this intermediary route in browser history on return from Spotify
         window.history.replaceState('', '', window.location.toString().split('?')[0].replace('/#/', '/'));
 
         this.$router.push(APP);

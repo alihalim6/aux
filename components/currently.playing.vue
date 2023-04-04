@@ -39,7 +39,7 @@
             <div class="position-relative">
               <v-icon v-if="currentlyPlayingItem.uri" class="clickable pl-3" @click.stop="trackLikeToggled()" color="#1DB954">mdi-heart{{itemLiked ? '' : '-outline'}}</v-icon>
 
-              <div v-show="showRepeat" class="clickable small-circle repeat" :class="{'repeat-set': setToRepeatTrack}" @click.stop="toggleTrackRepeat()">
+              <div v-show="trackReady" class="clickable small-circle repeat" :class="{'repeat-set': setToRepeatTrack}" @click.stop="toggleTrackRepeat()">
                 <span class="small-circle-top-letters">RE</span>
                 <span class="small-circle-bottom-letters">PEAT</span>
               </div>
@@ -49,8 +49,8 @@
           <div class="d-flex justify-center">
             <v-icon 
               class="clickable queue-control" 
-              :class="{'no-visibility': !hasPreviousTrack}" 
-              @click.stop="playPreviousTrack()"
+              :class="{'no-visibility': !hasPreviousTrack, 'disable-playback-control': !trackReady}" 
+              @click.stop="previousTrackPressed()"
               aria-label="skip to previous track"
             >
               mdi-skip-previous
@@ -67,8 +67,8 @@
             
             <v-icon 
               class="clickable queue-control" 
-              :class="{'no-visibility': !hasNextTrack}" 
-              @click.stop="playNextTrack(true)"
+              :class="{'no-visibility': !hasNextTrack, 'disable-playback-control': !trackReady}" 
+              @click.stop="nextTrackPressed()"
               aria-label="skip to next track"
             >
               mdi-skip-next
@@ -114,7 +114,7 @@
     upNextHidden = true;
     itemLiked = false;
     showUnseenDot = null;
-    showRepeat = false;
+    trackReady = false;
 
     playbackElapsed = {
       ms: 0,
@@ -132,6 +132,15 @@
     @Getter('audioPlaying', {namespace: SPOTIFY})
     audioPlaying;
 
+    @Getter('newPlayback', {namespace: SPOTIFY})
+    newPlayback;
+
+    @Getter('player', {namespace: SPOTIFY})
+    player;
+
+    @Getter('setToRepeatTrack', {namespace: SPOTIFY})
+    setToRepeatTrack;
+
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
 
@@ -143,15 +152,6 @@
 
     @Getter('feed', {namespace: UI})
     feed;
-
-    @Getter('newPlayback', {namespace: SPOTIFY})
-    newPlayback;
-
-    @Getter('player', {namespace: SPOTIFY})
-    player;
-
-    @Getter('setToRepeatTrack', {namespace: SPOTIFY})
-    setToRepeatTrack;
 
     @Action('stopPlayback', {namespace: SPOTIFY})
     stopPlayback;
@@ -188,8 +188,8 @@
 
     @Watch('currentlyPlayingItem')
     async itemPlayingChanged(item){
+      this.setPlayerVolume(0);
       this.stopInterval();
-      this.showRepeat = false;
 
       if(item.feedId){
         await setDuration(item);
@@ -207,13 +207,15 @@
       const item = this.currentlyPlayingItem;
 
       if(item && item.feedId){
+        this.setPlayerVolume(1);
+
         if(!this.playbackInterval){
           this.startInterval();
         }
 
         const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data[0];
-        this.showRepeat = true;
+        this.trackReady = true;
       }
     }
 
@@ -223,7 +225,7 @@
     }
 
     beforeMount(){
-      this.$nuxt.$on('hideUpNext', () => {
+      this.$nuxt.$root.$on('hideUpNext', () => {
         this.upNextHidden = true;
         this.upNextDisplaying = false;
       });
@@ -248,7 +250,7 @@
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){
-              this.playNextTrack();
+              this.playNextTrack({});
             }
             else if(this.setToRepeatTrack){
               this.repeatCurrentTrack();
@@ -260,10 +262,20 @@
 
             this.stopInterval();
           }
-
-          this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
+          else{
+            this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
+            this.syncElapsedWithPlayer();
+          }
         }
       }, 1000);
+    }
+
+    async syncElapsedWithPlayer(){
+      const currentState = await this.player.getCurrentState();
+
+      if(currentState && !currentState.paused){
+        this.playbackElapsed.display = msToDuration(currentState.position);
+      }
     }
 
     async repeatCurrentTrack(){
@@ -274,6 +286,7 @@
     stopInterval(){
       clearInterval(this.playbackInterval);
       this.playbackInterval = null;
+      this.trackReady = false;
     }
 
     handleError(){
@@ -350,9 +363,26 @@
       this.$nuxt.$root.$emit('displayDetailOverlay', setItemMetaData(cloneDeep([this.currentlyPlayingItem]))[0]);
     }
 
+    //try to avoid rogue plays from Spotify side from being heard if we stop playback but they continue and override our player pause
+    setPlayerVolume(volume){
+      if(this.player){
+        this.player.setVolume(volume);
+      }
+    }
+
+    previousTrackPressed(){
+      this.stopInterval();
+      this.playPreviousTrack();
+    }
+
+    nextTrackPressed(){
+      this.stopInterval();
+      this.playNextTrack({nextTrackButtonPressed: true});
+    }
+
     beforeDestroy(){
       this.stopInterval();
-      this.$nuxt.$off('hideUpNext');
+      this.$nuxt.$root.$off('hideUpNext');
       this.$nuxt.$root.$off(REMOVED_LIKED_ITEM_EVENT);
       this.$nuxt.$root.$off(LIKED_ITEM_EVENT);
     }
@@ -495,7 +525,7 @@
   .currently-playing-container {
     .v-tooltip__content {
       top: auto !important;
-      bottom: 30px;
+      bottom: calc(env(safe-area-inset-bottom) + 30px);
     }
   }
 
@@ -517,7 +547,7 @@
     position: absolute;
     right: -5px;
     top: 32px;
-    transform: scale(0.83);
+    transform: scale(0.73);
     padding: 6px 5px !important;
   }
 
@@ -526,5 +556,10 @@
     color: white;
     border: 2px solid $spotify-green;
     background-color: $spotify-green;
+  }
+
+  .disable-playback-control {
+    color: #eeeeee !important;
+    pointer-events: none;
   }
 </style>

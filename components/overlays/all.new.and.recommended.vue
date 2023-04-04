@@ -15,7 +15,7 @@
         <v-tab-item v-for="item in content" :key="item.label">
           <div v-if="item.data.length">
             <div v-if="item.tracks">
-              <PlayAllAndShuffle :tracks="item.data" collectionKey="newAndRecommended"/>
+              <PlayAllAndShuffle :tracks="[...item.data]" collectionKey="newAndRecommended"/>
               <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :new-and-recommended="true"/>
             </div>
 

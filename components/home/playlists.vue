@@ -104,12 +104,17 @@
     }
 
     async getData(){
-      const data = await playlists();
-      
-      this.content.forEach(playlistTab => {
-        const playlist = data[playlistTab.type].filter(playlist => playlist);//spotify can send null playlists
-        playlistTab.data = setItemMetaData(playlist);
-      });
+      try{
+        const data = await playlists();
+        
+        this.content.forEach(playlistTab => {
+          const playlist = data[playlistTab.type].filter(playlist => playlist);//spotify can send null playlists
+          playlistTab.data = setItemMetaData(playlist);
+        });
+      }
+      catch(error){
+        console.error(error);
+      }
     }
 
     getTabContent(){

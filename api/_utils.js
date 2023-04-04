@@ -2,9 +2,9 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import {refreshToken, accessTokenExpired} from '~/auth';
 import {storageGet} from '~/utils/storage';
-import {AUTH, DEVICE_ID} from '~/utils/constants';
+import {AUTH, DEVICE_ID, SPLASH} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
-import {initSpotifyPlayer} from '~/utils/helpers';
+import {initSpotifyPlayer, shuffleArray} from '~/utils/helpers';
 
 export const PLAYBACK_API_PATH = '/me/player/play';
 
@@ -13,7 +13,7 @@ export const httpClient = axios.create({
 });
 
 //sometimes this retries, sometimes my retry logic gets called, so keep this
-axiosRetry(httpClient, {retries: 2});
+axiosRetry(httpClient, {retries: 5});
 
 function isPlaybackCall(config){
   return config.url.indexOf(PLAYBACK_API_PATH) > -1;
@@ -77,13 +77,17 @@ httpClient.interceptors.response.use(async response => {
 async function retryRequest(config){
   if(!config._retry){
     config._retry = true;
-    await attemptTokenRefresh();
+
+    if(accessTokenExpired()){
+      await attemptTokenRefresh();
+    }
+
     console.log('retrying request...');
     return httpClient.request(config);
   }
   else{
     console.log('refresh/retry failed, need new token, sending back to splash...');
-    $nuxt.$router.go('/');
+    $nuxt.$router.replace({path: `/${SPLASH}`});
   }
 }
 
@@ -105,13 +109,6 @@ export const topItems = async (topType, config) => {
   return await httpClient.get(`/me/top/${topType}`, config);
 };
 
-//https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-export const shuffleArray = (array) => {
-  for(let i = array.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
 
 //note: the artist objects in the top tracks response don't have genres; would need to use the href in there to make API call to get artist(s)
 const getSeedGenres = (artists) => {

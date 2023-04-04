@@ -15,10 +15,11 @@
     <CurrentlyPlaying v-show="!isLoading"/>
 
     <LoadingOverlay v-if="isLoading"/>    
-    <FeedAlert/>
+    <LazyFeedAlert/>
+
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
-    <AddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
-    <Toast/>
+    <LazyAddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
+    <LazyToast/>
   </v-app>
 </template>
 
@@ -64,7 +65,11 @@
         }
       };
 
-      this.$nuxt.$root.$on('addToPlaylist', trackToAdd => this.trackToAddToPlaylist = trackToAdd);
+      this.$nuxt.$root.$on('addToPlaylist', trackToAdd => {
+        this.$nuxt.$root.$emit('hideUpNext');
+        this.trackToAddToPlaylist = trackToAdd;
+      });
+
       this.$nuxt.$root.$on('closeAddToPlaylistModal', () => this.trackToAddToPlaylist = null);
     }
 
@@ -77,6 +82,6 @@
 
 <style lang="scss">
   .base-app-container {
-    margin-top: 24px;
+    margin-top: 51px;
   }
 </style>

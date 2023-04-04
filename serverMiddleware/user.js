@@ -16,19 +16,20 @@ app.post('/initialize', async (req, res) => {
     let loggedInUser = await users.find({id: req.body.profile.id}).toArray();
     loggedInUser = loggedInUser.length ? loggedInUser[0] : null;
 
-    await loggedInUser ? 
-      users.updateOne({id: req.body.profile.id}, [{$set: {lastAppLoad: new Date()}}]) : 
-      users.insertOne({...req.body.profile, lastAppLoad: new Date()});
+    if(!loggedInUser){
+      users.insertOne({...req.body.profile});
+    }
 
     const auxModeOn = (loggedInUser && loggedInUser.auxModeOn === false) ? false : true;
 
     res.json({
       token,
       auxModeOn,
-      ignoredUsers: loggedInUser.ignoredUsers
+      ignoredUsers: loggedInUser ? loggedInUser.ignoredUsers : []
     });
   }
   catch(error){
+    console.log(error);
     res.sendStatus(500);
   }
 });
@@ -50,6 +51,16 @@ app.post('/updateAuxMode', async (req, res) => {
 app.post('/updateIgnoredUsers', async (req, res) => {
   try{
     await users.updateOne({id: req.body.profile.id}, [{$set: {ignoredUsers: req.body.ignoredUsers}}]); 
+    res.end();
+  }
+  catch(error){
+    res.sendStatus(500);
+  }
+});
+
+app.post('/delete', async (req, res) => {
+  try{
+    await users.deleteOne({id: req.body.profile.id}); 
     res.end();
   }
   catch(error){

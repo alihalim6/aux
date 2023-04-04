@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import {Component, Vue, Prop, Getter, Mutation, Action} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop, Getter, Mutation, Action, Watch} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
   import spotify from '~/api/spotify';
   import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT, UNFOLLOWED, NOW_FOLLOWING} from '~/utils/constants';
@@ -92,6 +92,13 @@
 
     @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
     playTrackNow;
+
+    @Watch('item')
+    itemChanged(newVal, oldVal){
+      if(newVal.uuid != oldVal.uuid){
+        this.threeDotItem = newVal;
+      }
+    }
 
     async beforeMount(){
       this.threeDotItem = this.item;
@@ -210,6 +217,11 @@
             }
           }
         }
+
+        this.options.push({
+          title: `${this.threeDotItem.type == 'artist' ? 'Open' : 'Listen on'} Spotify`,
+          fn: () => window.open(`https://open.spotify.com/${this.threeDotItem.type}/${this.threeDotItem.id}`, '_blank')
+        });
       }
       catch(error){
         console.log(error)

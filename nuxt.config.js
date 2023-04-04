@@ -1,7 +1,7 @@
 export default {  
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'AUX - Enjoy Spotify Together',
+    title: 'PASS THE AUX',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover' },

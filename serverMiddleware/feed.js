@@ -47,6 +47,12 @@ app.use(auth);
 
 //'PROTECTED' routes
 
+app.post('/deleteUserActivity', async (req, res) => {
+  await database.collection('activities').deleteMany({ 'user.id': req.body.profile.id });
+  await database.collection('reactions').deleteMany({ 'author': req.body.profile.name });
+  res.end();
+});
+
 app.post('/persistActivity', async (req, res) => {
   insertItem('activities', req.body.activity, res);
 });

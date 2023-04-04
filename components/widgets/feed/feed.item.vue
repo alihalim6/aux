@@ -42,7 +42,7 @@
       </div>
     </div>
 
-    <div class="d-flex flex-column align-end" :class="{'no-visibility': !activity.played}">
+    <div class="d-flex flex-column align-end margin-left-auto" :class="{'no-visibility': !activity.played}">
       <ThreeDotIcon v-if="!activity.splash" :item="activity.track" icon-class="activity-item-three-dot"/>
 
       <div class="clickable reaction-toggle-container">
@@ -132,7 +132,7 @@
   .feed-item-container {
     display: flex;
     align-items: flex-start;
-    justify-content: space-around;
+    justify-content: base;
     margin-bottom: 16px;
 
     .track-img {
@@ -140,7 +140,7 @@
 
       max-width: $track-img-size;
       height: $track-img-size;
-      margin-right: 12px;
+      margin-right: 18px;
       align-self: baseline;
       margin-top: 3px;
     }
@@ -149,7 +149,6 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      margin-right: 12px;
       max-width: 67%;
       padding-top: 6px;
 

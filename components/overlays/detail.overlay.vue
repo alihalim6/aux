@@ -28,6 +28,12 @@
 
                   <div class="d-flex justify-space-between align-center py-2">
                     <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
+
+                    <div v-if="!item.simpleOverlay" class="spotify-logo">
+                      <v-img @click="openItemInSpotify(item)" class="clickable spotify-icon overlay-spotify-icon" src="/Spotify_Logo_Icon.png"></v-img>
+                      <v-img @click="openItemInSpotify(item)" class="clickable spotify-full overlay-spotify-full" src="/Spotify_Logo_Full.png"></v-img>
+                    </div>
+
                     <v-icon class="close-button" large @click="closeOverlay()" aria-label="close page">mdi-close</v-icon>
                   </div>
 
@@ -157,6 +163,10 @@
       this.$nuxt.$root.$off('closeOverlay');
       this.$nuxt.$root.$off('displayArtistDetails');
     }
+
+    openItemInSpotify(item){
+      window.open(`https://open.spotify.com/${item.type}/${item.id}`, '_blank');
+    }
   }
 </script>
 
@@ -208,7 +218,7 @@
 
       .inner-container {
         max-width: $overlay-width;
-        padding: $base-padding;
+        padding: 0px $base-padding $base-padding;;
         margin: 0 auto;
         width: stretch;
 
@@ -246,6 +256,7 @@
             font-size: 12px;
             width: max-content;
             height: auto;
+            margin-bottom: 12px;
             
             @media (max-width: $full-image-cta-breakpoint) {
               display: unset;
@@ -326,5 +337,23 @@
 
   .full-item-image {
     margin: 0 auto;
+  }
+
+  .spotify-logo {
+    padding: $base-padding;
+  }
+
+  .overlay-spotify-icon {
+    display: none;
+
+    @media (max-width: $full-image-cta-breakpoint) {
+      display: block;
+    }
+  }
+
+  .overlay-spotify-full {
+    @media (max-width: $full-image-cta-breakpoint) {
+      display: none;
+    }
   }
 </style>

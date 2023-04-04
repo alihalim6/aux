@@ -1,8 +1,8 @@
 <template>
   <section class="loading-container">
     <div class="no-prompt-graphic loading">
-      <v-img src="http://www.clipartbest.com/cliparts/dT7/6xj/dT76xjjEc.gif"></v-img>
-      <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux_green.png')"></v-img>
+      <v-img src="/world.gif"></v-img>
+      <v-img class="animated-phrase" src="/pass_the_aux_green.png"></v-img>
     </div>
   </section>
 </template>

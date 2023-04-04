@@ -151,6 +151,7 @@ export async function setDuration(item){
 const retryPlayerInit = async () => {
   try{
     await refreshToken();
+    await initSpotifyPlayer();
   }
   catch(error){
     handleAuthError('Couldn\'t init player.');
@@ -186,6 +187,7 @@ export const initSpotifyPlayer = async () => {
   return new Promise(function(resolve){
     spotifyPlayer.addListener('ready', async ({device_id}) => {
       $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
+      window.spotifyPlayer = spotifyPlayer;
       storageSet(DEVICE_ID, device_id);
       resolve();
       console.log(`Spotify player ready with device id ${device_id}`);
@@ -321,7 +323,7 @@ export async function processAlbum(album){
 }
 
 //https://www.30secondsofcode.org/js/s/take-until/
-export const takeUntil = (arr, fn) => {
+export const takeUntilNotATrack = (arr, fn) => {
   for (const [i, val] of arr.entries()) if (fn(val)) return arr.slice(0, i);
   return arr;
 };

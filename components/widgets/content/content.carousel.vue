@@ -10,9 +10,9 @@
                 max-width="185" 
                 elevation="10" 
                 class="clickable" 
-                :class="{'content-hover': hover && !vertical, 'spaced-content': moreFromArtist || addToPlaylist, 'no-max-width': vertical, 'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)}"
+                :class="{'content-hover': hover && !vertical && !addToPlaylist, 'spaced-content': moreFromArtist || addToPlaylist, 'no-max-width': vertical, 'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)}"
               >
-                <v-img class="content-img" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
+                <v-img class="content-img" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
@@ -32,7 +32,7 @@
                       :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">
                         {{item.primaryLabel}}<span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
                       </div>
-                    <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
+                    <v-img v-if="newAndRecommended && item.isNew" src="/new.png" class="new-icon"></v-img>
                   </div>
 
                   <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>
@@ -109,6 +109,12 @@
     addTrackToPlaylist(playlist) {
       this.$nuxt.$emit('addTrackToPlaylist', playlist);
     } 
+
+    contentImgPressed(item){
+      if(!this.addToPlaylist){
+        this.$nuxt.$root.$emit('displayDetailOverlay', item);
+      }
+    }
   }
 </script>
 

@@ -1,6 +1,5 @@
 import {SPOTIFY, UI} from './constants';
-import {shuffleArray} from '~/utils/helpers';
-import {isSameTrack} from '~/utils/helpers';
+import {shuffleArray, isSameTrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 
 export const state = () => {
@@ -61,7 +60,7 @@ const THREE_DOT_TOAST_TIMEOUT = 2500;
 
 export const actions = {  
   playPreviousTrack: ({dispatch, getters}) => {
-    dispatch(`${SPOTIFY}/toggleTrackRepeat`, false, {root: true});
+    dispatch(`${SPOTIFY}/toggleTrackRepeat`, {repeat: false}, {root: true});
 
     playTrackWithinQueue({
       getters,
@@ -69,15 +68,18 @@ export const actions = {
       index: getters.currentlyPlayingIndex - 1
     });
   },
-  playNextTrack: ({dispatch, getters}, nextTrackButtonPressed) => {
-    dispatch(`${SPOTIFY}/toggleTrackRepeat`, false, {root: true});
+  playNextTrack: ({dispatch, getters}, {nextTrackButtonPressed, playingNextTrackNow}) => {
+    if(nextTrackButtonPressed){
+      dispatch(`${SPOTIFY}/toggleTrackRepeat`, {repeat: false}, {root: true});
+    }
 
     playTrackWithinQueue({
       getters,
       dispatch,
       index: getters.currentlyPlayingIndex + 1,
       playingNextTrack: true,
-      nextTrackButtonPressed
+      nextTrackButtonPressed,
+      playingNextTrackNow
     });
   },
   clearUpNext: ({getters, commit}) => {
@@ -98,12 +100,15 @@ export const actions = {
     commit('shuffleUpNext', {nextTracks: getters.nextTracks, currentIndex: getters.currentlyPlayingIndex});
   },
   playTrackNow: ({dispatch, getters, commit}, track) => {
+    let playingNextTrackNow = false;
+
     if(getters.nextTrack && isSameTrack(track, getters.nextTrack)){
       commit('removeFromQueue', getters.nextTrack);
+      playingNextTrackNow = true;
     }
 
     dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true});
-    dispatch('playNextTrack');
+    dispatch('playNextTrack', {playingNextTrackNow: true});
   },
   checkForEndOfQueue: ({getters, commit}) => {
     //if about to play last track in main queue and there are tracks in rest of queue, add from latter to former;

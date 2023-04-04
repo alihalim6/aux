@@ -1,6 +1,6 @@
 import {handleApiError} from '~/api/_utils';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
-import {shuffleArray, initSpotifyPlayer, processAlbum, takeUntil} from '~/utils/helpers';
+import {shuffleArray, initSpotifyPlayer, processAlbum, takeUntilNotATrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
@@ -44,7 +44,16 @@ export const getters = {
 };
 
 export const actions = {
-  togglePlayback: async ({commit, getters, dispatch}, {item, playingAllFeed, itemSet, shuffle, playingTrackWithinExistingQueue, nextTrackButtonPressed, playingNextTrack}) => {
+  togglePlayback: async ({commit, getters, dispatch}, {
+    item, 
+    playingAllFeed, 
+    itemSet, 
+    shuffle, 
+    playingTrackWithinExistingQueue, 
+    nextTrackButtonPressed, 
+    playingNextTrack,
+    playingNextTrackNow
+  }) => {
     try{
       const player = getters.player;
       const previouslyPlayingItem = getters.currentlyPlayingItem;
@@ -56,10 +65,6 @@ export const actions = {
       //if there was nothing playing and now there is, or if item playing has been toggled, flip the boolean
       if(!currentlyPlayingItemUri || currentItemToggled){
         commit('setAudioPlaying', !getters.audioPlaying);
-
-        if(player && !currentlyPlayingItemUri){
-          await player.setVolume(1);
-        }
       }
 
       if(currentItemToggled){
@@ -108,13 +113,14 @@ export const actions = {
         const currentlyPlayingItemIndex = item.queueIndex || queue.findIndex(setItem => setItem.uuid === item.uuid);
         queue = queue.length ? queue : [item];
 
-        await dispatch('playItem', {item, queue, currentlyPlayingItemIndex, playingNextTrack, nextTrackButtonPressed});
+        await dispatch('playItem', {item, queue, currentlyPlayingItemIndex, playingNextTrack, nextTrackButtonPressed, playingNextTrackNow});
 
         if(playingTrackWithinExistingQueue){  
           dispatch(`${PLAYBACK_QUEUE}/checkForEndOfQueue`, null, {root: true});
         }
         else{
           commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, feedId}, {root: true});
+          dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: true});//skip api call because on first play, their side is not reliably ready with the new device
         }
 
         commit('setNewPlayback', feedId);
@@ -126,7 +132,14 @@ export const actions = {
       dispatch('stopPlayback');
     }
   },
-  playItem: async ({getters, rootGetters, dispatch}, {item, queue, currentlyPlayingItemIndex, playingNextTrack, nextTrackButtonPressed}) => {
+  playItem: async ({getters, rootGetters, dispatch}, {
+    item, 
+    queue, 
+    currentlyPlayingItemIndex, 
+    playingNextTrack, 
+    nextTrackButtonPressed,
+    playingNextTrackNow
+  }) => {
     try {
       if(getters.sdkReady){
         //must init player on first play via user interaction (not app load) due to browser audio context requirements
@@ -143,7 +156,7 @@ export const actions = {
         return;
       }
 
-      if(playingNextTrack){
+      if(playingNextTrack && !playingNextTrackNow){
         let currentState;
       
         if(getters.player){
@@ -178,8 +191,26 @@ export const actions = {
       //doing it this way leads to sdk is used more (what we want) instead of api call due to them having correct next track more often;
 
       //has to use passed in queue instead of rootGetters due to getter timing not being reliable
+      let nextTracksToSend = null;
 
-      await startItemPlayback(item, takeUntil(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album'));
+      if(item.uri.indexOf('track') > 0){
+        nextTracksToSend = takeUntilNotATrack(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album');
+      }
+      else{
+        console.log('about to play an album-type track -> won\'t send next track uris');
+      }
+
+      await startItemPlayback(item, nextTracksToSend);
+
+      //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
+      if(queue.length > 1 && !nextTracksToSend){
+        const nextTrack = queue[currentlyPlayingItemIndex + 1];
+
+        if(nextTrack.uri.indexOf('track') > -1){
+          console.log(`adding the next track to spotify queue...${nextTrack.name}`);
+          spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+        }
+      }
     }
     catch(error){
       console.error(error);
@@ -192,24 +223,21 @@ export const actions = {
       const currentlyPlayingItem = getters.currentlyPlayingItem;
 
       if(getters.player){
-        //pause instead of disconnect so that on resume, we avoid a 404 and having to init a whole new player
-        getters.player.pause();
+        //needs to be disconnect so that on Spotify side, no rogue plays, and things clear out properly (e.g. stopping and replaying an album
+        //looks like a pause/play toggle to them if we were to use pause())
+        getters.player.disconnect();
       }
       
       commit('setItemPlaybackIcon', {item: currentlyPlayingItem, icon: 'play'});
       commit('setAudioPlaying', false);
       commit('setCurrentlyPlayingItem', {});
       commit('setCurrentlyPlayingItemUri', '');
+      commit('setNewPlayback', '');
       commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
       if(!noError){
         commit(`${UI}/setToast`, {text: 'There was an issue lorem ipsum...', error: true}, {root: true});
         storageRemove(DEVICE_ID);
-      }
-
-      //try to avoid rogue plays from Spotify side from being heard if we stop playback but they continue and override our player pause
-      if(getters.player){
-        getters.player.setVolume(0);
       }
     }
   },
@@ -228,10 +256,13 @@ export const actions = {
       }
     }
   },
-  async toggleTrackRepeat({getters, commit}, value){
-    const repeatTrack = (value != undefined) ? value : !getters.setToRepeatTrack;
+  async toggleTrackRepeat({getters, commit}, params){
+    const repeatTrack = (params == undefined) ? !getters.setToRepeatTrack : params.repeat;
     commit('setTrackRepeat', repeatTrack);
-    await spotify({url: `/me/player/repeat?state=${repeatTrack ? 'track' : 'off'}`, method: 'PUT'});
+
+    if(!params || !params.skipApiCall){
+      await spotify({url: `/me/player/repeat?state=${repeatTrack ? 'track' : 'off'}`, method: 'PUT'});
+    }
   },
 };
 

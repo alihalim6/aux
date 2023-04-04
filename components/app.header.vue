@@ -1,108 +1,126 @@
 <template>
-  <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll ref="appBar" :scroll-threshold="10">
-    <div class="logo-container">
-      <div class="aux-logo-container">
-        <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
-        <div class="inline-display outlined-phrase main-label">AUX</div>
+  <section>
+    <ActionDialog/>
+
+    <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll ref="appBar" :scroll-threshold="10">
+      <div class="logo-container">
+        <div class="aux-logo-container">
+          <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
+          <div class="inline-display outlined-phrase main-label">AUX</div>
+        </div>
+
+        <div class="d-flex align-center ml-2">
+          <span small class="divider">/</span>
+          <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon d-inline d-md-none" src="/Spotify_Logo_Icon.png"></v-img>
+          <v-img @click="spotifyLogoPressed()" class="clickable spotify-full d-none d-md-inline" src="/Spotify_Logo_Full.png"></v-img>
+        </div>
       </div>
 
-      <div class="d-flex align-center ml-2">
-        <v-icon small class="by-x">mdi-close</v-icon>
-        <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon d-inline d-md-none" :src="require('~/assets/Spotify_Logo_Icon.png')"></v-img>
-        <v-img @click="spotifyLogoPressed()" class="clickable spotify-full d-none d-md-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
-      </div>
-    </div>
+      <Search v-if="!isLoading"/>
 
-    <Search v-if="!isLoading"/>
+      <div class="user-menu-container">
+        <v-menu bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
+          <template v-slot:activator="{on, attrs}">            
+            <div class="clickable on-air-container" v-bind="attrs" v-on="on">
+              <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
+              <div class="users-on-air">{{liveUsers.length}}</div>
+              <v-icon class="live-info-icon" color="black" large>mdi-chevron-down</v-icon>
+            </div>
+          </template>
 
-    <div class="user-menu-container">
-      <v-menu bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
-        <template v-slot:activator="{on, attrs}">            
-          <div class="clickable on-air-container" v-bind="attrs" v-on="on">
-            <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
-            <div class="users-on-air">{{liveUsers.length}}</div>
-            <v-icon class="live-info-icon" color="black" large>mdi-chevron-down</v-icon>
-          </div>
-        </template>
-
-        <v-list>
-          <v-list-item>
-            <div class="user-list width-100 scroll-shadow">
-              <div class="d-flex justify-end">
-                <div v-if="liveUsers.length" class="following-on-container">
-                  <span class="following-on">FOLLOWING ON</span>
-                  <v-img class="spotify-img d-inline" :src="require('~/assets/Spotify_Logo_Full.png')"></v-img>
-                </div>
-              </div>
-
-              <div v-if="liveUsers.length" class="cursor-auto">
-                <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
-                  <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
-
-                  <div :class="{'ignored-opacity': user.ignored}">
-                    <v-img v-if="user.img" :src="user.img" class="user-img"></v-img>
-                    <div v-else class="round-profile-letter small-margin-right">{{`${user.name.substring(0, 1)}`}}</div>
+          <v-list>
+            <v-list-item>
+              <div class="user-list width-100 scroll-shadow">
+                <div class="d-flex justify-end">
+                  <div v-if="liveUsers.length" class="following-on-container">
+                    <span class="following-on">FOLLOWING ON</span>
+                    <v-img class="spotify-img d-inline" src="/Spotify_Logo_Full.png"></v-img>
                   </div>
-                  
-                  <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
-                  
-                  <v-switch 
-                    :class="{'not-following-switch': !user.following, 'ignored-opacity': user.ignored}" 
-                    v-model="user.following" 
-                    :hide-details="true" 
-                    color="#1DB954" 
-                    @click="followingUserToggled(user)"
-                  >
-                  </v-switch>
+                </div>
+
+                <div v-if="liveUsers.length" class="cursor-auto">
+                  <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
+                    <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
+
+                    <div :class="{'ignored-opacity': user.ignored}">
+                      <v-img v-if="user.img" :src="user.img" class="user-img"></v-img>
+                      <div v-else class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
+                    </div>
+                    
+                    <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
+                    
+                    <v-switch 
+                      :class="{'not-following-switch': !user.following, 'ignored-opacity': user.ignored}" 
+                      v-model="user.following" 
+                      :hide-details="true" 
+                      color="#1DB954" 
+                      @click="followingUserToggled(user)"
+                    >
+                    </v-switch>
+                  </div>
+                </div>
+
+                <div v-else>
+                  <div class="d-flex flex-column align-center">
+                    <span class="no-other-users-message">No one else is here.</span>
+                    <v-img class="no-other-users-img" src="/no_other_users.png"></v-img>
+                  </div>
                 </div>
               </div>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-              <div v-else>
-                <div class="d-flex flex-column align-center">
-                  <span class="no-other-users-message">No one else is here.</span>
-                  <v-img class="no-other-users-img" :src="require('~/assets/no_other_users.png')"></v-img>
-                </div>
+        <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
+          <template v-slot:activator="{on, attrs}">
+            <div v-bind="attrs" v-on="on" class="profile-menu-icon">     
+              <v-img v-if="profile.img" :src="profile.img" class="round-img-icon menu-img"></v-img>
+
+              <div v-else class="profile-name-letter">
+                <span >{{profile.name.substring(0, 1)}}</span>
               </div>
             </div>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+          </template>
 
-      <v-menu bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
-        <template v-slot:activator="{on, attrs}">            
-          <v-icon v-bind="attrs" v-on="on" color="#191414" class="clickable" large>mdi-menu</v-icon>
-        </template>
+          <v-list>
+            <v-list-item class="clickable menu-option-container">
+              <div class="aux-mode-toggle">
+                <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()" label="AUX Mode"></v-switch>              
+                <v-icon small class="clickable ml-2" color="#888" id="auxModeTooltipIcon">mdi-help-circle-outline</v-icon>
 
-        <v-list>
-          <v-list-item class="clickable menu-option-container">
-            <div class="aux-mode-toggle">
-              <v-switch v-model="auxModeOn" :hide-details="true" color="#1DB954" @change="auxModeToggled()" label="AUX Mode"></v-switch>              
-              <v-icon small class="clickable ml-2" color="#888" id="auxModeTooltipIcon">mdi-help-circle-outline</v-icon>
+                <v-tooltip left color="#1DB954" attach="#footer" activator="#auxModeTooltipIcon" :open-on-hover="false">
+                  <span>When <span class="font-weight-bold">AUX Mode</span> is on, tracks played by others are automatically added to your queue
+                    <v-icon small class="ml-1" color="white">mdi-arrow-down</v-icon>
+                  </span>
+                </v-tooltip>
+              </div>
+            </v-list-item>
 
-              <v-tooltip left color="#1DB954" attach="#footer" activator="#auxModeTooltipIcon" :open-on-hover="false">
-                <span>When <span class="font-weight-bold">AUX Mode</span> is on, tracks played by others are automatically added to your queue
-                  <v-icon small class="ml-1" color="white">mdi-arrow-down</v-icon>
-                </span>
-              </v-tooltip>
-            </div>
-          </v-list-item>
+            <v-list-item v-if="!runningInPwa && (pwaInstallEvent || isIos)" class="clickable menu-option-container" @click="() => {}">
+              <span class="install-pwa-label on-air">Install as an App</span>
+            </v-list-item>
 
-          <v-list-item class="clickable menu-option-container" @click="() => {}">
-            <span class="menu-label">Feedback/Contact</span>
-          </v-list-item>
+            <v-list-item class="clickable menu-option-container" @click="logout()">
+              <span class="menu-label">Logout</span>
+            </v-list-item>
 
-          <v-list-item class="clickable menu-option-container" @click="logoutPressed()">
-            <span class="menu-label">Logout</span>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </div>
-  </v-app-bar>
+            <v-list-item class="clickable menu-option-container" @click="feedbackContactPressed()">
+              <span class="menu-label">Get In Touch</span>
+            </v-list-item>
+
+            <v-list-item class="clickable menu-option-container danger" @click="deleteUserActivity()">
+              <span class="menu-label">Delete AUX Activity...</span>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+    </v-app-bar>
+  </section>
 </template>
 
 <script>
-  import {Component, Vue, Getter, Watch, Mutation, Action} from 'nuxt-property-decorator';
-  import {FEED, USER, UI, SPOTIFY} from '~/store/constants';
+  import {Component, Vue, Getter, Watch, Mutation} from 'nuxt-property-decorator';
+  import {FEED, USER, UI} from '~/store/constants';
   import {storageSet, clearStorage, storageGet} from '~/utils/storage';
   import {AUX_MODE, SPLASH, IGNORED_USERS, AUTH} from '~/utils/constants';
   import {ignoredUsers} from '~/utils/helpers';
@@ -115,9 +133,9 @@
   export default class AppHeader extends Vue {
     auxModeOn = true;
     liveUsers = [];
-    isIos;
-    isAndroid;
+    isIos = false;
     zIndex = 2000;
+    runningInPwa = false;
 
     @Getter('users', {namespace: FEED})
     users;
@@ -128,11 +146,14 @@
     @Getter('isLoading', {namespace: UI})
     isLoading;
 
+    @Getter('pwaInstallEvent', {namespace: UI})
+    pwaInstallEvent;
+
     @Mutation('setToast', {namespace: UI})
     setToast;
 
-    @Action('stopPlayback', {namespace: SPOTIFY})
-    stopPlayback;
+    @Mutation('setActionDialog', {namespace: UI})
+    setActionDialog;
 
     @Watch('users', {immediate: true})
     async usersChanged(liveUsers){
@@ -157,13 +178,11 @@
       }
     }
     
-    mounted(){
+    beforeMount(){
       if(navigator){
         const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
         this.isIos = iosPlatforms.find(platform => navigator.userAgent.includes(platform));
-
-        const ua = navigator.userAgent.toLowerCase();
-        this.isAndroid = ua.indexOf('android') > -1;
+        this.runningInPwa = window.matchMedia('(display-mode: standalone)').matches || document.referrer.startsWith('android-app://') || navigator.standalone;
       }
     }
 
@@ -177,10 +196,9 @@
       });
     }
 
-    logoutPressed(){
-      this.stopPlayback(true);
+    logout(deletedActivity){
       clearStorage();
-      $nuxt.$router.push({name: SPLASH, params: {loggedIn: true}});
+      $nuxt.$router.push({name: SPLASH, params: {loggedIn: !deletedActivity}});
     }
 
     ignoreUserToggled(user){
@@ -234,14 +252,42 @@
     spotifyLogoPressed(){
       window.open('https://www.spotify.com', '_blank');
     }
+
+    feedbackContactPressed(){
+      window.open('https://linktr.ee/alihalim', '_blank');
+    }
+
+    deleteUserActivity(){
+      this.setActionDialog({
+        text: `Delete tracks I've played, comments/reactions I've made, and my profile info (username, photo url and Spotify user ID) that AUX has saved (bars?):`,
+        confirmLabel: 'CONFIRM AND LOGOUT',
+        confirmFn: async () => {
+          await auxApiClient.post('/user/delete', {profile: this.profile}, {    
+            headers: {
+              Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+            }
+          });
+
+          try {
+            await auxApiClient.post('/feed/deleteUserActivity', {profile: this.profile}, {    
+              headers: {
+                Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+              }
+            });
+
+            this.logout(true);
+          }
+          catch(error){
+            this.setToast({text: 'Sorry, there was an issue deleting your data. Please try again!', error: true})
+          }
+        } 
+      });
+    }
   }
 </script>
 
 <style lang="scss">
   .app-bar {
-    $rose-red: #f81c03;
-    $cream: #fcfce0;
-    
     height: $app-header-height !important;
     max-height: $app-header-height;
     z-index: 30 !important;
@@ -285,7 +331,7 @@
           transform: skewX(-9.9deg);
           font-size: 26px;
           margin-left: -19px;
-          padding: 0px 6px;
+          padding: 0px 2px;
           letter-spacing: 4px;
           line-height: 1.7;
 
@@ -295,20 +341,11 @@
         }
       }
 
-      .by-x {
+      .divider {
         color: $primary-theme-color;
         padding-right: 4px;
-      }
-
-      .spotify-full {
-        width: 4.5em;
-      }
-
-      .spotify-icon {
-        $icon-size: 1.2em;
-
-        width: $icon-size;
-        height: $icon-size;
+        font-weight: bold;
+        font-weight: 26px;
       }
     }
 
@@ -316,6 +353,11 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-top: 13px;
+
+      @media(max-width: $max-inner-width){
+        margin-top: 7px;
+      }
 
       .on-air-container {
         display: flex;
@@ -400,7 +442,8 @@
   .menu-label {
     font-weight: bold;
     font-size: 12px;
-    color: $primary-theme-color;
+    color: $primary-theme-color !important;
+    text-decoration: none;
   }
 
   .aux-mode-toggle {
@@ -531,5 +574,34 @@
   .live-dot {
     margin-right: -8px;
     margin-top: 2px;
+  }
+
+  .danger {
+    background-color: $cream;
+
+    .menu-label {
+      color: $rose-red !important;
+    }
+  }
+
+  .profile-name-letter {
+    font-weight: bold;
+    border: 3px solid $primary-theme-color;
+    font-size: 18px;
+    border-radius: 100%;
+    padding: 2px 7px;
+    text-transform: uppercase;
+    width: 100%;
+    min-width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .menu-img {
+    $icon-size: 32px !important;
+
+    height: $icon-size;
+    max-width: $icon-size;
   }
 </style>

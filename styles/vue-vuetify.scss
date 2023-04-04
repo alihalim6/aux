@@ -197,3 +197,11 @@ $feed-base-bottom: 15px;
 .v-divider {
   border-width: 6px 0 0 0;
 }
+
+.theme--light.v-icon:focus::after {
+  opacity: 0;
+}
+
+.v-application .elevation-2.app-bar {
+  box-shadow: none !important;
+}

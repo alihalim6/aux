@@ -232,11 +232,11 @@
 
 <style lang="scss">    
   #searchContainer {
-    margin-top: 5px;
+    margin-top: 12px;
     max-width: 78px;
 
     @media(min-width: $device-size-threshold){
-      margin-top: 8px;
+      margin-top: 16px;
       position: relative;
     }
 
@@ -254,6 +254,7 @@
 
       .v-input__control > .v-input__slot:before {
         border-width: 1px;
+        border-color: $primary-theme-color;
       }
     }
   }
@@ -321,7 +322,7 @@
   .search-icon {
     color: black !important;
     border-bottom: 2px solid $primary-theme-color;
-    margin-left: 8px;
+    margin-left: 12px;
 
     @media(min-width: $device-size-threshold){
       display: none !important;

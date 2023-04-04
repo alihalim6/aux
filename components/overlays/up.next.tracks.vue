@@ -1,6 +1,6 @@
 <template>
   <section class="up-next-list-container" id="upNextListContainer" v-if="nextTrack">
-    <div class="clickable up-next-header" @click="$nuxt.$emit('hideUpNext')">
+    <div class="clickable up-next-header" @click="$nuxt.$root.$emit('hideUpNext')">
       <v-icon class="align-self-start" x-large color="white">mdi-chevron-down</v-icon>
 
       <div class="d-inline-flex align-center">
@@ -34,9 +34,13 @@
     </div>
 
     <div class="next-track-container">
-      <v-card elevation="6" class="clickable mt-10" @click.stop="nextTrackArtworkPressed()">
-        <v-img :src="nextTrack.imgUrl.medium" class="next-track-img"></v-img>
-      </v-card>
+      <div class="position-relative">
+        <v-card elevation="6" class="clickable mt-10" @click.stop="nextTrackArtworkPressed()">
+          <v-img :src="nextTrack.imgUrl.medium" class="next-track-img"></v-img>
+        </v-card>
+
+        <ThreeDotIcon :item="nextTrack" :item-in-queue="true" iconClass="up-next-three-dot next-track-three-dot mt-10" iconColor="white"/>
+      </div>
 
       <div class="track-info">
         <div class="info-item">
@@ -80,7 +84,7 @@
       <div v-for="track in thenTracks" :key="track.feedId" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
-        <ThreeDotIcon :item="track" :itemInQueue="true" iconClass="up-next-three-dot" iconColor="white"/>
+        <ThreeDotIcon :item="track" :item-in-queue="true" iconClass="up-next-three-dot" iconColor="white"/>
       </div>
 
       <span v-show="restOfQueueLength" class="plus-more">+ {{restOfQueueLength }} MORE... </span>
@@ -135,7 +139,7 @@
         this.$forceUpdate();
       }
       else {
-        this.$nuxt.$emit('hideUpNext');
+        this.$nuxt.$root.$emit('hideUpNext');
       }
     }
 
@@ -144,29 +148,31 @@
     }
 
     async nextTrackPressed(track, itemSet){
-      this.$nuxt.$emit('hideUpNext');
+      this.$nuxt.$root.$emit('hideUpNext');
       await this.togglePlayback({item: track, itemSet, playingTrackWithinExistingQueue: true});
     }
 
     async fromAlbumPressed(album){
       setItemMetaData([album]);
-      this.$nuxt.$emit('hideUpNext');
+      this.$nuxt.$root.$emit('hideUpNext');
       this.$nuxt.$root.$emit('displayDetailOverlay', album)
     }
 
     clearUpNextPressed(){
       this.clearUpNext();
-      this.$nuxt.$emit('hideUpNext');
+      this.$nuxt.$root.$emit('hideUpNext');
     }
 
     nextTrackArtworkPressed(){
-      this.$nuxt.$emit('hideUpNext');
+      this.$nuxt.$root.$emit('hideUpNext');
       this.$nuxt.$root.$emit('displayDetailOverlay', setItemMetaData(cloneDeep([this.nextTrack]))[0]);
     }
   }
 </script>
 
 <style lang="scss">  
+  $img-size: 250px;
+
   .up-next-list-container {
     width: 100%;
     height: 100%;
@@ -217,7 +223,6 @@
       align-items: center;
 
       .next-track-img {
-        $img-size: 250px;
         width: $img-size;
         height: $img-size;
       }
@@ -228,6 +233,7 @@
         justify-content: center;
         flex-wrap: wrap;
         margin-top: 12px;
+        max-width: 600px;
 
         .info-item {
           display: flex;
@@ -301,5 +307,11 @@
     font-style: italic;
     font-weight: bold;
     margin-top: 16px;
+  }
+
+  .next-track-three-dot {
+    position: absolute !important;
+    top: calc(#{$img-size} / 2);
+    right: -40px;
   }
 </style>

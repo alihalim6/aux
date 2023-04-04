@@ -10,7 +10,7 @@
           </v-hover>
         </div>
         
-        <div class="filter-container" v-if="allItems && allItems.length" >
+        <div class="filter-container" v-if="allItems.length" >
           <div class="clickable filter-label" @click="displayAll()">
             <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->
             <span v-else>See All</span>
@@ -62,10 +62,15 @@
     }
 
     async getData(){
-      const {previewItems, newReleases, allItems} = await newAndRecommended();
-      this.previewItems = setItemMetaData(previewItems);
-      this.newReleases = newReleases;
-      this.allItems = allItems;
+      try {
+        const {previewItems, newReleases, allItems} = await newAndRecommended();
+        this.previewItems = setItemMetaData(previewItems);
+        this.newReleases = newReleases;
+        this.allItems = allItems;
+      }
+      catch(error){
+        console.error(error);
+      }
     }
 
     displayOverlay({allNewAndRecommended, newReleases, name, data}){
@@ -79,7 +84,7 @@
           name,
           data
         });
-      }, 20);
+      }, 10);
     }
 
     displayAll(){

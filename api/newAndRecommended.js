@@ -1,4 +1,5 @@
-import {topItems, shuffleArray, getRecommendationSeeds, getATopArtist, httpClient} from './_utils';
+import {topItems, getRecommendationSeeds, getATopArtist, httpClient} from './_utils';
+import {shuffleArray} from '~/utils/helpers';
 
 const getRecommendedTracks = async (topArtists) => {
   const topTracks = await topItems('tracks');
@@ -22,21 +23,34 @@ const getRecommendedArtists = async (topArtists) => {
 async function newAndRecommended(){
   //TODO don't recommend if already follow an artist/like a track etc.
 
-  const {data} = await httpClient.get('/browse/new-releases?limit=25');
-  const newReleases = data.albums.items;
+  try {
+    const {data} = await httpClient.get('/browse/new-releases?limit=50');
+    const newReleases = data.albums.items;
+    let newReleasesOffset = data.albums.items.length;
 
-  const topArtists = await topItems('artists');
-  const recommendedTracks = await getRecommendedTracks(topArtists.data);
-  const recommendedArtists = await getRecommendedArtists(topArtists.data);
-  
-  const allItems = [...newReleases.map(item => ({...item, isNew: true})), ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.splice(0, 7)];
-  shuffleArray(allItems);
+    while(newReleasesOffset < data.albums.total){
+      const response = await httpClient.get(`/browse/new-releases?limit=50&offset=${newReleasesOffset}`);
+      newReleases.push.apply(newReleases, response.data.albums.items);
+      newReleasesOffset += response.data.albums.items.length;
+    }
 
-  return {
-    allItems,
-    previewItems: [...Array.from(allItems)].splice(0, 30),
-    newReleases
-  };
+    const topArtists = await topItems('artists');
+    const recommendedTracks = await getRecommendedTracks(topArtists.data);
+    const recommendedArtists = await getRecommendedArtists(topArtists.data);
+    const someShuffledNewReleases = shuffleArray([...newReleases]).slice(0, 10);
+    
+    const allItems = [...someShuffledNewReleases.map(item => ({...item, isNew: true})), ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.slice(0, 5)];
+    shuffleArray(allItems);
+
+    return {
+      allItems,
+      previewItems: [...Array.from(allItems)].splice(0, 30),
+      newReleases
+    };
+  }
+  catch(error){
+    console.error(error);
+  }
 }
 
 export default newAndRecommended;

@@ -45,9 +45,6 @@ export default {
     AUX_SECRET: process.env.AUX_SECRET
   },
 
-  // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
-
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {

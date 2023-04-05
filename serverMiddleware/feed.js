@@ -3,7 +3,7 @@ import auth from './_auth';
 
 const bodyParser = require('body-parser')
 const app = require('express')();
-const client = new MongoClient(process.env.MONGO_URI);
+const client = new MongoClient(process.env.MONGO_URI, {useUnifiedTopology: true});
 const database = client.db('feed');
 
 app.use(bodyParser.json());

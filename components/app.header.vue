@@ -19,7 +19,7 @@
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
-        <v-menu bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
+        <v-menu left bottom transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y allow-overflow>
           <template v-slot:activator="{on, attrs}">            
             <div class="clickable on-air-container" v-bind="attrs" v-on="on">
               <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
@@ -259,7 +259,7 @@
 
     deleteUserActivity(){
       this.setActionDialog({
-        text: `Delete tracks I've played, comments/reactions I've made, and my profile info (username, photo url and Spotify user ID) that AUX has saved (bars?):`,
+        text: `Delete tracks I've played, comments/reactions I've made, and profile info (username, photo url and Spotify user ID) that AUX has saved (bars?):`,
         confirmLabel: 'CONFIRM AND LOGOUT',
         confirmFn: async () => {
           await auxApiClient.post('/user/delete', {profile: this.profile}, {    
@@ -301,7 +301,7 @@
 
     @supports(-webkit-text-stroke: 1px $rose-red) {
       .outlined-pass-phrase {
-        -webkit-text-stroke: 1px $rose-red;
+        -webkit-text-stroke: 1.3px $rose-red;
         -webkit-text-fill-color: $rose-red;
       }
     }
@@ -319,10 +319,11 @@
         
         .pass-the-phrase {
           color: $rose-red;
-          transform: rotate(-80deg) scaleY(1.5);
+          transform: rotate(-79.5deg) scaleY(1.3);
           font-size: 10px;
           white-space: nowrap;
           font-style: italic;
+          letter-spacing: 0.75px;
         }
 
         .main-label {
@@ -330,8 +331,8 @@
           color: $cream;
           transform: skewX(-9.9deg);
           font-size: 26px;
-          margin-left: -19px;
-          padding: 0px 2px;
+          margin-left: -21px;
+          padding: 0px 2px 0px 5px;
           letter-spacing: 4px;
           line-height: 1.7;
 

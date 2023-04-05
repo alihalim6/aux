@@ -10,10 +10,10 @@
       </div>
     </v-card>
 
-    <!-- TOP ALBUMS -->  
+    <!-- ALBUMS -->  
     <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="artistAlbums.length">
       <div class="more-from-artist">
-        <div class="more-from-artist-title font-weight-bold">Top Albums</div>
+        <div class="more-from-artist-title font-weight-bold">Albums</div>
         <ContentCarousel :data="artistAlbums" :moreFromArtist="true"/>
       </div>
     </v-card>
@@ -80,7 +80,7 @@
           return album;
         }
         catch(error){
-          console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
+          //console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
         }
       }));
     }

@@ -46,7 +46,7 @@
             </div>
           </div>
 
-          <div class="d-flex justify-center">
+          <div class="d-flex justify-center mr-6">
             <v-icon 
               class="clickable queue-control" 
               :class="{'no-visibility': !hasPreviousTrack, 'disable-playback-control': !trackReady}" 
@@ -188,7 +188,6 @@
 
     @Watch('currentlyPlayingItem')
     async itemPlayingChanged(item){
-      this.setPlayerVolume(0);
       this.stopInterval();
 
       if(item.feedId){
@@ -207,8 +206,6 @@
       const item = this.currentlyPlayingItem;
 
       if(item && item.feedId){
-        this.setPlayerVolume(1);
-
         if(!this.playbackInterval){
           this.startInterval();
         }
@@ -264,18 +261,9 @@
           }
           else{
             this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
-            this.syncElapsedWithPlayer();
           }
         }
       }, 1000);
-    }
-
-    async syncElapsedWithPlayer(){
-      const currentState = await this.player.getCurrentState();
-
-      if(currentState && !currentState.paused){
-        this.playbackElapsed.display = msToDuration(currentState.position);
-      }
     }
 
     async repeatCurrentTrack(){
@@ -361,13 +349,6 @@
 
     displayItemDetails(){
       this.$nuxt.$root.$emit('displayDetailOverlay', setItemMetaData(cloneDeep([this.currentlyPlayingItem]))[0]);
-    }
-
-    //try to avoid rogue plays from Spotify side from being heard if we stop playback but they continue and override our player pause
-    setPlayerVolume(volume){
-      if(this.player){
-        this.player.setVolume(volume);
-      }
     }
 
     previousTrackPressed(){
@@ -548,7 +529,7 @@
     right: -5px;
     top: 32px;
     transform: scale(0.73);
-    padding: 6px 5px !important;
+    padding: 5px 5px 4px !important;
   }
 
   .repeat-set {

@@ -13,7 +13,7 @@ const getRecommendedTracks = async (topArtists) => {
 const getRecommendedArtists = async (topArtists) => {
   if(topArtists.items.length){
     const topArtist = await getATopArtist(topArtists);
-    console.log(`top artist seed for related artists: ${topArtist.name}`);
+    //console.log(`top artist seed for related artists: ${topArtist.name}`);
     return await httpClient.get(`/artists/${topArtist.id}/related-artists`);
   }
 
@@ -49,7 +49,7 @@ async function newAndRecommended(){
     };
   }
   catch(error){
-    console.error(error);
+    //console.error(error);
   }
 }
 

@@ -43,7 +43,7 @@
         </div>
       </div>
 
-      <v-img class="animated-phrase splash-animation" src="/pass_the_aux_green.png"></v-img>
+      <v-img class="splash-animation" src="/pass_the_aux_green.png"></v-img>
     </div>
 
     <div class="bottom-content">
@@ -71,18 +71,18 @@
     @Getter('feed', {namespace: UI})
     feed;
 
-    beforeMount(){
-      window.addEventListener('beforeinstallprompt', (e) => {
+    created(){
+      window.addEventListener('beforeinstallprompt', e => {
         // Prevent the mini-infobar from appearing on mobile
         e.preventDefault();
         // Stash the event so it can be triggered later.
         this.setPwaInstallEvent(e);
         // Optionally, send analytics event that PWA install promo was shown.
-        console.log(`'beforeinstallprompt' event was fired.`);
+        //console.log(`'beforeinstallprompt' event was fired.`);
       });
 
       window.addEventListener('appinstalled', () => {
-        console.log('PWA was installed...make api call to store');
+        //console.log('PWA was installed...make api call to store');
       });
     }
 
@@ -97,8 +97,6 @@
 </script>
 
 <style lang="scss">
-  @import url('https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Public+Sans:wght@400;700&display=swap');
-
   $header-margin: 5%;
   $splash-device-size-threshold: 430px;
 

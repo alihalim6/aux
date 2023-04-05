@@ -241,7 +241,7 @@
     right: 8px;
     max-width: 50vw;
     min-width: 40vw;
-    background-color: rgba(0, 0, 0, 0.27);
+    background-color: rgba(0, 0, 0, 0.24);
     backdrop-filter: blur(24px);
     color: white;
     z-index: 300;

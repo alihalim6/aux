@@ -68,6 +68,7 @@
         this.addReactionToActivity({activity: this.activity, message: this.chatMessage, splash: this.isSplashPage()});
         this.handleFeedAlert();
         this.chatMessage = '';
+        this.scrollReactionsDown();
       }
     }
 
@@ -77,6 +78,17 @@
       this.handleFeedAlert(message);
       this.chatMessage = '';
       this.$forceUpdate();
+      this.scrollReactionsDown();
+    }
+
+    async scrollReactionsDown(){
+      await this.$nextTick();
+      const reactionsContainer = document.getElementById(`${this.activity.feedId}-reactions`);
+
+      if(reactionsContainer){
+        //console.log('herre')
+        reactionsContainer.scrollTo(0, 99999);
+      }
     }
 
     isSplashPage(){

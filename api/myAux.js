@@ -49,7 +49,7 @@ async function myAux(){
     };
   }
   catch(error){
-    console.error(error);
+    //console.error(error);
   }
 };
 

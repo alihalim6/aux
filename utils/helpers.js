@@ -177,29 +177,29 @@ export const initSpotifyPlayer = async () => {
 
   const connected = await spotifyPlayer.connect();
 
-  console.log(`Connected to Spotify player: ${connected}`);
+  //console.log(`Connected to Spotify player: ${connected}`);
 
   if(!connected){
-    console.log(`Retrying...`);
+    //console.log(`Retrying...`);
     retryPlayerInit();
   }
 
   return new Promise(function(resolve){
     spotifyPlayer.addListener('ready', async ({device_id}) => {
+      spotifyPlayer.activateElement();
       $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
-      window.spotifyPlayer = spotifyPlayer;
       storageSet(DEVICE_ID, device_id);
       resolve();
-      console.log(`Spotify player ready with device id ${device_id}`);
+      //console.log(`Spotify player ready with device id ${device_id}`);
     });
 
     spotifyPlayer.addListener('authentication_error', async ({message}) => {
-      console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
+      //console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
       retryPlayerInit();
     });
 
     spotifyPlayer.addListener('not_ready', async () => {
-      console.error('Spotify player is offline...');
+      //console.error('Spotify player is offline...');
     });
     
     spotifyPlayer.addListener('player_state_changed', async (currentState) => {      

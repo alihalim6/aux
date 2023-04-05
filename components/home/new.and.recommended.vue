@@ -69,7 +69,7 @@
         this.allItems = allItems;
       }
       catch(error){
-        console.error(error);
+        //console.error(error);
       }
     }
 

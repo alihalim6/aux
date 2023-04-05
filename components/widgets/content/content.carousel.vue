@@ -6,11 +6,23 @@
             <section>
               <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
 
+              <v-img class="clickable content-img artist-img" :class="{'content-hover': hover}" v-if="item.isArtist && item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
+                <template v-slot:placeholder>
+                  <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
+                </template>
+              </v-img>
+
               <v-card 
+                v-else
                 max-width="185" 
                 elevation="10" 
                 class="clickable" 
-                :class="{'content-hover': hover && !vertical && !addToPlaylist, 'spaced-content': moreFromArtist || addToPlaylist, 'no-max-width': vertical, 'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)}"
+                :class="{
+                  'content-hover': hover && !vertical && !addToPlaylist, 
+                  'spaced-content': moreFromArtist || addToPlaylist, 
+                  'no-max-width': vertical, 
+                  'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)
+                }"
               >
                 <v-img class="content-img" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
                   <template v-slot:placeholder>
@@ -23,8 +35,12 @@
                 <v-icon color="white" large @click="addTrackToPlaylist(item)" aria-label="add track to playlist">mdi-plus</v-icon>
               </div>
 
-              <div :class="{'pb-8': vertical}" v-if="!addToPlaylist">
-                <div class="primary-container" :class="{'hovered-primary-container': hover && !vertical, 'hovered-primary-last-container': hover && !vertical && index == data.length - 1}">
+              <div :class="{'pb-8': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
+                <div class="primary-container" 
+                  :class="{
+                    'hovered-primary-container': hover && !vertical && !item.isArtist, 
+                    'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist
+                  }">
                   <div class="d-flex align-start">
                     <div 
                       class="clickable primary-label" 
@@ -140,8 +156,7 @@
 
     .content-img {
       min-width: $content-img-size;
-      min-height: $content-img-size;
-      max-height: $content-img-size;
+      height: $content-img-size;
     }
 
     .secondary-label {
@@ -188,6 +203,7 @@
       padding-top: 0px;
       color: #888888;
       font-size: $secondary-label-font-size;
+      text-align: center;
     }
 
     .more-from-padding {
@@ -236,5 +252,10 @@
     border-radius: 100%;
     width: fit-content;
     margin: 18px auto 32px;
+  }
+
+  .artist-img {
+    border-radius: 100% !important;
+    max-width: $content-img-size;
   }
 </style>

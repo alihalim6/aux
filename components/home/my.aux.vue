@@ -115,7 +115,7 @@
         const data = await myAux();
 
         if(data.profile.product != 'premium'){
-          this.$nuxt.error({message: 'Unfortuantely, AUX can only support Spotify Premium users at this time. Sorry about that!', notPremium: true, actionButtonLabel: 'GO BACK TO SPOTIFY LOGIN'});
+          this.$nuxt.error({customMessage: 'Unfortuantely, AUX can only support Spotify Premium users at this time. Sorry about that!', notPremium: true, actionButtonLabel: 'GO BACK TO SPOTIFY LOGIN'});
         }
         
         this.setProfile(data.profile);
@@ -153,14 +153,14 @@
 
         //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
         this.$nuxt.$on('playPreShuffledLikes', async playbackItem => {
-          console.log('playing preshuffled tracks');
+          //console.log('playing preshuffled tracks');
           await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
           //set a new shuffle for next time
           this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
         });
       }
       catch(error){
-        console.error(error);
+        //console.error(error);
       }
     }
 

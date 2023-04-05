@@ -224,7 +224,7 @@
         });
       }
       catch(error){
-        console.log(error)
+        //console.log(error)
         this.setToast({text: 'Something went wrong lorem ipsum...', error: true});//could happen on load of three dot options not necessarily an action so keep generic
       }
     }

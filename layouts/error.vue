@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div class="container">
-      <div class="message">{{error.message ||  'Something exploded, and here we are. Sorry about that.'}}</div>
+      <div class="message">{{error.customMessage ||  'Something exploded and here we are. Sorry about that.'}}</div>
 
       <div class="clickable nav-button error-button" @click="actionButtonPressed()">
         <span class="nav-button-label">{{error.actionButtonLabel || 'RELOAD'}}</span>

@@ -28,7 +28,7 @@ app.post('/initialize', async (req, res) => {
             activity.reactions = [];
           }
 
-          activity.reactions.unshift(reaction);
+          activity.reactions.push(reaction);
         }
       }
       
@@ -38,7 +38,7 @@ app.post('/initialize', async (req, res) => {
     res.json({activities: sortedActivities});
   }
   catch(error){
-    console.log(error)
+    //console.log(error)
     res.sendStatus(500);
   }
 });

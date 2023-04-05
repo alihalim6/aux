@@ -262,7 +262,7 @@ export const mutations = {
       }
 
       activity.updateTimestamp = timestamp;
-      activity.reactions.unshift({author: reaction.author.name, message: reaction.message, timestamp});
+      activity.reactions.push({author: reaction.author.name, message: reaction.message, timestamp});
     }
   },
   updateLatestActivity(state, activity){

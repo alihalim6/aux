@@ -60,7 +60,7 @@ export const actions = {
       let currentlyPlayingItemUri = getters.currentlyPlayingItemUri;
       const currentItemToggled = !playingAllFeed && (currentlyPlayingItemUri === item.feedId);
 
-      console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
+      //console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
   
       //if there was nothing playing and now there is, or if item playing has been toggled, flip the boolean
       if(!currentlyPlayingItemUri || currentItemToggled){
@@ -78,7 +78,7 @@ export const actions = {
 
         if(item.isCollection){
           const collectionUri = item.uri;
-          console.log(`collection toggled: ${item.name} - ${collectionUri}`);
+          //console.log(`collection toggled: ${item.name} - ${collectionUri}`);
 
           if(item.isPlaylist){
             queue = item.details.playlistTracks;
@@ -101,7 +101,7 @@ export const actions = {
         }
 
         if(shuffle){
-          console.log('item set shuffled');
+          //console.log('item set shuffled');
           shuffleArray(queue);
           item = queue[0];
         }
@@ -120,15 +120,16 @@ export const actions = {
         }
         else{
           commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, feedId}, {root: true});
-          dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: true});//skip api call because on first play, their side is not reliably ready with the new device
         }
 
+        //skip api call because on very first session play, Spotify side is not ready with the new device
+        dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: !previouslyPlayingItem.feedId});
         commit('setNewPlayback', feedId);
         dispatch(`${FEED}/addToFeed`, {track: item, feedId}, {root: true});
       }
     }
     catch(error){
-      console.log(error);
+      //console.log(error);
       dispatch('stopPlayback');
     }
   },
@@ -152,7 +153,7 @@ export const actions = {
       }
 
       if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
-        console.log('skipping Candace playback logic');
+        //console.log('skipping Candace playback logic');
         return;
       }
 
@@ -164,20 +165,20 @@ export const actions = {
         }
 
         if(currentState){
-          console.log(`current Spotify track: ${currentState.track_window.current_track.name}`);
-          console.log(`next Spotify track: ${currentState.track_window.next_tracks[0] ? currentState.track_window.next_tracks[0].name : 'nada'}`);
+          //console.log(`current Spotify track: ${currentState.track_window.current_track.name}`);
+          //console.log(`next Spotify track: ${currentState.track_window.next_tracks[0] ? currentState.track_window.next_tracks[0].name : 'nada'}`);
           
           if(currentState.track_window.current_track && currentState.track_window.current_track.uri == item.uri){
-            console.log(`letting Spotify play the current track: ${item.name}`);
+            //console.log(`letting Spotify play the current track: ${item.name}`);
             return;
           }
 
           if(currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
-            console.log(`letting Spotify play the play next track: ${item.name}`);
+            //console.log(`letting Spotify play the play next track: ${item.name}`);
             
             if(nextTrackButtonPressed){
-              console.log('next button pressed, changing tracks using sdk player...');
-              await getters.player.nextTrack();
+              //console.log('next button pressed, changing tracks manually...');
+              await spotify({url: 'me/player/next', method: 'POST'});
             }
 
             return;
@@ -197,7 +198,7 @@ export const actions = {
         nextTracksToSend = takeUntilNotATrack(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album');
       }
       else{
-        console.log('about to play an album-type track -> won\'t send next track uris');
+        //console.log('about to play an album-type track -> won\'t send next track uris');
       }
 
       await startItemPlayback(item, nextTracksToSend);
@@ -207,13 +208,13 @@ export const actions = {
         const nextTrack = queue[currentlyPlayingItemIndex + 1];
 
         if(nextTrack.uri.indexOf('track') > -1){
-          console.log(`adding the next track to spotify queue...${nextTrack.name}`);
+          //console.log(`adding the next track to spotify queue...${nextTrack.name}`);
           spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
         }
       }
     }
     catch(error){
-      console.error(error);
+      //console.error(error);
       dispatch('stopPlayback');
       handleApiError('There was an issue with playback lorem ipsum...');
     }
@@ -251,7 +252,7 @@ export const actions = {
         commit('setAudioPlaying', true);
       }
       catch(error){
-        console.error(error);
+        //console.error(error);
         dispatch('stopPlayback');
       }
     }
@@ -277,7 +278,7 @@ export const mutations = {
     params.item.playbackIcon = params.icon;
   },
   setAudioPlaying(state, playing){
-    //console.log(`setting audioPlaying to ${playing}`);
+    ////console.log(`setting audioPlaying to ${playing}`);
     state.audioPlaying = playing;
   },
   setNewPlayback(state, feedId){

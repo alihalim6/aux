@@ -198,7 +198,7 @@
     async itemPlayingChanged(item){
       this.stopInterval();
 
-      if(item.feedId){
+      if(item.queueId){
         await setDuration(item);
         this.initializeTiming(item);
       }
@@ -213,7 +213,7 @@
     async startPlayback(){
       const item = this.currentlyPlayingItem;
 
-      if(item && item.feedId){
+      if(item && item.queueId){
         if(!this.playbackInterval){
           this.startInterval();
         }

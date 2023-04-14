@@ -29,7 +29,7 @@
           </div>
 
           <div class="d-flex flex-column">
-            <div :id="`${activity.feedId}-reactions`" class="reaction-activity-container" :class="{'vertically-hidden': !showReactions, 'scroll-shadow-on-transparent': activity.reactions && activity.reactions.length >= 5}">
+            <div :id="`${activity.queueId}-reactions`" class="reaction-activity-container" :class="{'vertically-hidden': !showReactions}">
               <span v-for="reaction in activity.reactions" :key="reaction.timestamp.toString()">
                 <span class="reaction-author">{{reaction.author}}:</span>
                 <span class="mr-1">{{reaction.message}}</span>
@@ -183,10 +183,8 @@
         }
 
         .reaction-activity-container {
-          overflow: scroll;
           display: flex;
           flex-direction: column;
-          max-height: 83px;
           margin-top: 18px;
           font-size: $chat-font-size;
           color: white;
@@ -253,6 +251,7 @@
   .skipped {
     opacity: 0.65;
     font-style: italic;
+    text-decoration: line-through;
   }
 
   .reaction-author {

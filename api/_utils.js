@@ -85,8 +85,8 @@ async function retryRequest(config){
     console.log('retrying request...');
     return httpClient.request(config);
   }
-  else{
-    console.log('refresh/retry failed, need new token, sending back to splash...');
+  else if(isPlaybackCall(config)){
+    console.log('refresh/retry failed for playback, sending back to splash...');
     $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
     $nuxt.$router.replace({path: `/${SPLASH}`});
   }

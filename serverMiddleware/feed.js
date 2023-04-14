@@ -19,7 +19,7 @@ app.post('/initialize', async (req, res) => {
       activity.addedByCurrentUser = req.body.splash ? false : profile.id == activity.user.id;
 
       for (const reaction of reactions){        
-        if(reaction.feedId == activity.feedId){
+        if(reaction.queueId == activity.queueId){
           if(!req.body.splash && reaction.author == profile.name){
             reaction.author = 'You';
           }

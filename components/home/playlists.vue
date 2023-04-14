@@ -23,7 +23,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs overflow-scroll-shadow" id="playlistTabContent">
+      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs overflow-scroll-shadow home-content" id="playlistTabContent">
         <v-tab-item v-for="content in getTabContent()" :key="content.type">
           <div v-for="item in content.data" :key="item.uuid">
             <v-hover v-slot="{hover}">
@@ -193,7 +193,7 @@
   }
 
   .playlist-container {
-    margin: 8px 8px 24px;
+    margin: 8px 0px 24px;
     flex-direction: column;
     display: flex;
 

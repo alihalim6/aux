@@ -9,7 +9,7 @@ import spotify from '~/api/spotify';
 
 export const state = () => {
   return {
-    currentlyPlayingItemUri: '',//simple string (changed to be feedId down the road) so that watcher for this doesn't have to be deep on object (performance)
+    currentlyPlayingItemUri: '',//simple string (changed to be queueId down the road) so that watcher for this doesn't have to be deep on object (performance)
     currentlyPlayingItem: {},
     audioPlaying: false,
     newPlayback: '',
@@ -58,12 +58,12 @@ export const actions = {
       const player = getters.player;
       const previouslyPlayingItem = getters.currentlyPlayingItem;
       let currentlyPlayingItemUri = getters.currentlyPlayingItemUri;
-      const currentItemToggled = !playingAllFeed && (currentlyPlayingItemUri === item.feedId);
+      let nothingWasPlaying = !currentlyPlayingItemUri;
+      const currentItemToggled = !playingAllFeed && (currentlyPlayingItemUri === item.queueId);
 
       console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
   
-      //if there was nothing playing and now there is, or if item playing has been toggled, flip the boolean
-      if(!currentlyPlayingItemUri || currentItemToggled){
+      if(nothingWasPlaying || currentItemToggled){
         commit('setAudioPlaying', !getters.audioPlaying);
       }
 
@@ -106,26 +106,34 @@ export const actions = {
           item = queue[0];
         }
 
-        const feedId = playingTrackWithinExistingQueue || item.feedId ? item.feedId : uuid();
-        commit('setCurrentlyPlayingItem', {...item, feedId});
-        commit('setCurrentlyPlayingItemUri', feedId);
+        const queueId = playingTrackWithinExistingQueue || item.queueId ? item.queueId : uuid();
+        commit('setCurrentlyPlayingItem', {...item, queueId});
+        commit('setCurrentlyPlayingItemUri', queueId);
 
         const currentlyPlayingItemIndex = item.queueIndex || queue.findIndex(setItem => setItem.uuid === item.uuid);
         queue = queue.length ? queue : [item];
 
-        await dispatch('playItem', {item, queue, currentlyPlayingItemIndex, playingNextTrack, nextTrackButtonPressed, playingNextTrackNow});
+        await dispatch('playItem', {
+          item,
+          previouslyPlayingItem,
+          queue,
+          currentlyPlayingItemIndex,
+          playingNextTrack,
+          nextTrackButtonPressed,
+          playingNextTrackNow
+        });
 
         if(playingTrackWithinExistingQueue){  
           dispatch(`${PLAYBACK_QUEUE}/checkForEndOfQueue`, null, {root: true});
         }
         else{
-          commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, feedId}, {root: true});
+          commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, queueId}, {root: true});
         }
 
-        //skip api call because on very first session play, Spotify side is not ready with the new device
-        dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: !previouslyPlayingItem.feedId});
-        commit('setNewPlayback', feedId);
-        dispatch(`${FEED}/addToFeed`, {track: item, feedId}, {root: true});
+        //skip api call if not playing anything (no device on Spotify side)
+        dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: nothingWasPlaying});
+        commit('setNewPlayback', queueId);
+        dispatch(`${FEED}/addToFeed`, {track: item, queueId}, {root: true});
       }
     }
     catch(error){
@@ -135,6 +143,7 @@ export const actions = {
   },
   playItem: async ({getters, rootGetters, dispatch}, {
     item, 
+    previouslyPlayingItem,
     queue, 
     currentlyPlayingItemIndex, 
     playingNextTrack, 
@@ -173,14 +182,10 @@ export const actions = {
             return;
           }
 
-          if(currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
-            console.log(`letting Spotify play the play next track: ${item.name}`);
-            
-            if(nextTrackButtonPressed){
-              console.log('next button pressed, changing tracks manually...');
-              await getters.player.nextTrack();
-            }
+          const samePreviousTracks = previouslyPlayingItem.uri == currentState.track_window.current_track.uri;
 
+          if(!nextTrackButtonPressed && samePreviousTracks && currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
+            console.log(`letting Spotify play the play next track: ${item.name}`);
             return;
           }
         }
@@ -190,8 +195,8 @@ export const actions = {
       //prevents Spotify from having no next tracks as often because when we allow them to play 2nd of the two we were sending originally,
       //they had no knowledge of what was after that in queue (as expected);
       //doing it this way leads to sdk is used more (what we want) instead of api call due to them having correct next track more often;
-
       //has to use passed in queue instead of rootGetters due to getter timing not being reliable
+
       let nextTracksToSend = null;
 
       if(item.uri.indexOf('track') > 0){
@@ -262,7 +267,12 @@ export const actions = {
     commit('setTrackRepeat', repeatTrack);
 
     if(!params || !params.skipApiCall){
-      await spotify({url: `/me/player/repeat?state=${repeatTrack ? 'track' : 'off'}`, method: 'PUT'});
+      try {
+        await spotify({url: `/me/player/repeat?state=${repeatTrack ? 'track' : 'off'}`, method: 'PUT'});
+      }
+      catch(error){
+        console.error(error);
+      }
     }
   },
   openItemInSpotify({dispatch, getters}, item){
@@ -288,8 +298,8 @@ export const mutations = {
     //console.log(`setting audioPlaying to ${playing}`);
     state.audioPlaying = playing;
   },
-  setNewPlayback(state, feedId){
-    state.newPlayback = feedId;
+  setNewPlayback(state, queueId){
+    state.newPlayback = queueId;
   },
   setSdkReady(state){
     state.sdkReady = true;

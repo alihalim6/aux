@@ -58,7 +58,7 @@ export const actions = {
     const activity = {
       user: loggedInUser,
       track: params.track,
-      feedId: params.feedId,
+      queueId: params.queueId,
       timestamp,
       updateTimestamp: timestamp //needed to trigger UI updates of feed items immediately
     };
@@ -153,7 +153,7 @@ export const actions = {
 
       auxApiClient.post('/feed/persistReaction', {
         reaction: {
-          feedId: reactionActivity.feedId,
+          queueId: reactionActivity.queueId,
           message: reaction.message,
           author: loggedInUser.name,
           timestamp: moment().toISOString()
@@ -193,7 +193,7 @@ export const actions = {
         ...activity, 
         track: activity.track.id, 
         trackType: activity.track.type,
-        feedId: activity.feedId, 
+        queueId: activity.queueId, 
         played: true
       }
     }, {    

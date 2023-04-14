@@ -44,7 +44,7 @@ async function newAndRecommended(){
 
     return {
       allItems,
-      previewItems: [...Array.from(allItems)].splice(0, 30),
+      previewItems: [...Array.from(allItems)].splice(0, 20),
       newReleases
     };
   }

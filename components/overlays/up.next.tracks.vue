@@ -81,7 +81,7 @@
     <div class="then-container" v-if="thenTracks.length">
       <span class="then-label">THEN</span>
 
-      <div v-for="track in thenTracks" :key="track.feedId" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
+      <div v-for="track in thenTracks" :key="track.queueId" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
         <ThreeDotIcon :item="track" :item-in-queue="true" iconClass="up-next-three-dot" iconColor="white"/>

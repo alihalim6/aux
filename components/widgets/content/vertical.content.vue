@@ -22,8 +22,6 @@
                 <span class="item-detail">{{item.secondaryLabel}}</span>
                 <div class="item-detail"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
               </div>
-
-              <v-icon @click="displayItemDetails(item)" class="clickable ml-auto" color="black">mdi-arrow-right</v-icon>
             </div>
 
             <div class="bottom-container">
@@ -79,8 +77,12 @@
     .item-container {
       display: flex;
       justify-content: flex-start;
-      align-items: flex-start;
+      align-items: center;
       padding: $base-padding $base-padding 8px;
+
+      @media(max-width: $max-inner-width){ 
+        align-items: flex-start;
+      }
 
       .divider {
         font-size: 32px;

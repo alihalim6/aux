@@ -99,7 +99,7 @@
       this.setActionDialog({
         text: `AUX uses and stores your profile photo url, Spotify ID and username in order to associate you with the tracks that you play as well as 
           the comments and reactions you make on other users' tracks. The same info is used to indicate to other AUX users that you're "live" on AUX
-          whenever you're on it. This data can always be removed via the AUX profile menu. AUX uses no cookies.`,
+          whenever you're on. This data can always be removed via the AUX profile menu. AUX uses no cookies.`,
         confirmLabel: 'OK'
       });
     }
@@ -211,6 +211,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    padding: 24px;
   }
   
   .login {

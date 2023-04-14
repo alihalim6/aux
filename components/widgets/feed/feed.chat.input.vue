@@ -84,7 +84,7 @@
 
     async scrollReactionsDown(){
       await this.$nextTick();
-      const reactionsContainer = document.getElementById(`${this.activity.feedId}-reactions`);
+      const reactionsContainer = document.getElementById(`${this.activity.queueId}-reactions`);
 
       if(reactionsContainer){
         console.log('herre')

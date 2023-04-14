@@ -7,7 +7,12 @@
               <div :class="{'d-flex flex-column align-center': item.isArtist}">
                 <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
 
-                <v-img class="clickable content-img artist-img" :class="{'content-hover': hover && !lastNewAndRecommendedItem(index)}" v-if="item.isArtist && item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
+                <v-img 
+                  v-if="item.isArtist && item.imgUrl" 
+                  class="clickable content-img artist-img" 
+                  :class="{'content-hover': hover && !lastNewAndRecommendedItem(index)}" 
+                  :src="carouselImgSrc(item)" @click="contentImgPressed(item)"
+                >
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
@@ -46,7 +51,7 @@
                       <div 
                         class="clickable primary-label" 
                         @click.stop="primaryLabelPressed(item)" 
-                        :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">
+                        :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover, 'spotify-green-color': itemIsPlaying(item)}">
                           {{item.primaryLabel}}<span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
                         </div>
                       <v-img v-if="newAndRecommended && item.isNew" src="/new.png" class="new-icon"></v-img>
@@ -65,8 +70,12 @@
               </div>
             </v-hover>
             
-            <div v-if="lastNewAndRecommendedItem(index)" class="clickable see-all" @click="$nuxt.$emit('showAllNewAndReco')">
-              <div class="mb-3">SEE</div><div>ALL</div>
+            <div v-if="lastNewAndRecommendedItem(index)" class="see-all-container">
+              <span class="dots">...</span>
+
+              <div  class="clickable see-all" @click="$nuxt.$emit('showAllNewAndReco')">
+                <div class="mb-3">SEE</div><div>ALL</div>
+              </div>
             </div>
           </section>
         </div>
@@ -269,30 +278,35 @@
     max-width: $content-img-size;
   }
 
-  $see-all-margin: 48px;
+  .see-all-container {
+    display: flex;
+    align-items: center;
+    margin: 0px 48px 0px 20px;
+  }
+
+  .dots {
+    font-size: 56px;
+    letter-spacing: 5px;
+    color: $primary-theme-color;
+    margin-right: 12px;
+  }
   
   .see-all {
     border-left: 2px solid $primary-theme-color;
-    font-size: 28px;
+    font-size: 26px;
     color: $secondary-theme-color;
     background-color: $primary-theme-color;
     font-weight: bold;
     width: 42px;
     border-radius: 20px;
     word-wrap: break-word;
-    margin: 0px $see-all-margin;
     padding: 14px 8px;
-    text-orientation: upright;
     text-align: center;
   }
 
   .see-all:hover {
     color: $cream;
     background-color: $rose-red;
-    border: 2px solid $rose-red;
-  }
-
-  .last-item-hovered {
-    margin-left: -$see-all-margin;
+    border-left: 1px solid $rose-red;
   }
 </style>

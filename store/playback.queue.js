@@ -1,6 +1,7 @@
 import {SPOTIFY, UI} from './constants';
 import {shuffleArray, isSameTrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
+import cloneDeep from 'lodash.clonedeep';
 
 export const state = () => {
   return {
@@ -35,7 +36,7 @@ export const getters = {
   },
   currentlyPlayingIndex(state, getters, rootState, rootGetters){
     const currentlyPlayingItem = rootGetters[`${SPOTIFY}/currentlyPlayingItem`];
-    const index = getters.queue.findIndex(track => track.feedId == currentlyPlayingItem.feedId);
+    const index = getters.queue.findIndex(track => track.queueId == currentlyPlayingItem.queueId);
     return index;
   },
   hasPreviousTrack: (state, getters) => {
@@ -114,12 +115,15 @@ export const actions = {
   }
 };
 
-//feedId: extra unique id in case same track is played more than once in a queue;
+//queueId: extra unique id in case same track is in queue more than once;
 //for this store, it's at the track level (since that is what the queue works with)
 //but for the feed store, it's at the metadata level (for a little but of ease/cleanliness)
-function setFeedIds(tracks){
-  for(const track of tracks){
-    track.feedId = uuid();
+function setQueueIds(tracks){
+  //clone tracks that already have feed ids (already been in queue) so that object ref is fresh
+  tracks = tracks.map(track => track.queueId ? cloneDeep(track) : track);
+
+  for(let track of tracks){
+    track.queueId = uuid();
   }
 
   return tracks;
@@ -129,9 +133,9 @@ export const mutations = {
   startQueue(state, params){
     let newQueue = params.queue.slice(params.index);
 
-    //tie first item in new queue to currentlyPlayingItem in spotify store with given feedId; rest of items get own id
-    newQueue[0].feedId = params.feedId;
-    newQueue = [newQueue[0], ...setFeedIds(newQueue.slice(1))];
+    //tie first item in new queue to currentlyPlayingItem in spotify store with given queueId; rest of items get own id
+    newQueue[0].queueId = params.queueId;
+    newQueue = [newQueue[0], ...setQueueIds(newQueue.slice(1))];
     //separating these into two different commits didn't help up next show faster
     state.queue = newQueue.slice(0, QUEUE_LENGTH_LIMIT);
     state.restOfQueue = newQueue.slice(QUEUE_LENGTH_LIMIT);
@@ -141,20 +145,20 @@ export const mutations = {
     state.restOfQueue = [];
   },  
   removeFromQueue(state, track){
-    let trackIndex = state.queue.findIndex(queueTrack => queueTrack.feedId === track.feedId);
+    let trackIndex = state.queue.findIndex(queueTrack => queueTrack.queueId === track.queueId);
 
     if(trackIndex > -1){
       state.queue.splice(trackIndex, 1);
     }
     else{
-      trackIndex = state.restOfQueue.findIndex(queueTrack => queueTrack.feedId === track.feedId);
+      trackIndex = state.restOfQueue.findIndex(queueTrack => queueTrack.queueId === track.queueId);
       state.restOfQueue.splice(trackIndex, 1);
     }
   },
   setPlayNext(state, params){
     //not worried about rest of queue here; if set track(s) that puts queue over limit, not a big deal, not likely to be a huge amount;
     //would get messy trying to siphon the added tracks into the main but only up to the limit
-    state.queue.splice(params.currentIndex + 1, 0, ...setFeedIds(params.tracks));
+    state.queue.splice(params.currentIndex + 1, 0, ...setQueueIds(params.tracks));
   },
   clearUpNext(state, currentIndex){
     state.queue = state.queue.slice(0, currentIndex + 1);
@@ -162,10 +166,10 @@ export const mutations = {
   },
   addToEndOfQueue(state, tracks){
     if(state.restOfQueue.length){
-      state.restOfQueue.push(...setFeedIds(tracks));
+      state.restOfQueue.push(...setQueueIds(tracks));
     }
     else{
-      state.queue.push(...setFeedIds(tracks));
+      state.queue.push(...setQueueIds(tracks));
     }
   },
   shuffleUpNext(state, params){

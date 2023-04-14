@@ -201,7 +201,7 @@
       this.skipOrPlay.activity = activity;
 
       this.skipOrPlay.interval = setInterval(() => {
-        if(this.audioPlaying && this.currentlyPlayingItem.feedId){
+        if(this.audioPlaying && this.currentlyPlayingItem.queueId){
           this.secsOfTrackPlayed++;
           
           if(isSameTrack(this.currentlyPlayingItem, activity.track)){

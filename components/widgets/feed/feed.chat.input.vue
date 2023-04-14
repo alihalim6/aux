@@ -13,6 +13,7 @@
       v-model="chatMessage"
       clearable
       :maxlength="100"
+      enterkeyhint="send"
     >
       <template v-slot:append-outer>
         <v-icon :color="submitIconColor" class="clickable mr-2" @click.stop="chatMessageSubmitted()">mdi-arrow-up-circle</v-icon>
@@ -86,7 +87,7 @@
       const reactionsContainer = document.getElementById(`${this.activity.feedId}-reactions`);
 
       if(reactionsContainer){
-        //console.log('herre')
+        console.log('herre')
         reactionsContainer.scrollTo(0, 99999);
       }
     }

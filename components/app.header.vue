@@ -9,17 +9,17 @@
           <div class="inline-display outlined-phrase main-label">AUX</div>
         </div>
 
-        <div class="d-flex align-center ml-2">
-          <span small class="divider">/</span>
-          <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon d-inline d-md-none" src="/Spotify_Logo_Icon.png"></v-img>
-          <v-img @click="spotifyLogoPressed()" class="clickable spotify-full d-none d-md-inline" src="/Spotify_Logo_Full.png"></v-img>
+        <div class="spotify-logo-container">
+          <v-icon class="divider">mdi-checkbox-blank-circle</v-icon>
+          <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon d-block d-md-none" src="/Spotify_Logo_Icon.png"></v-img>
+          <v-img @click="spotifyLogoPressed()" class="clickable spotify-full d-none d-md-block" src="/Spotify_Logo_Full.png"></v-img>
         </div>
       </div>
 
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
-        <v-menu left bottom transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y allow-overflow>
+        <v-menu left bottom transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y allow-overflow attach :max-width="325" :nudge-right="50">
           <template v-slot:activator="{on, attrs}">            
             <div class="clickable on-air-container" v-bind="attrs" v-on="on">
               <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
@@ -31,12 +31,7 @@
           <v-list>
             <v-list-item>
               <div class="user-list width-100 scroll-shadow">
-                <div class="d-flex justify-end">
-                  <div v-if="liveUsers.length" class="following-on-container">
-                    <span class="following-on">FOLLOWING ON</span>
-                    <v-img class="spotify-img d-inline" src="/Spotify_Logo_Full.png"></v-img>
-                  </div>
-                </div>
+                <div v-if="liveUsers.length" class="following-on">FOLLOW ON SPOTIFY</div>
 
                 <div v-if="liveUsers.length" class="cursor-auto">
                   <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
@@ -96,17 +91,13 @@
               </div>
             </v-list-item>
 
-            <v-list-item v-if="!runningInPwa && (pwaInstallEvent || isIos)" class="clickable menu-option-container" @click="() => {}">
+            <v-list-item v-if="!runningInPwa && isIos" class="clickable menu-option-container" @click="installPwaPressed()">
               <span class="install-pwa-label on-air">Install as an App</span>
             </v-list-item>
 
             <v-list-item class="clickable menu-option-container" @click="logout()">
               <span class="menu-label">Logout</span>
-            </v-list-item>
-
-            <v-list-item class="clickable menu-option-container" @click="feedbackContactPressed()">
-              <span class="menu-label">Get In Touch</span>
-            </v-list-item>
+            </v-list-item> 
 
             <v-list-item class="clickable menu-option-container danger" @click="deleteUserActivity()">
               <span class="menu-label">Delete AUX Activity...</span>
@@ -145,9 +136,6 @@
 
     @Getter('isLoading', {namespace: UI})
     isLoading;
-
-    @Getter('pwaInstallEvent', {namespace: UI})
-    pwaInstallEvent;
 
     @Mutation('setToast', {namespace: UI})
     setToast;
@@ -253,13 +241,10 @@
       window.open('https://www.spotify.com', '_blank');
     }
 
-    feedbackContactPressed(){
-      window.open('https://linktr.ee/alihalim', '_blank');
-    }
-
     deleteUserActivity(){
       this.setActionDialog({
         text: `Delete tracks I've played, comments/reactions I've made, and profile info (username, photo url and Spotify user ID) that AUX has saved (bars?):`,
+        cancellable: true,
         confirmLabel: 'CONFIRM AND LOGOUT',
         confirmFn: async () => {
           await auxApiClient.post('/user/delete', {profile: this.profile}, {    
@@ -282,6 +267,12 @@
           }
         } 
       });
+    }
+
+    installPwaPressed(){
+      if(this.isIos){
+        this.setActionDialog({isIosPwaInstall: true, confirmLabel: 'GOT IT'});
+      }
     }
   }
 </script>
@@ -311,6 +302,7 @@
       justify-content: space-evenly;
       align-items: center;
       margin-top: 1px;
+      height: 30px;
 
       .aux-logo-container {
         font-weight: 700;
@@ -344,9 +336,9 @@
 
       .divider {
         color: $primary-theme-color;
-        padding-right: 4px;
+        padding-right: 6px;
         font-weight: bold;
-        font-weight: 26px;
+        font-size: 8px;
       }
     }
 
@@ -516,33 +508,14 @@
     padding: 0px;
   }
 
-  .following-on-container {
+  .following-on {
+    white-space: nowrap;
+    color: #666666;
     font-weight: bold;
     font-size: 10px;
-    width: 66px;
     align-self: flex-end;
     line-height: 2;
-    margin-bottom: 16px;
-
-    .following-on {
-      margin-right: 4px;
-      white-space: nowrap;
-      color: #666666;
-    }
-
-    .v-image {
-      padding-top: 4px;
-    }
-
-    .v-responsive__sizer {
-      padding: 0px !important;
-    }
-
-    .v-image__image {
-      background-size: 66px;
-      width: 77px;
-      height: 20px;
-    }
+    max-width: 84px;
   }
 
   .user-list {
@@ -604,5 +577,11 @@
 
     height: $icon-size;
     max-width: $icon-size;
+  }
+
+  .spotify-logo-container {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
   }
 </style>

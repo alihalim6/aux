@@ -70,8 +70,8 @@
 </template>
 
 <script>
-  import {Component, Vue, Mutation} from 'nuxt-property-decorator';
-  import {UI} from '~/store/constants';
+  import {Component, Vue, Mutation, Action} from 'nuxt-property-decorator';
+  import {UI, SPOTIFY} from '~/store/constants';
   import artist from '~/api/artist';
   import details from '~/api/details';
   import {setItemMetaData, setDuration} from '~/utils/helpers';
@@ -89,6 +89,9 @@
     
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
+
+    @Action('openItemInSpotify', {namespace: SPOTIFY})
+    openItemInSpotify;
 
     beforeMount(){
       this.$nuxt.$root.$on('scrolledDown', scrolledDown => this.scrolledDown = scrolledDown);
@@ -162,10 +165,6 @@
       this.$nuxt.$root.$off('displayDetailOverlay');
       this.$nuxt.$root.$off('closeOverlay');
       this.$nuxt.$root.$off('displayArtistDetails');
-    }
-
-    openItemInSpotify(item){
-      window.open(`https://open.spotify.com/${item.type}/${item.id}`, '_blank');
     }
   }
 </script>
@@ -345,6 +344,7 @@
 
   .overlay-spotify-icon {
     display: none;
+    
 
     @media (max-width: $full-image-cta-breakpoint) {
       display: block;

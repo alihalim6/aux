@@ -2,67 +2,73 @@
     <section>
       <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}">
         <div v-for="(item, index) in data" :key="item.uuid">
-          <v-hover v-slot="{hover}">
-            <section>
-              <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
+          <section :class="{'d-flex align-start': lastNewAndRecommendedItem(index)}">
+            <v-hover v-slot="{hover}">
+              <div :class="{'d-flex flex-column align-center': item.isArtist}">
+                <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
 
-              <v-img class="clickable content-img artist-img" :class="{'content-hover': hover}" v-if="item.isArtist && item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
-                <template v-slot:placeholder>
-                  <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
-                </template>
-              </v-img>
-
-              <v-card 
-                v-else
-                max-width="185" 
-                elevation="10" 
-                class="clickable" 
-                :class="{
-                  'content-hover': hover && !vertical && !addToPlaylist, 
-                  'spaced-content': moreFromArtist || addToPlaylist, 
-                  'no-max-width': vertical, 
-                  'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)
-                }"
-              >
-                <v-img class="content-img" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
+                <v-img class="clickable content-img artist-img" :class="{'content-hover': hover && !lastNewAndRecommendedItem(index)}" v-if="item.isArtist && item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
                 </v-img>
-              </v-card>
 
-              <div v-if="addToPlaylist" class="clickable add-button">
-                <v-icon color="white" large @click="addTrackToPlaylist(item)" aria-label="add track to playlist">mdi-plus</v-icon>
-              </div>
-
-              <div :class="{'pb-8': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
-                <div class="primary-container" 
+                <v-card 
+                  v-else
+                  max-width="185" 
+                  elevation="10" 
+                  class="clickable" 
                   :class="{
-                    'hovered-primary-container': hover && !vertical && !item.isArtist, 
-                    'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist
-                  }">
-                  <div class="d-flex align-start">
-                    <div 
-                      class="clickable primary-label" 
-                      @click.stop="primaryLabelPressed(item)" 
-                      :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">
-                        {{item.primaryLabel}}<span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
-                      </div>
-                    <v-img v-if="newAndRecommended && item.isNew" src="/new.png" class="new-icon"></v-img>
+                    'content-hover': hover && !vertical && !addToPlaylist && !lastNewAndRecommendedItem(index), 
+                    'spaced-content': moreFromArtist || addToPlaylist, 
+                    'no-max-width': vertical, 
+                    'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)
+                  }"
+                >
+                  <v-img class="content-img" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
+                    <template v-slot:placeholder>
+                      <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
+                    </template>
+                  </v-img>
+                </v-card>
+
+                <div v-if="addToPlaylist" class="clickable add-button">
+                  <v-icon color="white" large @click="addTrackToPlaylist(item)" aria-label="add track to playlist">mdi-plus</v-icon>
+                </div>
+
+                <div :class="{'pb-8': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
+                  <div class="primary-container" 
+                    :class="{
+                      'hovered-primary-container': hover && !vertical && !item.isArtist && !lastNewAndRecommendedItem(index), 
+                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !lastNewAndRecommendedItem(index)
+                    }">
+                    <div class="d-flex align-start">
+                      <div 
+                        class="clickable primary-label" 
+                        @click.stop="primaryLabelPressed(item)" 
+                        :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover || itemIsPlaying(item)}">
+                          {{item.primaryLabel}}<span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
+                        </div>
+                      <v-img v-if="newAndRecommended && item.isNew" src="/new.png" class="new-icon"></v-img>
+                    </div>
+
+                    <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>
                   </div>
 
-                  <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>
-                </div>
+                  <div v-if="!moreFromArtist && !noSecondaryLabel" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
 
-                <div v-if="!moreFromArtist && !noSecondaryLabel" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
-
-                <div class="secondary-label bottom-label">
-                  <v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>
-                  <span>{{item.numberOfTracks}}</span>
+                  <div class="secondary-label bottom-label">
+                    <v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>
+                    <span>{{item.numberOfTracks}}</span>
+                  </div>
                 </div>
               </div>
-            </section>
-          </v-hover>
+            </v-hover>
+            
+            <div v-if="lastNewAndRecommendedItem(index)" class="clickable see-all" @click="$nuxt.$emit('showAllNewAndReco')">
+              <div class="mb-3">SEE</div><div>ALL</div>
+            </div>
+          </section>
         </div>
       </div>
     </section>
@@ -131,6 +137,10 @@
         this.$nuxt.$root.$emit('displayDetailOverlay', item);
       }
     }
+
+    lastNewAndRecommendedItem(index){
+      return this.newAndRecommended && index == this.data.length - 1;
+    }
   }
 </script>
 
@@ -177,7 +187,7 @@
     .primary-container {
       display: flex;
       align-items: flex-start;
-      padding: 12px 6px 4px $label-left-padding;
+      padding: 16px 6px 4px $label-left-padding;
       justify-content: space-between;
 
       .primary-label {
@@ -257,5 +267,32 @@
   .artist-img {
     border-radius: 100% !important;
     max-width: $content-img-size;
+  }
+
+  $see-all-margin: 48px;
+  
+  .see-all {
+    border-left: 2px solid $primary-theme-color;
+    font-size: 28px;
+    color: $secondary-theme-color;
+    background-color: $primary-theme-color;
+    font-weight: bold;
+    width: 42px;
+    border-radius: 20px;
+    word-wrap: break-word;
+    margin: 0px $see-all-margin;
+    padding: 14px 8px;
+    text-orientation: upright;
+    text-align: center;
+  }
+
+  .see-all:hover {
+    color: $cream;
+    background-color: $rose-red;
+    border: 2px solid $rose-red;
+  }
+
+  .last-item-hovered {
+    margin-left: -$see-all-margin;
   }
 </style>

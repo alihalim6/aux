@@ -21,7 +21,7 @@
     <!-- RELATED ARTISTS -->  
     <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.relatedArtists.length">
       <div class="more-from-artist">
-        <div class="more-from-artist-title mb-2 font-weight-bold">Similar Artists</div>
+        <div class="more-from-artist-title mb-2 font-weight-bold">Related Artists</div>
         
         <div class="related-artists-container">
           <div 
@@ -80,7 +80,7 @@
           return album;
         }
         catch(error){
-          //console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
+          console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
         }
       }));
     }

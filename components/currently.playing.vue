@@ -46,9 +46,9 @@
             </div>
           </div>
 
-          <div class="d-flex justify-center mr-6">
+          <div class="queue-control-container" :class="{'adjust-queue-control': currentlyPlayingItem.uri}">
             <v-icon 
-              class="clickable queue-control" 
+              class="clickable queue-control previous-track-button" 
               :class="{'no-visibility': !hasPreviousTrack, 'disable-playback-control': !trackReady}" 
               @click.stop="previousTrackPressed()"
               aria-label="skip to previous track"
@@ -58,7 +58,7 @@
             
             <v-icon 
               class="clickable control playback-toggle" 
-              :class="{'disabled-control': !currentlyPlayingItem.uri}" 
+              :class="{'disabled-control ml-6': !currentlyPlayingItem.uri}" 
               @click.stop="playbackToggled()"
               :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
             >
@@ -171,6 +171,9 @@
     @Action('toggleTrackRepeat', {namespace: SPOTIFY})
     toggleTrackRepeat;
 
+    @Action('stopPlayback', {namespace: SPOTIFY})
+    stopPlayback;
+
     @Mutation('displayFeed', {namespace: UI})
     displayFeed;
 
@@ -179,6 +182,11 @@
 
     @Mutation('setToast', {namespace: UI})
     setToast;
+
+    @Watch('$route', {immediate: true, deep: true})
+    routeChanged(){
+      this.stopPlayback(true);
+    }
 
     @Watch('audioPlaying')
     async updatePlaybackIcon(playing){
@@ -542,5 +550,24 @@
   .disable-playback-control {
     color: #eeeeee !important;
     pointer-events: none;
+  }
+
+  $queue-control-threshold: 400px;
+
+  .queue-control-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .adjust-queue-control {
+    @media(max-width: $queue-control-threshold){
+      justify-content: flex-start;
+    }
+  }
+
+  .previous-track-button {
+    @media(max-width: $queue-control-threshold){
+      margin-left: 0px !important;
+    }
   }
 </style>

@@ -13,7 +13,7 @@ const getRecommendedTracks = async (topArtists) => {
 const getRecommendedArtists = async (topArtists) => {
   if(topArtists.items.length){
     const topArtist = await getATopArtist(topArtists);
-    //console.log(`top artist seed for related artists: ${topArtist.name}`);
+    console.log(`top artist seed for related artists: ${topArtist.name}`);
     return await httpClient.get(`/artists/${topArtist.id}/related-artists`);
   }
 
@@ -39,7 +39,7 @@ async function newAndRecommended(){
     const recommendedArtists = await getRecommendedArtists(topArtists.data);
     const someShuffledNewReleases = shuffleArray([...newReleases]).slice(0, 10);
     
-    const allItems = [...someShuffledNewReleases.map(item => ({...item, isNew: true})), ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.slice(0, 5)];
+    const allItems = [...someShuffledNewReleases.map(item => ({...item, isNew: true})), ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.slice(0, 3)];
     shuffleArray(allItems);
 
     return {
@@ -49,7 +49,7 @@ async function newAndRecommended(){
     };
   }
   catch(error){
-    //console.error(error);
+    console.error(error);
   }
 }
 

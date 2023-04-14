@@ -1,10 +1,19 @@
 <template>
   <v-app class="justify-space-between">
+    <ActionDialog/>
+
     <div class="splash-content">
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
-        <div class="clickable nav-button login" @click="loginClicked()">
-          <v-img class="spotify-icon" src="/Spotify_Logo_Icon.png"></v-img>
-          <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
+        <div class="login-container">
+          <div class="clickable nav-button login" @click="loginClicked()">
+            <v-img class="spotify-icon" src="/Spotify_Logo_Icon.png"></v-img>
+            <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
+          </div>
+
+          <span class="disclaimer">
+            By logging in, you agree to <span class="clickable text-decoration-underline" @click="showTerms()">these terms</span> and 
+            <span class="clickable text-decoration-underline" @click="showPrivacyPolicy()">this privacy disclosure</span>
+          </span>
         </div>
       </div>
 
@@ -36,11 +45,6 @@
         </div>
 
         <span class="premium-only">Works for Spotify Premium users only</span>
-        
-        <div class="mobile-friendly">
-          <v-icon color="#191414">mdi-cellphone-text</v-icon>
-          <span>friendly</span>
-        </div>
       </div>
 
       <v-img class="splash-animation" src="/pass_the_aux_green.png"></v-img>
@@ -65,26 +69,11 @@
     @Mutation('setLoading', {namespace: UI})
     setLoading;
 
-    @Mutation('setPwaInstallEvent', {namespace: UI})
-    setPwaInstallEvent;
+    @Mutation('setActionDialog', {namespace: UI})
+    setActionDialog;
 
     @Getter('feed', {namespace: UI})
     feed;
-
-    created(){
-      window.addEventListener('beforeinstallprompt', e => {
-        // Prevent the mini-infobar from appearing on mobile
-        e.preventDefault();
-        // Stash the event so it can be triggered later.
-        this.setPwaInstallEvent(e);
-        // Optionally, send analytics event that PWA install promo was shown.
-        //console.log(`'beforeinstallprompt' event was fired.`);
-      });
-
-      window.addEventListener('appinstalled', () => {
-        //console.log('PWA was installed...make api call to store');
-      });
-    }
 
     mounted(){
       this.setLoading(false);
@@ -92,6 +81,27 @@
 
     loginClicked(){
       authorize();
+    }
+
+    showTerms(){
+      this.setActionDialog({
+        text: `AUX does not make any warranties or representations on behalf of Spotify. All warranties with respect to the 
+          Spotify Platform, Spotify Service and Spotify Content, including the implied warranties of merchantability, fitness for a particular purpose and non-infringement are disclaimed.
+          Modifying or creating derivative works based on the Spotify Platform, Spotify Service or Spotify Content is prohibited.
+          Decompiling, reverse-engineering, disassembling, and otherwise reducing the Spotify Platform, Spotify Service, and Spotify Content to source code or other human-perceivable form, 
+          to the full extent allowed by law is prohibited. AUX is responsible for itself and any liability on the part of third parties (e.g., Spotify) is disclaimed. 
+          Spotify is a third party beneficiary of this agreement and privacy disclosure and is entitled to directly enforce this agreement.`,
+        confirmLabel: 'OK'
+      });
+    }
+
+     showPrivacyPolicy(){
+      this.setActionDialog({
+        text: `AUX uses and stores your profile photo url, Spotify ID and username in order to associate you with the tracks that you play as well as 
+          the comments and reactions you make on other users' tracks. The same info is used to indicate to other AUX users that you're "live" on AUX
+          whenever you're on it. This data can always be removed via the AUX profile menu. AUX uses no cookies.`,
+        confirmLabel: 'OK'
+      });
     }
   }
 </script>
@@ -130,13 +140,14 @@
       background-position-x: -13px;
       background-position-y: 13px;
       background-repeat: repeat;
+      margin-top: 42px;
     }
   }
 
   .info-container {
     @extend .fade-in;
     opacity: 0;
-    padding: 24px 28px;
+    padding: 24px 28px 0px;
     display: flex;
     flex-direction: column;
     animation-delay: 830ms;
@@ -198,6 +209,8 @@
     position: fixed;
     z-index: 2;
     display: flex;
+    align-items: center;
+    justify-content: flex-end;
   }
   
   .login {
@@ -238,7 +251,7 @@
   }
 
   .splash-animation {
-    bottom: calc(#{$max-footer-height-not-playing} + 150px);
+    bottom: calc(#{$max-footer-height-not-playing} + 66px);
     width: 75%;
     position: relative;
     margin: 0 auto;
@@ -252,13 +265,14 @@
     33% {opacity: 1;}
   }
 
-  .mobile-friendly {
-    width: -webkit-fill-available;
-    margin: 0 auto;
+  .disclaimer {
+    padding: $base-padding;
+    font-size: 12px;
+    max-width: 250px;
+  }
+
+  .login-container {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #aaaaaa;
-    margin-top: 18px;
+    flex-direction: column;
   }
 </style>

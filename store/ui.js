@@ -5,7 +5,6 @@ export const state = () => {
     feed: {display: false, unseenActivity: false},
     feedAlert: {},
     replyingToFeedReaction: false,
-    pwaInstallEvent: null,
     actionDialog: {}
   };
 };
@@ -25,9 +24,6 @@ export const getters = {
   },
   replyingToFeedReaction: (state) => {
     return state.replyingToFeedReaction;
-  },
-  pwaInstallEvent: (state) => {
-    return state.pwaInstallEvent;
   },
   actionDialog: (state) => {
     return state.actionDialog;
@@ -58,9 +54,6 @@ export const mutations = {
   },
   unseenActivity(state, unseen){
     state.feed.unseenActivity = unseen;
-  },
-  setPwaInstallEvent(state, event){
-    state.pwaInstallEvent = event;
   },
   setActionDialog(state, dialog){
     state.actionDialog = dialog;

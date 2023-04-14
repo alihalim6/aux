@@ -10,18 +10,22 @@
           </v-hover>
         </div>
         
-        <div class="filter-container" v-if="allItems.length" >
-          <div class="clickable filter-label" @click="displayAll()">
-            <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->
-            <span v-else>See All</span>
-          </div>
+        <div class="tab-container d-flex align-center pl-0" v-if="allItems.length">
+          <v-hover v-slot="{hover}">
+            <div class="clickable tab-label mr-0" :class="{'hover-scale': hover}" @click="displayAll()">
+              <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->
+              <span v-else class="text-decoration-underline">SEE ALL</span>
+            </div>
+          </v-hover>
           
-          <span class="filter-divider">/</span>
+          <span class="tab-divider">/</span>
           
-          <div class="clickable filter-label" @click="displayNewReleases()">
-            <span v-if="overlayLoading === NEW_RELEASES">...</span>
-            <span v-else>New Releases Only</span>
-          </div>
+          <v-hover v-slot="{hover}">
+            <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayNewReleases()">
+              <span v-if="overlayLoading === NEW_RELEASES">...</span>
+              <span v-else class="text-decoration-underline">NEW RELEASES ONLY</span>
+            </div>
+          </v-hover>
         </div>
       </div>
     </div>
@@ -41,7 +45,7 @@
     previewItems = [];
     newReleases = [];
     allItems = [];
-    NEW_AND_RECOMMENDED = 'NEW AND RECOMMENDED';
+    NEW_AND_RECOMMENDED = 'RECOMMENDED';
     NEW_RELEASES = 'NEW RELEASES';
     overlayLoading = false;
     refreshingData = false;
@@ -59,6 +63,7 @@
       this.setLoading(false);
 
       this.$nuxt.$root.$on('newAndRecoOverlayShown', () => this.overlayLoading = false);
+      this.$nuxt.$on('showAllNewAndReco', this.displayAll);
     }
 
     async getData(){
@@ -69,20 +74,18 @@
         this.allItems = allItems;
       }
       catch(error){
-        //console.error(error);
+        console.error(error);
       }
     }
 
-    displayOverlay({allNewAndRecommended, newReleases, name, data}){
+    displayOverlay({name, ...rest}){
       this.overlayLoading = name;
 
       setTimeout(() => {
         this.$nuxt.$root.$emit('displayDetailOverlay', {
           ...this.baseOverlay,
-          allNewAndRecommended,
-          newReleases,
           name,
-          data
+          ...rest
         });
       }, 10);
     }
@@ -111,6 +114,7 @@
 
     beforeDestroy(){
       this.$nuxt.$root.$off('newAndRecoOverlayShown');
+      this.$nuxt.$off('showAllNewAndReco');
     }
   }
 </script>

@@ -104,7 +104,7 @@
 <style lang="scss">
   .track-list-container {
     margin: 18px auto 0px;
-    padding: 0px 8px;
+    padding: 0px 8px 56px;
 
     .left-container {
       $track-number-size: 25px;

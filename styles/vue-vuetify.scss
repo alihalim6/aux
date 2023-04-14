@@ -205,3 +205,7 @@ $feed-base-bottom: 15px;
 .v-application .elevation-2.app-bar {
   box-shadow: none !important;
 }
+
+.theme--light.v-tabs .v-tab:hover::before {
+  opacity: 0;
+}

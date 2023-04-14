@@ -5,24 +5,16 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Action, Watch} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter} from 'nuxt-property-decorator';
   import {storageGet} from '~/utils/storage';
   import {AUTH, SPLASH, APP} from '~/utils/constants';
   import {initToken, accessTokenExpired, refreshToken, handleAuthError} from '~/auth';
-  import {UI, SPOTIFY} from '~/store/constants';
+  import {UI} from '~/store/constants';
 
   @Component
   export default class Root extends Vue {
     @Getter('isLoading', {namespace: UI})
     isLoading;
-
-    @Action('stopPlayback', {namespace: SPOTIFY})
-    stopPlayback;
-
-    @Watch('$route')
-    routeChanged(){
-      this.stopPlayback(true);
-    }
 
     async beforeMount(){
       //query params mean you've been sent here from Spotify via redirect_uri after authenticating 
@@ -32,7 +24,7 @@
           await initToken();
         }
         catch(error){
-          //console.error('token init failed...');
+          console.error('token init failed...');
           handleAuthError(error);
         }
 
@@ -48,7 +40,7 @@
       //else if storage has access token, user has been in app, so go check if expired etc and load app
       else if(storageGet(AUTH.ACCESS_TOKEN)){
         if(accessTokenExpired()){
-          //console.log('token expired, attempting refreshing it');
+          console.log('token expired, attempting refreshing it');
 
           try{
             await refreshToken();

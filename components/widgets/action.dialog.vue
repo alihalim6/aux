@@ -13,15 +13,26 @@
   >
     <div class="d-flex flex-column align-end fill-available">
       <v-icon class="clickable" @click.stop="closeDialog()" color="#191414" aria-label="close the dialog">mdi-close</v-icon>
-      <span class="dialog-text">{{actionDialog.text}}</span>
+
+      <div v-if="actionDialog.isIosPwaInstall" class="dialog-text">
+        <span class="ios-warning">WARNING: for installed web apps (those added to home screen), 
+          iOS unfortuantely does not allow background audio (app needs to be open in foreground, otherwise music pauses). 
+          If you're good with that, here's how to install AUX as an app:
+        </span>
+
+        <div class="my-2">1. Tap the share icon in the browser bar.</div>
+        <div>2. Hit "Add to Home screen".</div>
+      </div>
+
+      <span v-else class="dialog-text">{{actionDialog.text}}</span>
 
       <div class="d-flex align-center mt-4">
-        <div class="clickable nav-button cancel">
+        <div class="clickable nav-button cancel" v-if="actionDialog.cancellable">
           <span class="nav-button-label" @click="closeDialog()">CANCEL</span>
         </div>
 
         <div class="clickable nav-button confirm">
-          <span class="nav-button-label" @click="actionDialog.confirmFn()">{{ actionDialog.confirmLabel }}</span>
+          <span class="nav-button-label" @click="actionDialog.confirmFn ? actionDialog.confirmFn() : closeDialog()">{{ actionDialog.confirmLabel }}</span>
         </div>
       </div>
     </div>
@@ -76,5 +87,9 @@
     .nav-button-label {
       color: $primary-theme-color !important;
     }
+  }
+
+  .ios-warning {
+    font-size: 12px;
   }
 </style>

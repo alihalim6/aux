@@ -11,46 +11,46 @@
         </div>
       </div>
       
-      <div class="home-content no-padding">
-        <v-tabs v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
-          <v-tab v-for="(item, index) in content" :key="item.type" class="justify-start">
-            <div class="playlist-tab" :class="{'selected-tab': selectedTab === index}">
+      <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
+        <v-tab v-for="(item, index) in content" :key="item.type" class="justify-start">
+          <v-hover v-slot="{hover}">
+            <div class="tab-label" :class="{'selected-tab': selectedTab === index, 'hover-tab': hover}">
               <span>{{item.label}}</span>
             </div>
+          </v-hover>
 
-            <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
-          </v-tab>
-        </v-tabs>
+          <span v-if="index < (content.length - 1)" class="tab-divider color-black">/</span>
+        </v-tab>
+      </v-tabs>
 
-        <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs overflow-scroll-shadow" id="playlistTabContent">
-          <v-tab-item v-for="content in getTabContent()" :key="content.type">
-            <div v-for="item in content.data" :key="item.uuid">
-              <v-hover v-slot="{hover}">
-                <v-card elevation="7" class="clickable playlist-container" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
-                  <v-img :src="item.imgUrl.large" class="playlist-img">
-                    <template v-slot:placeholder>
-                      <span class="content-placeholder">{{item.name.substring(0, 1)}}</span>
-                    </template>
-                  </v-img>
+      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs overflow-scroll-shadow" id="playlistTabContent">
+        <v-tab-item v-for="content in getTabContent()" :key="content.type">
+          <div v-for="item in content.data" :key="item.uuid">
+            <v-hover v-slot="{hover}">
+              <v-card elevation="7" class="clickable playlist-container" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
+                <v-img :src="item.imgUrl.large" class="playlist-img">
+                  <template v-slot:placeholder>
+                    <span class="content-placeholder">{{item.name.substring(0, 1)}}</span>
+                  </template>
+                </v-img>
 
-                  <div class="playlist-info" :style="{'background-image': `url(${item.imgUrl.large})`}" :class="{'playlist-hovered': hover}">
-                    <div class="d-flex flex-column align-start justify-space-between height-100 width-100">
-                      <div class="d-flex flex-column">
-                        <span class="playlist-title">{{item.primaryLabel}}</span>
-                        <span class="playlist-description">{{item.secondaryLabel}}</span>
-                      </div>
-
-                      <div class="number-of-playlist-tracks">{{item.numberOfTracks}}</div>
+                <div class="playlist-info" :style="{'background-image': `url(${item.imgUrl.large})`}" :class="{'playlist-hovered': hover}">
+                  <div class="d-flex flex-column align-start justify-space-between height-100 width-100">
+                    <div class="d-flex flex-column">
+                      <span class="playlist-title">{{item.primaryLabel}}</span>
+                      <span class="playlist-description">{{item.secondaryLabel}}</span>
                     </div>
-                  </div>
-                </v-card>
-              </v-hover>
-            </div>
 
-            <BackToTop elementId="playlistTabContent" arrowColor="#1DB954"/>
-          </v-tab-item>
-        </v-tabs-items>
-      </div>
+                    <div class="number-of-playlist-tracks">{{item.numberOfTracks}}</div>
+                  </div>
+                </div>
+              </v-card>
+            </v-hover>
+          </div>
+
+          <BackToTop elementId="playlistTabContent" arrowColor="#1DB954"/>
+        </v-tab-item>
+      </v-tabs-items>
     </div>
   </section>
 </template>
@@ -113,7 +113,7 @@
         });
       }
       catch(error){
-        //console.error(error);
+        console.error(error);
       }
     }
 
@@ -134,19 +134,6 @@
 </script>
 
 <style lang="scss">
-  .playlist-tab {
-    color: $filter-label-color;
-    font-weight: bold;
-  }
-
-  .selected-tab {
-    color: $secondary-theme-color;
-    background-color: $spotify-green;
-    font-weight: bold;
-    padding: 8px;
-    border-radius: 4px;
-  }
-
   .playlist-info {
     background-color: rgba(0, 0, 0, 0.8);
     color: $secondary-theme-color;

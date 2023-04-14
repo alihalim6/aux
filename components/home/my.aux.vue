@@ -5,11 +5,13 @@
 
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
         <v-tab v-for="(tab, index) in getContent()" :key="tab.key" :disabled="getContent()[selectedTab].fetchPending" @change="tabChanged">
-          <div class="filter-label" :class="{'selected-tab': selectedTab === index}">
-            <span :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
-          </div>
+          <v-hover v-slot="{hover}">
+            <div class="tab-label" :class="{'selected-tab': selectedTab === index, 'hover-tab': hover}">
+              <span :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
+            </div>
+          </v-hover>
 
-          <span v-if="index < (content.length - 1)" class="filter-divider color-black">/</span>
+          <span v-if="index < (content.length - 1)" class="tab-divider color-black">/</span>
         </v-tab>
       </v-tabs>
 
@@ -153,14 +155,14 @@
 
         //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
         this.$nuxt.$on('playPreShuffledLikes', async playbackItem => {
-          //console.log('playing preshuffled tracks');
+          console.log('playing preshuffled tracks');
           await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
           //set a new shuffle for next time
           this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
         });
       }
       catch(error){
-        //console.error(error);
+        console.error(error);
       }
     }
 
@@ -247,22 +249,6 @@
 </script>
 
 <style lang="scss">
-  .tab-container {
-    padding-left: $home-content-padding;
-    max-width: calc(100vw - #{$home-content-padding});
-
-    @media(min-width: $max-inner-width){
-      padding: 0px;
-    }
-
-    .selected-tab {
-      background-color: $spotify-green;
-      color: $secondary-theme-color;
-      border: none;
-      padding: 10px;
-    }
-  }
-
   .fetch-in-progress {
     width: 100% !important;
     margin: 16px auto;

@@ -48,7 +48,7 @@ export const MY_AUX = {
   LIKED_TRACKS: 'Liked Songs',
   LIKED_ALBUMS: 'Liked Albums',
   RECENTLY_PLAYED: 'Recently Played',
-  TOP_ITEMS: 'Top Tracks/Artists'
+  TOP_ITEMS: 'Top Tracks \'n\' Artists'
 };
 
 export const PLAYLISTS = {

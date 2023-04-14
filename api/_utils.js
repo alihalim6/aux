@@ -27,7 +27,7 @@ httpClient.interceptors.request.use(async config => {
   const playbackRetry = config._retry && isPlaybackCall(config);
 
   if(playbackRetry){
-    //console.log(`retrying playback request with device id ${storageGet(DEVICE_ID)}`);
+    console.log(`retrying playback request with device id ${storageGet(DEVICE_ID)}`);
   }
 
   return {
@@ -60,7 +60,7 @@ httpClient.interceptors.response.use(async response => {
   return response;
 }, async error => {
   if(error.response.status == 404 && isPlaybackCall(error.config)){
-    //console.log('404 on playback...initializing new player');
+    console.log('404 on playback...initializing new player');
     await initSpotifyPlayer();
     await retryRequest(error.config);
     return;
@@ -82,11 +82,11 @@ async function retryRequest(config){
       await attemptTokenRefresh();
     }
 
-    //console.log('retrying request...');
+    console.log('retrying request...');
     return httpClient.request(config);
   }
   else{
-    //console.log('refresh/retry failed, need new token, sending back to splash...');
+    console.log('refresh/retry failed, need new token, sending back to splash...');
     $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
     $nuxt.$router.replace({path: `/${SPLASH}`});
   }
@@ -137,7 +137,7 @@ export const getRecommendationSeeds = (artists, tracks) => {
         return;
       }
 
-      //console.log(`seed: ${item.name}`);
+      console.log(`seed: ${item.name}`);
   
       seed += item.id + ',';
       i++;

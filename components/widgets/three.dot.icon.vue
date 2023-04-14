@@ -75,9 +75,6 @@
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
-    @Mutation('removeFromQueue', {namespace: PLAYBACK_QUEUE})
-    removeFromQueue;
-
     @Mutation('setToast', {namespace: UI})
     setToast;
 
@@ -86,6 +83,9 @@
 
     @Action('setTracksToPlayNext', {namespace: PLAYBACK_QUEUE})
     setTracksToPlayNext;
+
+    @Action('removeFromQueue', {namespace: PLAYBACK_QUEUE})
+    removeFromQueue;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;

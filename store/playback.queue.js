@@ -2,6 +2,9 @@ import {SPOTIFY, UI} from './constants';
 import {shuffleArray, isSameTrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import cloneDeep from 'lodash.clonedeep';
+import spotify from '~/api/spotify';
+import {storageGet} from '~/utils/storage';
+import {DEVICE_ID} from '~/utils/constants';
 
 export const state = () => {
   return {
@@ -59,6 +62,13 @@ export const getters = {
 
 const THREE_DOT_TOAST_TIMEOUT = 2500;
 
+function updateSpotifyNextTrack(track){
+  if(track && track.uri.indexOf('track') > -1){
+    console.log(`next track modified, resetting queue on spotify side with it...${track.name}`);
+    spotify({url: `/me/player/queue?uri=${track.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+  }
+}
+
 export const actions = {  
   playPreviousTrack: ({dispatch, getters}) => {
     playTrackWithinQueue({
@@ -90,6 +100,8 @@ export const actions = {
     if(!params.noConfirmationToast){
       commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${params.tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
     }
+
+    updateSpotifyNextTrack(getters.nextTrack);
   },
   shuffleUpNext: ({commit, getters}) => {
     commit('shuffleUpNext', {nextTracks: getters.nextTracks, currentIndex: getters.currentlyPlayingIndex});
@@ -111,6 +123,14 @@ export const actions = {
     //to last track in main queue, which is when we need to take action
     if(!getters.thenTracks.length && getters.restOfQueue.length){
       commit('addFromRestOfQueueToMain');
+    }
+  },
+  removeFromQueue: ({commit,getters}, track) => {
+    const nextTrackRemoved = getters.nextTrack.queueId == track.queueId;
+    commit('removeFromQueue', track);
+
+    if(nextTrackRemoved){
+      updateSpotifyNextTrack(getters.nextTrack);
     }
   }
 };

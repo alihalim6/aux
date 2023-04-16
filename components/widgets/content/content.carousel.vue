@@ -2,7 +2,7 @@
     <section>
       <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}">
         <div v-for="(item, index) in data" :key="item.uuid">
-          <section :class="{'d-flex align-start': lastNewAndRecommendedItem(index)}">
+          <section :class="{'d-flex align-center': lastNewAndRecommendedItem(index)}">
             <v-hover v-slot="{hover}">
               <div :class="{'d-flex flex-column align-center': item.isArtist}">
                 <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
@@ -20,7 +20,6 @@
 
                 <v-card 
                   v-else
-                  max-width="185" 
                   elevation="10" 
                   class="clickable" 
                   :class="{
@@ -52,8 +51,10 @@
                         class="clickable primary-label" 
                         @click.stop="primaryLabelPressed(item)" 
                         :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover, 'spotify-green-color': itemIsPlaying(item)}">
-                          {{item.primaryLabel}}<span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
-                        </div>
+                          {{item.primaryLabel}}
+                          <span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
+                      </div>
+
                       <v-img v-if="newAndRecommended && item.isNew" src="/new.png" class="new-icon"></v-img>
                     </div>
 
@@ -73,9 +74,7 @@
             <div v-if="lastNewAndRecommendedItem(index)" class="see-all-container">
               <span class="dots">...</span>
 
-              <div  class="clickable see-all" @click="$nuxt.$emit('showAllNewAndReco')">
-                <div class="mb-3">SEE</div><div>ALL</div>
-              </div>
+              <div  class="clickable see-all" @click="$nuxt.$emit('showAllNewAndReco')">SEE ALL</div>
             </div>
           </section>
         </div>
@@ -148,17 +147,17 @@
     }
 
     lastNewAndRecommendedItem(index){
-      return this.newAndRecommended && index == this.data.length - 1;
+      return !this.vertical && this.newAndRecommended && index == this.data.length - 1;
     }
   }
 </script>
 
 <style lang="scss">
-  $content-img-size: 275px;
+  $content-img-size: 300px;
   $label-left-padding: 6px;
   $secondary-label-font-size: 12px;
   $primary-label-font-size: 14px;
-  $content-img-partial-size: 185px;
+  $content-img-partial-size: auto;
 
   .content-carousel {
     display: flex;
@@ -281,27 +280,27 @@
   .see-all-container {
     display: flex;
     align-items: center;
-    margin: 0px 48px 0px 20px;
+    margin: -48px 48px 0px 20px;
   }
 
   .dots {
-    font-size: 56px;
+    font-size: 28px;
     letter-spacing: 5px;
     color: $primary-theme-color;
     margin-right: 12px;
+    position: relative;
+    top: -6px;
   }
   
   .see-all {
     border-left: 2px solid $primary-theme-color;
-    font-size: 26px;
+    font-size: 18px;
     color: $secondary-theme-color;
     background-color: $primary-theme-color;
     font-weight: bold;
-    width: 42px;
     border-radius: 20px;
-    word-wrap: break-word;
-    padding: 14px 8px;
-    text-align: center;
+    padding: 8px;
+    white-space: nowrap;
   }
 
   .see-all:hover {

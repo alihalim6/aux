@@ -6,7 +6,7 @@ const getRecommendedTracks = async (topArtists) => {
   const seeds = getRecommendationSeeds(topArtists, topTracks.data);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=30&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
+    await httpClient.get(`/recommendations?limit=40&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -36,10 +36,28 @@ async function newAndRecommended(){
 
     const topArtists = await topItems('artists');
     const recommendedTracks = await getRecommendedTracks(topArtists.data);
+    const recommendedAlbums = [];
+    const recommendedAlbumsMax = 4;
     const recommendedArtists = await getRecommendedArtists(topArtists.data);
-    const someShuffledNewReleases = shuffleArray([...newReleases]).slice(0, 10);
-    
-    const allItems = [...someShuffledNewReleases.map(item => ({...item, isNew: true})), ...recommendedTracks.data.tracks, ...recommendedArtists.data.artists.slice(0, 3)];
+    const someShuffledNewReleases = shuffleArray([...newReleases].slice(0, 7));
+    let tracksToRecommendAlbums = recommendedTracks.data.tracks.slice(0, recommendedAlbumsMax);
+
+    if(tracksToRecommendAlbums.length){
+      for(const track of tracksToRecommendAlbums){
+        if(track.album && track.album.album_type.toLowerCase() == 'album'){
+          const {data} = await httpClient.get(`/albums/${track.album.id}`);
+          recommendedAlbums.push(data);
+        }
+      }
+    }
+
+    const allItems = [
+      ...someShuffledNewReleases.map(item => ({...item, isNew: true})), 
+      ...recommendedTracks.data.tracks.slice(recommendedAlbumsMax), 
+      ...recommendedArtists.data.artists.slice(0, 3),
+      ...recommendedAlbums
+    ];
+
     shuffleArray(allItems);
 
     return {

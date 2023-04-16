@@ -91,7 +91,7 @@
         label: MY_AUX.RECENTLY_PLAYED,
         trackList: true,
         id: uuid(),
-        footnote: '*Recently played on Spotify'
+        footnote: '*On Spotify'
       }
     ];
 

@@ -19,7 +19,7 @@
               <TrackList :tracks="item.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :new-and-recommended="true"/>
             </div>
 
-            <ContentCarousel v-else :data="item.data" :vertical="true"/>
+            <ContentCarousel v-else :data="item.data" :vertical="true" :new-and-recommended="true"/>
           </div>
         </v-tab-item>
       </v-tabs-items>
@@ -45,7 +45,7 @@
       },
       {
         data: [],
-        label: 'New Albums'
+        label: 'Albums'
       },
       {
         data: [],

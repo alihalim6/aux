@@ -166,6 +166,8 @@ export const actions = {
         return;
       }
 
+      let makePlaybackApiCall = true;
+
       if(playingNextTrack && !playingNextTrackNow){
         let currentState;
       
@@ -179,43 +181,70 @@ export const actions = {
           
           if(currentState.track_window.current_track && currentState.track_window.current_track.uri == item.uri){
             console.log(`letting Spotify play the current track: ${item.name}`);
-            return;
+            makePlaybackApiCall = false;
           }
 
           const samePreviousTracks = previouslyPlayingItem.uri == currentState.track_window.current_track.uri;
 
           if(!nextTrackButtonPressed && samePreviousTracks && currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
             console.log(`letting Spotify play the play next track: ${item.name}`);
-            return;
+            makePlaybackApiCall = false;
           }
         }
       }
 
-      //send as many tracks as possible;
-      //prevents Spotify from having no next tracks as often because when we allow them to play 2nd of the two we were sending originally,
-      //they had no knowledge of what was after that in queue (as expected);
-      //doing it this way leads to sdk is used more (what we want) instead of api call due to them having correct next track more often;
-      //has to use passed in queue instead of rootGetters due to getter timing not being reliable
+      if(makePlaybackApiCall){
+        //send as many tracks as possible;
+        //prevents Spotify from having no next tracks as often because when we allow them to play 2nd of the two we were sending originally,
+        //they had no knowledge of what was after that in queue (as expected);
+        //doing it this way leads to sdk is used more (what we want) instead of api call due to them having correct next track more often;
+        //has to use passed in queue instead of rootGetters due to getter timing not being reliable
 
-      let nextTracksToSend = null;
+        let nextTracksToSend = null;
 
-      if(item.uri.indexOf('track') > 0){
-        nextTracksToSend = takeUntilNotATrack(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album');
-      }
-      else{
-        console.log('about to play an album-type track -> won\'t send next track uris');
-      }
-
-      await startItemPlayback(item, nextTracksToSend);
-
-      //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
-      if(queue.length > 1 && !nextTracksToSend){
-        const nextTrack = queue[currentlyPlayingItemIndex + 1];
-
-        if(nextTrack.uri.indexOf('track') > -1){
-          console.log(`adding the next track to spotify queue...${nextTrack.name}`);
-          spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+        if(item.uri.indexOf('track') > 0){
+          nextTracksToSend = takeUntilNotATrack(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album');
         }
+        else{
+          console.log('about to play an album-type track -> won\'t send next track uris');
+        }
+
+        await startItemPlayback(item, nextTracksToSend);
+
+        //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
+        if(queue.length > 1 && !nextTracksToSend){
+          const nextTrack = queue[currentlyPlayingItemIndex + 1];
+
+          if(nextTrack && nextTrack.uri.indexOf('track') > -1){
+            console.log(`adding the next track to spotify queue...${nextTrack.name}`);
+            spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+          }
+        }
+      }
+
+      //lock screen
+      if('mediaSession' in navigator){
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: item.name,
+          artist: item.primaryLabel,
+          album: item.trackFromAlbum ? item.album.name : '',
+          artwork: [
+            { src: 'https://via.placeholder.com/96',   sizes: '96x96',   type: 'image/png' },
+            { src: 'https://via.placeholder.com/128', sizes: '128x128', type: 'image/png' },
+            { src: 'https://via.placeholder.com/192', sizes: '192x192', type: 'image/png' },
+            { src: 'https://via.placeholder.com/256', sizes: '256x256', type: 'image/png' },
+            { src: 'https://via.placeholder.com/384', sizes: '384x384', type: 'image/png' },
+            { src: 'https://via.placeholder.com/512', sizes: '512x512', type: 'image/png' },
+          ]
+        });
+
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+          dispatch(`${PLAYBACK_QUEUE}/playPreviousTrack`, null, {root: true});
+        });
+
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+          dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {}, {root: true});
+        });
       }
     }
     catch(error){

@@ -12,9 +12,9 @@
         
         <div class="tab-container d-flex align-center pl-0" v-if="allItems.length">
           <v-hover v-slot="{hover}">
-            <div class="clickable tab-label mr-0" :class="{'hover-scale': hover}" @click="displayAll()">
+            <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayAll()">
               <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->
-              <span v-else class="text-decoration-underline">SEE ALL</span>
+              <span v-else class="new-and-reco-tab">SEE ALL</span>
             </div>
           </v-hover>
           
@@ -23,7 +23,7 @@
           <v-hover v-slot="{hover}">
             <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayNewReleases()">
               <span v-if="overlayLoading === NEW_RELEASES">...</span>
-              <span v-else class="text-decoration-underline">NEW RELEASES ONLY</span>
+              <span v-else class="new-and-reco-tab">NEW RELEASES ONLY</span>
             </div>
           </v-hover>
         </div>
@@ -45,7 +45,7 @@
     previewItems = [];
     newReleases = [];
     allItems = [];
-    NEW_AND_RECOMMENDED = 'RECOMMENDED';
+    NEW_AND_RECOMMENDED = 'NEW AND RECOMMENDED';
     NEW_RELEASES = 'NEW RELEASES';
     overlayLoading = false;
     refreshingData = false;
@@ -68,7 +68,7 @@
 
     async getData(){
       try {
-        const {previewItems, newReleases, allItems} = await newAndRecommended();
+        const {previewItems, newReleases, allItems, recommendedAlbums} = await newAndRecommended();
         this.previewItems = setItemMetaData(previewItems);
         this.newReleases = newReleases;
         this.allItems = allItems;
@@ -118,3 +118,9 @@
     }
   }
 </script>
+
+<style lang="scss" scoped>
+  .new-and-reco-tab {
+    border-bottom: 2px solid $primary-theme-color;
+  }
+</style>

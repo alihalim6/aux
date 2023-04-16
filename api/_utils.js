@@ -88,7 +88,7 @@ async function retryRequest(config){
   else if(isPlaybackCall(config)){
     console.log('refresh/retry failed for playback, sending back to splash...');
     $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
-    $nuxt.$router.replace({path: `/${SPLASH}`});
+    $nuxt.$router.replace({name: SPLASH, params: {failedRefreshRetry: true}});
   }
 }
 

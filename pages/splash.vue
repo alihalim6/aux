@@ -77,6 +77,13 @@
 
     mounted(){
       this.setLoading(false);
+
+      if(this.$route.params.failedRefreshRetry){
+        this.setActionDialog({
+          text: 'You\'ve been teleported back to the splash page (Spotify needs you to login again).',
+          confirmLabel: 'OK'
+        });
+      }
     }
 
     loginClicked(){

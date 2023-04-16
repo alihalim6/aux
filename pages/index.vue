@@ -31,7 +31,7 @@
         //clean up url and get rid of this intermediary route in browser history on return from Spotify
         window.history.replaceState('', '', window.location.toString().split('?')[0].replace('/#/', '/'));
 
-        this.$router.push(APP);
+        this.$router.replace({name: APP});
       }
       else if(this.$route.query.error){
         handleAuthError(this.$route.query.error);
@@ -44,19 +44,19 @@
 
           try{
             await refreshToken();
-            this.$router.push(APP);
+            this.$router.replace({name: APP});
           }
           catch(error){
             handleAuthError('token refresh failed...');
           }
         }
         else{
-          this.$router.push(APP);
+          this.$router.replace({name: APP});
         }
       }
       //else splash page
       else{
-        this.$router.push({name: SPLASH, params: {loggedIn: true}});
+        this.$router.replace({name: SPLASH, params: {loggedIn: true}});
       }
     }
   }

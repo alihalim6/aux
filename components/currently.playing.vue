@@ -29,7 +29,7 @@
               class="clickable d-flex align-center"
               :class="{'disabled-control': !currentlyPlayingItem.uri}"
               @change="updateElapsedDisplay"
-              @end="seek"
+              @end="() => seek()"
               aria-label="seek track"
             >
               <template v-slot:prepend><span class="playback-time">{{playbackElapsed.display}}</span></template>
@@ -109,12 +109,14 @@
   @Component
   export default class CurrentlyPlaying extends Vue {
     playbackInterval = null;
+    spotifySyncInterval = null;
     playbackIcon = 'play';
     upNextDisplaying = false;
     upNextHidden = true;
     itemLiked = false;
     showUnseenDot = null;
     trackReady = false;
+    mediaSessionApiInitialized = false;
 
     playbackElapsed = {
       ms: 0,
@@ -221,6 +223,25 @@
         const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data[0];
         this.trackReady = true;
+
+        //lock screen
+        if(!this.mediaSessionApiInitialized && ('mediaSession' in navigator)){
+          const defaultSkipTime = 10; /* Time to skip in seconds by default */
+
+          navigator.mediaSession.setActionHandler('seekbackward', async details => {
+            const skipTime = details.seekOffset || defaultSkipTime;
+            console.log('skipTime', skipTime);
+            await this.seek(Math.max((this.playbackElapsed.ms / 1000) - skipTime, this.playbackTotal.ms / 1000));
+          });
+
+          navigator.mediaSession.setActionHandler('seekforward', async details => {
+            const skipTime = details.seekOffset || defaultSkipTime;
+            console.log('skipTime', skipTime);
+            await this.seek(Math.min((this.playbackElapsed.ms / 1000) + skipTime, this.playbackTotal.ms / 1000));
+          });
+
+          this.mediaSessionApiInitialized = true;
+        }
       }
     }
 
@@ -272,6 +293,16 @@
           }
         }
       }, 1000);
+
+      this.spotifySyncInterval = setInterval(async () => {
+        const playerState = await this.player.getCurrentState();
+
+        if(playerState && (Math.abs(playerState.position - this.playbackElapsed.ms) > 1500)){
+          this.playbackElapsed.ms = playerState.position;
+          this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
+          console.log('lag in playback elapsed, sync-ed with Spotify...');
+        }
+      }, 15000);
     }
 
     async repeatCurrentTrack(){
@@ -281,7 +312,9 @@
 
     stopInterval(){
       clearInterval(this.playbackInterval);
+      clearInterval(this.spotifySyncInterval);
       this.playbackInterval = null;
+      this.spotifySyncInterval = null;
       this.trackReady = false;
     }
 
@@ -300,8 +333,9 @@
       this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
     }
 
-    async seek(){
-      await this.seekPlayback(this.playbackElapsed.ms);
+    async seek(secs){
+      console.log('seeking to: ' + secs + ' secs');
+      await this.seekPlayback(secs ? secs * 1000 : this.playbackElapsed.ms);
       this.updateElapsedDisplay();
     }
 

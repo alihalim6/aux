@@ -191,6 +191,11 @@ export const initSpotifyPlayer = async () => {
       console.log(`Spotify player ready with device id ${device_id}`);
     });
 
+    spotifyPlayer.on('initialization_error', ({ message }) => {
+      console.error('Failed to initialize', message);
+      $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
+    });
+
     spotifyPlayer.addListener('authentication_error', async ({message}) => {
       console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
       retryPlayerInit();

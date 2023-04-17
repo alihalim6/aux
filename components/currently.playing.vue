@@ -1,11 +1,15 @@
 <template>
   <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
-    <div class="clickable view-feed-container" v-if="!upNextDisplaying" @click="feedIconPressed()">
-      <div class="d-flex align-center ml-2">
-        <v-icon x-small color="red">mdi-circle</v-icon>
-        <div class="on-air">FEED</div>
-        <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
-        <v-icon v-show="showUnseenDot" large class="unseen-activity-dot" color="#36a8ff">mdi-circle-small</v-icon>
+    <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-3">
+      <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon currently-playing-spotify-icon" :class="{'no-visibility': !currentlyPlayingItem.uri}" src="/Spotify_Logo_Icon.png"></v-img>
+
+      <div class="clickable view-feed-container" @click="feedIconPressed()">
+        <div class="d-flex align-center ml-2">
+          <v-icon x-small color="red">mdi-circle</v-icon>
+          <div class="on-air">FEED</div>
+          <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
+          <v-icon v-show="showUnseenDot" large class="unseen-activity-dot" color="#36a8ff">mdi-circle-small</v-icon>
+        </div>
       </div>
     </div>
 
@@ -39,7 +43,7 @@
             <div class="position-relative">
               <v-icon v-if="currentlyPlayingItem.uri" class="clickable pl-3" @click.stop="trackLikeToggled()" color="#1DB954">mdi-heart{{itemLiked ? '' : '-outline'}}</v-icon>
 
-              <div v-show="trackReady" class="clickable small-circle repeat" :class="{'repeat-set': setToRepeatTrack}" @click.stop="toggleTrackRepeat()">
+              <div v-show="trackReady" class="clickable small-circle repeat" :class="{'repeat-set': setToRepeatTrack}" @click.stop="repeatPressed()">
                 <span class="small-circle-top-letters">RE</span>
                 <span class="small-circle-bottom-letters">PEAT</span>
               </div>
@@ -109,7 +113,6 @@
   @Component
   export default class CurrentlyPlaying extends Vue {
     playbackInterval = null;
-    spotifySyncInterval = null;
     playbackIcon = 'play';
     upNextDisplaying = false;
     upNextHidden = true;
@@ -136,9 +139,6 @@
 
     @Getter('newPlayback', {namespace: SPOTIFY})
     newPlayback;
-
-    @Getter('player', {namespace: SPOTIFY})
-    player;
 
     @Getter('setToRepeatTrack', {namespace: SPOTIFY})
     setToRepeatTrack;
@@ -293,16 +293,6 @@
           }
         }
       }, 1000);
-
-      this.spotifySyncInterval = setInterval(async () => {
-        const playerState = await this.player.getCurrentState();
-
-        if(playerState && (Math.abs(playerState.position - this.playbackElapsed.ms) > 1500)){
-          this.playbackElapsed.ms = playerState.position;
-          this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
-          console.log('lag in playback elapsed, sync-ed with Spotify...');
-        }
-      }, 15000);
     }
 
     async repeatCurrentTrack(){
@@ -312,9 +302,7 @@
 
     stopInterval(){
       clearInterval(this.playbackInterval);
-      clearInterval(this.spotifySyncInterval);
       this.playbackInterval = null;
-      this.spotifySyncInterval = null;
       this.trackReady = false;
     }
 
@@ -401,6 +389,16 @@
     nextTrackPressed(){
       this.stopInterval();
       this.playNextTrack({nextTrackButtonPressed: true});
+    }
+
+    spotifyLogoPressed(){
+      window.open('https://www.spotify.com', '_blank');
+    }
+
+    async repeatPressed(){
+      //Spotify not reliably clearing repeat, so call twice
+      await toggleTrackRepeat();
+      await toggleTrackRepeat();
     }
 
     beforeDestroy(){
@@ -603,5 +601,10 @@
     @media(max-width: $queue-control-threshold){
       margin-left: 0px !important;
     }
+  }
+
+  .currently-playing-spotify-icon {
+    margin-top: 4px;
+    margin-left: 12px;
   }
 </style>

@@ -2,6 +2,8 @@
   <section class="mt-6 pt-1 pb-6">
     <div class="content-container mt-4">
       <div class="home-content-title">
+        <v-img @click="spotifyLogoPressed()" class="clickable spotify-full" src="/Spotify_Logo_Full.png"></v-img>
+
         <div class="d-flex align-center">
           <span>Playlists</span>
 
@@ -125,6 +127,10 @@
       this.refreshingData = true;
       await this.getData();
       this.refreshingData = false;
+    }
+
+    spotifyLogoPressed(){
+      window.open('https://open.spotify.com/collection/playlists', '_blank');
     }
 
     beforeDestroy(){

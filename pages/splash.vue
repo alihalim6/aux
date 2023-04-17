@@ -12,7 +12,7 @@
 
           <span class="disclaimer">
             By logging in, you agree to <span class="clickable text-decoration-underline" @click="showTerms()">these terms</span> and 
-            <span class="clickable text-decoration-underline" @click="showPrivacyPolicy()">this privacy disclosure</span>
+            <span class="clickable text-decoration-underline" @click="showPrivacyPolicy()">this privacy notice</span>
           </span>
         </div>
       </div>
@@ -97,7 +97,7 @@
           Modifying or creating derivative works based on the Spotify Platform, Spotify Service or Spotify Content is prohibited.
           Decompiling, reverse-engineering, disassembling, and otherwise reducing the Spotify Platform, Spotify Service, and Spotify Content to source code or other human-perceivable form, 
           to the full extent allowed by law is prohibited. AUX is responsible for itself and any liability on the part of third parties (e.g., Spotify) is disclaimed. 
-          Spotify is a third party beneficiary of this agreement and privacy disclosure and is entitled to directly enforce this agreement.`,
+          Spotify is a third party beneficiary of this agreement and privacy notice and is entitled to directly enforce this agreement.`,
         confirmLabel: 'OK'
       });
     }

@@ -165,7 +165,7 @@
     margin-top: 12px;
 
     .spaced-content {
-      margin-right: 103px;
+      margin-right: 18px;
     }
 
     .last-item {
@@ -173,7 +173,7 @@
     }
 
     .content-img {
-      min-width: $content-img-size;
+      width: $content-img-size;
       height: $content-img-size;
     }
 

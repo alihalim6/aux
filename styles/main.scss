@@ -397,7 +397,7 @@ $section-title-font-size: 36px;
     border-radius: 22px;
     align-self: flex-end;
     margin-left: auto;
-    padding: 8px 14px;
+    padding: $nav-button-padding;
   }
 
   .nav-button:hover {
@@ -414,17 +414,14 @@ $section-title-font-size: 36px;
     color: $secondary-theme-color;
   }
 
-  .spotify-full {  
-    width: 5.3em;
-    min-width: 70px;
+  .spotify-full {    
+    width: 70px;
   }
 
   .spotify-icon {
-    $icon-size: 1.5em;
-    $icon-min-size: 21px;
+    $icon-size: 21px;
 
     width: $icon-size;
+    max-width: $icon-size;
     height: $icon-size;
-    min-width: $icon-min-size;
-    min-height: $icon-min-size;
   }

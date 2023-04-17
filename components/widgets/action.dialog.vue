@@ -8,11 +8,11 @@
     min-width="fit-content"
     :max-width="600"
     transition="slide-y-transition" 
-    color="white"
+    color="#191414"
     :timeout="-1"
   >
     <div class="d-flex flex-column align-end fill-available">
-      <v-icon class="clickable" @click.stop="closeDialog()" color="#191414" aria-label="close the dialog">mdi-close</v-icon>
+      <v-icon class="clickable" @click.stop="closeDialog()" color="white" aria-label="close the dialog">mdi-close</v-icon>
 
       <div v-if="actionDialog.isIosPwaInstall" class="dialog-text">
         <span class="ios-warning">WARNING: for installed web apps (those added to home screen), 
@@ -73,7 +73,8 @@
     font-weight: bold;
     font-size: 16px;
     padding: $base-padding;
-    color: $primary-theme-color;
+    background-color: $primary-theme-color;
+    color: $secondary-theme-color;
   }
 
   .nav-button {
@@ -82,10 +83,31 @@
   }
 
   .cancel {
-    background-color: $secondary-theme-color;
+    .nav-button-label {
+      color: $secondary-theme-color !important;
+    }
+  }
 
+  .cancel:hover {
+    background-color: $primary-theme-color;
+    border: 2px solid $secondary-theme-color;
+  }
+
+  .confirm {
+    background-color: $secondary-theme-color;
+    
     .nav-button-label {
       color: $primary-theme-color !important;
+    }
+  }
+
+  .confirm:hover {
+    padding: $nav-button-padding;
+    border: none;
+    background-color: $primary-theme-color;
+
+    .nav-button-label {
+      color: $secondary-theme-color !important;
     }
   }
 

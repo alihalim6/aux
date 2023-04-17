@@ -4,15 +4,9 @@
 
     <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll ref="appBar" :scroll-threshold="10">
       <div class="logo-container">
-        <div class="aux-logo-container">
+        <div class="clickable aux-logo-container" @click="$router.replace({path: '/'})">
           <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
           <div class="inline-display outlined-phrase main-label">AUX</div>
-        </div>
-
-        <div class="spotify-logo-container">
-          <v-icon class="divider">mdi-checkbox-blank-circle</v-icon>
-          <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon d-block d-md-none" src="/Spotify_Logo_Icon.png"></v-img>
-          <v-img @click="spotifyLogoPressed()" class="clickable spotify-full d-none d-md-block" src="/Spotify_Logo_Full.png"></v-img>
         </div>
       </div>
 
@@ -31,9 +25,9 @@
           <v-list>
             <v-list-item>
               <div class="user-list width-100 scroll-shadow">
-                <div v-if="liveUsers.length" class="following-on">FOLLOW ON SPOTIFY</div>
-
-                <div v-if="liveUsers.length" class="cursor-auto">
+                <div v-show="liveUsers.length" class="cursor-auto">
+                  <div class="following-on">FOLLOW ON SPOTIFY</div>
+                  
                   <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
                     <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
 
@@ -55,7 +49,7 @@
                   </div>
                 </div>
 
-                <div v-else>
+                <div v-show="!liveUsers.length">
                   <div class="d-flex flex-column align-center">
                     <span class="no-other-users-message">No one else is here.</span>
                     <v-img class="no-other-users-img" src="/no_other_users.png"></v-img>
@@ -237,10 +231,6 @@
       }
     }
 
-    spotifyLogoPressed(){
-      window.open('https://www.spotify.com', '_blank');
-    }
-
     deleteUserActivity(){
       this.setActionDialog({
         text: `Delete tracks I've played, comments/reactions I've made, and profile info (username, photo url and Spotify user ID) that AUX has saved (bars?):`,
@@ -311,7 +301,7 @@
         
         .pass-the-phrase {
           color: $rose-red;
-          transform: rotate(-79.5deg) scaleY(1.3);
+          transform: rotate(-80deg) scaleY(1.3);
           font-size: 10px;
           white-space: nowrap;
           font-style: italic;
@@ -577,11 +567,5 @@
 
     height: $icon-size;
     max-width: $icon-size;
-  }
-
-  .spotify-logo-container {
-    display: flex;
-    align-items: center;
-    margin-left: 8px;
   }
 </style>

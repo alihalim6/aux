@@ -14,7 +14,7 @@
               </div>
 
               <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" @click.stop>
-                <div class="inner-container" v-if="item.details">
+                <div class="inner-container" v-if="item.details" :class="{'extra-padding-bottom': !item.isAlbum}">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
                     <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
                     <v-icon class="close-button" large @click="closeOverlay()" aria-label="close overlay">mdi-close</v-icon>
@@ -217,7 +217,7 @@
 
       .inner-container {
         max-width: $overlay-width;
-        padding: 0px $base-padding $base-padding;;
+        padding: 0px $base-padding $base-padding;
         margin: 0 auto;
         width: stretch;
 
@@ -353,7 +353,11 @@
 
   .overlay-spotify-full {
     @media (max-width: $full-image-cta-breakpoint) {
-      display: none;
+      display: none !important;
     }
+  }
+
+  .extra-padding-bottom {
+    padding-bottom: 64px !important;
   }
 </style>

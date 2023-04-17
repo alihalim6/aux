@@ -1,7 +1,10 @@
 <template>
   <section class="pt-1 pb-12">
     <div class="content-container mt-4">
-      <div class="home-content-title">My Vibe</div>
+      <div class="home-content-title">
+        <v-img @click="spotifyLogoPressed()" class="clickable spotify-full" src="/Spotify_Logo_Full.png"></v-img>
+        <span>My Vibe</span>
+      </div>
 
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
         <v-tab v-for="(tab, index) in getContent()" :key="tab.key" :disabled="getContent()[selectedTab].fetchPending" @change="tabChanged">
@@ -239,6 +242,10 @@
 
     getContent(){
       return this.content.filter(content => content.data.length);
+    }
+
+    spotifyLogoPressed(){
+      window.open('https://open.spotify.com/collection/tracks', '_blank');
     }
 
     beforeDestroy(){

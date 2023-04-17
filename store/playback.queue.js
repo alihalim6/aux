@@ -94,14 +94,16 @@ export const actions = {
     commit('addToEndOfQueue', tracks);
     commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${tracks.length > 1 ? 's' : ''} added to end of queue`}, {root: true});
   },
-  setTracksToPlayNext: ({commit, getters}, params) => {
-    commit('setPlayNext', {currentIndex: getters.currentlyPlayingIndex, tracks: params.tracks});
+  setTracksToPlayNext: ({commit, getters}, {tracks, noConfirmationToast, doNotUpdateSpotify}) => {
+    commit('setPlayNext', {currentIndex: getters.currentlyPlayingIndex, tracks});
 
-    if(!params.noConfirmationToast){
-      commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${params.tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
+    if(!noConfirmationToast){
+      commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${tracks.length > 1 ? 's' : ''} set to play next`}, {root: true});
     }
 
-    updateSpotifyNextTrack(getters.nextTrack);
+    if(!doNotUpdateSpotify){
+      updateSpotifyNextTrack(getters.nextTrack);
+    }
   },
   shuffleUpNext: ({commit, getters}) => {
     commit('shuffleUpNext', {nextTracks: getters.nextTracks, currentIndex: getters.currentlyPlayingIndex});
@@ -114,7 +116,7 @@ export const actions = {
       playingNextTrackNow = true;
     }
 
-    dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true});
+    dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true, doNotUpdateSpotify: true});
     dispatch('playNextTrack', {playingNextTrackNow: true});
   },
   checkForEndOfQueue: ({getters, commit}) => {

@@ -9,8 +9,8 @@ $max-inner-width: 715px;
 $base-padding: 14px;
 $home-content-padding: 36px;
 $max-home-content-height: 525px;
-$max-footer-height-not-playing: calc(env(safe-area-inset-bottom) + 140px);
-$max-footer-height-playing: calc(env(safe-area-inset-bottom) + 188px);
+$max-footer-height-not-playing: calc(env(safe-area-inset-bottom) + 141px);
+$max-footer-height-playing: calc(env(safe-area-inset-bottom) + 200px);
 $overlay-border-size: 4px;
 $simple-title-border-size: 3px;
 $text-field-filled-full-width-outlined-single-line-slot-min-height: 20px;
@@ -18,6 +18,7 @@ $device-size-threshold: 600px;
 $snackbar-side-margin: 8px;
 $chat-font-size: 12px;
 $reaction-emoji-margin: 5px;
+$nav-button-padding: 8px 14px;
 
 $up-next-slide-animation: 0.29s forwards 1 ease-in-out;
 

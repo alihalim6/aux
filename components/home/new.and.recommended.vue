@@ -2,6 +2,8 @@
   <section>
     <div class="content-container">
       <div class="home-content-title">
+        <v-img class="spotify-full" src="/Spotify_Logo_Full.png"></v-img>
+
         <div class="d-flex align-center">
           <span>New & Recommended</span>
 

@@ -1,3 +1,5 @@
+import redirectSSL from 'redirect-ssl';
+
 export default {  
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -74,10 +76,13 @@ export default {
     treeShake: true
   },
 
-  serverMiddleware: {
-    '/feed': '~/serverMiddleware/feed.js',
-    '/user': '~/serverMiddleware/user.js'
-  },
+  serverMiddleware: [
+    {path: '/feed', handler: '~/serverMiddleware/feed.js'},
+    {path: '/user', handler: '~/serverMiddleware/user.js'},
+    redirectSSL.create({
+      enabled: process.env.NODE_ENV === 'production'
+    }),
+  ],
 
   styleResources: {
     scss: ['./styles/variables.scss', './styles/main.scss', './styles/simple-styles.scss']

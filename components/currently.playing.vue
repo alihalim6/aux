@@ -224,14 +224,14 @@
         this.itemLiked = data[0];
         this.trackReady = true;
 
-        //lock screen
+        //lock screen; https://web.dev/media-session/
         if(!this.mediaSessionApiInitialized && ('mediaSession' in navigator)){
-          const defaultSkipTime = 10; /* Time to skip in seconds by default */
+          const defaultSkipTime = 20;
 
           navigator.mediaSession.setActionHandler('seekbackward', async details => {
             const skipTime = details.seekOffset || defaultSkipTime;
             console.log('skipTime', skipTime);
-            await this.seek(Math.max((this.playbackElapsed.ms / 1000) - skipTime, this.playbackTotal.ms / 1000));
+            await this.seek(Math.max((this.playbackElapsed.ms / 1000) - skipTime, 0));
           });
 
           navigator.mediaSession.setActionHandler('seekforward', async details => {
@@ -323,7 +323,8 @@
 
     async seek(secs){
       console.log('seeking to: ' + secs + ' secs');
-      await this.seekPlayback(secs ? secs * 1000 : this.playbackElapsed.ms);
+      this.playbackElapsed.ms = secs ? secs * 1000 : this.playbackElapsed.ms;
+      await this.seekPlayback(this.playbackElapsed.ms);
       this.updateElapsedDisplay();
     }
 
@@ -397,8 +398,9 @@
 
     async repeatPressed(){
       //Spotify not reliably clearing repeat, so call twice
-      await toggleTrackRepeat();
-      await toggleTrackRepeat();
+      const newRepeatStatus = !this.setToRepeatTrack;
+      await this.toggleTrackRepeat({repeat: newRepeatStatus});
+      await this.toggleTrackRepeat({repeat: newRepeatStatus});
     }
 
     beforeDestroy(){

@@ -210,3 +210,9 @@ $phrase-border-color: #aaaaaa;
 .margin-left-auto {
   margin-left: auto;
 }
+
+.hidden {
+  visibility: hidden;
+  height: 0px;
+  width: 0px;
+}

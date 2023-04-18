@@ -226,25 +226,29 @@ export const actions = {
       if('mediaSession' in navigator){
         navigator.mediaSession.metadata = new MediaMetadata({
           title: item.name,
-          artist: item.primaryLabel,
+          artist: item.secondaryLabel,
           album: item.trackFromAlbum ? item.album.name : '',
           artwork: [
-            { src: 'https://via.placeholder.com/96',   sizes: '96x96',   type: 'image/png' },
-            { src: 'https://via.placeholder.com/128', sizes: '128x128', type: 'image/png' },
-            { src: 'https://via.placeholder.com/192', sizes: '192x192', type: 'image/png' },
-            { src: 'https://via.placeholder.com/256', sizes: '256x256', type: 'image/png' },
-            { src: 'https://via.placeholder.com/384', sizes: '384x384', type: 'image/png' },
-            { src: 'https://via.placeholder.com/512', sizes: '512x512', type: 'image/png' },
+            { src: item.imgUrl.small,   sizes: '96x96',   type: 'image/jpeg' },
+            { src: item.imgUrl.medium, sizes: '128x128', type: 'image/png' },
+            { src: item.imgUrl.medium, sizes: '192x192', type: 'image/png' },
+            { src: item.imgUrl.medium, sizes: '256x256', type: 'image/jpeg' },
+            { src: item.imgUrl.medium, sizes: '384x384', type: 'image/png' },
+            { src: item.imgUrl.large, sizes: '512x512', type: 'image/jpeg' },
           ]
         });
 
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-          dispatch(`${PLAYBACK_QUEUE}/playPreviousTrack`, null, {root: true});
-        });
+        if(queue[currentlyPlayingItemIndex - 1]){
+          navigator.mediaSession.setActionHandler('previoustrack', () => {
+            dispatch(`${PLAYBACK_QUEUE}/playPreviousTrack`, null, {root: true});
+          });
+        }
 
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-          dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {}, {root: true});
-        });
+        if(queue[currentlyPlayingItemIndex + 1]){
+          navigator.mediaSession.setActionHandler('nexttrack', () => {
+            dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {}, {root: true});
+          });
+        }
       }
     }
     catch(error){

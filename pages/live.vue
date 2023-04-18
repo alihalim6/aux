@@ -1,5 +1,9 @@
 <template>
   <v-app :class="{'item-playing': currentlyPlayingItem.uri}">
+    <audio controls class="hidden" loop autoplay id="silentPlayer">
+      <source src="/5-seconds-of-silence.mp3" type="audio/mpeg" controls>
+    </audio>
+
     <AppHeader/>
 
     <div v-show="!isLoading" class="base-app-container">
@@ -26,7 +30,9 @@
 <script>
   import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
   import {UI, SPOTIFY} from '~/store/constants';
+  import {DEVICE_ID} from '~/utils/constants';
   import initSocketClient from '~/utils/init.socket.client';
+  import {storageRemove} from '~/utils/storage';
 
   @Component
   export default class App extends Vue {
@@ -41,6 +47,9 @@
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
+    @Getter('audioPlaying', {namespace: SPOTIFY})
+    audioPlaying;
+
     @Mutation('setSdkReady', {namespace: SPOTIFY})
     setSdkReady;
 
@@ -54,6 +63,8 @@
       window.onSpotifyWebPlaybackSDKReady = async () => {
         this.setSdkReady();
       };
+
+      storageRemove(DEVICE_ID);
 
       this.$nuxt.$root.$on('addToPlaylist', trackToAdd => {
         this.$nuxt.$root.$emit('hideUpNext');

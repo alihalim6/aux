@@ -78,10 +78,7 @@ export default {
 
   serverMiddleware: [
     {path: '/feed', handler: '~/serverMiddleware/feed.js'},
-    {path: '/user', handler: '~/serverMiddleware/user.js'},
-    redirectSSL.create({
-      enabled: process.env.NODE_ENV === 'production'
-    }),
+    {path: '/user', handler: '~/serverMiddleware/user.js'}
   ],
 
   styleResources: {

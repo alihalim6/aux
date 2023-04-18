@@ -29,7 +29,6 @@
     "mongodb": "^4.13.0",
     "nuxt": "^2.15.7",
     "nuxt-property-decorator": "^2.9.1",
-    "redirect-ssl": "^3.0.0",
     "sass": "^1.60.0",
     "socket.io": "^4.4.0",
     "socket.io-client": "^4.4.0",

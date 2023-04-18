@@ -14,7 +14,7 @@
               </div>
 
               <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" @click.stop>
-                <div class="inner-container" v-if="item.details" :class="{'extra-padding-bottom': !item.isAlbum}">
+                <div class="inner-container" v-if="item.details" :class="{'extra-padding-bottom': item.isPlaylist}">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
                     <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
                     <v-icon class="close-button" large @click="closeOverlay()" aria-label="close overlay">mdi-close</v-icon>

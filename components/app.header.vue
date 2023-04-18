@@ -52,7 +52,7 @@
                 <div v-show="!liveUsers.length">
                   <div class="d-flex flex-column align-center">
                     <span class="no-other-users-message">No one else is here.</span>
-                    <v-img class="no-other-users-img" src="/no_other_users.png"></v-img>
+                    <v-img class="no-other-users-img" :eager="true" src="/no_other_users.png"></v-img>
                   </div>
                 </div>
               </div>

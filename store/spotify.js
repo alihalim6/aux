@@ -272,8 +272,9 @@ export const actions = {
 
       if(!noError){
         commit(`${UI}/setToast`, {text: 'There was an issue lorem ipsum...', error: true}, {root: true});
-        storageRemove(DEVICE_ID);
       }
+
+      storageRemove(DEVICE_ID);
     }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){

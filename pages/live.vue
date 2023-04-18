@@ -27,9 +27,6 @@
   import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
   import {UI, SPOTIFY} from '~/store/constants';
   import initSocketClient from '~/utils/init.socket.client';
-  import {storageSet} from '~/utils/storage';
-  import spotify from '~/api/spotify';
-  import {DEVICE_ID, AUX_DEVICE_NAME} from '~/utils/constants';
 
   @Component
   export default class App extends Vue {
@@ -56,13 +53,6 @@
 
       window.onSpotifyWebPlaybackSDKReady = async () => {
         this.setSdkReady();
-        
-        const {devices} = await spotify({url: '/me/player/devices'});
-        const auxDevice = devices.find(device => device.name == AUX_DEVICE_NAME);
-
-        if(auxDevice){
-          storageSet(DEVICE_ID, auxDevice.id);
-        }
       };
 
       this.$nuxt.$root.$on('addToPlaylist', trackToAdd => {

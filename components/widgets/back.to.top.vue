@@ -63,7 +63,7 @@
     }
 
     .back-to-top:hover {
-      padding: 6px;
+      padding: 10px;
     }
   }
 

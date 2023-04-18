@@ -29,7 +29,7 @@
                     'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)
                   }"
                 >
-                  <v-img class="content-img" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
+                  <v-img class="content-img" :class="{'auto-width': vertical}" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
                     <template v-slot:placeholder>
                       <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                     </template>
@@ -207,7 +207,7 @@
     }
 
     .hovered-primary-container {
-      margin: 4px calc(#{$content-img-size} - #{$content-img-partial-size}) 0px 0px;
+      margin-top: 4px;
       width: $content-img-partial-size;
     }
 
@@ -307,5 +307,10 @@
     color: $cream;
     background-color: $rose-red;
     border-left: 1px solid $rose-red;
+  }
+
+  .auto-width {
+    width: auto !important;
+    min-width: $content-img-size;
   }
 </style>

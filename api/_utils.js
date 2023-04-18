@@ -75,7 +75,6 @@ httpClient.interceptors.response.use(async response => {
 });
 
 async function retryRequest(config){
-  console.log(config);/////
   if(!config._retry){
     config._retry = true;
 
@@ -86,7 +85,7 @@ async function retryRequest(config){
     console.log('retrying request...');
     return httpClient.request(config);
   }
-  else if(config.response.status == '401' && isPlaybackCall(config)){
+  else if(isPlaybackCall(config)){//TODO need a way to only do this if 401
     console.log('refresh/retry failed for playback, sending back to splash...');
     $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
     $nuxt.$router.replace({name: SPLASH, params: {failedRefreshRetry: true}});

@@ -10,9 +10,9 @@
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
           </div>
 
-          <span class="disclaimer">
+          <span class="disclaimer text-right">
             By logging in, you agree to <span class="clickable text-decoration-underline" @click="showTerms()">these terms</span> and 
-            <span class="clickable text-decoration-underline" @click="showPrivacyPolicy()">this privacy notice</span>
+            <span class="clickable text-decoration-underline" @click="showPrivacyPolicy()">this privacy notice</span>.
           </span>
         </div>
       </div>

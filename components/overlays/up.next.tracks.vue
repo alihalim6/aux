@@ -24,7 +24,7 @@
 
          <div class="clickable up-next-action"> 
           <span class="underlined" @click.stop="clearUpNextPressed()">
-            <span v-if="nextTracks.length > 1">CLEAR ALL</span>
+            <span v-if="nextTracks.length > 1">REMOVE ALL</span>
             <span v-else>REMOVE</span>
           </span>
           

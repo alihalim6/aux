@@ -25,12 +25,11 @@
         
         <div class="related-artists-container">
           <div 
-            v-for="(artist, index) in parentItem.details.relatedArtists" 
+            v-for="artist in parentItem.details.relatedArtists" 
             :key="artist.id"
-            :class="{'no-bottom-border': (index === parentItem.details.relatedArtists.length - 1)}"
             @click="$nuxt.$root.$emit('displayArtistDetails', artist)">
               <v-hover v-slot="{hover}">
-                <section class="clickable artist-container dashed-separator">
+                <section class="clickable artist-container">
 
                   <v-img class="artist-image" :src="artist.imgUrl.medium">
                     <template v-slot:placeholder>
@@ -114,12 +113,10 @@
       justify-content: flex-start;
       padding-left: $base-padding;
       border-radius: 2px;
-      border-bottom: 1px dashed #eeeeee;
 
       .artist-image {
         max-width: 45%;
-        border-radius: 4px;
-        margin: 8px 10px 8px 0px;
+        margin: 14px 10px 14px 0px;
         box-shadow: 0px 4px 5px -2px rgb(0 0 0 / 20%), 0px 7px 10px 1px rgb(0 0 0 / 14%), 0px 2px 16px 1px rgb(0 0 0 / 12%);
       }
 

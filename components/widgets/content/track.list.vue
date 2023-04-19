@@ -1,7 +1,7 @@
 <template>
   <section class="track-list-container" :class="{'mixed-track-list': tracksFromDifferentAlbums, 'disable-tracks': disableTracks}">
       <div v-for="(track, index) in tracks.filter(track => track.uuid)" :key="track.uuid">
-        <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-2 dashed-separator" :class="{'no-bottom-border': (index === tracks.length - 1)}">
+        <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-4">
           <div class="left-container">
             <v-img v-if="tracksFromDifferentAlbums && track.imgUrl" class="clickable track-album-img" @click="trackImgPressed(track)" :src="track.imgUrl.small"></v-img>
             <div v-else class="track-number">{{track.track_number}}.</div>

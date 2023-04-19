@@ -212,7 +212,7 @@
         .added-by {
           display: flex;
           align-items: center;
-          color: white;
+          color: $cream;
           margin-bottom: 6px;
 
           .username-margin {

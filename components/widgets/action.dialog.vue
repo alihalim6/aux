@@ -15,9 +15,9 @@
       <v-icon class="clickable" @click.stop="closeDialog()" color="white" aria-label="close the dialog">mdi-close</v-icon>
 
       <div v-if="actionDialog.isIosPwaInstall" class="dialog-text">
-        <span class="ios-warning">WARNING: for installed web apps (those added to home screen), 
+        <span class="ios-warning">FYI: for installed web apps (those added to home screen; makes for a way better experience), 
           iOS unfortuantely does not allow background audio (app needs to be open in foreground, otherwise music pauses). 
-          If you're good with that, here's how to install AUX as an app:
+          If you're good with that, here's how to install AUX as an app if you didn't already know:
         </span>
 
         <div class="my-2">1. Tap the share icon in the browser bar.</div>

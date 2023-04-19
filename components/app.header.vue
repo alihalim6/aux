@@ -179,8 +179,8 @@
     }
 
     logout(deletedActivity){
-      clearStorage();
       $nuxt.$router.push({name: SPLASH, params: {loggedIn: !deletedActivity}});
+      clearStorage();
     }
 
     ignoreUserToggled(user){

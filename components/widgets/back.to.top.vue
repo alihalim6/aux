@@ -57,13 +57,13 @@
     z-index: 20;
 
     .back-to-top {
-      padding: 6px;
+      padding: 4px;
       border-radius: 100%;
       box-shadow: 0px 3px 10px -1px rgb(0 0 0 / 80%);
     }
 
     .back-to-top:hover {
-      padding: 10px;
+      padding: 6px;
     }
   }
 

@@ -1,10 +1,18 @@
 <template>
   <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
     <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-3">
-      <v-img @click="spotifyLogoPressed()" class="clickable spotify-icon currently-playing-spotify-icon" :class="{'no-visibility': !currentlyPlayingItem.uri}" src="/Spotify_Logo_Icon.png"></v-img>
+      <v-img @click="spotifyLogoPressed()" 
+        class="clickable spotify-icon currently-playing-spotify-icon" 
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" src="/Spotify_Logo_Icon.png">
+      </v-img>
 
-      <div class="clickable view-feed-container" @click="feedIconPressed()">
-        <div class="d-flex align-center ml-2">
+      <v-img @click="spotifyLogoPressed()" 
+        class="clickable spotify-full currently-playing-spotify-icon" 
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" src="/Spotify_Logo_Full.png">
+      </v-img>
+
+      <div class="clickable view-feed-container" @click="feedIconPressed()" @keyup.enter="feedIconPressed()">
+        <div class="d-flex align-center ml-2" tabindex="0" aria-label="toggle the feed">
           <v-icon x-small color="red">mdi-circle</v-icon>
           <div class="on-air">FEED</div>
           <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
@@ -36,8 +44,8 @@
               @end="() => seek()"
               aria-label="seek track"
             >
-              <template v-slot:prepend><span class="playback-time">{{playbackElapsed.display}}</span></template>
-              <template v-slot:append><span class="playback-time">{{playbackTotal.display}}</span></template>
+              <template v-slot:prepend><span class="playback-time" aria-label="track time elapsed">{{playbackElapsed.display}}</span></template>
+              <template v-slot:append><span class="playback-time" aria-label="track duration">{{playbackTotal.display}}</span></template>
             </v-slider>
 
             <div class="position-relative">
@@ -55,7 +63,10 @@
               class="clickable queue-control previous-track-button" 
               :class="{'no-visibility': !hasPreviousTrack, 'disable-playback-control': !trackReady}" 
               @click.stop="previousTrackPressed()"
+              @keyup.enter="previousTrackPressed()"
               aria-label="skip to previous track"
+              :aria-disabled="!hasPreviousTrack"
+              :tabindex="hasPreviousTrack ? 0 : -1"
             >
               mdi-skip-previous
             </v-icon>
@@ -64,7 +75,10 @@
               class="clickable control playback-toggle" 
               :class="{'disabled-control ml-6': !currentlyPlayingItem.uri}" 
               @click.stop="playbackToggled()"
+              @keyup.enter="playbackToggled()"
               :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
+              :aria-disabled="!currentlyPlayingItem.uri"
+              :tabindex="currentlyPlayingItem.uri ? 0 : -1"
             >
               {{`mdi-${playbackIcon}`}}
             </v-icon>        
@@ -73,7 +87,10 @@
               class="clickable queue-control" 
               :class="{'no-visibility': !hasNextTrack, 'disable-playback-control': !trackReady}" 
               @click.stop="nextTrackPressed()"
+              @keyup.enter="nextTrackPressed()"
               aria-label="skip to next track"
+              :aria-disabled="!hasNextTrack"
+              :tabindex="hasNextTrack ? 0 : -1"
             >
               mdi-skip-next
             </v-icon>
@@ -82,10 +99,10 @@
       </div>
 
       <div class="d-flex flex-column align-start" id="upNextToggle">
-        <div class="up-next-container" @click.stop="viewUpNext()">
+        <div class="up-next-container" @click.stop="viewUpNext()" @keyup.enter="viewUpNext()" aria-label="view next tracks in queue">
           <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
-          <div class="d-inline-flex align-center">
+          <div class="d-inline-flex align-center" :tabindex="hasNextTrack ? 0 : -1">
             <span class="clickable min-width-fit" :class="{'no-next-track': !hasNextTrack}">UP NEXT: </span>
 
             <div v-if="hasNextTrack" class="clickable track-sneak-peek">
@@ -414,6 +431,7 @@
 
 <style lang="scss">
   $off-color: #cccccc;
+  $top-row-margin: 12px;
 
   .currently-playing-container {
     flex-direction: column;
@@ -431,7 +449,7 @@
 
     .view-feed-container {
       align-self: flex-end;
-      margin-right: 12px;
+      margin-right: $top-row-margin;
       display: flex;
       padding-top: 2px;
       position: relative;
@@ -563,7 +581,7 @@
   }
 
   .repeat {
-    $color: #aaaaaa;
+    $color: #888888;
 
     color: $color;
     border: 2px solid $color;
@@ -607,6 +625,6 @@
 
   .currently-playing-spotify-icon {
     margin-top: 4px;
-    margin-left: 12px;
+    margin-left: $top-row-margin;
   }
 </style>

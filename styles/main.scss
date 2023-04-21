@@ -416,7 +416,10 @@ $section-title-font-size: 36px;
   }
 
   .spotify-full {    
-    width: 70px;
+    $icon-size: 70px;
+
+    width: $icon-size;
+    max-width: $icon-size;
   }
 
   .spotify-icon {
@@ -425,4 +428,10 @@ $section-title-font-size: 36px;
     width: $icon-size;
     max-width: $icon-size;
     height: $icon-size;
+  }
+
+  .spotify-full, .spotify-icon {
+    .v-image__image {
+      background-size: contain;
+    }
   }

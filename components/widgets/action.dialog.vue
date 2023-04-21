@@ -10,11 +10,23 @@
     transition="slide-y-transition" 
     color="#191414"
     :timeout="-1"
+    role="dialog"
+    aria-describedby="actionDialogText"
   >
     <div class="d-flex flex-column align-end fill-available">
-      <v-icon class="clickable" @click.stop="closeDialog()" color="white" aria-label="close the dialog">mdi-close</v-icon>
+      <v-icon 
+        class="clickable" 
+        @click.stop="closeDialog()" 
+        color="white" 
+        aria-label="close the dialog" 
+        tabindex="0" 
+        @keyup.esc="closeDialog()" 
+        id="closeActionDialog"
+      >
+        mdi-close
+      </v-icon>
 
-      <div v-if="actionDialog.isIosPwaInstall" class="dialog-text">
+      <div v-if="actionDialog.isIosPwaInstall" class="dialog-text" id="actionDialogText">
         <span class="ios-warning">FYI: for installed web apps (those added to home screen; makes for a way better experience), 
           iOS unfortuantely does not allow background audio (app needs to be open in foreground, otherwise music pauses). 
           If you're good with that, here's how to install AUX as an app if you didn't already know:
@@ -24,16 +36,30 @@
         <div>2. Hit "Add to Home screen".</div>
       </div>
 
-      <span v-else class="dialog-text">{{actionDialog.text}}</span>
+      <span v-else class="dialog-text" id="actionDialogText">{{actionDialog.text}}</span>
 
       <div class="d-flex align-center mt-4">
-        <div class="clickable nav-button cancel" v-if="actionDialog.cancellable">
-          <span class="nav-button-label" @click="closeDialog()">CANCEL</span>
-        </div>
+        <button 
+          class="clickable nav-button cancel" 
+          v-if="actionDialog.cancellable" 
+          @click.stop="closeDialog()" 
+          tabindex="0" 
+          aria-label="close the dialog"
+          @keyup.esc="closeDialog()" 
+        >
+          <span class="nav-button-label">CANCEL</span>
+        </button>    
 
-        <div class="clickable nav-button confirm">
-          <span class="nav-button-label" @click="actionDialog.confirmFn ? actionDialog.confirmFn() : closeDialog()">{{ actionDialog.confirmLabel }}</span>
-        </div>
+        <button 
+          class="clickable nav-button confirm" 
+          @click.stop="confirmFn()" 
+          @keyup.enter="confirmFn()" 
+          tabindex="0" 
+          aria-label="confirm and close the dialog"
+          @keyup.esc="closeDialog()" 
+        >
+          <span class="nav-button-label">{{ actionDialog.confirmLabel }}</span>
+        </button>
       </div>
     </div>
   </v-snackbar>
@@ -51,12 +77,19 @@
     actionDialog;
 
     @Watch('actionDialog')
-    dialogChanged(dialog){
+    async dialogChanged(dialog){
       this.currentDialog = {...dialog};
+      await this.$nextTick();
+      const element = document.getElementById('closeActionDialog');
+      element.focus();
     }
 
     closeDialog(){
       this.currentDialog = null;
+    }
+
+    confirmFn(){
+      return this.actionDialog.confirmFn ? actionDialog.confirmFn() : this.closeDialog();
     }
   }
 </script>

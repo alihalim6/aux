@@ -52,10 +52,23 @@ export const actions = {
     playingTrackWithinExistingQueue, 
     nextTrackButtonPressed, 
     playingNextTrack,
-    playingNextTrackNow
+    playingNextTrackNow,
+    pause
   }) => {
     try{
       const player = getters.player;
+
+      if(pause){
+        commit('setAudioPlaying', false);
+
+        try{
+          await player.pause();
+        }catch(error){}
+        finally{
+          return;
+        }
+      }
+
       const previouslyPlayingItem = getters.currentlyPlayingItem;
       let currentlyPlayingItemUri = getters.currentlyPlayingItemUri;
       let nothingWasPlaying = !currentlyPlayingItemUri;
@@ -311,7 +324,7 @@ export const actions = {
   },
   openItemInSpotify({dispatch, getters}, item){
     if(item.type == 'track'){
-      dispatch('togglePlayback', {item: getters.currentlyPlayingItem});
+      dispatch('togglePlayback', {pause: true});
     }
 
     window.open(`https://open.spotify.com/${item.type}/${item.id}`, '_blank');

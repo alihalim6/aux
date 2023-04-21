@@ -53,7 +53,7 @@ export default {
       lang: 'en',
       name: 'AUX',
       short_name: 'AUX',
-      description: 'Spotify Together'
+      description: 'Enjoy Spotify Together'
     }
   },
 

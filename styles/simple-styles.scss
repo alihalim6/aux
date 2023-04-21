@@ -133,6 +133,10 @@ $phrase-border-color: #aaaaaa;
   color: white !important;
 }
 
+.primary-color {
+  color: $primary-theme-color !important;
+}
+
 .blurred {
   background-color: transparent;
   backdrop-filter: blur(6px);
@@ -190,7 +194,7 @@ $phrase-border-color: #aaaaaa;
   flex-direction: column;
   align-items: center;
   border-radius: 100%;
-  padding: 7px 4px 4.5px;
+  padding: 8px 5px 5.5px;
   font-weight: bold;
   line-height: 10px;
 }

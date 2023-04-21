@@ -2,8 +2,6 @@
   <section>
     <div class="content-container">
       <div class="home-content-title">
-        <v-img class="spotify-full" src="/Spotify_Logo_Full.png"></v-img>
-
         <div class="d-flex align-center">
           <span>New & Recommended</span>
 
@@ -70,7 +68,7 @@
 
     async getData(){
       try {
-        const {previewItems, newReleases, allItems, recommendedAlbums} = await newAndRecommended();
+        const {previewItems, newReleases, allItems} = await newAndRecommended();
         this.previewItems = setItemMetaData(previewItems);
         this.newReleases = newReleases;
         this.allItems = allItems;

@@ -26,20 +26,13 @@ async function newAndRecommended(){
   try {
     const {data} = await httpClient.get('/browse/new-releases?limit=50');
     const newReleases = data.albums.items;
-    let newReleasesOffset = data.albums.items.length;
-
-    while(newReleasesOffset < data.albums.total){
-      const response = await httpClient.get(`/browse/new-releases?limit=50&offset=${newReleasesOffset}`);
-      newReleases.push.apply(newReleases, response.data.albums.items);
-      newReleasesOffset += response.data.albums.items.length;
-    }
 
     const topArtists = await topItems('artists');
     const recommendedTracks = await getRecommendedTracks(topArtists.data);
     const recommendedAlbums = [];
     const recommendedAlbumsMax = 4;
     const recommendedArtists = await getRecommendedArtists(topArtists.data);
-    const someShuffledNewReleases = shuffleArray([...newReleases].slice(0, 7));
+    const someShuffledNewReleases = shuffleArray([...newReleases].slice(0, 5));
     let tracksToRecommendAlbums = recommendedTracks.data.tracks.slice(0, recommendedAlbumsMax);
 
     if(tracksToRecommendAlbums.length){

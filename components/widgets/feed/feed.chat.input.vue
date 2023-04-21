@@ -1,5 +1,5 @@
 <template>    
-  <section class="mt-3 mb-2">
+  <section class="mt-3 mb-2" v-if="activity && activity.track">
     <v-text-field 
       dense 
       outlined 
@@ -14,12 +14,31 @@
       clearable
       :maxlength="100"
       enterkeyhint="send"
+      :aria-label="`add a comment/reaction for ${activity.track.primaryLabel}`"
     >
       <template v-slot:append-outer>
-        <v-icon :color="submitIconColor" class="clickable mr-2" @click.stop="chatMessageSubmitted()">mdi-arrow-up-circle</v-icon>
+        <v-icon 
+          :color="submitIconColor" 
+          class="clickable mr-2" 
+          @click.stop="chatMessageSubmitted()" 
+          @keyup.enter="chatMessageSubmitted()" 
+          tabindex="0" 
+          :aria-label="`submit comment/reaction for ${activity.track.primaryLabel}`">mdi-arrow-up-circle
+        </v-icon>
         
         <div class="reaction-container" v-if="!chatOnFeedAlert">
-          <div class="clickable reaction" :class="{'pt-1': index == 1}" v-for="(reaction, index) in reactions" :key="reaction.name" @click.stop="emojiReactionPressed(reaction.code)">{{String.fromCodePoint(reaction.code)}}</div>
+          <button 
+            class="clickable reaction" 
+            :class="{'pt-1': index == 1}" 
+            v-for="(reaction, index) in reactions" 
+            :key="reaction.name"
+            tabindex="0"
+            :aria-label="`submit ${String.fromCodePoint(reaction.code)} reaction for track`"
+            @click.stop="emojiReactionPressed(reaction.code)"
+            @keyup.enter="emojiReactionPressed(reaction.code)" 
+          >
+            {{String.fromCodePoint(reaction.code)}}
+          </button>
         </div>
       </template>
     </v-text-field>

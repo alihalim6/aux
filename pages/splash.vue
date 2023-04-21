@@ -5,49 +5,50 @@
     <div class="splash-content">
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
         <div class="login-container">
-          <div class="clickable nav-button login" @click="loginClicked()">
+          <button class="clickable nav-button login" @click="loginClicked()">
             <v-img class="spotify-icon" src="/Spotify_Logo_Icon.png"></v-img>
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
-          </div>
+          </button>
 
-          <span class="disclaimer text-right">
-            By logging in, you agree to <span class="clickable text-decoration-underline" @click="showTerms()">these terms</span> and 
-            <span class="clickable text-decoration-underline" @click="showPrivacyPolicy()">this privacy notice</span>.
-          </span>
+          <p class="disclaimer text-right">
+            By logging in, you agree to 
+            <a class="clickable text-decoration-underline primary-color" tabindex="0" @click="showTerms()" @keyup.enter="showTerms()">these terms</a> and 
+            <a class="clickable text-decoration-underline primary-color" @click="showPrivacyPolicy()" tabindex="0" @keyup.enter="showPrivacyPolicy()">this privacy notice</a>.
+          </p>
         </div>
       </div>
 
-      <div class="big-p">P</div>
+      <div class="big-p" tabindex="0" aria-label="introducing the web app: PASS THE AUX">P</div>
 
       <div class="info-container">
         <div class="bullet-point">
-          <span class="slash">/</span> 
-          <span>Enjoy your Spotify library + new releases, featured playlists, and recommendations.</span>
+          <span class="slash" aria-hidden="true">/</span> 
+          <span tabindex="0">Enjoy your Spotify library + new releases, featured playlists, and recommendations.</span>
         </div>
 
         <div class="bullet-point">
-          <span class="slash">/</span> 
-          <span>See and play what others are listening to.</span>
+          <span class="slash" aria-hidden="true">/</span> 
+          <span tabindex="0">See and play what others are listening to.</span>
         </div>
 
         <div class="bullet-point">
-          <span class="slash">/</span> 
-          <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
+          <span class="slash" aria-hidden="true">/</span> 
+          <span tabindex="0"><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
         </div>
 
-        <span class="bullet-point align-self-center mt-6">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
+        <span class="bullet-point align-self-center mt-6" tabindex="0">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
 
-        <div class="made-info">
+        <div class="made-info" tabindex="0">
           <span>Created by</span>
           <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank">Ali Halim</a>
           <span>using</span>
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's API</a>
         </div>
 
-        <span class="premium-only">Works for Spotify Premium users only</span>
+        <span class="premium-only" tabindex="0">Works for Spotify Premium users only</span>
       </div>
 
-      <v-img class="splash-animation" src="/pass_the_aux_green.png"></v-img>
+      <v-img class="splash-animation" src="/pass_the_aux_green.png" aria-hidden="true"></v-img>
     </div>
 
     <div class="bottom-content">

@@ -179,7 +179,7 @@
     }
 
     logout(deletedActivity){
-      $nuxt.$router.push({name: SPLASH, params: {loggedIn: !deletedActivity}});
+      $nuxt.$router.replace({name: SPLASH, params: {loggedIn: !deletedActivity}});
       clearStorage();
     }
 

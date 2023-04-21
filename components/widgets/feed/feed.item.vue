@@ -4,35 +4,53 @@
       class="clickable track-img" 
       v-if="activity.track.imgUrl" 
       :src="activity.track.imgUrl.small || activity.track.imgUrl.large" 
-      :class="{'skipped':skippedNotPlayed()}" 
-      @click.stop="trackImgPressed()">
+      :class="{'skipped': skippedNotPlayed()}" 
+      @click.stop="trackImgPressed()"
+      @keyup.enter="trackImgPressed()"
+      tabindex="0"
+      :alt="`artwork for ${activity.track.primaryLabel}, click to view track details`"
+      aria-role="button"
+    >
     </v-img>
 
     <div class="feed-item fill-available">
-      <div class="item-info-container" :class="{'mb-6':skippedNotPlayed()}">
-        <div class="track-info" :class="{'skipped':skippedNotPlayed()}">
-          <div class="d-flex align-center" @click="itemInfoPressed(activity.track)" :class="{'track-playing font-italic': !activity.splash && isTrackPlaying(activity.track)}">
-            <span class="clickable font-weight-bold">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
+      <div class="item-info-container" :class="{'mb-6': skippedNotPlayed()}">
+        <div class="track-info" :class="{'skipped': skippedNotPlayed()}">
+          <div class="d-flex align-center"
+            @click="itemInfoPressed(activity.track)"
+            @keyup.enter="itemInfoPressed(activity.track)"
+            tabindex="0"
+            :class="{'track-playing font-italic': !activity.splash && isTrackPlaying(activity.track)}"
+            :aria-label="`play ${activity.track.primaryLabel} by ${activity.track.secondaryLabel} ${skippedNotPlayed() ? '(track was previously skipped)' : ''}`"
+          >
+            <span class="clickable font-weight-bold" aria-hidden="true">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
           </div>
           
-          <v-progress-linear v-if="(!activity.skipped && !activity.played) || (activity.skipped && isTrackPlaying(activity.track))" class="aux-play-pending" stream reverse color="white" :buffer-value="0"></v-progress-linear>
+          <v-progress-linear 
+            v-if="(!activity.skipped && !activity.played) || (activity.skipped && isTrackPlaying(activity.track))" 
+            class="aux-play-pending" 
+            stream 
+            reverse 
+            color="white" 
+            :buffer-value="0">
+          </v-progress-linear>
         </div>
 
         <section v-if="activity.played">
           <div class="activity-info-container">
-            <div class="added-by">
-              <v-img v-if="activity.user.img" :src="activity.user.img" class="round-img-icon"></v-img>
-              <span :class="{'username-margin': activity.user.img}">{{activity.addedByCurrentUser ? 'You' : activity.user.name}}</span>
+            <div class="added-by" :aria-label="`track added by ${addedBy()}`" tabindex="0">
+              <v-img v-if="activity.user.img" :src="activity.user.img" class="round-img-icon" alt=""></v-img>
+              <span :class="{'username-margin': activity.user.img}" aria-hidden="true">{{addedBy()}}</span>
             </div>
 
-            <timeago :datetime="activity.timestamp" :converter="activityTimestamp" :auto-update="true" class="font-weight-regular"></timeago>
+            <timeago :datetime="activity.timestamp" :converter="activityTimestamp" :auto-update="true" class="font-weight-regular" tabindex="0"></timeago>
           </div>
 
           <div class="d-flex flex-column">
             <div :id="`${activity.queueId}-reactions`" class="reaction-activity-container" :class="{'vertically-hidden': !showReactions}">
               <span v-for="reaction in activity.reactions" :key="reaction.timestamp.toString()">
-                <span class="reaction-author">{{reaction.author}}:</span>
-                <span class="mr-1">{{reaction.message}}</span>
+                <span class="reaction-author" tabindex="0" :aria-label="`commenter username: ${reaction.author}`">{{reaction.author}}:</span>
+                <span role="comment" class="mr-1" tabindex="0">{{reaction.message}}</span>
               </span>
             </div>
 
@@ -45,9 +63,14 @@
     <div class="d-flex flex-column align-end margin-left-auto" :class="{'no-visibility': !activity.played}">
       <ThreeDotIcon v-if="!activity.splash" :item="activity.track" icon-class="activity-item-three-dot"/>
 
-      <div class="clickable reaction-toggle-container">
-        <v-icon color="white" small @click.stop="() => showReactions = !showReactions">{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>
-        <span v-if="activity.reactions && activity.reactions.length" class="reaction-count">{{activity.reactions.length}}</span>
+      <div class="clickable reaction-toggle-container" 
+        @click.stop="toggleReactions()" 
+        @keyup.enter="toggleReactions()" 
+        tabindex="0" 
+        :aria-label="`toggle comments/reactions for ${activity.track.primaryLabel} (${activity.reactions ? activity.reactions.length : 0} comments currently ${showReactions ? 'showing' : 'hidden'})`"
+      >
+        <v-icon color="white" small>{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>
+        <span v-if="activity.reactions && activity.reactions.length" class="reaction-count" aria-hidden="true">{{activity.reactions.length}}</span>
       </div>
     </div>
   </section>
@@ -124,6 +147,14 @@
 
     skippedNotPlayed(){
       return this.activity.skipped && !this.activity.played;
+    }
+
+    toggleReactions(){
+      this.showReactions = !this.showReactions;
+    }
+
+    addedBy(){
+      return this.activity.addedByCurrentUser ? 'You' : this.activity.user.name;
     }
   }
 </script>

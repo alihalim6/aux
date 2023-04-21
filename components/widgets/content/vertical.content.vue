@@ -28,7 +28,7 @@
               <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
 
               <div class="item-icon-container">
-                <PlaybackIcon :item="item" :itemSet="data"/>
+                <PlaybackIcon v-if="item.isCollection" :item="item" :itemSet="data"/>
                 <ThreeDotIcon :item="item"/>
               </div>
             </div>

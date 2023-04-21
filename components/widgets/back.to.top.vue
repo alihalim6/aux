@@ -23,7 +23,10 @@
 
     mounted(){
       this.element = document.getElementById(this.elementId);
-      this.element.addEventListener('scroll', this.handleScroll);
+
+      if(this.element){
+        this.element.addEventListener('scroll', this.handleScroll);
+      }
     }
 
     handleScroll(e){

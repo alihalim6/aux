@@ -29,7 +29,7 @@
 
               <div class="item-icon-container">
                 <PlaybackIcon v-if="item.isCollection" :item="item" :itemSet="data"/>
-                <ThreeDotIcon :item="item"/>
+                <ThreeDotIcon :item="item" icon-class="ml-1"/>
               </div>
             </div>
           </section>

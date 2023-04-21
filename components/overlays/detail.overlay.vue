@@ -16,7 +16,17 @@
               <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" @click.stop>
                 <div class="inner-container" v-if="item.details" :class="{'extra-padding-bottom': item.isPlaylist}">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
-                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
+                    <v-icon 
+                      :class="{'no-visibility': hideBackButton(index)}" 
+                      aria-label="back to previous overlay" 
+                      :aria-hidden="hideBackButton(index)"
+                      class="back-button" 
+                      large 
+                      @click="goBack()"
+                    >
+                      mdi-arrow-left
+                    </v-icon>
+
                     <v-icon class="close-button" large @click="closeOverlay()" aria-label="close overlay">mdi-close</v-icon>
                   </div>
 
@@ -27,7 +37,16 @@
                   </div>
 
                   <div class="d-flex justify-space-between align-center py-2">
-                    <v-icon :class="{'no-visibility': (index === 0)}" aria-label="back to previous page" class="back-button" large @click="goBack()">mdi-arrow-left</v-icon>
+                    <v-icon 
+                      :class="{'no-visibility': hideBackButton(index)}" 
+                      aria-label="back to previous overlay"
+                      :aria-hidden="hideBackButton(index)"
+                      class="back-button" 
+                      large 
+                      @click="goBack()"
+                    >
+                      mdi-arrow-left
+                    </v-icon>
 
                     <div class="spotify-logo">
                       <v-img 
@@ -89,6 +108,7 @@
     currentIndex = -1;
     fullItemImage = '';
     processing = false;
+    isAndroid = false;
     
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -112,6 +132,22 @@
         
         this.displayDetailOverlay(setItemMetaData([artistToDisplay])[0]);
       });
+
+      var ua = navigator.userAgent.toLowerCase();
+      this.isAndroid = ua.indexOf('android') > -1;
+
+      if(this.isAndroid) {
+        window.addEventListener('popstate', () => {
+          if(this.display){
+            if(this.items.length > 1){
+              this.goBack();
+            }
+            else{
+              this.closeOverlay();
+            }
+          }
+        });
+      }
     }
 
     async displayDetailOverlay(itemToDisplay){
@@ -137,6 +173,10 @@
         this.closeFeed();
         this.scrolledDown = false;
         this.processing = false;
+
+        if(this.isAndroid){
+          history.pushState({}, '');
+        }
       }
     }
 
@@ -167,6 +207,10 @@
       if(!item.simpleOverlay){
         this.openItemInSpotify(item);
       }
+    }
+
+    hideBackButton(index){
+      return (index === 0) || this.isAndroid;
     }
 
     beforeDestroy(){

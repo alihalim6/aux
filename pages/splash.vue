@@ -19,6 +19,9 @@
       </div>
 
       <div class="big-p" tabindex="0" aria-label="introducing the web app: PASS THE AUX">P</div>
+      <!-- <div class="width-100 d-flex flex-wrap container">
+          <v-img src="/rose.png" class="roses" v-for="(n, index) of new Array(100)" :key="index"></v-img>
+      </div> -->
 
       <div class="info-container">
         <div class="bullet-point">
@@ -146,8 +149,10 @@
       color: transparent;
       font-family: 'Arvo', serif;
       background-position-x: -13px;
-      background-position-y: 13px;
+      background-position-y: -7px;
       background-repeat: repeat;
+      margin-top: 42px;
+      background-size: 188%;
       margin-top: 42px;
     }
   }
@@ -283,5 +288,16 @@
   .login-container {
     display: flex;
     flex-direction: column;
+  }
+
+  .container {
+    background-color: #fcfce1;
+  }
+
+  .roses {
+    margin: 18px;
+    $size: 46px;
+    height: $size;
+    width: $size;
   }
 </style>

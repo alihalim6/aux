@@ -28,9 +28,6 @@
           handleAuthError(error);
         }
 
-        //clean up url and get rid of this intermediary route in browser history on return from Spotify
-        window.history.replaceState('', '', window.location.toString().split('?')[0].replace('/#/', '/'));
-
         this.$router.replace({name: APP});
       }
       else if(this.$route.query.error){

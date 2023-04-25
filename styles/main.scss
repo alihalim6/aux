@@ -201,7 +201,6 @@ $section-title-font-size: 36px;
 
 .home-content {
   @extend .home-content-responsive;
-  @extend .scroll-shadow;
 
   max-height: $max-home-content-height;
   overflow-y: scroll;
@@ -211,6 +210,11 @@ $section-title-font-size: 36px;
   .track-list-container {
     padding: 0px $base-padding 0px 0px;
   }
+}
+
+.home-content-with-shadow {
+  @extend .home-content;
+  @extend .scroll-shadow;
 }
 
 .home-content-responsive {

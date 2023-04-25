@@ -9,7 +9,7 @@
                 <div class="blurred loading"></div>
               </div>            
 
-              <div class="full-item-image-cta-outer" @click="() => fullItemImage = item.imgUrl.large" v-if="item.imgUrl.large && item.details && !item.simpleOverlay">
+              <div v-if="item.imgUrl.large && item.details && !item.simpleOverlay" class="full-item-image-cta-outer" @click="() => fullItemImage = item.imgUrl.large">
                 <v-icon color="white" small class="eye">mdi-eye</v-icon>
               </div>
 

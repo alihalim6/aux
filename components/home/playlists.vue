@@ -1,6 +1,6 @@
 <template>
-  <section class="mt-6 pt-1 pb-6">
-    <div class="content-container mt-4">
+  <section class="mt-8 pt-3 pb-8 cream-background">
+    <div class="content-container">
       <div class="home-content-title">
         <v-img @click="spotifyLogoPressed()" class="clickable spotify-full" src="/Spotify_Logo_Full.png"></v-img>
 
@@ -25,7 +25,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs overflow-scroll-shadow home-content" id="playlistTabContent">
+      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs home-content cream-background py-0" id="playlistTabContent">
         <v-tab-item v-for="content in getTabContent()" :key="content.type">
           <div v-for="item in content.data" :key="item.uuid">
             <v-hover v-slot="{hover}">
@@ -206,5 +206,9 @@
     @media(min-width: $device-size-threshold){
       flex-direction: row;
     }
+  }
+
+  #playlistTabContent .v-window__container {
+    background-color: $cream;
   }
 </style>

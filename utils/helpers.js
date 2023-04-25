@@ -3,7 +3,7 @@ import {AUTH, IGNORED_USERS, DEVICE_ID, AUX_DEVICE_NAME} from '~/utils/constants
 import {refreshToken, handleAuthError} from '~/auth';
 import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
-import {SPOTIFY, UI} from '~/store/constants';
+import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
 import {handleApiError} from '~/api/_utils';
 import {differenceInMinutes, differenceInHours, differenceInDays, parseISO} from 'date-fns';
 import details from '~/api/details';
@@ -156,18 +156,13 @@ const retryPlayerInit = async () => {
   }
 };
 
-//this also makes whatever device/browser that user is on avaiable as a Spotify Connect device (e.g speaker); 
-//tested and worked to play track from iphone Spotify to browser;
-//TODO: tie this in as a way to be live on aux (from Spotify -- user who prefers their interface)?
-//EDIT: doesn't seem doable as we'd need a hook to know/display something has been played from elsewhere etc. 
-//EDIT: --> maybe sptofiy tracking object has this info
 export const initSpotifyPlayer = async () => {
   const spotifyPlayer = new Spotify.Player({
     name: AUX_DEVICE_NAME,
     getOAuthToken: callback => {
       //https://github.com/spotify/web-playback-sdk/issues/23
       //apperently this function is called when sdk needs new token;
-      //can't be async so we'll have to hope our logic has a refresh one stored
+      //can't be async so we'll have to hope our logic has a fresh one stored
       callback(storageGet(AUTH.ACCESS_TOKEN));
     },
     volume: 1
@@ -213,6 +208,22 @@ export const initSpotifyPlayer = async () => {
       //keep playing if spotify paused due to there being no next tracks in its own queue
       const spotifyPausedForNoNextTracks = currentState.paused && !currentState.track_window.next_tracks.length && currentState.position == 0;
       $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);//needed to react to headphones being taken off etc.
+
+      //move to next track on our side if Spotify starts playing next track before we do
+
+      console.log(currentState.track_window.previous_tracks);
+      console.log(currentState.track_window.current_track);
+
+      const ourCurrentTrackIsSpotifyPrevious = currentState.track_window.previous_tracks.length ? 
+        currentState.track_window.previous_tracks[0].uri == $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] : false;
+
+      const ourNextTrackIsSpotifyCurrent = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/hasNextTrack`] ?
+        currentState.current && currentState.track_window.current_track.uri == $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`].uri : false;
+      
+      if(ourCurrentTrackIsSpotifyPrevious && ourNextTrackIsSpotifyCurrent){
+        console.log('Spotify moved to next track ahead of us...catching up');
+        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlayback: true});
+      }
     });
   });
 };

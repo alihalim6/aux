@@ -20,7 +20,7 @@
 
       <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
         <v-tab-item v-for="(tab, index) in getContent()" :key="tab.key">
-          <div class="home-content" :id="`myAux${index}`" v-if="tab.data.length">
+          <div class="home-content-with-shadow" :id="`myAux${index}`" v-if="tab.data.length">
             <div v-if="tab.trackList">
               <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
               <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key" :my-aux-liked-tracks="tab.key == 'likedTracks'"/>

@@ -53,7 +53,8 @@ export const actions = {
     nextTrackButtonPressed, 
     playingNextTrack,
     playingNextTrackNow,
-    pause
+    pause,
+    noPlayback
   }) => {
     try{
       const player = getters.player;
@@ -126,15 +127,17 @@ export const actions = {
         const currentlyPlayingItemIndex = item.queueIndex || queue.findIndex(setItem => setItem.uuid === item.uuid);
         queue = queue.length ? queue : [item];
 
-        await dispatch('playItem', {
-          item,
-          previouslyPlayingItem,
-          queue,
-          currentlyPlayingItemIndex,
-          playingNextTrack,
-          nextTrackButtonPressed,
-          playingNextTrackNow
-        });
+        if(!noPlayback){
+          await dispatch('playItem', {
+            item,
+            previouslyPlayingItem,
+            queue,
+            currentlyPlayingItemIndex,
+            playingNextTrack,
+            nextTrackButtonPressed,
+            playingNextTrackNow
+          });
+        }
 
         if(playingTrackWithinExistingQueue){  
           dispatch(`${PLAYBACK_QUEUE}/checkForEndOfQueue`, null, {root: true});

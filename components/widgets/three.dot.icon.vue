@@ -1,7 +1,7 @@
 <template>
   <v-menu left :transition="detailOverlay || threeDotItem.isArtist ? 'slide-x-reverse-transition' : 'slide-x-transition'" z-index="2000" :nudge-left="threeDotItem.isArtist ? 100 : 20" :value="!hide">
     <template v-slot:activator="{on, attrs}">
-      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" :color="iconColor || 'black'" :class="[iconClass]">mdi-dots-vertical</v-icon>
+      <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" :color="iconColor || 'black'" :class="[iconClass]" tabindex="0" :aria-label="`three-dot menu for ${threeDotItem.primaryLabel}`">mdi-dots-vertical</v-icon>
     </template>
 
     <v-list>
@@ -288,5 +288,9 @@
     font-size: 19px !important;
     padding-top: 4px;
     padding-left: 4px;
+  }
+
+  .three-dots:focus-visible {
+    @extend .focused;
   }
 </style>

@@ -3,19 +3,18 @@
     <ActionDialog/>
 
     <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll ref="appBar" :scroll-threshold="10">
-      <div class="logo-container">
-        <div class="clickable aux-logo-container" @click="$router.replace({path: '/'})">
-          <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
-          <div class="inline-display outlined-phrase main-label">AUX</div>
-        </div>
+      <div class="aux-logo-container" tabindex="-1" aria-hidden="true">
+        <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
+        <div class="inline-display outlined-phrase main-label">AUX</div>
       </div>
 
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
         <v-menu left bottom transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y allow-overflow attach :max-width="325" :nudge-right="50">
-          <template v-slot:activator="{on, attrs}">            
-            <div class="clickable on-air-container" v-bind="attrs" v-on="on">
+          <template v-slot:activator="{on, attrs}">         
+            <!-- couldn't get shitty vuetify to handle pressing enter for these app header menus-->
+            <div class="clickable on-air-container" v-bind="attrs" v-on="on" tabindex="0" :aria-label="`there are currently ${liveUsers.length} other users on AUX`">
               <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
               <div class="users-on-air">{{liveUsers.length}}</div>
               <v-icon class="live-info-icon" color="black" large>mdi-chevron-down</v-icon>
@@ -62,7 +61,7 @@
 
         <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
           <template v-slot:activator="{on, attrs}">
-            <div v-bind="attrs" v-on="on" class="profile-menu-icon">     
+            <div v-bind="attrs" v-on="on" class="profile-menu-icon" tabindex="-1" aria-hidden="true">     
               <v-img v-if="profile.img" :src="profile.img" class="round-img-icon menu-img"></v-img>
 
               <div v-else class="profile-name-letter">
@@ -287,51 +286,44 @@
       }
     }
 
-    .logo-container {
-      display: flex;
-      justify-content: space-evenly;
-      align-items: center;
+    .aux-logo-container {
       margin-top: 1px;
-      height: 30px;
-
-      .aux-logo-container {
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        
-        .pass-the-phrase {
-          color: $rose-red;
-          transform: rotate(-80deg) scaleY(1.3);
-          font-size: 10px;
-          white-space: nowrap;
-          font-style: italic;
-          letter-spacing: 0.75px;
-        }
-
-        .main-label {
-          background-color: $rose-red;
-          color: $cream;
-          transform: skewX(-9.9deg);
-          font-size: 26px;
-          margin-left: -21px;
-          padding: 0px 2px 0px 5px;
-          letter-spacing: 4px;
-          line-height: 1.7;
-
-            @media(max-width: $max-inner-width){ 
-              font-size: 22px;
-            }
-        }
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      
+      .pass-the-phrase {
+        color: $rose-red;
+        transform: rotate(-80deg) scaleY(1.3);
+        font-size: 10px;
+        white-space: nowrap;
+        font-style: italic;
+        letter-spacing: 0.75px;
       }
 
-      .divider {
-        color: $primary-theme-color;
-        padding-right: 6px;
-        font-weight: bold;
-        font-size: 8px;
+      .main-label {
+        background-color: $rose-red;
+        color: $cream;
+        transform: skewX(-9.9deg);
+        font-size: 26px;
+        margin-left: -21px;
+        padding: 0px 2px 0px 5px;
+        letter-spacing: 4px;
+        line-height: 1.7;
+
+          @media(max-width: $max-inner-width){ 
+            font-size: 22px;
+          }
       }
     }
 
+    .divider {
+      color: $primary-theme-color;
+      padding-right: 6px;
+      font-weight: bold;
+      font-size: 8px;
+    }
+  
     .user-menu-container {
       display: flex;
       align-items: center;
@@ -391,6 +383,10 @@
             100% {transform: scaleX(1) translateX(0);} 
           }
         }
+      }
+
+      .on-air-container:focus-visible {
+        @extend .focused;
       }
 
       .profile-container {

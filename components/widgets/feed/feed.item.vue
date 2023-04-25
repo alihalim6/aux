@@ -8,7 +8,7 @@
       @click.stop="trackImgPressed()"
       @keyup.enter="trackImgPressed()"
       tabindex="0"
-      :alt="`artwork for ${activity.track.primaryLabel}, click to view track details`"
+      :alt="`artwork for ${activity.track.primaryLabel}, press enter to open track details`"
       aria-role="button"
     >
     </v-img>

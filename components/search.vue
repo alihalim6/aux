@@ -1,5 +1,5 @@
 <template>
-  <section id="searchContainer" :class="{'searching': showSearchResults}" v-click-outside="blurred">
+  <section id="searchContainer" :class="{'searching': showSearchResults}" v-click-outside="blurred" @keyup.esc="blurred()">
     <!-- LARGER SCREENS -->
     <v-text-field 
       dense 
@@ -11,6 +11,7 @@
       clearable
       :maxlength="maxLength"
       @focus="focused()"
+      @keydown.tab="tabToSearchResults()"
     >
     <!--  -->
       
@@ -32,8 +33,19 @@
         </v-text-field>
         <!--  -->
 
-        <div class="d-flex align-center justify-space-between width-100">
-          <div v-for="filter in filters" :key="filter.label" @click.stop="filterPressed(filter)"  class="clickable filter" :class="{'selected-filter': filterType == filter.type}">{{filter.label}}</div>
+        <div class="d-flex align-center justify-space-between width-100" @keyup.esc="blurred()">
+          <button 
+            v-for="(filter, index) in filters" 
+            :key="filter.label" 
+            tabindex="0"
+            :aria-label="`set search category to: ${filter.label}`"
+            @click.stop="filterPressed(filter)"
+            @keyup.enter="filterPressed(filter)"
+            class="clickable filter" 
+            :class="{'selected-filter': filterType == filter.type, 'first-filter': index == 0}"
+          >
+            {{filter.label}}
+          </button>
         </div>
 
         <div v-if="validQuery() && !loadingResults && !results.length" class="result-message">Couldn't find anything for that search. Do try again, ya hear?</div>
@@ -45,14 +57,28 @@
 
         <div class="d-flex justify-space-between my-8" v-for="item in results" :key="item.id" :class="{'track-playing': isTrackPlaying(item)}">
           <div class="d-flex" :class="{'align-center': !item.isMultitrackAlbum, 'align-start': item.isMultitrackAlbum}">
-            <v-img class="clickable result-img" v-if="itemImg(item)" :src="itemImg(item)" @click.stop="$nuxt.$root.$emit('displayDetailOverlay', item)">
+            <v-img 
+              class="clickable result-img" 
+              v-if="itemImg(item)" :src="itemImg(item)" 
+              @click.stop="displaySearchResultDetails(item)" 
+              @keyup.stop.enter="displaySearchResultDetails(item)" 
+              tabindex="0"
+              :alt="`artwork for ${item.primaryLabel}, press enter to open details`"
+              aria-role="button"
+            >
               <template v-slot:placeholder>
                 <span class="small-content-placeholder">{{item.name.substring(0, 1)}}</span>
               </template>
             </v-img>
 
             <div class="d-flex flex-column">
-              <span class="clickable result-name" @click.stop="primaryLabelPressed(item)">
+              <span 
+                class="clickable result-name" 
+                @click.stop="primaryLabelPressed(item)" 
+                @keyup.stop.enter="primaryLabelPressed(item)" 
+                tabindex="0"
+                :aria-label="`${item.primaryLabel} by ${item.secondaryLabel}; press enter to ${item.isCollection ? 'view details' : 'play'}`"
+              >
                 {{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span><span v-if="item.explicit" class="explicit">E</span>
               </span>
 
@@ -109,8 +135,10 @@
 
     @Watch('query')
     queryChanged(){
-      this.loadingResults = true;
-      this.callSearchApi();
+      if(this.query && this.query.trim()){
+        this.loadingResults = true;
+        this.callSearchApi();
+      }
     }
 
     @Mutation('closeFeed', {namespace: UI})
@@ -226,6 +254,22 @@
 
     itemImg(item){
       return item.imgUrl.small || item.imgUrl.large;
+    }
+
+    //has issue (doesn't tab to tracks after first time)
+    async tabToSearchResults(){
+      if(this.showSearchResults){
+        const filters = document.getElementsByClassName('first-filter');
+
+        if(filters.length){
+          await this.$nextTick();
+          filters[0].focus();
+        }
+      }
+    }
+
+    displaySearchResultDetails(item){
+      this.$nuxt.$root.$emit('displayDetailOverlay', item);
     }
   }
 </script>

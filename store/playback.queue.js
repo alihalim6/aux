@@ -77,14 +77,13 @@ export const actions = {
       index: getters.currentlyPlayingIndex - 1
     });
   },
-  playNextTrack: ({dispatch, getters}, {nextTrackButtonPressed, playingNextTrackNow}) => {
+  playNextTrack: ({dispatch, getters}, params) => {
     playTrackWithinQueue({
       getters,
       dispatch,
       index: getters.currentlyPlayingIndex + 1,
       playingNextTrack: true,
-      nextTrackButtonPressed,
-      playingNextTrackNow
+      ...params
     });
   },
   clearUpNext: ({getters, commit}) => {

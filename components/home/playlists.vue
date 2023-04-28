@@ -5,10 +5,19 @@
         <v-img @click="spotifyLogoPressed()" class="clickable spotify-full" src="/Spotify_Logo_Full.png"></v-img>
 
         <div class="d-flex align-center">
-          <span>Playlists</span>
+          <h3>Playlists</h3>
 
           <v-hover v-slot="{hover}">
-            <v-icon @click="refreshData()" class="clickable refresh-data" :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" color="#1DB954">mdi-refresh</v-icon>
+            <v-icon 
+              @click="refreshData()" 
+              @keyup.enter="refreshData()"
+              class="clickable refresh-data" 
+              :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" 
+              color="#1DB954"
+              aria-label="press enter to refresh Spotify playlists"
+            >
+                mdi-refresh
+              </v-icon>
           </v-hover>
         </div>
       </div>
@@ -16,7 +25,7 @@
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
         <v-tab v-for="(item, index) in content" :key="item.type" class="justify-start">
           <v-hover v-slot="{hover}">
-            <div class="tab-label" :class="{'selected-tab': selectedTab === index, 'hover-tab': hover}">
+            <div class="tab-label" :class="{'selected-tab': selectedTab === index, 'hover-tab': hover}" :aria-label="`Spotify playlists: ${item.label}`">
               <span>{{item.label}}</span>
             </div>
           </v-hover>

@@ -3,7 +3,7 @@
     <div class="content-container mt-4">
       <div class="home-content-title">
         <v-img @click="spotifyLogoPressed()" class="clickable spotify-full" src="/Spotify_Logo_Full.png"></v-img>
-        <span>My Vibe</span>
+        <h3>My Vibe</h3>
       </div>
 
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>

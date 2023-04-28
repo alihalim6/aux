@@ -116,7 +116,7 @@ export const actions = {
     }
 
     dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true, doNotUpdateSpotify: true});
-    dispatch('playNextTrack', {playingNextTrackNow: true});
+    dispatch('playNextTrack', {playingNextTrackNow});
   },
   checkForEndOfQueue: ({getters, commit}) => {
     //if about to play last track in main queue and there are tracks in rest of queue, add from latter to former;

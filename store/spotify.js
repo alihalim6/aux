@@ -59,12 +59,17 @@ export const actions = {
     try{
       const player = getters.player;
 
+      if(!player){
+        await initSpotifyPlayer();
+      }
+
       if(pause){
         commit('setAudioPlaying', false);
 
         try{
           await player.pause();
-        }catch(error){}
+        }
+        catch{}
         finally{
           return;
         }
@@ -135,7 +140,8 @@ export const actions = {
             currentlyPlayingItemIndex,
             playingNextTrack,
             nextTrackButtonPressed,
-            playingNextTrackNow
+            playingNextTrackNow,
+            nothingWasPlaying
           });
         }
 
@@ -146,8 +152,6 @@ export const actions = {
           commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, queueId}, {root: true});
         }
 
-        //skip api call if not playing anything (no device on Spotify side)
-        dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: nothingWasPlaying});
         commit('setNewPlayback', queueId);
         dispatch(`${FEED}/addToFeed`, {track: item, queueId}, {root: true});
       }
@@ -164,7 +168,8 @@ export const actions = {
     currentlyPlayingItemIndex, 
     playingNextTrack, 
     nextTrackButtonPressed,
-    playingNextTrackNow
+    playingNextTrackNow,
+    nothingWasPlaying
   }) => {
     try {
       if(getters.sdkReady){
@@ -262,10 +267,13 @@ export const actions = {
 
         if(queue[currentlyPlayingItemIndex + 1]){
           navigator.mediaSession.setActionHandler('nexttrack', () => {
-            dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {}, {root: true});
+            dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {nextTrackButtonPressed: true}, {root: true});
           });
         }
       }
+
+      //skip api call if not playing anything (no device on Spotify side)
+      dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: nothingWasPlaying});
     }
     catch(error){
       console.error(error);

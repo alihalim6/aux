@@ -3,7 +3,6 @@
     <!-- LARGER SCREENS -->
     <v-text-field 
       dense 
-      :placeholder="placeholder" 
       hide-details="auto" 
       class="search-input search-field" 
       color="black"
@@ -12,6 +11,7 @@
       :maxlength="maxLength"
       @focus="focused()"
       @keydown.tab="tabToSearchResults()"
+      @click:clear="results = []"
     >
     <!--  -->
       
@@ -20,7 +20,6 @@
         <!-- SMALLER SCREENS -->
         <v-text-field 
           dense 
-          :placeholder="placeholder" 
           hide-details="auto" 
           class="device-search-input search-field" 
           color="white"
@@ -29,6 +28,7 @@
           :maxlength="maxLength"
           @focus="focused()"
           dark
+          @click:clear="results = []"
         >
         </v-text-field>
         <!--  -->
@@ -94,6 +94,10 @@
 
         <BackToTop v-if="searchResultsId" :elementId="searchResultsId" arrowColor="white"/>
       </template>
+
+      <template v-slot:append>
+        <v-icon v-show="!query" color="#191414">mdi-magnify</v-icon>
+      </template>
     </v-text-field>
 
     <v-icon class="clickable search-icon" @click="searchIconPressed()">mdi-magnify</v-icon>
@@ -119,7 +123,6 @@
     filters = [{label: 'tracks', type: 'track'}, {label: 'albums', type: 'album'}, {label: 'playlists', type: 'playlist'}, {label: 'artists', type: 'artist'}];
     searchResultsId = '';
     maxLength = 30;
-    placeholder = 'SEARCH...';
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
@@ -339,6 +342,10 @@
 
       @media(min-width: $device-size-threshold){
         display: inherit;
+        background-color: $cream;
+        min-width: 150px;
+        padding: 6px 20px 12px;
+        border-radius: 22px;
       }
     }
     

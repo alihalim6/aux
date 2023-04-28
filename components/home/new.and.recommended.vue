@@ -3,10 +3,19 @@
     <div class="content-container">
       <div class="home-content-title">
         <div class="d-flex align-center">
-          <span>New & Recommended</span>
+          <h3 tabindex="0" aria-label="recommended Spotify tracks, albums and artists">New & Recommended</h3>
 
           <v-hover v-slot="{hover}">
-            <v-icon @click="refreshData()" class="clickable refresh-data" :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" color="#1DB954">mdi-refresh</v-icon>
+            <v-icon 
+              @click="refreshData()" 
+              @keyup.enter="refreshData()"
+              class="clickable refresh-data" 
+              :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" 
+              color="#1DB954"
+              aria-label="press enter to refresh new and recommended Spotify tracks, albums and artists"
+            >
+              mdi-refresh
+            </v-icon>
           </v-hover>
         </div>
         
@@ -14,7 +23,7 @@
           <v-hover v-slot="{hover}">
             <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayAll()">
               <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->
-              <span v-else class="new-and-reco-tab">SEE ALL</span>
+              <button v-else class="new-and-reco-tab" aria-label="open modal with all new and recommended tracks, albums and artists">SEE ALL</button>
             </div>
           </v-hover>
           
@@ -23,7 +32,7 @@
           <v-hover v-slot="{hover}">
             <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayNewReleases()">
               <span v-if="overlayLoading === NEW_RELEASES">...</span>
-              <span v-else class="new-and-reco-tab">NEW RELEASES ONLY</span>
+              <button v-else class="new-and-reco-tab" aria-label="open modal with new releases only">NEW RELEASES ONLY</button>
             </div>
           </v-hover>
         </div>

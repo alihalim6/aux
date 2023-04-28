@@ -3,7 +3,10 @@ import {shuffleArray} from '~/utils/helpers';
 
 const getRecommendedTracks = async (topArtists) => {
   const topTracks = await topItems('tracks');
-  const seeds = getRecommendationSeeds(topArtists, topTracks.data);
+  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=30');
+  recentlyPlayed = recentlyPlayed.data.items.map(item => item.track).filter(item => item.id);
+
+  const seeds = getRecommendationSeeds(topArtists, {items: [...topTracks.data.items, ...recentlyPlayed]});
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
     await httpClient.get(`/recommendations?limit=40&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
@@ -32,7 +35,7 @@ async function newAndRecommended(){
     const recommendedAlbums = [];
     const recommendedAlbumsMax = 4;
     const recommendedArtists = await getRecommendedArtists(topArtists.data);
-    const someShuffledNewReleases = shuffleArray([...newReleases].slice(0, 5));
+    const someShuffledNewReleases = shuffleArray([...newReleases].slice(0, 8));
     let tracksToRecommendAlbums = recommendedTracks.data.tracks.slice(0, recommendedAlbumsMax);
 
     if(tracksToRecommendAlbums.length){

@@ -168,15 +168,6 @@ export const initSpotifyPlayer = async () => {
     volume: 1
   });
 
-  const connected = await spotifyPlayer.connect();
-
-  console.log(`Connected to Spotify player: ${connected}`);
-
-  if(!connected){
-    console.log(`Retrying...`);
-    retryPlayerInit();
-  }
-
   return new Promise(function(resolve){
     spotifyPlayer.addListener('ready', async ({device_id}) => {
       spotifyPlayer.activateElement();
@@ -225,6 +216,17 @@ export const initSpotifyPlayer = async () => {
         $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlayback: true});
       }
     });
+
+    (async () => {
+      const connected = await spotifyPlayer.connect();
+
+      console.log(`Connected to Spotify player: ${connected}`);
+
+      if(!connected){
+        console.log(`Retrying...`);
+        retryPlayerInit();
+      }
+    })();
   });
 };
 

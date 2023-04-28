@@ -371,16 +371,15 @@
           left: 28px;
           background-color: $spotify-green;
           animation: oscillate-live;
-          animation-duration: 4s;
+          animation-duration: 3s;
           animation-timing-function: ease-in-out;
           animation-iteration-count: infinite;
-          animation-fill-mode: forwards;
+          animation-fill-mode: backwards;
 
           @keyframes oscillate-live {
             0% {transform: scaleX(1) translateX(0);}
-            10% {transform: scaleX(1.2) translateX(115%);} 
-            20% {transform: scaleX(1) translateX(0%);}
-            100% {transform: scaleX(1) translateX(0);} 
+            10% {transform: scaleX(1.3) translateX(115%);} 
+            20% {transform: scaleX(1) translateX(0);} 
           }
         }
       }

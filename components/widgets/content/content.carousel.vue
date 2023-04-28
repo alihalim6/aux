@@ -2,7 +2,7 @@
     <section>
       <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}">
         <div v-for="(item, index) in data" :key="item.uuid">
-          <section :class="{'d-flex align-center': lastNewAndRecommendedItem(index)}">
+          <section :class="{'d-flex align-center': lastNewAndRecoCarouselItem(index)}">
             <v-hover v-slot="{hover}">
               <div :class="{'d-flex flex-column align-center': item.isArtist}">
                 <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
@@ -10,8 +10,13 @@
                 <v-img 
                   v-if="item.isArtist && item.imgUrl" 
                   class="clickable content-img artist-img" 
-                  :class="{'content-hover': hover && !lastNewAndRecommendedItem(index)}" 
-                  :src="carouselImgSrc(item)" @click="contentImgPressed(item)"
+                  :class="{'content-hover': hover && !lastNewAndRecoCarouselItem(index)}" 
+                  :src="carouselImgSrc(item)" 
+                  @click="contentImgPressed(item)"
+                  @keyup.enter="contentImgPressed(item)"
+                  tabindex="0"
+                  :alt="`photo for ${item.primaryLabel}, press enter to open details`"
+                  aria-role="button"
                 >
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
@@ -23,13 +28,22 @@
                   elevation="10" 
                   class="clickable" 
                   :class="{
-                    'content-hover': hover && !vertical && !addToPlaylist && !lastNewAndRecommendedItem(index), 
+                    'content-hover': hover && !vertical && !addToPlaylist && !lastNewAndRecoCarouselItem(index), 
                     'spaced-content': moreFromArtist || addToPlaylist, 
                     'no-max-width': vertical, 
                     'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)
                   }"
                 >
-                  <v-img class="content-img" :class="{'auto-width': vertical}" v-if="item.imgUrl" :src="carouselImgSrc(item)" @click="contentImgPressed(item)">
+                  <v-img 
+                    class="content-img" 
+                    :class="{'auto-width': vertical}" v-if="item.imgUrl" 
+                    :src="carouselImgSrc(item)" 
+                    @click="contentImgPressed(item)"
+                    @keyup.enter="contentImgPressed(item)"
+                    tabindex="0"
+                    :alt="`artwork for ${item.primaryLabel}, press enter to open details`"
+                    aria-role="button"
+                  >
                     <template v-slot:placeholder>
                       <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
                     </template>
@@ -43,8 +57,8 @@
                 <div :class="{'pb-8': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
                   <div class="primary-container" 
                     :class="{
-                      'hovered-primary-container': hover && !vertical && !item.isArtist && !lastNewAndRecommendedItem(index), 
-                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !lastNewAndRecommendedItem(index)
+                      'hovered-primary-container': hover && !vertical && !item.isArtist && !lastNewAndRecoCarouselItem(index), 
+                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !lastNewAndRecoCarouselItem(index)
                     }">
                     <div class="d-flex align-start">
                       <div 
@@ -71,10 +85,9 @@
               </div>
             </v-hover>
             
-            <div v-if="lastNewAndRecommendedItem(index)" class="see-all-container">
+            <div v-if="lastNewAndRecoCarouselItem(index)" class="see-all-container">
               <span class="dots">...</span>
-
-              <div  class="clickable see-all" @click="$nuxt.$emit('showAllNewAndReco')">SEE ALL</div>
+              <button class="clickable see-all" @click="$nuxt.$emit('showAllNewAndReco')" aria-label="open modal with all new and recommended tracks, albums and artists">SEE ALL</button>
             </div>
           </section>
         </div>
@@ -146,7 +159,7 @@
       }
     }
 
-    lastNewAndRecommendedItem(index){
+    lastNewAndRecoCarouselItem(index){
       return !this.vertical && this.newAndRecommended && index == this.data.length - 1;
     }
   }
@@ -250,7 +263,7 @@
   
   .content-hover {
     z-index: 10;
-    transform: scale(1.1) translateY(-8px);
+    transform: scale(1.1) translateY(-8px) translateZ(0);
   }
 
   .add-to-playlist-title {

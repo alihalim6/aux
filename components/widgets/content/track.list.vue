@@ -10,7 +10,7 @@
               <v-hover v-slot="{hover}">
                 <div class="d-flex align-start">
                   <span class="clickable track-name" :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" @click.stop="trackNamePressed(track, index)">{{track.name}}</span>  
-                  <v-img v-if="newAndRecommended && track.isNew" src="/new.png" class="new-icon"></v-img>
+                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
                 </div>
               </v-hover>
 

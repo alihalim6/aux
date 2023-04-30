@@ -2,7 +2,14 @@
   <section class="mt-8 pt-3 pb-8 cream-background">
     <div class="content-container">
       <div class="home-content-title">
-        <v-img @click="spotifyLogoPressed()" class="clickable spotify-full" src="/Spotify_Logo_Full.png"></v-img>
+        <v-img 
+          @click="spotifyLogoPressed()" 
+          @keyup.enter="spotifyLogoPressed()"
+          class="clickable spotify-full" 
+          :src="require('~/assets/Spotify_Logo_Full.png')"
+          alt="open playlists on Spotify"
+          tabindex="0"
+        ></v-img>
 
         <div class="d-flex align-center">
           <h3>Playlists</h3>
@@ -14,7 +21,8 @@
               class="clickable refresh-data" 
               :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" 
               color="#1DB954"
-              aria-label="press enter to refresh Spotify playlists"
+              aria-label="refresh Spotify playlists"
+              tabindex="0"
             >
                 mdi-refresh
               </v-icon>
@@ -38,7 +46,14 @@
         <v-tab-item v-for="content in getTabContent()" :key="content.type">
           <div v-for="item in content.data" :key="item.uuid">
             <v-hover v-slot="{hover}">
-              <v-card elevation="7" class="clickable playlist-container" @click="$nuxt.$root.$emit('displayDetailOverlay', item)">
+              <v-card 
+                elevation="7" 
+                class="clickable playlist-container" 
+                @click="$nuxt.$root.$emit('displayDetailOverlay', item)"
+                @keyup.enter="$nuxt.$root.$emit('displayDetailOverlay', item)"
+                tabindex="0"
+                :aria-label="`open modal with details for playlist ${item.name}`"
+              >
                 <v-img :src="item.imgUrl.large" class="playlist-img">
                   <template v-slot:placeholder>
                     <span class="content-placeholder">{{item.name.substring(0, 1)}}</span>
@@ -215,6 +230,10 @@
     @media(min-width: $device-size-threshold){
       flex-direction: row;
     }
+  }
+
+  .playlist-container:focus-visible {
+    @extend .focused;
   }
 
   #playlistTabContent .v-window__container {

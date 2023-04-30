@@ -3,12 +3,12 @@
     <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-3">
       <v-img @click="spotifyLogoPressed()" 
         class="clickable spotify-icon currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" src="/Spotify_Logo_Icon.png">
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Full.png')">
       </v-img>
 
       <v-img @click="spotifyLogoPressed()" 
         class="clickable spotify-full currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" src="/Spotify_Logo_Full.png">
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets/Spotify_Logo_Full.png')">
       </v-img>
 
       <div class="clickable view-feed-container" @click="feedIconPressed()" @keyup.enter="feedIconPressed()">
@@ -23,7 +23,12 @@
 
     <div class="currently-playing" v-if="!upNextDisplaying">
       <div class="d-flex">
-        <v-img @click="displayItemDetails()" v-if="currentlyPlayingItem.uri" class="clickable item-img" :src="currentlyPlayingItem.imgUrl.medium || currentlyPlayingItem.imgUrl.large"></v-img>
+        <v-img 
+          @click="displayItemDetails()" 
+          v-if="currentlyPlayingItem.uri" 
+          class="clickable item-img" 
+          :src="currentlyPlayingItem.imgUrl.medium || currentlyPlayingItem.imgUrl.large">
+        </v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
           <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>

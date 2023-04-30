@@ -12,7 +12,11 @@
           <section>
             <div class="item-container">  
               <v-card max-width="40%" elevation="7">
-                <v-img :src="item.imgUrl.large" class="clickable" @click="displayItemDetails(item)"></v-img>
+                <v-img :src="item.imgUrl.large" class="clickable" @click="displayItemDetails(item)">
+                  <template v-slot:placeholder>
+                    <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
+                  </template>
+                </v-img>
               </v-card>
 
               <v-icon class="divider">mdi-slash-forward</v-icon>

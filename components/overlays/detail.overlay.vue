@@ -4,7 +4,7 @@
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex" :touchless="true">
           <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">        
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
-            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="currentIndex === index && (item.imgUrl || item.simpleOverlay)">
+            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="currentIndex === index">
               <div v-show="!item.details" class="loading-container">
                 <div class="blurred loading"></div>
               </div>            
@@ -52,7 +52,7 @@
                       <v-img 
                         @click="spotifyLogoPressed(item)" 
                         :class="{'spotify-icon': $vuetify.breakpoint.xs, 'spotify-full': $vuetify.breakpoint.smAndUp, 'clickable': !item.simpleOverlay}" 
-                        :src="$vuetify.breakpoint.smAndUp ? '/Spotify_Logo_Full.png' : '/Spotify_Logo_Icon.png'">
+                        :src="require(`~/assets/Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)">
                       </v-img>
                     </div>
 

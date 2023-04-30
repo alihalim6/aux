@@ -50,8 +50,8 @@
             </div>
 
             <div class="no-prompt-graphic">
-              <v-img src="/world.gif"></v-img>
-              <v-img class="animated-phrase" src="/pass_the_aux.png"></v-img>
+              <v-img :src="require('~/assets/world.gif')"></v-img>
+              <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux.png')"></v-img>
             </div>
           </div>
         </div>

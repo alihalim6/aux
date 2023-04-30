@@ -29,20 +29,25 @@ export const setItemMetaData = (items) => {
 
     try{
       item.imgUrl = {};
-      item.imgUrl.large = item.images ? item.images[0].url : item.album.images[0].url;
+
+      const {url, width} = item.images ? item.images[0] : item.album.images[0];
+      item.imgUrl.large = url;
+
+      function setMediumAndSmall(imageItem){
+        item.imgUrl.medium = imageItem.images[1].url;        
+        item.imgUrl.small = imageItem.images[2].url;
+      }
 
       if(item.images && item.images.length > 1){
-        item.imgUrl.medium = item.images[1].url;
-        item.imgUrl.small = item.images[2].url;
+        setMediumAndSmall(item);
       }
 
-      if(item.album.images && item.album.images.length > 1){
-        item.imgUrl.medium = item.album.images[1].url;
-        item.imgUrl.small = item.album.images[2].url;
+      if(item.album && item.album.images && item.album.images.length > 1){
+        setMediumAndSmall(item.album);
       }
     }
-    //not all items have images
-    catch(error){}
+    //not all items have images/album, so just catch instead of messy conditionals
+    catch{}
       
     if(item.isAlbum || item.isTrack){
       const artists = item.artists.map(artist => artist.name);

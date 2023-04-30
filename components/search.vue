@@ -63,8 +63,7 @@
               @click.stop="displaySearchResultDetails(item)" 
               @keyup.stop.enter="displaySearchResultDetails(item)" 
               tabindex="0"
-              :alt="`artwork for ${item.primaryLabel}, press enter to open details`"
-              aria-role="button"
+              :alt="`open modal with details about ${item.primaryLabel}`"
             >
               <template v-slot:placeholder>
                 <span class="small-content-placeholder">{{item.name.substring(0, 1)}}</span>
@@ -77,7 +76,7 @@
                 @click.stop="primaryLabelPressed(item)" 
                 @keyup.stop.enter="primaryLabelPressed(item)" 
                 tabindex="0"
-                :aria-label="`${item.primaryLabel} by ${item.secondaryLabel}; press enter to ${item.isCollection ? 'view details' : 'play'}`"
+                :aria-label="`${item.isCollection ? 'view details for' : 'play'} ${item.primaryLabel} by ${item.secondaryLabel}`"
               >
                 {{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span><span v-if="item.explicit" class="explicit">E</span>
               </span>
@@ -343,7 +342,7 @@
       @media(min-width: $device-size-threshold){
         display: inherit;
         background-color: $cream;
-        min-width: 150px;
+        min-width: 162px;
         padding: 6px 20px 12px;
         border-radius: 22px;
       }

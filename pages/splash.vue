@@ -6,7 +6,7 @@
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
         <div class="login-container">
           <button class="clickable nav-button login" @click="loginClicked()">
-            <v-img class="spotify-icon" src="/Spotify_Logo_Icon.png"></v-img>
+            <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" ></v-img>
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
           </button>
 
@@ -51,7 +51,7 @@
         <span class="premium-only" tabindex="0">Works for Spotify Premium users only</span>
       </div>
 
-      <v-img class="splash-animation" src="/pass_the_aux_green.png" aria-hidden="true"></v-img>
+      <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" aria-hidden="true"></v-img>
     </div>
 
     <div class="bottom-content">

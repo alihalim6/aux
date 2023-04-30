@@ -15,8 +15,7 @@
                   @click="contentImgPressed(item)"
                   @keyup.enter="contentImgPressed(item)"
                   tabindex="0"
-                  :alt="`photo for ${item.primaryLabel}, press enter to open details`"
-                  aria-role="button"
+                  :alt="`open modal with details about ${item.primaryLabel}`"
                 >
                   <template v-slot:placeholder>
                     <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
@@ -41,8 +40,7 @@
                     @click="contentImgPressed(item)"
                     @keyup.enter="contentImgPressed(item)"
                     tabindex="0"
-                    :alt="`artwork for ${item.primaryLabel}, press enter to open details`"
-                    aria-role="button"
+                    :alt="`open modal with details about ${item.primaryLabel}`"
                   >
                     <template v-slot:placeholder>
                       <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
@@ -69,7 +67,7 @@
                           <span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
                       </div>
 
-                      <v-img v-if="newAndRecommended && item.isNew" src="/new.png" class="new-icon"></v-img>
+                      <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
                     </div>
 
                     <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>

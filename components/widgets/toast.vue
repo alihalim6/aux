@@ -12,13 +12,9 @@
     :timeout="timeout"
   >
     <div class="snackbar-container fill-available">
-      <div class="d-flex align-center pr-3">
-        <v-img v-if="toast.img" :src="toast.img" class="snackbar-img"></v-img>
-        
-        <span class="toast-text" :class="{'error-text': toast.error}">
-          <span>{{toast.username}} </span><span>{{toast.text}}</span>
-        </span>
-      </div>
+      <span class="toast-text pr-3" :class="{'error-text': toast.error}">
+        <span>{{toast.username}} </span><span>{{toast.text}}</span>
+      </span>
 
       <v-icon class="clickable" @click.stop="closeToast()" color="white" aria-label="close the toast message">mdi-close</v-icon>
     </div>

@@ -2,7 +2,14 @@
   <section class="pt-1 pb-12">
     <div class="content-container mt-4">
       <div class="home-content-title">
-        <v-img @click="spotifyLogoPressed()" class="clickable spotify-full" src="/Spotify_Logo_Full.png"></v-img>
+        <v-img 
+          @click="spotifyLogoPressed()" 
+          @keyup.enter="spotifyLogoPressed()"
+          class="clickable spotify-full" 
+          :src="require('~/assets/Spotify_Logo_Full.png')"
+          alt="open Liked Songs on Spotify"
+          tabindex="0"
+        ></v-img>
         <h3>My Vibe</h3>
       </div>
 

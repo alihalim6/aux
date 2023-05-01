@@ -3,13 +3,31 @@
       <div v-for="(track, index) in tracks.filter(track => track.uuid)" :key="track.uuid">
         <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-4">
           <div class="left-container">
-            <v-img v-if="tracksFromDifferentAlbums && track.imgUrl" class="clickable track-album-img" @click="trackImgPressed(track)" :src="track.imgUrl.small"></v-img>
+            <v-img 
+              v-if="tracksFromDifferentAlbums && track.imgUrl" 
+              class="clickable track-album-img" 
+              @click="trackImgPressed(track)" 
+              @keyup.enter="trackImgPressed(track)" 
+              :src="track.imgUrl.small"
+              tabindex="0"
+              :alt="`open modal with details about ${track.primaryLabel}`"
+            >
+            </v-img>
             <div v-else class="track-number">{{track.track_number}}.</div>
 
             <div class="track-info" :class="{'smaller-track-names': tracksFromDifferentAlbums}">
               <v-hover v-slot="{hover}">
                 <div class="d-flex align-start">
-                  <span class="clickable track-name" :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" @click.stop="trackNamePressed(track, index)">{{track.name}}</span>  
+                  <span 
+                    class="clickable track-name" 
+                    :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" 
+                    @click.stop="trackNamePressed(track, index)"
+                    @keyup.enter.stop="trackNamePressed(track, index)"
+                    :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`"
+                    tabindex="0"
+                    role="button"
+                  >{{track.name}}
+                </span>  
                   <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
                 </div>
               </v-hover>
@@ -21,8 +39,15 @@
               <div class="track-duration">{{track.duration}}</div>
 
               <div v-if="tracksFromDifferentAlbums && (track.album && track.album.total_tracks > 1) && !hideAlbums" class="track-from-album-container">
-                <span class="font-italic">From</span> <div @click.stop="fromAlbumPressed(track.album)" class="clickable font-weight-bold text-decoration-underline track-from-album">
-                  {{track.album.name}}</div>
+                <span class="font-italic">From</span> <div 
+                  @click.stop="fromAlbumPressed(track.album)" 
+                  class="clickable font-weight-bold text-decoration-underline track-from-album" 
+                  :aria-label="`open modal with details about ${track.album.name}`" 
+                  tabindex="0"
+                  role="button"
+                >
+                  {{track.album.name}}
+                </div>
                   <v-icon small class="clickable">mdi-arrow-right</v-icon>
               </div>
             </div>

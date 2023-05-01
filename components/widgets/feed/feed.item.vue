@@ -37,19 +37,19 @@
 
         <section v-if="activity.played">
           <div class="activity-info-container">
-            <div class="added-by" :aria-label="`track added by ${addedBy()}`" tabindex="0">
+            <div class="added-by" :aria-label="`track added by ${addedBy()}`">
               <v-img v-if="activity.user.img" :src="activity.user.img" class="round-img-icon" alt=""></v-img>
               <span :class="{'username-margin': activity.user.img}" aria-hidden="true">{{addedBy()}}</span>
             </div>
 
-            <timeago :datetime="activity.timestamp" :converter="activityTimestamp" :auto-update="true" class="font-weight-regular" tabindex="0"></timeago>
+            <timeago :datetime="activity.timestamp" :converter="activityTimestamp" :auto-update="true" class="font-weight-regular"></timeago>
           </div>
 
           <div class="d-flex flex-column">
             <div :id="`${activity.queueId}-reactions`" class="reaction-activity-container" :class="{'vertically-hidden': !showReactions}">
               <span v-for="reaction in activity.reactions" :key="reaction.timestamp.toString()">
-                <span class="reaction-author" tabindex="0" :aria-label="`commenter username: ${reaction.author}`">{{reaction.author}}:</span>
-                <span role="comment" class="mr-1" tabindex="0">{{reaction.message}}</span>
+                <span class="reaction-author" :aria-label="`commenter username: ${reaction.author}`">{{reaction.author}}:</span>
+                <span role="comment" class="mr-1">{{reaction.message}}</span>
               </span>
             </div>
 

@@ -2,7 +2,7 @@
   <section class="play-all-and-shuffle-container fill-available" v-if="playbackItem">
     <PlaybackIcon :item="playbackItem" :itemSet="playbackItem.itemSet" iconClass="playback-icon"/>
     
-    <div class="clickable small-circle shuffle" @click.stop="shuffleAndPlay()" >
+    <div class="clickable small-circle shuffle" @click="shuffleAndPlay()" @keyup.enter="shuffleAndPlay()" tabindex="0" >
       <span class="small-circle-top-letters">SHU</span>
       <span class="small-circle-bottom-letters">FFLE</span>
     </div>

@@ -2,19 +2,21 @@
     <section>
       <!-- TRACK -->
       <v-icon 
-        class="clickable" 
+        class="clickable playback-icon" 
         :color="itemIsPlaying ? '#1DB954' : 'black'" 
         :class="[iconClass]" 
         v-if="!item.isArtist && !collectionPlaying()" 
         @click.stop="togglePlay(item)"
-        :aria-label="`${item.playbackIcon} item`"
+        @keyup.enter.stop="togglePlay(item)"
+        :aria-label="`${item.playbackIcon} ${item.name}`"
+        tabindex="0"
       >
         {{`mdi-${item.playbackIcon}`}}
       </v-icon>
 
       <!-- COLLECTION -->
       <v-icon
-        class="clickable collection-playback" 
+        class="clickable collection-playback playback-icon" 
         :class="[iconClass]" 
         v-if="collectionPlaying()" 
         @click.stop="stopPlayback(true)"
@@ -104,5 +106,9 @@
 <style lang="scss">
   .collection-playback {
     color: #1DB954 !important;
+  }
+
+  .playback-icon:focus-visible {
+    @extend .focused;
   }
 </style>

@@ -19,6 +19,10 @@ function isPlaybackCall(config){
   return config.url.indexOf(PLAYBACK_API_PATH) > -1;
 }
 
+function isRepeatCall(config){
+  return config.url.indexOf('/me/player/repeat') > -1;
+}
+
 httpClient.interceptors.request.use(async config => {
   if(accessTokenExpired()){
     await attemptTokenRefresh(); 
@@ -69,7 +73,7 @@ httpClient.interceptors.response.use(async response => {
   if(shouldRetry(error.response.status)){
     retryRequest(error.config);
   }
-  else{
+  else if(!isRepeatCall()){
     handleApiError();
   }
 });

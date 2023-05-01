@@ -19,7 +19,7 @@
       <template v-slot:append-outer>
         <v-icon 
           :color="submitIconColor" 
-          class="clickable mr-2" 
+          class="clickable mr-2 submit-reaction" 
           @click.stop="chatMessageSubmitted()" 
           @keyup.enter="chatMessageSubmitted()" 
           tabindex="0" 
@@ -169,5 +169,9 @@
     ::placeholder {
       color: rgba(0, 0, 0, 0.8) !important;
     }
+  }
+
+  .submit-reaction:focus-visible {
+    @extend .focused;
   }
 </style>

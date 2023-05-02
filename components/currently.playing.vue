@@ -3,7 +3,7 @@
     <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-3">
       <v-img @click="spotifyLogoPressed()" 
         class="clickable spotify-icon currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Full.png')">
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')">
       </v-img>
 
       <v-img @click="spotifyLogoPressed()" 

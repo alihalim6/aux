@@ -180,7 +180,7 @@
     display: inline-flex;
     flex-direction: column;
     overflow-y: scroll;
-    padding-top: calc(env(safe-area-inset-top) + 12px);
+    padding-top: calc(env(safe-area-inset-top) + 6px);
 
     .up-next-header {
       font-weight: bold;

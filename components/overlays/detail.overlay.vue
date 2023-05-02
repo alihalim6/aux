@@ -4,7 +4,7 @@
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex" :touchless="true">
           <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">        
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
-            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="currentIndex === index">
+            <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="currentIndex === index" aria-hidden="true">
               <div v-show="!item.details" class="loading-container">
                 <div class="blurred loading"></div>
               </div>            
@@ -41,9 +41,11 @@
                       :class="{'no-visibility': hideBackButton(index)}" 
                       aria-label="back to previous overlay"
                       :aria-hidden="hideBackButton(index)"
-                      class="back-button" 
+                      class="back-button overlay-button" 
                       large 
                       @click="goBack()"
+                      @keyup.enter="goBack()"
+                      tabindex="0"
                     >
                       mdi-arrow-left
                     </v-icon>
@@ -51,12 +53,16 @@
                     <div class="spotify-logo">
                       <v-img 
                         @click="spotifyLogoPressed(item)" 
+                        @keyup.enter="spotifyLogoPressed(item)" 
                         :class="{'spotify-icon': $vuetify.breakpoint.xs, 'spotify-full': $vuetify.breakpoint.smAndUp, 'clickable': !item.simpleOverlay}" 
-                        :src="require(`~/assets/Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)">
+                        :src="require(`~/assets/Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)"
+                        :alt="`open ${item.name} on Spotify`"
+                        tabindex="0"
+                      >
                       </v-img>
                     </div>
 
-                    <v-icon class="close-button" large @click="closeOverlay()" aria-label="close page">mdi-close</v-icon>
+                    <v-icon class="close-button overlay-button" large @click="closeOverlay()" @keyup.enter="closeOverlay()" aria-label="close modal" tabindex="0">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
@@ -85,7 +91,7 @@
         </v-carousel>
     </v-dialog>
 
-    <v-dialog :value="fullItemImage" max-width="824" transition="slide-y-transition" @click:outside="fullItemImageClose()">
+    <v-dialog :value="fullItemImage" max-width="824" transition="slide-y-transition" @click:outside="fullItemImageClose()" aria-hidden="true">
       <v-img class="full-item-image fill-available" :src="fullItemImage" @click.stop="fullItemImageClose()"></v-img>
     </v-dialog>
   </section>
@@ -331,6 +337,10 @@
         .close-button {
           @extend .overlay-button;
         }
+
+        .overlay-button:focus-visible {
+          @extend .focused;
+        }
         
         .overlay-section-title {
           padding: 16px $base-padding 8px;
@@ -393,6 +403,10 @@
 
   .spotify-logo {
     padding: $base-padding;
+  }
+
+  .spotify-logo:focus-visible {
+    @extend .focused;
   }
 
   .extra-padding-bottom {

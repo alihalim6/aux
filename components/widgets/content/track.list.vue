@@ -26,9 +26,11 @@
                     :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`"
                     tabindex="0"
                     role="button"
-                  >{{track.name}}
-                </span>  
-                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon"></v-img>
+                  >
+                    {{track.name}}
+                  </span>  
+                
+                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon" aria-hidden="true"></v-img>
                 </div>
               </v-hover>
 

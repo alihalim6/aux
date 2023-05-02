@@ -11,7 +11,7 @@
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
-        <v-menu left bottom transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y allow-overflow attach :max-width="325" :nudge-right="50">
+        <v-menu transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y :max-width="325">
           <template v-slot:activator="{on, attrs}">         
             <!-- couldn't get shitty vuetify to handle pressing enter for these app header menus-->
             <div class="clickable on-air-container" v-bind="attrs" v-on="on" :aria-label="`there are currently ${liveUsers.length} other users on AUX`">
@@ -30,7 +30,7 @@
                   <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
                     <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
 
-                    <div :class="{'ignored-opacity': user.ignored}">
+                    <div :class="{'ignored-opacity': user.ignored}" aria-hidden="true">
                       <v-img v-if="user.img" :src="user.img" class="user-img"></v-img>
                       <div v-else class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
                     </div>
@@ -51,7 +51,7 @@
                 <div v-show="!liveUsers.length">
                   <div class="d-flex flex-column align-center">
                     <span class="no-other-users-message">No one else is here.</span>
-                    <v-img class="no-other-users-img" :eager="true" :src="require('~/assets/no_other_users.png')"></v-img>
+                    <v-img class="no-other-users-img" :eager="true" :src="require('~/assets/no_other_users.png')" aria-hidden="true"></v-img>
                   </div>
                 </div>
               </div>
@@ -287,14 +287,14 @@
     }
 
     .aux-logo-container {
-      margin-top: 1px;
+      margin-top: 4px;
       font-weight: 700;
       display: flex;
       align-items: center;
       
       .pass-the-phrase {
         color: $rose-red;
-        transform: rotate(-80deg) scaleY(1.3);
+        transform: rotate(-80deg) scaleY(1.3) scaleX(1.1);
         font-size: 10px;
         white-space: nowrap;
         font-style: italic;
@@ -517,7 +517,7 @@
   }
 
   .no-other-users-img {
-    $size: 68px;
+    $size: 50px;
 
     width: $size;
     max-width: $size;

@@ -60,13 +60,13 @@
     z-index: 20;
 
     .back-to-top {
-      padding: 4px;
+      padding: 4px 5px;
       border-radius: 100%;
       box-shadow: 0px 3px 10px -1px rgb(0 0 0 / 80%);
     }
 
     .back-to-top:hover {
-      padding: 6px;
+      padding: 6px 7px;
     }
   }
 

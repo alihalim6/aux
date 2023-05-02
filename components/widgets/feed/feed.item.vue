@@ -45,7 +45,7 @@
             <timeago :datetime="activity.timestamp" :converter="activityTimestamp" :auto-update="true" class="font-weight-regular"></timeago>
           </div>
 
-          <div class="d-flex flex-column">
+          <div class="d-flex flex-column" :class="{'vertically-hidden': !showReactions}">
             <div :id="`${activity.queueId}-reactions`" class="reaction-activity-container" :class="{'vertically-hidden': !showReactions}">
               <span v-for="reaction in activity.reactions" :key="reaction.timestamp.toString()">
                 <span class="reaction-author" :aria-label="`commenter username: ${reaction.author}`">{{reaction.author}}:</span>
@@ -53,7 +53,7 @@
               </span>
             </div>
 
-            <FeedChatInput :activity="activity" :showReactions="showReactions"/>
+            <FeedChatInput :activity="activity" />
           </div>
         </section>
       </div>
@@ -162,8 +162,7 @@
   .feed-item-container {
     display: flex;
     align-items: flex-start;
-    justify-content: base;
-    margin-bottom: 16px;
+    margin-bottom: 48px;
 
     .track-img {
       $track-img-size: 32px;

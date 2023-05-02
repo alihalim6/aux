@@ -9,7 +9,6 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }, 
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;700&display=swap' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Arvo:wght@700&family=Public+Sans:wght@400;700&display=swap'}
     ]
@@ -59,15 +58,16 @@ export default {
         {
           "src": "/aux.png",
           "type": "image/png",
-          "sizes": "192x192"
+          "sizes": "256x"
         },
         {
           "src": "/rose.png",
           "type": "image/png",
-          "sizes": "512x512"
+          "sizes": "512x"
         }
       ],
-    }
+    },
+
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build`

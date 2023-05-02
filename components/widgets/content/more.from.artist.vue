@@ -24,28 +24,29 @@
         <div class="more-from-artist-title mb-2 font-weight-bold">Related Artists</div>
         
         <div class="related-artists-container">
-          <div 
+          <button 
             v-for="artist in parentItem.details.relatedArtists" 
             :key="artist.id"
-            @click="$nuxt.$root.$emit('displayArtistDetails', artist)">
-              <v-hover v-slot="{hover}">
-                <section class="clickable artist-container">
+            @click="$nuxt.$root.$emit('displayArtistDetails', artist)"
+            @keyup.enter="$nuxt.$root.$emit('displayArtistDetails', artist)"
+            tabindex="0"
+          >
+            <v-hover v-slot="{hover}">
+              <section class="clickable artist-container">
 
-                  <v-img class="artist-image" :src="artist.imgUrl.medium">
-                    <template v-slot:placeholder>
-                      <span class="content-placeholder">{{artist.name.substring(0, 1)}}</span>
-                    </template>
-                  </v-img>
+                <v-img class="artist-image" :src="artist.imgUrl.medium" :alt="`photo for ${artist.name}`">
+                  <template v-slot:placeholder>
+                    <span class="content-placeholder">{{artist.name.substring(0, 1)}}</span>
+                  </template>
+                </v-img>
 
-                  <div class="mr-2">
-                    <div class="font-weight-bold" :class="{'lighter-black-color': hover}">{{artist.name}}</div>
-                    <div class="artist-genres">{{artist.secondaryLabel}}</div>
-                  </div>
-
-                  <v-icon class="clickable ml-auto">mdi-arrow-right</v-icon>
-                </section>
-              </v-hover>
-          </div>
+                <div class="mr-2">
+                  <div class="font-weight-bold" :class="{'lighter-black-color': hover}">{{artist.name}}</div>
+                  <div class="artist-genres">{{artist.secondaryLabel}}</div>
+                </div>
+              </section>
+            </v-hover>
+          </button>
         </div>
       </div>
     </v-card>
@@ -94,7 +95,7 @@
 
   .more-from-artist-container {
     @extend .overlay-margin;
-    padding: 10px 2px 14px;
+    padding: 10px 2px $base-padding;
     font-size: 16px;
 
     .more-from-artist-title {
@@ -106,18 +107,22 @@
   .related-artists-container {
     overflow-y: scroll;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     .artist-container {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding-left: $base-padding;
-      border-radius: 2px;
+      margin: 24px 0px;
 
       .artist-image {
-        max-width: 45%;
-        margin: 14px 10px 14px 0px;
-        box-shadow: 0px 4px 5px -2px rgb(0 0 0 / 20%), 0px 7px 10px 1px rgb(0 0 0 / 14%), 0px 2px 16px 1px rgb(0 0 0 / 12%);
+        $size: 250px;
+        width: $size;
+        height: $size;
+        border-radius: 100%;
+        margin-bottom: 12px;
       }
 
       .artist-genres {

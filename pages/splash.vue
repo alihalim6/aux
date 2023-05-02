@@ -6,7 +6,7 @@
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
         <div class="login-container">
           <button class="clickable nav-button login" @click="loginClicked()">
-            <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" ></v-img>
+            <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" aria-hidden="true"></v-img>
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
           </button>
 
@@ -18,37 +18,34 @@
         </div>
       </div>
 
-      <div class="big-p" tabindex="0" aria-label="introducing the web app: PASS THE AUX">P</div>
+      <div class="big-p" aria-hidden="true">P</div>
       <!-- <div class="width-100 d-flex flex-wrap container">
           <v-img src="/rose.png" class="roses" v-for="(n, index) of new Array(100)" :key="index"></v-img>
       </div> -->
 
       <div class="info-container">
         <div class="bullet-point">
-          <span class="slash" aria-hidden="true">/</span> 
-          <span tabindex="0">Enjoy your Spotify library + new releases, featured playlists, and recommendations.</span>
+          <span>Enjoy your Spotify library + new releases, featured playlists, and recommendations.</span>
         </div>
 
         <div class="bullet-point">
-          <span class="slash" aria-hidden="true">/</span> 
-          <span tabindex="0">See and play what others are listening to.</span>
+          <span>See and play what others are listening to.</span>
         </div>
 
         <div class="bullet-point">
-          <span class="slash" aria-hidden="true">/</span> 
-          <span tabindex="0"><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
+          <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
         </div>
 
-        <span class="bullet-point align-self-center mt-6" tabindex="0">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
+        <span class="bullet-point align-self-center mt-6">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
 
-        <div class="made-info" tabindex="0">
+        <div class="made-info">
           <span>Created by</span>
-          <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank">Ali Halim</a>
+          <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank" tabindex="0">Ali Halim</a>
           <span>using</span>
-          <a class="made-by-link" href="https://developer.spotify.com" target="_blank">Spotify's API</a>
+          <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's API</a>
         </div>
 
-        <span class="premium-only" tabindex="0">Works for Spotify Premium users only</span>
+        <span class="premium-only">Works for Spotify Premium users only</span>
       </div>
 
       <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" aria-hidden="true"></v-img>
@@ -168,7 +165,8 @@
     width: -webkit-fill-available;
 
     @media(min-width: 700px){
-      max-width: 58%;
+      max-width: 600px;
+      margin-left: 24px;
     }
   }
 
@@ -179,7 +177,7 @@
     align-items: center;
     font-size: $bullet-point-font-size;
     align-self: flex-start;
-    margin-top: 4px;
+    margin: 14px 0px;
   }
 
   .slash {
@@ -224,7 +222,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 24px;
+    padding: 24px 24px 14px;
   }
   
   .login {

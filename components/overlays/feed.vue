@@ -49,7 +49,7 @@
               <div class="sub-prompt">Nothing's been played in the last 24hrs. Kick things off by playing something!  Invite others lorem ipsum...</div>
             </div>
 
-            <div class="no-prompt-graphic">
+            <div class="no-prompt-graphic" aria-hidden="true">
               <v-img :src="require('~/assets/world.gif')"></v-img>
               <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux.png')"></v-img>
             </div>

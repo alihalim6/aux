@@ -12,7 +12,14 @@
           <section>
             <div class="item-container">  
               <v-card max-width="40%" elevation="7">
-                <v-img :src="item.imgUrl.large" class="clickable" @click="displayItemDetails(item)">
+                <v-img 
+                  :src="item.imgUrl.large" 
+                  class="clickable" 
+                  @click="displayItemDetails(item)"
+                  @keyup.enter="displayItemDetails(item)"
+                  tabindex="0"
+                  :alt="`open modal with details about ${item.primaryLabel}`"
+                >
                   <template v-slot:placeholder>
                     <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
@@ -22,7 +29,16 @@
               <v-icon class="divider">mdi-slash-forward</v-icon>
 
               <div class="d-flex flex-column">
-                <span class="clickable item-title" @click="itemTitlePressed(item)" :class="{'lighter-black-color': hover}">{{item.primaryLabel}}</span>
+                <button 
+                  class="clickable item-title" 
+                  @click="itemTitlePressed(item)" 
+                  @keyup.enter="itemTitlePressed(item)"
+                  :class="{'lighter-black-color': hover}"
+                  :aria-label="`${item.isCollection ? `open modal with details about ${item.primaryLabel}` : `play ${item.primaryLabel} by ${item.secondaryLabel}`}`"
+                >
+                  {{item.primaryLabel}}
+                </button>
+
                 <span class="item-detail">{{item.secondaryLabel}}</span>
                 <div class="item-detail"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
               </div>
@@ -99,6 +115,7 @@
         padding-bottom: 2px;
         font-weight: bold;
         word-break: break-word;
+        text-align: left;
       }
     }
 

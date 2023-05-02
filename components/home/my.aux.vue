@@ -10,7 +10,7 @@
           alt="open Liked Songs on Spotify"
           tabindex="0"
         ></v-img>
-        <h3>My Vibe</h3>
+        <span>My Vibe</span>
       </div>
 
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
@@ -191,7 +191,7 @@
         const {data} = contentWithItemType;
 
         if(removal){
-          const itemIndex = data.findIndex(like => like.uuid == item.uuid);
+          const itemIndex = data.findIndex(like => like.uri == item.uri);
           data.splice(itemIndex, 1);
         }
         else{

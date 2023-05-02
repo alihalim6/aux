@@ -3,7 +3,7 @@
     <div class="content-container">
       <div class="home-content-title">
         <div class="d-flex align-center">
-          <h3 tabindex="0" aria-label="recommended Spotify tracks, albums and artists">New & Recommended</h3>
+          <span tabindex="0" aria-label="recommended Spotify tracks, albums and artists">New & Recommended</span>
 
           <v-hover v-slot="{hover}">
             <v-icon 

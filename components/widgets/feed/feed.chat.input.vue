@@ -6,7 +6,7 @@
       placeholder="Track talk..." 
       :hide-details="true" 
       class="feed-chat-input" 
-      :class="{'vertically-hidden': !showReactions, 'chat-input-on-white': chatOnFeedAlert}"
+      :class="{'chat-input-on-white': chatOnFeedAlert}"
       :color="color"
       width="85%"
       @keyup.enter="chatMessageSubmitted"
@@ -67,9 +67,6 @@
 
     @Prop()
     activity;
-
-    @Prop({default: true})
-    showReactions;
 
     @Prop({default: 'white'})
     color;

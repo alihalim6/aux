@@ -5,8 +5,8 @@
     </template>
 
     <v-list>
-      <v-list-item v-for="option in options.filter(option => !option.hidden)" 
-        :key="option.title" 
+      <v-list-item v-for="(option, index) in options.filter(option => !option.hidden)" 
+        :key="index" 
         class="clickable menu-option-container" 
         @click="option.fn(item)" 
         :disabled="option.forQueue && disableQueueOptions"
@@ -77,6 +77,9 @@
 
     @Mutation('setToast', {namespace: UI})
     setToast;
+
+    @Mutation('closeFeed', {namespace: UI})
+    closeFeed;
 
     @Action('addToEndOfQueue', {namespace: PLAYBACK_QUEUE})
     addToEndOfQueue;
@@ -214,6 +217,7 @@
               this.options.push({
                 title: 'Add to Playlist...',
                 fn: () => {
+                  this.closeFeed();
                   this.$nuxt.$root.$emit('addToPlaylist', this.threeDotItem);
                 }
               });

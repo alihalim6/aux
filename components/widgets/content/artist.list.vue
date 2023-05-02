@@ -10,9 +10,8 @@
         :aria-label="`open modal with details about ${artist.name}`"
         tabindex="0"
         role="button"
-        >
-          {{artist.name}}
-        </span><span v-if="(index < artists.length - 1)">, </span>
+      >
+        <span>{{artist.name}}</span></span><span v-if="(index < artists.length - 1)">, </span>
     </span>
   </span>
 </template>

@@ -12,7 +12,7 @@
         ></v-img>
 
         <div class="d-flex align-center">
-          <h3>Playlists</h3>
+          <span>Playlists</span>
 
           <v-hover v-slot="{hover}">
             <v-icon 
@@ -53,8 +53,9 @@
                 @keyup.enter="$nuxt.$root.$emit('displayDetailOverlay', item)"
                 tabindex="0"
                 :aria-label="`open modal with details for playlist ${item.name}`"
+                role="button"
               >
-                <v-img :src="item.imgUrl.large" class="playlist-img">
+                <v-img :src="item.imgUrl.large" class="playlist-img" :alt="`artwork for playlist ${item.name}`">
                   <template v-slot:placeholder>
                     <span class="content-placeholder">{{item.name.substring(0, 1)}}</span>
                   </template>

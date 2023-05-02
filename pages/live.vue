@@ -1,6 +1,6 @@
 <template>
   <v-app :class="{'item-playing': currentlyPlayingItem.uri}">
-    <audio controls class="hidden" loop autoplay id="silentPlayer">
+    <audio v-if="currentlyPlayingItem.uri" controls class="hidden" loop autoplay id="silentPlayer">
       <source src="/5-seconds-of-silence.mp3" type="audio/mpeg" controls>
     </audio>
 

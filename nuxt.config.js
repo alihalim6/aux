@@ -53,7 +53,20 @@ export default {
       lang: 'en',
       name: 'PASS THE AUX',
       short_name: 'AUX',
-      description: 'Listen to Spotify content and interact with tracks that others play on Spotify.'
+      description: 'Listen to Spotify content and interact with tracks that others play.',
+      background_color: '#fffff1',
+      icons: [
+        {
+          "src": "/aux.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        },
+        {
+          "src": "/rose.png",
+          "type": "image/png",
+          "sizes": "512x512"
+        }
+      ],
     }
   },
 

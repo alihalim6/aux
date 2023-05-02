@@ -58,16 +58,15 @@ export default {
         {
           "src": "/aux.png",
           "type": "image/png",
-          "sizes": "256x"
+          "sizes": "192x192"
         },
         {
           "src": "/rose.png",
           "type": "image/png",
-          "sizes": "512x"
+          "sizes": "512x512"
         }
       ],
-    },
-
+    }
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build`

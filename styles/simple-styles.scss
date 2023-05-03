@@ -41,6 +41,10 @@ $phrase-border-color: #aaaaaa;
   display: inline;
 }
 
+.block-display {
+  display: block;
+}
+
 @supports(-webkit-text-stroke: $phrase-border-size $phrase-border-color) {
   .outlined-phrase {
     -webkit-text-stroke: $phrase-border-size $phrase-border-color;
@@ -197,6 +201,10 @@ $phrase-border-color: #aaaaaa;
   padding: 8px 5px 5.5px;
   font-weight: bold;
   line-height: 10px;
+}
+
+.small-circle:focus-visible {
+  @extend .focused;
 }
 
 .small-circle-top-letters {

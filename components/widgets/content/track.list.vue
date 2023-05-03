@@ -7,7 +7,7 @@
               v-if="tracksFromDifferentAlbums && track.imgUrl" 
               class="clickable track-album-img" 
               @click="trackImgPressed(track)" 
-              @keyup.enter="trackImgPressed(track)" 
+              @keydown.enter="trackImgPressed(track)" 
               :src="track.imgUrl.small"
               tabindex="0"
               :alt="`open modal with details about ${track.primaryLabel}`"
@@ -22,7 +22,7 @@
                     class="clickable track-name" 
                     :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" 
                     @click.stop="trackNamePressed(track, index)"
-                    @keyup.enter.stop="trackNamePressed(track, index)"
+                    @keydown.enter.stop="trackNamePressed(track, index)"
                     :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`"
                     tabindex="0"
                     role="button"
@@ -55,7 +55,7 @@
             </div>
           </div>
 
-          <ThreeDotIcon :item="track"/>
+          <ThreeDotIcon :item="{...track, playlistId}"/>
         </div>
       </div>
   </section>
@@ -91,6 +91,9 @@
     @Prop()
     disableTracks;
 
+    @Prop()
+    playlistId;
+    
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 

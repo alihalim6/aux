@@ -44,7 +44,6 @@
                       class="back-button overlay-button" 
                       large 
                       @click="goBack()"
-                      @keyup.enter="goBack()"
                       tabindex="0"
                     >
                       mdi-arrow-left
@@ -53,7 +52,7 @@
                     <div class="spotify-logo">
                       <v-img 
                         @click="spotifyLogoPressed(item)" 
-                        @keyup.enter="spotifyLogoPressed(item)" 
+                        @keydown.enter="spotifyLogoPressed(item)" 
                         :class="{'spotify-icon': $vuetify.breakpoint.xs, 'spotify-full': $vuetify.breakpoint.smAndUp, 'clickable': !item.simpleOverlay}" 
                         :src="require(`~/assets/Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)"
                         :alt="`open ${item.name} on Spotify`"
@@ -62,7 +61,7 @@
                       </v-img>
                     </div>
 
-                    <v-icon class="close-button overlay-button" large @click="closeOverlay()" @keyup.enter="closeOverlay()" aria-label="close modal" tabindex="0">mdi-close</v-icon>
+                    <v-icon class="close-button overlay-button" large @click="closeOverlay()" aria-label="close modal" tabindex="0">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
@@ -278,7 +277,7 @@
         max-width: $overlay-width;
         padding: 0px $base-padding $base-padding;
         margin: 0 auto;
-        width: stretch;
+        width: -webkit-fill-available;
 
         .scrolled-down-top-bar {
           max-width: $overlay-width;
@@ -410,6 +409,6 @@
   }
 
   .extra-padding-bottom {
-    padding-bottom: 64px !important;
+    padding-bottom: 96px !important;
   }
 </style>

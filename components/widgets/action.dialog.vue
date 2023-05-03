@@ -20,7 +20,6 @@
         color="white" 
         aria-label="close the dialog" 
         tabindex="0" 
-        @keyup.esc="closeDialog()" 
         id="closeActionDialog"
       >
         mdi-close
@@ -45,7 +44,7 @@
           @click.stop="closeDialog()" 
           tabindex="0" 
           aria-label="close the dialog"
-          @keyup.esc="closeDialog()" 
+          @keydown.esc="closeDialog()" 
         >
           <span class="nav-button-label">CANCEL</span>
         </button>    
@@ -53,10 +52,10 @@
         <button 
           class="clickable nav-button confirm" 
           @click.stop="confirmFn()" 
-          @keyup.enter="confirmFn()" 
+          @keydown.enter="confirmFn()" 
           tabindex="0" 
           aria-label="confirm and close the dialog"
-          @keyup.esc="closeDialog()" 
+          @keydown.esc="closeDialog()" 
         >
           <span class="nav-button-label">{{ actionDialog.confirmLabel }}</span>
         </button>

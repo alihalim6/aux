@@ -284,6 +284,8 @@ export const actions = {
   stopPlayback({commit, getters}, noError){
     if(getters.currentlyPlayingItemUri){
       const currentlyPlayingItem = getters.currentlyPlayingItem;
+      commit('setItemPlaybackIcon', {item: currentlyPlayingItem, icon: 'play'});
+    }
 
       if(getters.player){
         //needs to be disconnect so that on Spotify side, no rogue plays, and things clear out properly (e.g. stopping and replaying an album
@@ -291,7 +293,6 @@ export const actions = {
         getters.player.disconnect();
       }
       
-      commit('setItemPlaybackIcon', {item: currentlyPlayingItem, icon: 'play'});
       commit('setAudioPlaying', false);
       commit('setCurrentlyPlayingItem', {});
       commit('setCurrentlyPlayingItemUri', '');
@@ -302,8 +303,9 @@ export const actions = {
         commit(`${UI}/setToast`, {text: 'There was an issue lorem ipsum...', error: true}, {root: true});
       }
 
-      storageRemove(DEVICE_ID);
-    }
+      if(process.client){
+        storageRemove(DEVICE_ID);
+      }
   },
   async seekPlayback({getters, dispatch, commit}, seekPosition){
     const player = getters.player;

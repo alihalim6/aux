@@ -13,7 +13,7 @@
                   :class="{'content-hover': hover && !lastNewAndRecoCarouselItem(index)}" 
                   :src="carouselImgSrc(item)" 
                   @click="contentImgPressed(item)"
-                  @keyup.enter="contentImgPressed(item)"
+                  @keydown.enter="contentImgPressed(item)"
                   tabindex="0"
                   :alt="`open modal with details about ${item.primaryLabel}`"
                 >
@@ -30,7 +30,8 @@
                     'content-hover': hover && !vertical && !addToPlaylist && !lastNewAndRecoCarouselItem(index), 
                     'spaced-content': moreFromArtist || addToPlaylist, 
                     'no-max-width': vertical, 
-                    'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1)
+                    'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1),
+                    'cursor-auto': addToPlaylist
                   }"
                 >
                   <v-img 
@@ -38,7 +39,7 @@
                     :class="{'auto-width': vertical}" v-if="item.imgUrl" 
                     :src="carouselImgSrc(item)" 
                     @click="contentImgPressed(item)"
-                    @keyup.enter="contentImgPressed(item)"
+                    @keydown.enter="contentImgPressed(item)"
                     tabindex="0"
                     :alt="`open modal with details about ${item.primaryLabel}`"
                   >
@@ -59,13 +60,14 @@
                       'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !lastNewAndRecoCarouselItem(index)
                     }">
                     <div class="d-flex align-start">
-                      <div 
-                        class="clickable primary-label" 
+                      <button 
+                        class="clickable primary-label text-left" 
                         @click.stop="primaryLabelPressed(item)" 
+                        :aria-label="`${playable(item) ? 'play' : 'open modal with details about'} ${item.primaryLabel} by ${item.secondaryLabel}`"
                         :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover, 'spotify-green-color': itemIsPlaying(item)}">
                           {{item.primaryLabel}}
                           <span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
-                      </div>
+                      </button>
 
                       <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon" aria-hidden="true"></v-img>
                     </div>
@@ -73,7 +75,7 @@
                     <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>
                   </div>
 
-                  <div v-if="!moreFromArtist && !noSecondaryLabel" class="secondary-label" :class="{'artist-primary-label': item.isArtist}">{{item.secondaryLabel}}</div>
+                  <span v-if="!moreFromArtist && !noSecondaryLabel" class="secondary-label" :class="{'artist-genres': item.isArtist}" aria-hidden="true">{{item.secondaryLabel}}</span>
 
                   <div class="secondary-label bottom-label">
                     <v-icon v-if="item.numberOfTracks" class="record-icon" small>mdi-music-circle</v-icon>
@@ -124,8 +126,12 @@
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
+    playable(item){
+      return item.singleTrack || item.isTrack;
+    }
+
     primaryLabelPressed(item){
-      if(item.singleTrack || item.isTrack){
+      if(this.playable(item)){
         this.togglePlayback({item, itemSet: this.data});
       }
       else{
@@ -226,7 +232,7 @@
       width: $content-img-size;
     }
 
-    .artist-primary-label {
+    .artist-genres {
       @extend .primary-label;
       @extend .artist-secondary-label;
       padding-top: 0px;

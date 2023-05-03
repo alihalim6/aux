@@ -7,7 +7,6 @@
         :class="[iconClass]" 
         v-if="!item.isArtist && !collectionPlaying()" 
         @click.stop="togglePlay(item)"
-        @keyup.enter.stop="togglePlay(item)"
         :aria-label="`${item.playbackIcon} ${item.name}`"
         tabindex="0"
       >

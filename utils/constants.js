@@ -21,18 +21,17 @@ export const AUTH = {
 
   SCOPES: `
     streaming 
+    user-read-email 
     user-read-private 
     user-follow-modify
     user-follow-read 
     user-library-modify 
     user-library-read 
-    playlist-read-collaborative 
-    user-read-email 
-    playlist-read-private 
     user-top-read 
     user-read-recently-played 
-    user-read-playback-state 
     user-modify-playback-state
+    playlist-read-collaborative 
+    playlist-read-private 
     playlist-modify-public
     playlist-modify-private
   `,//TODO: may need more (e.g. allow following artists)

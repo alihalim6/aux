@@ -9,7 +9,6 @@ $section-title-font-size: 36px;
   max-width: $max-inner-width;
 
   .section-title {
-    font-size: $section-title-font-size;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -446,4 +445,8 @@ $section-title-font-size: 36px;
     .v-image__image {
       background-size: contain;
     }
+  }
+
+  h1 {
+    font-size: $section-title-font-size;
   }

@@ -47,7 +47,7 @@
         try {
           await spotify({method: 'POST', url: `/playlists/${playlist.id}/tracks?uris=${this.track.uri}`});
           this.setToast({text: `${this.track.name} added to ${playlist.name}`});
-          this.$nuxt.$root.$emit('trackAddedToPlaylist', {playlist, track: this.track});
+          this.$nuxt.$root.$emit('updateHomePlaylists');
         }
         catch(error) {
           handleApiError(`There was an issue adding the track to ${playlist.name} lorem ipsum...`);

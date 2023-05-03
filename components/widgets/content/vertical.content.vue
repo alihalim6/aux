@@ -16,7 +16,7 @@
                   :src="item.imgUrl.large" 
                   class="clickable" 
                   @click="displayItemDetails(item)"
-                  @keyup.enter="displayItemDetails(item)"
+                  @keydown.enter="displayItemDetails(item)"
                   tabindex="0"
                   :alt="`open modal with details about ${item.primaryLabel}`"
                 >
@@ -32,7 +32,7 @@
                 <button 
                   class="clickable item-title" 
                   @click="itemTitlePressed(item)" 
-                  @keyup.enter="itemTitlePressed(item)"
+                  @keydown.enter="itemTitlePressed(item)"
                   :class="{'lighter-black-color': hover}"
                   :aria-label="`${item.isCollection ? `open modal with details about ${item.primaryLabel}` : `play ${item.primaryLabel} by ${item.secondaryLabel}`}`"
                 >

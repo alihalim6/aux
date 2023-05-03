@@ -1,32 +1,53 @@
 <template>
   <section class="up-next-list-container" id="upNextListContainer" v-if="nextTrack">
-    <div class="clickable up-next-header" @click="$nuxt.$root.$emit('hideUpNext')">
+    <button 
+      class="clickable up-next-header" 
+      @click="$nuxt.$root.$emit('hideUpNext')" 
+      @keydown.enter.stop.prevent="$nuxt.$root.$emit('hideUpNext')"
+      tabindex="0"
+      aria-label="hide next tracks in queue"
+    >
       <v-icon class="align-self-start" x-large color="white">mdi-chevron-down</v-icon>
 
       <div class="d-inline-flex align-center">
         <span class="min-width-fit">PLAYING: </span>
 
         <div class="track-sneak-peek">
-          <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small"></v-img>
+          <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" aria-hidden="true"></v-img>
           <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
         </div>
       </div>
-    </div>
+    </button>
     
     <div class="d-flex flex-column align-center">
       <span class="up-next-title">UP NEXT</span>
 
       <div class="up-next-actions">
         <div class="clickable up-next-action" v-if="nextTracks.length > 1"> 
-          <span class="underlined" @click.stop="shuffleUpNext()">SHUFFLE</span>
+          <button 
+            class="underlined" 
+            @click.stop="shuffleUpNext()" 
+            @keydown.enter.stop.prevent="shuffleUpNext()" 
+            tabindex="0" 
+            aria-label="shuffle next tracks in queue"
+          >
+            SHUFFLE
+          </button>
+          
           <v-icon small class="pl-1" color="white">mdi-shuffle</v-icon>
         </div>
 
          <div class="clickable up-next-action"> 
-          <span class="underlined" @click.stop="clearUpNextPressed()">
+          <button 
+            class="underlined" 
+            @click.stop="clearUpNextPressed()"
+            @keydown.enter.stop.prevent="clearUpNextPressed()" 
+            tabindex="0" 
+            aria-label="remove next tracks in queue"
+          >
             <span v-if="nextTracks.length > 1">REMOVE ALL</span>
             <span v-else>REMOVE</span>
-          </span>
+          </button>
           
           <v-icon small class="pl-1" color="white">mdi-cancel</v-icon>
          </div>
@@ -35,8 +56,9 @@
 
     <div class="next-track-container">
       <div class="position-relative">
-        <v-card elevation="6" class="clickable mt-10" @click.stop="nextTrackArtworkPressed()">
-          <v-img :src="nextTrack.imgUrl.medium" class="next-track-img"></v-img>
+        <v-card elevation="6" class="clickable mt-10 next-track">
+          <v-img :src="nextTrack.imgUrl.medium" class="next-track-img" @click.stop="nextTrackArtworkPressed()" aria-hidden="true">
+          </v-img>
         </v-card>
 
         <ThreeDotIcon :item="nextTrack" :item-in-queue="true" iconClass="up-next-three-dot next-track-three-dot mt-10" iconColor="white"/>
@@ -66,7 +88,16 @@
         <div v-if="multiTrackAlbum()" class="d-flex">
           <div class="info-item">
             <div class="info-label">FROM</div>
-            <div class="clickable info-value ellipses-text underlined" @click.stop="fromAlbumPressed(nextTrack.album)">{{nextTrack.album.name.toUpperCase()}}</div>
+
+            <button 
+              class="clickable info-value ellipses-text underlined" 
+              @click.stop="fromAlbumPressed(nextTrack.album)"
+              @keydown.enter.prevent.stop="fromAlbumPressed(nextTrack.album)"
+              tabindex="0"
+              :aria-label="`open modal with details about ${nextTrack.album.name}`"
+            >
+              {{nextTrack.album.name.toUpperCase()}}
+            </button>
           </div>
         </div>
         
@@ -81,11 +112,19 @@
     <div class="then-container" v-if="thenTracks.length">
       <span class="then-label">THEN</span>
 
-      <div v-for="track in thenTracks" :key="track.queueId" class="clickable then-track-container fill-available" @click.stop="nextTrackPressed(track, thenTracks)">
+      <button 
+        v-for="track in thenTracks" 
+        :key="track.queueId" 
+        class="clickable then-track-container fill-available" 
+        @click.stop="nextTrackPressed(track, thenTracks)"
+        @keydown.enter.prevent.stop="nextTrackPressed(track, thenTracks)"
+        tabindex="0"
+        :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`"
+      >
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
         <ThreeDotIcon :item="track" :item-in-queue="true" iconClass="up-next-three-dot" iconColor="white"/>
-      </div>
+      </button>
 
       <span v-show="restOfQueueLength" class="plus-more">+ {{restOfQueueLength }} MORE... </span>
     </div>
@@ -258,9 +297,13 @@
       flex-direction: column;
       align-items: center;
       font-weight: bold;
-      width: 90vw;
+      width: 70vw;
       margin-top: 40px;
       padding-bottom: 120px;
+
+      @media(max-width: $max-inner-width){ 
+        width: 90vw;
+      }
 
       .then-label {
         text-decoration: underline;

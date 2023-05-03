@@ -28,7 +28,7 @@
             v-for="artist in parentItem.details.relatedArtists" 
             :key="artist.id"
             @click="$nuxt.$root.$emit('displayArtistDetails', artist)"
-            @keyup.enter="$nuxt.$root.$emit('displayArtistDetails', artist)"
+            @keydown.enter="$nuxt.$root.$emit('displayArtistDetails', artist)"
             tabindex="0"
           >
             <v-hover v-slot="{hover}">

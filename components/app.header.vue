@@ -11,7 +11,7 @@
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
-        <v-menu transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y :max-width="325">
+        <v-menu transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
           <template v-slot:activator="{on, attrs}">         
             <!-- couldn't get shitty vuetify to handle pressing enter for these app header menus-->
             <div class="clickable on-air-container" v-bind="attrs" v-on="on" :aria-label="`there are currently ${liveUsers.length} other users on AUX`">
@@ -31,8 +31,8 @@
                     <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
 
                     <div :class="{'ignored-opacity': user.ignored}" aria-hidden="true">
-                      <v-img v-if="user.img" :src="user.img" class="user-img"></v-img>
-                      <div v-else class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
+                      <v-img v-show="user.img" :src="user.img" class="user-img"></v-img>
+                      <div v-show="!user.img" class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
                     </div>
                     
                     <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
@@ -287,7 +287,7 @@
     }
 
     .aux-logo-container {
-      margin-top: 4px;
+      margin-top: 8px;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -501,6 +501,7 @@
     align-self: flex-end;
     line-height: 2;
     max-width: 84px;
+    margin-left: auto;
   }
 
   .user-list {

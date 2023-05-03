@@ -4,7 +4,7 @@
       <div class="home-content-title">
         <v-img 
           @click="spotifyLogoPressed()" 
-          @keyup.enter="spotifyLogoPressed()"
+          @keydown.enter="spotifyLogoPressed()"
           class="clickable spotify-full" 
           :src="require('~/assets/Spotify_Logo_Full.png')"
           alt="open playlists on Spotify"
@@ -12,12 +12,12 @@
         ></v-img>
 
         <div class="d-flex align-center">
-          <span>Playlists</span>
+          <h1 aria-label="featured Spotify playlists and playlists from your library">Playlists</h1>
 
           <v-hover v-slot="{hover}">
             <v-icon 
               @click="refreshData()" 
-              @keyup.enter="refreshData()"
+              @keydown.enter="refreshData()"
               class="clickable refresh-data" 
               :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" 
               color="#1DB954"
@@ -50,7 +50,7 @@
                 elevation="7" 
                 class="clickable playlist-container" 
                 @click="$nuxt.$root.$emit('displayDetailOverlay', item)"
-                @keyup.enter="$nuxt.$root.$emit('displayDetailOverlay', item)"
+                @keydown.enter="$nuxt.$root.$emit('displayDetailOverlay', item)"
                 tabindex="0"
                 :aria-label="`open modal with details for playlist ${item.name}`"
                 role="button"
@@ -117,17 +117,7 @@
 
     async beforeMount(){
       await this.getData();
-      
-      this.$nuxt.$root.$on('trackAddedToPlaylist', function({playlist}){
-        const myPlaylists = this.content.filter(({type}) => type == 'byMe' || type == 'liked').map(({data}) => data);
-        
-        for(const myPlaylist of [...myPlaylists[0], ...myPlaylists[1]]){
-          if(myPlaylist.id == playlist.id){
-            myPlaylist.numberOfTracks = `${++myPlaylist.tracks.total} Tracks`;
-            break;
-          }
-        }
-      }.bind(this));
+      this.$nuxt.$root.$on('updateHomePlaylists', this.refreshData);
     }
 
     async getData(){
@@ -159,7 +149,7 @@
     }
 
     beforeDestroy(){
-      this.$nuxt.$root.$off('trackAddedToPlaylist');
+      this.$nuxt.$root.$off('updateHomePlaylists');
     }
   }
 </script>

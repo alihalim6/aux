@@ -10,7 +10,7 @@
                   v-show="activityFeed.length" 
                   class="clickable d-flex align-center" 
                   @click.stop="playAllPressed()"
-                  @keyup.enter="playAllPressed()"
+                  @keydown.enter="playAllPressed()"
                   tabindex="0"
                   id="playAll"
                 >

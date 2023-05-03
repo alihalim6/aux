@@ -5,15 +5,16 @@
     </div>
 
     <v-card class="mt-3 pa-2" elevation="7" v-if="tracks.length">
-      <TrackList :tracks="tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+      <TrackList :tracks="tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true" :playlist-id="userOwned() ? playlist.id : null"/>
     </v-card>
   </section>
 </template>
 
 <script>
-  import {Component, Vue, Prop} from 'nuxt-property-decorator';
+  import {Component, Vue, Prop, Getter} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
   import spotify from '~/api/spotify';
+  import {USER} from '~/store/constants';
 
   @Component
   export default class PlaylistDetails extends Vue {
@@ -22,6 +23,9 @@
 
     @Prop({required: true})
     playlist;
+
+    @Getter('profile', {namespace: USER})
+    profile;
 
     async beforeMount(){
       const { playlistTracks, totalPlaylistTracks, collectionTrackLimit } = this.playlist.details;
@@ -45,6 +49,19 @@
       this.$nuxt.$root.$on('trackAddedToPlaylist', function({track}){
         this.tracks.push(track);
       }.bind(this));
+
+      this.$nuxt.$root.$on('trackRemovedFromPlaylist', async function({track, playlistId}){
+        await spotify({
+          method: 'DELETE', 
+          url: `/playlists/${playlistId}/tracks`, 
+          body: {
+            tracks: [{uri: track.uri}]
+          }
+        });
+
+        this.tracks.splice(this.tracks.findIndex(playlistTrack => playlistTrack.uuid == track.uuid), 1);
+        this.$nuxt.$root.$emit('updateHomePlaylists');
+      }.bind(this));
     }
 
     setTrackData(item){
@@ -56,8 +73,13 @@
       return setItemMetaData([item.track])[0];
     }
 
+    userOwned(){
+      return this.playlist.owner.id == this.profile.id;
+    }
+
     beforeDestroy() {
       this.$nuxt.$root.$off('trackAddedToPlaylist');
+      this.$nuxt.$root.$off('trackRemovedFromPlaylist');
     }
   }
 </script>

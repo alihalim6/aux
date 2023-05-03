@@ -1,6 +1,8 @@
 <template>
-  <section id="searchContainer" :class="{'searching': showSearchResults}" v-click-outside="blurred" @keyup.esc="blurred()">
+  <section id="searchContainer" :class="{'searching': showSearchResults}" v-click-outside="blurred" @keydown.esc="blurred()">
     <!-- LARGER SCREENS -->
+    <div class="hidden block-display" id="largeInputLabel">search Spotify content</div>
+    
     <v-text-field 
       dense 
       hide-details="auto" 
@@ -12,10 +14,12 @@
       @focus="focused()"
       @keydown.tab="tabToSearchResults()"
       @click:clear="results = []"
+      aria-labelledby="largeInputLabel"
     >
     <!--  -->
       
       <template v-slot:prepend>
+        <div class="hidden block-display" id="smallInputLabel">search Spotify content</div>
 
         <!-- SMALLER SCREENS -->
         <v-text-field 
@@ -29,18 +33,19 @@
           @focus="focused()"
           dark
           @click:clear="results = []"
+          aria-labelledby="smallInputLabel"
         >
         </v-text-field>
         <!--  -->
 
-        <div class="d-flex align-center justify-space-between width-100" @keyup.esc="blurred()">
+        <div class="d-flex align-center justify-space-between width-100" @keydown.esc="blurred()">
           <button 
             v-for="(filter, index) in filters" 
             :key="filter.label" 
             tabindex="0"
             :aria-label="`set search category to: ${filter.label}`"
             @click.stop="filterPressed(filter)"
-            @keyup.enter="filterPressed(filter)"
+            @keydown.enter="filterPressed(filter)"
             class="clickable filter" 
             :class="{'selected-filter': filterType == filter.type, 'first-filter': index == 0}"
           >
@@ -61,7 +66,7 @@
               class="clickable result-img" 
               v-if="itemImg(item)" :src="itemImg(item)" 
               @click.stop="displaySearchResultDetails(item)" 
-              @keyup.stop.enter="displaySearchResultDetails(item)" 
+              @keydown.stop.enter="displaySearchResultDetails(item)" 
               tabindex="0"
               :alt="`open modal with details about ${item.primaryLabel}`"
             >
@@ -71,15 +76,15 @@
             </v-img>
 
             <div class="d-flex flex-column">
-              <span 
+              <button 
                 class="clickable result-name" 
                 @click.stop="primaryLabelPressed(item)" 
-                @keyup.stop.enter="primaryLabelPressed(item)" 
+                @keydown.stop.enter="primaryLabelPressed(item)" 
                 tabindex="0"
                 :aria-label="`${item.isCollection ? 'view details for' : 'play'} ${item.primaryLabel} by ${item.secondaryLabel}`"
               >
                 {{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span><span v-if="item.explicit" class="explicit">E</span>
-              </span>
+              </button>
 
               <div v-if="item.isMultitrackAlbum" class="mt-2">
                 <v-icon class="number-of-tracks-icon" small>mdi-music-circle</v-icon>
@@ -99,7 +104,7 @@
       </template>
     </v-text-field>
 
-    <v-icon class="clickable search-icon" @click="searchIconPressed()">mdi-magnify</v-icon>
+    <v-icon class="clickable search-icon" @click="searchIconPressed()" aria-label="search Spotify content">mdi-magnify</v-icon>
   </section>
 </template>
 
@@ -427,5 +432,6 @@
 
   .result-name {
     line-height: 1.3;
+    text-align: left;
   }
 </style>

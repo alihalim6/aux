@@ -6,7 +6,7 @@
       :src="activity.track.imgUrl.small || activity.track.imgUrl.large" 
       :class="{'skipped': skippedNotPlayed()}" 
       @click.stop="trackImgPressed()"
-      @keyup.enter="trackImgPressed()"
+      @keydown.enter="trackImgPressed()"
       tabindex="0"
       :alt="`open modal with details about ${activity.track.primaryLabel}`"
     >
@@ -15,15 +15,15 @@
     <div class="feed-item fill-available">
       <div class="item-info-container" :class="{'mb-6': skippedNotPlayed()}">
         <div class="track-info" :class="{'skipped': skippedNotPlayed()}">
-          <div class="d-flex align-center"
+          <button class="d-flex align-center text-left"
             @click="itemInfoPressed(activity.track)"
-            @keyup.enter="itemInfoPressed(activity.track)"
+            @keydown.enter="itemInfoPressed(activity.track)"
             tabindex="0"
             :class="{'track-playing font-italic': !activity.splash && isTrackPlaying(activity.track)}"
             :aria-label="`play ${activity.track.primaryLabel} by ${activity.track.secondaryLabel} ${skippedNotPlayed() ? '(track was previously skipped)' : ''}`"
           >
             <span class="clickable font-weight-bold" aria-hidden="true">{{activity.track.primaryLabel}} /<span class="track-artists"> {{activity.track.secondaryLabel}}</span></span>
-          </div>
+          </button>
           
           <v-progress-linear 
             v-if="(!activity.skipped && !activity.played) || (activity.skipped && isTrackPlaying(activity.track))" 
@@ -49,7 +49,7 @@
             <div :id="`${activity.queueId}-reactions`" class="reaction-activity-container" :class="{'vertically-hidden': !showReactions}">
               <span v-for="reaction in activity.reactions" :key="reaction.timestamp.toString()">
                 <span class="reaction-author" :aria-label="`commenter username: ${reaction.author}`">{{reaction.author}}:</span>
-                <span role="comment" class="mr-1">{{reaction.message}}</span>
+                <span role="comment">{{reaction.message}}</span>
               </span>
             </div>
 
@@ -62,15 +62,15 @@
     <div class="d-flex flex-column align-end margin-left-auto" :class="{'no-visibility': !activity.played}">
       <ThreeDotIcon v-if="!activity.splash" :item="activity.track" icon-class="activity-item-three-dot"/>
 
-      <div class="clickable reaction-toggle-container" 
+      <button class="clickable reaction-toggle-container" 
         @click.stop="toggleReactions()" 
-        @keyup.enter="toggleReactions()" 
+        @keydown.enter="toggleReactions()" 
         tabindex="0" 
         :aria-label="`toggle comments/reactions for ${activity.track.primaryLabel} (${activity.reactions ? activity.reactions.length : 0} comments currently ${showReactions ? 'showing' : 'hidden'})`"
       >
         <v-icon color="white" small>{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>
         <span v-if="activity.reactions && activity.reactions.length" class="reaction-count" aria-hidden="true">{{activity.reactions.length}}</span>
-      </div>
+      </button>
     </div>
   </section>
 </template>
@@ -286,6 +286,6 @@
   .reaction-author {
     color: #fffbcc;
     font-weight: bold;
-    margin-right: 4px;
+    margin-right: 2px;
   }
 </style>

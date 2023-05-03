@@ -3,12 +3,12 @@
     <div class="content-container">
       <div class="home-content-title">
         <div class="d-flex align-center">
-          <span tabindex="0" aria-label="recommended Spotify tracks, albums and artists">New & Recommended</span>
+          <h1 aria-label="new releases and recommended Spotify tracks, albums and artists">New & Recommended</h1>
 
           <v-hover v-slot="{hover}">
             <v-icon 
               @click="refreshData()" 
-              @keyup.enter="refreshData()"
+              @keydown.enter="refreshData()"
               class="clickable refresh-data" 
               :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" 
               color="#1DB954"
@@ -28,7 +28,7 @@
             </div>
           </v-hover>
           
-          <span class="tab-divider">/</span>
+          <span class="tab-divider" aria-hidden="true">/</span>
           
           <v-hover v-slot="{hover}">
             <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayNewReleases()">

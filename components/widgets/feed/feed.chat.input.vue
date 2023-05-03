@@ -1,5 +1,7 @@
 <template>    
   <section class="mt-3 mb-2" v-if="activity && activity.track">
+    <div class="hidden block-display" :id="`chat-${activity.queueId}`">add a comment/reaction for {{activity.track.primaryLabel}}</div>
+    
     <v-text-field 
       dense 
       outlined 
@@ -9,19 +11,19 @@
       :class="{'chat-input-on-white': chatOnFeedAlert}"
       :color="color"
       width="85%"
-      @keyup.enter="chatMessageSubmitted"
+      @keydown.enter="chatMessageSubmitted"
       v-model="chatMessage"
       clearable
       :maxlength="100"
       enterkeyhint="send"
-      :aria-label="`add a comment/reaction for ${activity.track.primaryLabel}`"
+      :aria-labelledby="`chat-${activity.queueId}`"
     >
       <template v-slot:append-outer>
         <v-icon 
           :color="submitIconColor" 
           class="clickable mr-2 submit-reaction" 
           @click.stop="chatMessageSubmitted()" 
-          @keyup.enter="chatMessageSubmitted()" 
+          @keydown.enter="chatMessageSubmitted()" 
           tabindex="0" 
           :aria-label="`submit comment/reaction for ${activity.track.primaryLabel}`">mdi-arrow-up-circle
         </v-icon>
@@ -35,7 +37,7 @@
             tabindex="0"
             :aria-label="`submit ${String.fromCodePoint(reaction.code)} reaction for track`"
             @click.stop="emojiReactionPressed(reaction.code)"
-            @keyup.enter="emojiReactionPressed(reaction.code)" 
+            @keydown.enter="emojiReactionPressed(reaction.code)" 
           >
             {{String.fromCodePoint(reaction.code)}}
           </button>

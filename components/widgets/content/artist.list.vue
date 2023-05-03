@@ -1,17 +1,17 @@
 <template>
   <span>
     <span v-for="(artist, index) in artists" :key="artist.id">
-      <span 
-        :id="`trackArtist${index}`" 
+      <button 
+        :id="artist.uuid" 
         class="clickable inline-display" 
         @click.stop="$nuxt.$root.$emit('displayArtistDetails', artist)" 
-        @keyup.enter.stop="$nuxt.$root.$emit('displayArtistDetails', artist)" 
+        @keydown.enter.stop="$nuxt.$root.$emit('displayArtistDetails', artist)" 
         :class="{'text-decoration-underline': underline}"
         :aria-label="`open modal with details about ${artist.name}`"
         tabindex="0"
-        role="button"
       >
-        <span>{{artist.name}}</span></span><span v-if="(index < artists.length - 1)">, </span>
+        <span>{{artist.name}}</span>
+      </button><span v-if="(index < artists.length - 1)">, </span>
     </span>
   </span>
 </template>

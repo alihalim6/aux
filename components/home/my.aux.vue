@@ -4,13 +4,14 @@
       <div class="home-content-title">
         <v-img 
           @click="spotifyLogoPressed()" 
-          @keyup.enter="spotifyLogoPressed()"
+          @keydown.enter="spotifyLogoPressed()"
           class="clickable spotify-full" 
           :src="require('~/assets/Spotify_Logo_Full.png')"
           alt="open Liked Songs on Spotify"
           tabindex="0"
         ></v-img>
-        <span>My Vibe</span>
+
+        <h1 aria-label="your liked tracks and albums, recently played tracks and your top Spotify tracks and artists" role="heading">My Vibe</h1>
       </div>
 
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>

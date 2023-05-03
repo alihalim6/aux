@@ -221,6 +221,15 @@
                   this.$nuxt.$root.$emit('addToPlaylist', this.threeDotItem);
                 }
               });
+
+              if(this.threeDotItem.playlistId){
+                this.options.push({
+                  title: 'Remove from Playlist',
+                  fn: () => {
+                    this.$nuxt.$root.$emit('trackRemovedFromPlaylist', {track: this.threeDotItem, playlistId: this.threeDotItem.playlistId});
+                  }
+                });
+              }
             }
           }
         }

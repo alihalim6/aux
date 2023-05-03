@@ -1,33 +1,47 @@
 <template>
   <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
     <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-3">
-      <v-img @click="spotifyLogoPressed()" 
+      <v-img 
+        @click="spotifyLogoPressed()" 
+        @keydown.enter="spotifyLogoPressed()"
         class="clickable spotify-icon currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')">
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')"
+        tabindex="0"
+        alt="open Spotify"
+      >
       </v-img>
 
-      <v-img @click="spotifyLogoPressed()" 
+      <v-img 
+        @click="spotifyLogoPressed()" 
+        @keydown.enter="spotifyLogoPressed()"
         class="clickable spotify-full currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets/Spotify_Logo_Full.png')">
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets/Spotify_Logo_Full.png')"
+        tabindex="0"
+        alt="open Spotify"
+      >
       </v-img>
 
-      <div class="clickable view-feed-container" @click="feedIconPressed()" @keyup.enter="feedIconPressed()">
-        <div class="d-flex align-center ml-2" tabindex="0" aria-label="toggle the feed">
+      <button class="clickable view-feed-container" @click="feedIconPressed()" @keydown.enter.prevent="feedIconPressed()">
+        <div class="d-flex align-center ml-2" tabindex="0" aria-label="toggle the activity feed">
           <v-icon x-small color="red">mdi-circle</v-icon>
           <div class="on-air">FEED</div>
           <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
           <v-icon v-show="showUnseenDot" large class="unseen-activity-dot" color="#36a8ff">mdi-circle-small</v-icon>
         </div>
-      </div>
+      </button>
     </div>
 
     <div class="currently-playing" v-if="!upNextDisplaying">
       <div class="d-flex">
         <v-img 
           @click="displayItemDetails()" 
+          @keydown.enter="displayItemDetails()"
           v-if="currentlyPlayingItem.uri" 
           class="clickable item-img" 
-          :src="currentlyPlayingItem.imgUrl.medium || currentlyPlayingItem.imgUrl.large">
+          :src="currentlyPlayingItem.imgUrl.medium || currentlyPlayingItem.imgUrl.large"
+          tabindex="0"
+          :alt="`open modal with details about ${currentlyPlayingItem.primaryLabel}`"
+        >
         </v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
@@ -54,12 +68,29 @@
             </v-slider>
 
             <div class="position-relative">
-              <v-icon v-if="currentlyPlayingItem.uri" class="clickable pl-3" @click.stop="trackLikeToggled()" color="#1DB954">mdi-heart{{itemLiked ? '' : '-outline'}}</v-icon>
+              <v-icon 
+                v-if="currentlyPlayingItem.uri" 
+                class="clickable pl-3 like-toggle" 
+                @click.stop="trackLikeToggled()" 
+                color="#1DB954" 
+                :aria-label="`${itemLiked ? 'remove track from' : 'add track to'} liked songs`"
+                tabindex="0"
+              >
+                mdi-heart{{itemLiked ? '' : '-outline'}}
+              </v-icon>
 
-              <div v-show="trackReady" class="clickable small-circle repeat" :class="{'repeat-set': setToRepeatTrack}" @click.stop="repeatPressed()">
+              <button 
+                v-show="trackReady" 
+                class="clickable small-circle repeat" 
+                :class="{'repeat-set': setToRepeatTrack}" 
+                @click.stop="repeatPressed()" 
+                @keydown.enter.prevent="repeatPressed()"
+                tabindex="0"
+                :aria-label="`toggle repeat ${setToRepeatTrack ? 'off' : 'on'}`"
+              >
                 <span class="small-circle-top-letters">RE</span>
                 <span class="small-circle-bottom-letters">PEAT</span>
-              </div>
+              </button>
             </div>
           </div>
 
@@ -68,7 +99,6 @@
               class="clickable queue-control previous-track-button" 
               :class="{'no-visibility': !hasPreviousTrack, 'disable-playback-control': !trackReady}" 
               @click.stop="previousTrackPressed()"
-              @keyup.enter="previousTrackPressed()"
               aria-label="skip to previous track"
               :aria-disabled="!hasPreviousTrack"
               :tabindex="hasPreviousTrack ? 0 : -1"
@@ -80,7 +110,6 @@
               class="clickable control playback-toggle" 
               :class="{'disabled-control ml-6': !currentlyPlayingItem.uri}" 
               @click.stop="playbackToggled()"
-              @keyup.enter="playbackToggled()"
               :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
               :aria-disabled="!currentlyPlayingItem.uri"
               :tabindex="currentlyPlayingItem.uri ? 0 : -1"
@@ -92,7 +121,6 @@
               class="clickable queue-control" 
               :class="{'no-visibility': !hasNextTrack, 'disable-playback-control': !trackReady}" 
               @click.stop="nextTrackPressed()"
-              @keyup.enter="nextTrackPressed()"
               aria-label="skip to next track"
               :aria-disabled="!hasNextTrack"
               :tabindex="hasNextTrack ? 0 : -1"
@@ -104,7 +132,7 @@
       </div>
 
       <div class="d-flex flex-column align-start" id="upNextToggle">
-        <div class="up-next-container" @click.stop="viewUpNext()" @keyup.enter="viewUpNext()" aria-label="view next tracks in queue">
+        <button class="up-next-container" @click.stop="viewUpNext()" @keydown.enter="viewUpNext()" aria-label="view next tracks in queue">
           <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
           <div class="d-inline-flex align-center" :tabindex="hasNextTrack ? 0 : -1">
@@ -115,7 +143,7 @@
               <span class="ellipses-text">{{nextTrack.primaryLabel}} /<span class="track-artists"> {{nextTrack.secondaryLabel}}</span></span>
             </div>
           </div>
-        </div>
+        </button>
       </div>
     </div>
     
@@ -496,6 +524,10 @@
           color: $primary-theme-color;
         }
 
+        .control:focus-visible {
+          @extend .focused;
+        }
+
         .queue-control {
           @extend .control;
           margin: 0px 20px;
@@ -631,5 +663,9 @@
   .currently-playing-spotify-icon {
     margin-top: 4px;
     margin-left: $top-row-margin;
+  }
+
+  .like-toggle:focus-visible {
+    @extend .focused;
   }
 </style>

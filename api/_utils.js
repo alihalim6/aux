@@ -63,7 +63,7 @@ httpClient.interceptors.response.use(async response => {
 
   return response;
 }, async error => {
-  if(error.response.status == 404 && isPlaybackCall(error.config)){
+  if(error.response && error.response.status == 404 && isPlaybackCall(error.config)){
     console.log('404 on playback...initializing new player');
     await initSpotifyPlayer();
     await retryRequest(error.config);

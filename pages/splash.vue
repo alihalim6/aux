@@ -12,8 +12,8 @@
 
           <p class="disclaimer text-right">
             By logging in, you agree to 
-            <a class="clickable text-decoration-underline primary-color" tabindex="0" @click="showTerms()" @keyup.enter="showTerms()">these terms</a> and 
-            <a class="clickable text-decoration-underline primary-color" @click="showPrivacyPolicy()" tabindex="0" @keyup.enter="showPrivacyPolicy()">this privacy notice</a>.
+            <a class="clickable text-decoration-underline primary-color" tabindex="0" @click="showTerms()" @keydown.enter="showTerms()">these terms</a> and 
+            <a class="clickable text-decoration-underline primary-color" @click="showPrivacyPolicy()" tabindex="0" @keydown.enter="showPrivacyPolicy()">this privacy notice</a>.
           </p>
         </div>
       </div>
@@ -36,7 +36,7 @@
           <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
         </div>
 
-        <span class="bullet-point align-self-center mt-6">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
+        <span class="bullet-point align-self-center mt-10">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
 
         <div class="made-info">
           <span>Created by</span>
@@ -117,6 +117,7 @@
 <style lang="scss">
   $header-margin: 5%;
   $splash-device-size-threshold: 430px;
+  $info-container-threshold: 700px;
 
   .splash-content {
     height: 100%;
@@ -164,27 +165,26 @@
     margin-top: -134px;
     width: -webkit-fill-available;
 
-    @media(min-width: 700px){
-      max-width: 600px;
-      margin-left: 24px;
+    @media(min-width: $info-container-threshold){
+      max-width: 500px;
     }
   }
 
   $bullet-point-font-size: 16px;
 
   .bullet-point {
+    $margin: 14px;
+
     display: flex;
     align-items: center;
     font-size: $bullet-point-font-size;
     align-self: flex-start;
-    margin: 14px 0px;
-  }
+    margin: $margin 0px;
 
-  .slash {
-    font-size: 45px;
-    margin-right: 8px;
-    transform: scaleX(1.4);
-    color: $spotify-green;
+    @media(min-width: $info-container-threshold){
+      margin: $margin auto;
+      text-align: center;
+    }
   }
 
   .bullet-point-on-air {
@@ -263,7 +263,7 @@
   }
 
   .splash-animation {
-    bottom: calc(#{$max-footer-height-not-playing} + 66px);
+    bottom: calc(#{$max-footer-height-not-playing} + 78px);
     width: 75%;
     position: relative;
     margin: 0 auto;

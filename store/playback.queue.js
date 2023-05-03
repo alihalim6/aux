@@ -64,7 +64,7 @@ const THREE_DOT_TOAST_TIMEOUT = 2500;
 
 function updateSpotifyNextTrack(track){
   if(track && track.uri.indexOf('track') > -1){
-    console.log(`next track modified, resetting queue on spotify side with it...${track.name}`);
+    //console.log(`next track modified, resetting queue on spotify side with it...${track.name}`);
     spotify({url: `/me/player/queue?uri=${track.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
   }
 }

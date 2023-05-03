@@ -34,10 +34,10 @@ export default function(){
       });
 
       socket.on('disconnect', reason => {
-        console.log(reason);
+        //console.log(reason);
         
         if(reason == 'io server disconnect' || reason == 'io client disconnect'){
-          console.log('attempting reconnection...');
+          //console.log('attempting reconnection...');
           socket.connect();
         }
 

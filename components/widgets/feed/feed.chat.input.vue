@@ -105,7 +105,7 @@
       const reactionsContainer = document.getElementById(`${this.activity.queueId}-reactions`);
 
       if(reactionsContainer){
-        console.log('herre')
+        //console.log('herre')
         reactionsContainer.scrollTo(0, 99999);
       }
     }

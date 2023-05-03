@@ -32,12 +32,12 @@ export const refreshToken = async () => {
 
 export const accessTokenExpired = () => {
   const tokenExpirationTime = parseInt(storageGet(AUTH.TOKEN_SET_AT)) + parseInt(storageGet(AUTH.TOKEN_EXPIRES_IN));
-  //console.log(`token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
+  ////console.log(`token expires/expired ${tokenExpirationTime - Date.now()}ms from now`);
   return tokenExpirationTime < (Date.now() + 300000);//within 5 minutes of expiring or already expired
 };
 
 export const handleAuthError = (error) => {
-  console.error(`${error} / Sending back to Splash page.`);
+  //console.error(`${error} / Sending back to Splash page.`);
   $nuxt.$root.$emit('closeOverlay');
   $nuxt.$store.dispatch('spotify/stopPlayback');
 

@@ -280,13 +280,13 @@
 
           navigator.mediaSession.setActionHandler('seekbackward', async details => {
             const skipTime = details.seekOffset || defaultSkipTime;
-            console.log('skipTime', skipTime);
+            //console.log('skipTime', skipTime);
             await this.seek(Math.max((this.playbackElapsed.ms / 1000) - skipTime, 0));
           });
 
           navigator.mediaSession.setActionHandler('seekforward', async details => {
             const skipTime = details.seekOffset || defaultSkipTime;
-            console.log('skipTime', skipTime);
+            //console.log('skipTime', skipTime);
             await this.seek(Math.min((this.playbackElapsed.ms / 1000) + skipTime, this.playbackTotal.ms / 1000));
           });
 
@@ -372,7 +372,7 @@
     }
 
     async seek(secs){
-      console.log('seeking to: ' + secs + ' secs');
+      //console.log('seeking to: ' + secs + ' secs');
       this.playbackElapsed.ms = secs ? secs * 1000 : this.playbackElapsed.ms;
       await this.seekPlayback(this.playbackElapsed.ms);
       this.updateElapsedDisplay();

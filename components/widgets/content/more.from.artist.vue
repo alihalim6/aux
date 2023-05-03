@@ -80,7 +80,7 @@
           return album;
         }
         catch(error){
-          console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
+          //console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
         }
       }));
     }

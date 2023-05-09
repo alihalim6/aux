@@ -64,7 +64,7 @@ const THREE_DOT_TOAST_TIMEOUT = 2500;
 
 function updateSpotifyNextTrack(track){
   if(track && track.uri.indexOf('track') > -1){
-    //console.log(`next track modified, resetting queue on spotify side with it...${track.name}`);
+    console.log(`next track modified, resetting queue on spotify side with it...${track.name}`);
     spotify({url: `/me/player/queue?uri=${track.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
   }
 }
@@ -106,6 +106,7 @@ export const actions = {
   },
   shuffleUpNext: ({commit, getters}) => {
     commit('shuffleUpNext', {nextTracks: getters.nextTracks, currentIndex: getters.currentlyPlayingIndex});
+    updateSpotifyNextTrack(getters.nextTrack);
   },
   playTrackNow: ({dispatch, getters, commit}, track) => {
     let playingNextTrackNow = false;
@@ -194,15 +195,15 @@ export const mutations = {
     }
   },
   shuffleUpNext(state, params){
-    let shuffledQueue = [...state.queue, ...state.restOfQueue];
+    let shuffledQueue = [];
     //https://stackoverflow.com/questions/51287428/how-does-the-spread-syntax-affect-array-splice (the simpler syntax gets funky to work with (creates nested array))
-    shuffledQueue.splice(...[params.currentIndex + 1, (params.nextTracks.length + state.restOfQueue.length)].concat(shuffleArray([...params.nextTracks, ...state.restOfQueue])));
+    shuffledQueue.splice(...[0, (params.nextTracks.length + state.restOfQueue.length)].concat(shuffleArray([...params.nextTracks, ...state.restOfQueue])));
 
     if(shuffledQueue.length > QUEUE_LENGTH_LIMIT){
       state.restOfQueue = shuffledQueue.slice(QUEUE_LENGTH_LIMIT);
     }
 
-    state.queue = shuffledQueue.slice(0, QUEUE_LENGTH_LIMIT);
+    state.queue = [state.queue[params.currentIndex], ...shuffledQueue.slice(0, QUEUE_LENGTH_LIMIT)];
   },
   addFromRestOfQueueToMain(state){
     state.queue.push.apply(state.queue, state.restOfQueue.splice(0, QUEUE_LENGTH_LIMIT));

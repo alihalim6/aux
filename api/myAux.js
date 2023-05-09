@@ -8,7 +8,7 @@ async function myAux(){
     const likedTracks = await httpClient.get(`/me/tracks?limit=${limit}`);
     const likedAlbums = await httpClient.get(`/me/albums?limit=${limit}`);
 
-    const recentlyPlayed = await httpClient.get(`/me/player/recently-played?limit=${limit}`);
+    const recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=25');
 
     const topArtists = await topItems('artists');
     const topTracks = await topItems('tracks');
@@ -49,7 +49,7 @@ async function myAux(){
     };
   }
   catch(error){
-    //console.error(error);
+    console.error(error);
   }
 };
 

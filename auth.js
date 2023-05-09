@@ -37,7 +37,7 @@ export const accessTokenExpired = () => {
 };
 
 export const handleAuthError = (error) => {
-  //console.error(`${error} / Sending back to Splash page.`);
+  console.error(`${error} / Sending back to Splash page.`);
   $nuxt.$root.$emit('closeOverlay');
   $nuxt.$store.dispatch('spotify/stopPlayback');
 

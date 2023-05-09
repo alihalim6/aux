@@ -18,7 +18,7 @@
     <!-- needs to be outside of above block so that up next overlay slides all the way to top (relativity issue) -->
     <CurrentlyPlaying v-show="!isLoading"/>
 
-    <LoadingOverlay v-if="isLoading"/>    
+    <LazyLoadingOverlay v-if="isLoading"/>    
     <LazyFeedAlert/>
 
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
@@ -36,9 +36,6 @@
 
   @Component
   export default class App extends Vue {
-    //TODO all v-imgs use lazy-src prop to show loader until img shows?
-    //TODO adjust vuetify breakpoints so that full spotify logo still shows up until it really can't fit
-
     trackToAddToPlaylist = null;
     
     @Getter('isLoading', {namespace: UI})
@@ -46,9 +43,6 @@
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
-
-    @Getter('audioPlaying', {namespace: SPOTIFY})
-    audioPlaying;
 
     @Mutation('setSdkReady', {namespace: SPOTIFY})
     setSdkReady;

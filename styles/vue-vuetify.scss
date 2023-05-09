@@ -5,7 +5,6 @@ $feed-height: 63vh;
 $feed-height-smaller: 95vh;
 $feed-base-bottom: 15px;
 
-//TODO
 //UNUSED: things didn't update correctly as playing/not playing toggled
 //no block comment-out since that isn't respected and messes up compilation
 @mixin item-playing-styles($footer-height) {

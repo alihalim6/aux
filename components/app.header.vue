@@ -116,7 +116,6 @@
   @Component
   export default class AppHeader extends Vue {
     auxModeOn = true;
-    liveUsers = [];
     isIos = false;
     zIndex = 2000;
     runningInPwa = false;
@@ -310,6 +309,7 @@
         padding: 0px 2px 0px 5px;
         letter-spacing: 4px;
         line-height: 1.7;
+        margin-top: 4px;
 
           @media(max-width: $max-inner-width){ 
             font-size: 22px;
@@ -547,10 +547,9 @@
   .profile-name-letter {
     font-weight: bold;
     border: 3px solid $primary-theme-color;
-    font-size: 18px;
+    font-size: 16px;
     border-radius: 100%;
     padding: 2px 7px;
-    text-transform: uppercase;
     width: 100%;
     min-width: 34px;
     display: flex;

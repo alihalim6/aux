@@ -94,9 +94,6 @@
     }
 
     collectionPlaying(){
-      //TODO: fix play from elsewhee (e.g. artist top tracks) then load album -- item.fromCollection not set so wrong icon on collection
-      //still happens? ^^^
-
       return (this.item.isCollection && this.currentlyPlayingItem.fromCollection && this.currentlyPlayingItem.fromCollection.includes(this.item.uri));
     }
   }

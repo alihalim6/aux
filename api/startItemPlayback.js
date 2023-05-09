@@ -6,7 +6,7 @@ async function startItemPlayback(item, nextTracks){
   let requestBody = {uris: [item.uri]};
 
   if(nextTracks){
-    //console.log(`next tracks: ${nextTracks.map(track => track.name)}`);
+    console.log(`next tracks: ${nextTracks.map(track => track.name)}`);
     requestBody.uris.push.apply(requestBody.uris, nextTracks.map(track => track.uri));
   }
   else{

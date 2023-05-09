@@ -14,7 +14,7 @@
               </div>
 
               <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" @click.stop>
-                <div class="inner-container" v-if="item.details" :class="{'extra-padding-bottom': item.isPlaylist}">
+                <div class="inner-container" v-if="item.details" :class="{'extra-padding-bottom': item.isPlaylist || item.allNewAndRecommended}">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
                     <v-icon 
                       :class="{'no-visibility': hideBackButton(index)}" 
@@ -156,7 +156,7 @@
     }
 
     async displayDetailOverlay(itemToDisplay){
-      if(!this.processing){//TODO: multiple event hits
+      if(!this.processing){
         this.processing = true;
         const item = cloneDeep(itemToDisplay);
 

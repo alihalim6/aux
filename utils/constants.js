@@ -34,7 +34,7 @@ export const AUTH = {
     playlist-read-private 
     playlist-modify-public
     playlist-modify-private
-  `,//TODO: may need more (e.g. allow following artists)
+  `,
 
   URL: {
     TOKEN: 'https://accounts.spotify.com/api/token',

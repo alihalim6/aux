@@ -137,7 +137,7 @@ export const actions = {
   handleUserDisconnect:  ({commit, rootGetters}) => {
     //all users clear out list and re-signal self
     commit('clearUsers');
-    socket.emit('userLive', rootGetters[`${USER}/profile`]);//TODO: would need 3+ users to test since user that disconnected is not there to receive this
+    socket.emit('userLive', rootGetters[`${USER}/profile`]);//would need 3+ users to test since user that disconnected is not there to receive this
   },
 
   //reaction from current user

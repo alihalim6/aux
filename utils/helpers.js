@@ -179,21 +179,22 @@ export const initSpotifyPlayer = async () => {
       $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
       storageSet(DEVICE_ID, device_id);
       resolve();
-      //console.log(`Spotify player ready with device id ${device_id}`);
+      console.log(`Spotify player ready with device id ${device_id}`);
     });
 
-    spotifyPlayer.on('initialization_error', ({ message }) => {
-      //console.error('Failed to initialize', message);
+    spotifyPlayer.on('initialization_error', () => {
+      console.error('Failed to initialize', message);
       $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
+      retryPlayerInit();
     });
 
     spotifyPlayer.addListener('authentication_error', async ({message}) => {
-      //console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
+      console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
       retryPlayerInit();
     });
 
     spotifyPlayer.addListener('not_ready', async () => {
-      //console.error('Spotify player is offline...');
+      console.error('Spotify player is offline...');
     });
     
     spotifyPlayer.addListener('player_state_changed', async (currentState) => {      
@@ -207,28 +208,31 @@ export const initSpotifyPlayer = async () => {
 
       //move to next track on our side if Spotify starts playing next track before we do
 
-      //console.log(currentState.track_window.previous_tracks);
-      //console.log(currentState.track_window.current_track);
+      console.log(currentState.track_window.previous_tracks);
+      console.log(currentState.track_window.current_track);
 
-      const ourCurrentTrackIsSpotifyPrevious = currentState.track_window.previous_tracks.length ? 
-        currentState.track_window.previous_tracks[0].uri == $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] : false;
+      const ourCurrentTrackIsSpotifyPrevious = currentState.track_window.previous_tracks.length && $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] ? 
+        currentState.track_window.previous_tracks[0].uri == $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`].uri : false;
 
-      const ourNextTrackIsSpotifyCurrent = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/hasNextTrack`] ?
-        currentState.current && currentState.track_window.current_track.uri == $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`].uri : false;
+      const spotifyCurrentTrack = currentState.track_window.current_track;
+      const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/hasNextTrack`];
+
+      const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ?
+        spotifyCurrentTrack.uri == $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`].uri : false;
       
-      if(ourCurrentTrackIsSpotifyPrevious && ourNextTrackIsSpotifyCurrent){
-        //console.log('Spotify moved to next track ahead of us...catching up');
-        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlayback: true});
+      if(ourCurrentTrackIsSpotifyPrevious && auxNextTrack){
+        console.log(`Spotify moved to the next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);
+        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlayback: ourNextTrackIsSpotifyCurrent});
       }
     });
 
     (async () => {
       const connected = await spotifyPlayer.connect();
 
-      //console.log(`Connected to Spotify player: ${connected}`);
+      console.log(`Connected to Spotify player: ${connected}`);
 
       if(!connected){
-        //console.log(`Retrying...`);
+        console.log(`Retrying...`);
         retryPlayerInit();
       }
     })();

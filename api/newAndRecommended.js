@@ -3,20 +3,20 @@ import {shuffleArray} from '~/utils/helpers';
 
 const getRecommendedTracks = async (topArtists) => {
   const topTracks = await topItems('tracks');
-  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=30');
+  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=25');
   recentlyPlayed = recentlyPlayed.data.items.map(item => item.track).filter(item => item.id);
 
   const seeds = getRecommendationSeeds(topArtists, {items: [...topTracks.data.items, ...recentlyPlayed]});
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=40&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
+    await httpClient.get(`/recommendations?limit=30&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
     Promise.resolve({data: {tracks: []}});
 };
 
 const getRecommendedArtists = async (topArtists) => {
   if(topArtists.items.length){
     const topArtist = await getATopArtist(topArtists);
-    //console.log(`top artist seed for related artists: ${topArtist.name}`);
+    console.log(`top artist seed for related artists: ${topArtist.name}`);
     return await httpClient.get(`/artists/${topArtist.id}/related-artists`);
   }
 
@@ -24,8 +24,6 @@ const getRecommendedArtists = async (topArtists) => {
 };
 
 async function newAndRecommended(){
-  //TODO don't recommend if already follow an artist/like a track etc.
-
   try {
     const {data} = await httpClient.get('/browse/new-releases?limit=50');
     const newReleases = data.albums.items;
@@ -33,7 +31,7 @@ async function newAndRecommended(){
     const topArtists = await topItems('artists');
     const recommendedTracks = await getRecommendedTracks(topArtists.data);
     const recommendedAlbums = [];
-    const recommendedAlbumsMax = 4;
+    const recommendedAlbumsMax = 3;
     const recommendedArtists = await getRecommendedArtists(topArtists.data);
     const someShuffledNewReleases = shuffleArray([...newReleases].slice(0, 8));
     let tracksToRecommendAlbums = recommendedTracks.data.tracks.slice(0, recommendedAlbumsMax);
@@ -63,7 +61,7 @@ async function newAndRecommended(){
     };
   }
   catch(error){
-    //console.error(error);
+    console.error(error);
   }
 }
 

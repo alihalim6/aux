@@ -95,7 +95,6 @@
         type: 'album',
         id: uuid()
       },
-      //apparently API doesn't return total for this TODO recheck
       {
         data: [],
         key: 'recentlyPlayed',
@@ -106,7 +105,6 @@
       }
     ];
 
-    //TODO: find better place for this?
     @Mutation('setProfile', {namespace: USER})
     setProfile;
 
@@ -166,14 +164,14 @@
 
         //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
         this.$nuxt.$on('playPreShuffledLikes', async playbackItem => {
-          //console.log('playing preshuffled tracks');
+          console.log('playing preshuffled tracks');
           await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
           //set a new shuffle for next time
           this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
         });
       }
       catch(error){
-        //console.error(error);
+        console.error(error);
       }
     }
 

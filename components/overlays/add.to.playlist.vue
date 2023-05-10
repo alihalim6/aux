@@ -50,7 +50,7 @@
           this.$nuxt.$root.$emit('updateHomePlaylists');
         }
         catch(error) {
-          handleApiError(`There was an issue adding the track to ${playlist.name} lorem ipsum...`);
+          handleApiError(`There was an issue adding the track to ${playlist.name}. Please try again.`);
         }
         finally {
           this.$nuxt.$emit('closeAddToPlaylistModal');

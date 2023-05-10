@@ -231,6 +231,7 @@ export const actions = {
         }
 
         await startItemPlayback(item, nextTracksToSend);
+        await getters.player.resume();
 
         //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
         if(queue.length > 1 && !nextTracksToSend){
@@ -278,7 +279,7 @@ export const actions = {
     catch(error){
       console.error(error);
       dispatch('stopPlayback');
-      handleApiError('There was an issue with playback lorem ipsum...');
+      handleApiError('Something went wrong with playback...');
     }
   },
   stopPlayback({commit, getters}, noError){
@@ -300,7 +301,7 @@ export const actions = {
       commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
       if(!noError){
-        commit(`${UI}/setToast`, {text: 'There was an issue lorem ipsum...', error: true}, {root: true});
+        commit(`${UI}/setToast`, {text: 'Did not compute...', error: true}, {root: true});
       }
 
       if(process.client){

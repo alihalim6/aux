@@ -11,7 +11,7 @@ import details from '~/api/details';
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
   if(!items){
-    $nuxt.$store.commit(`$${UI}/setToast`, {text: 'Something went wrong with the data lorem ipsum...', error: true});
+    $nuxt.$store.commit(`$${UI}/setToast`, {text: 'Something went wrong in the Spotify data!', error: true});
     return;
   }
 
@@ -134,7 +134,7 @@ export const getItemDuration = async (item) => {
       return data.items[0].duration_ms;
     }
     catch(error){
-      handleApiError('There was an issue loading track duration information lorem ipsum...');
+      handleApiError('Oops, there was an issue loading some track duration information.');
       return 0;
     }
   }
@@ -215,12 +215,13 @@ export const initSpotifyPlayer = async () => {
         currentState.track_window.previous_tracks[0].uri == $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`].uri : false;
 
       const spotifyCurrentTrack = currentState.track_window.current_track;
+      const auxPreviousTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/hasPreviousTrack`];
       const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/hasNextTrack`];
 
       const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ?
         spotifyCurrentTrack.uri == $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`].uri : false;
       
-      if(ourCurrentTrackIsSpotifyPrevious && auxNextTrack){
+      if(auxPreviousTrack && ourCurrentTrackIsSpotifyPrevious && auxNextTrack){
         console.log(`Spotify moved to the next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);
         $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlayback: ourNextTrackIsSpotifyCurrent});
       }

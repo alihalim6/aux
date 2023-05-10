@@ -405,7 +405,7 @@
           this.setToast({text: REMOVED_FROM_LIKES});
         }
         catch(error){
-          handleApiError('Oops! That like didn\'t go thru lorem ipsum...');
+          handleApiError('Sorry! That like didn\'t go thru. Give it another will ya?');
           this.itemLiked = true;
         }
       }
@@ -416,7 +416,7 @@
           this.setToast({text: ADDED_TO_LIKES});
         }
         catch(error){
-          handleApiError('Oops! That un-like didn\'t go thru lorem ipsum...');
+          handleApiError('Oops! That un-like didn\'t go thru. Give it another will ya?');
           this.itemLiked = false;
         }
       }

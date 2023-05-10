@@ -46,7 +46,7 @@
           <div v-else class="d-flex flex-column">
             <div class="no-feed-prompt">
               <div>Tracks that you and others play show here.</div>
-              <div class="sub-prompt">Nothing's been played in the last 24hrs. Kick things off by playing something!  Invite others lorem ipsum...</div>
+              <div class="sub-prompt">Nothing's been played in the last 24 hours. Kick things off by playing something and tell a friend.</div>
             </div>
 
             <div class="no-prompt-graphic" aria-hidden="true">

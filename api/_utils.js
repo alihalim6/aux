@@ -109,12 +109,12 @@ async function attemptTokenRefresh(){
     await refreshToken();
   }
   catch(error){
-    $nuxt.$store.commit(`${UI}/setToast`, {text: 'Something went wrong, please refresh the page lorem ipsum...', error: true});
+    $nuxt.$store.commit(`${UI}/setToast`, {text: 'Something went wrong, please refresh the page.', error: true});
   }
 }
 
 export function handleApiError(message){
-  $nuxt.$store.commit(`${UI}/setToast`, {text: message || 'Something went wrong lorem ipsum...', error: true});
+  $nuxt.$store.commit(`${UI}/setToast`, {text: message || 'Something went wrong!', error: true});
   $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
 }
 

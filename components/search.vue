@@ -188,7 +188,7 @@
             }
           }
           catch(error){
-            handleApiError('Ran into an issue while searching lorem ipsum...');
+            handleApiError('Ran into an issue while searching...');
             this.loadingResults = false;
           }
         }

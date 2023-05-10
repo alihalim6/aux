@@ -216,7 +216,7 @@
         }
       }
       catch(error){
-        handleApiError(`Oops! That ${user.following ? 'follow' : 'unfollow'} didn't go thru lorem ipsum...`);
+        handleApiError(`Oops! That ${user.following ? 'follow' : 'unfollow'} didn't go thru. Please try again.`);
         user.following = !user.following;
       }
     }

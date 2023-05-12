@@ -237,7 +237,7 @@
     @supports(-webkit-text-stroke: $simple-title-border-size white) {
       .up-next-title {
         @extend .simple-overlay-title;
-        -webkit-text-stroke: $simple-title-border-size white;
+        -webkit-text-stroke: $simple-title-border-size $cream;
         -webkit-text-fill-color: black;
       }
     }
@@ -308,6 +308,7 @@
       .then-label {
         text-decoration: underline;
         font-size: 18px;
+        color: $cream;
       }
 
       .then-track-container {

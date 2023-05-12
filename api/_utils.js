@@ -71,7 +71,7 @@ httpClient.interceptors.response.use(async response => {
   }
 
   //401 on a retry
-  if(error.config._retry && error.response && error.response.status == 401){
+  if(error.config && error.config._retry && error.response && error.response.status == 401){
     sendToSplash();
   }
   else if(shouldRetry(error.response.status)){

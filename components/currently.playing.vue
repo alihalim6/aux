@@ -132,7 +132,7 @@
       </div>
 
       <div class="d-flex flex-column align-start" id="upNextToggle">
-        <button class="up-next-container" @click.stop="viewUpNext()" @keydown.enter="viewUpNext()" aria-label="view next tracks in queue">
+        <button class="up-next-container" @click.stop="viewUpNext()" @keydown.enter="viewUpNext()" aria-label="display next tracks in queue">
           <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
           <div class="d-inline-flex align-center" :tabindex="hasNextTrack ? 0 : -1">

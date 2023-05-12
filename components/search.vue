@@ -81,7 +81,7 @@
                 @click.stop="primaryLabelPressed(item)" 
                 @keydown.stop.enter="primaryLabelPressed(item)" 
                 tabindex="0"
-                :aria-label="`${item.isCollection ? 'view details for' : 'play'} ${item.primaryLabel} by ${item.secondaryLabel}`"
+                :aria-label="`${item.isCollection ? 'display details for' : 'play'} ${item.primaryLabel} by ${item.secondaryLabel}`"
               >
                 {{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span><span v-if="item.explicit" class="explicit">E</span>
               </button>

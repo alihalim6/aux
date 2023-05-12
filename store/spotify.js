@@ -53,8 +53,7 @@ export const actions = {
     nextTrackButtonPressed, 
     playingNextTrack,
     playingNextTrackNow,
-    pause,
-    noPlayback
+    pause
   }) => {
     try{
       const player = getters.player;
@@ -132,18 +131,18 @@ export const actions = {
         const currentlyPlayingItemIndex = item.queueIndex || queue.findIndex(setItem => setItem.uuid === item.uuid);
         queue = queue.length ? queue : [item];
 
-        if(!noPlayback){
-          await dispatch('playItem', {
-            item,
-            previouslyPlayingItem,
-            queue,
-            currentlyPlayingItemIndex,
-            playingNextTrack,
-            nextTrackButtonPressed,
-            playingNextTrackNow,
-            nothingWasPlaying
-          });
-        }
+        await dispatch('playItem', {
+          item,
+          previouslyPlayingItem,
+          queue,
+          currentlyPlayingItemIndex,
+          playingNextTrack,
+          nextTrackButtonPressed,
+          playingNextTrackNow,
+          nothingWasPlaying
+        });
+        
+        commit('setNewPlayback', queueId);
 
         if(playingTrackWithinExistingQueue){  
           dispatch(`${PLAYBACK_QUEUE}/checkForEndOfQueue`, null, {root: true});
@@ -152,7 +151,6 @@ export const actions = {
           commit(`${PLAYBACK_QUEUE}/startQueue`, {index: currentlyPlayingItemIndex, queue, queueId}, {root: true});
         }
 
-        commit('setNewPlayback', queueId);
         dispatch(`${FEED}/addToFeed`, {track: item, queueId}, {root: true});
       }
     }
@@ -231,7 +229,6 @@ export const actions = {
         }
 
         await startItemPlayback(item, nextTracksToSend);
-        await getters.player.resume();
 
         //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
         if(queue.length > 1 && !nextTracksToSend){

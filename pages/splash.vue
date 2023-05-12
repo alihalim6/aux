@@ -18,26 +18,32 @@
         </div>
       </div>
 
-      <div class="big-p" aria-hidden="true">P</div>
+      <div class="big-p" aria-hidden="true">
+        P
+        <v-icon class="clickable whats-p-icon" id="pToolTip" tabindex="0" aria-label="tooltip with info about what AUX is">
+          mdi-help-circle-outline
+        </v-icon>
+
+        <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" aria-hidden="true"></v-img>
+      </div>
       <!-- <div class="width-100 d-flex flex-wrap container">
           <v-img src="/rose.png" class="roses" v-for="(n, index) of new Array(100)" :key="index"></v-img>
       </div> -->
 
-      <div class="info-container">
-        <div class="bullet-point">
-          <span>Enjoy your Spotify library + new releases, featured playlists, and recommendations.</span>
+      <v-tooltip top color="#f24f44" activator="#pToolTip" role="tooltip">
+        <div class="p-tooltip">
+          <div class="bullet-point">Enjoy your Spotify library + new releases, featured playlists, and recommendations.</div>
+          <div class="bullet-point">See and play what others are listening to.</div>
+          
+          <div class="bullet-point">
+            <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
+          </div>
+
+          <div>All with a shared <span class="on-air">FEED</span>.</div>
         </div>
+      </v-tooltip>
 
-        <div class="bullet-point">
-          <span>See and play what others are listening to.</span>
-        </div>
-
-        <div class="bullet-point">
-          <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
-        </div>
-
-        <span class="bullet-point align-self-center mt-10">All with a shared <span class="on-air bullet-point-on-air">FEED</span>.</span>
-
+      <div class="bottom-container">
         <div class="made-info">
           <span>Created by</span>
           <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank" tabindex="0">Ali Halim</a>
@@ -45,13 +51,11 @@
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's API</a>
         </div>
 
-        <span class="premium-only">Works for Spotify Premium users only</span>
+        <span class="made-info mt-1">Works for Spotify Premium users only</span>
       </div>
-
-      <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" aria-hidden="true"></v-img>
     </div>
 
-    <div class="bottom-content">
+    <div class="footer-content">
       <LazyFeed/>
       <CurrentlyPlaying />
     </div>
@@ -81,7 +85,7 @@
 
       if(this.$route.params.failedRefreshRetry){
         this.setActionDialog({
-          text: 'You\'ve been teleported back to the splash page (Spotify needs you to login again).',
+          text: 'You\'ve been teleported back to the splash page (Spotify needs you to log in again).',
           confirmLabel: 'OK'
         });
       }
@@ -152,66 +156,23 @@
       margin-top: 42px;
       background-size: 188%;
       margin-top: 42px;
+      position: relative;
     }
   }
 
-  .info-container {
-    @extend .fade-in;
-    opacity: 0;
-    padding: 24px 28px 0px;
-    display: flex;
-    flex-direction: column;
-    animation-delay: 830ms;
-    margin-top: -134px;
-    width: -webkit-fill-available;
-
-    @media(min-width: $info-container-threshold){
-      max-width: 500px;
-    }
-  }
-
-  $bullet-point-font-size: 16px;
-
-  .bullet-point {
-    $margin: 14px;
-
-    display: flex;
-    align-items: center;
-    font-size: $bullet-point-font-size;
-    align-self: flex-start;
-    margin: $margin 0px;
-
-    @media(min-width: $info-container-threshold){
-      margin: $margin auto;
-      text-align: center;
-    }
-  }
-
-  .bullet-point-on-air {
-    font-size: $bullet-point-font-size;
-  }
-
-  .bottom-content {
+  .footer-content {
     position: sticky;
     bottom: 0px;
   }
 
   .made-info {
     font-size: 14px;
-    margin-top: 200px;
-    align-self: center;
     color: #888888;
     white-space: nowrap;
-    padding: 0px $base-padding;
   }
 
   .made-by-link {
     color: $primary-theme-color !important;
-  }
-
-  .premium-only {
-    @extend .made-info;
-    margin-top: 6px;
   }
 
   .splash-header {
@@ -222,7 +183,8 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 24px 24px 14px;
+    padding: 24px 24px 0px;
+    background-color: rgba(245, 241, 182, 0.096);
   }
   
   .login {
@@ -254,21 +216,18 @@
     }
   }
 
-  .first-slash {
-    color: #f20d18;
-  }
-
-  .second-slash {
-    color: $spotify-green;
-  }
-
   .splash-animation {
-    bottom: calc(#{$max-footer-height-not-playing} + 78px);
-    width: 75%;
-    position: relative;
-    margin: 0 auto;
+    width: 100%;
     max-width: 515px;
+    transform: scale(1.2);
+    margin: 0 auto;
     animation: blink 1s infinite linear;
+    position: absolute;
+    bottom: 75px;
+
+    .v-image__image--cover {
+      background-size: contain;
+    }
   }
 
   @keyframes blink {
@@ -297,5 +256,36 @@
     $size: 46px;
     height: $size;
     width: $size;
+  }
+
+  .bottom-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 16px;
+    margin-top: 24px;
+  }
+
+  .whats-p-icon {
+    position: absolute !important;
+    bottom: 144px;
+    right: 2px;
+  }
+
+  .whats-p-icon, .p-tooltip {
+    -webkit-text-stroke: transparent;
+    color: $primary-theme-color !important;
+  }
+
+  .p-tooltip {
+    font-family: 'Public Sans', sans-serif;
+    color: white !important;
+    font-weight: bold;
+  }
+
+  .bullet-point {
+    margin-bottom: 12px;
   }
 </style>

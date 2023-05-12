@@ -23,7 +23,7 @@
             </v-hover>
 
             <div>
-              <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" tabindex="0" aria-label="view feed tooltip">
+              <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" tabindex="0" aria-label="display feed tooltip">
                 mdi-help-circle-outline
               </v-icon>
 
@@ -46,7 +46,7 @@
           <div v-else class="d-flex flex-column">
             <div class="no-feed-prompt">
               <div>Tracks that you and others play show here.</div>
-              <div class="sub-prompt">Nothing's been played in the last 24 hours. Kick things off by playing something and tell a friend.</div>
+              <div class="sub-prompt">Nothing's been played in the last 24 hours. Kick things off by playing something and tell a friend!</div>
             </div>
 
             <div class="no-prompt-graphic" aria-hidden="true">

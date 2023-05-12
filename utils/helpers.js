@@ -175,14 +175,24 @@ export const initSpotifyPlayer = async () => {
 
   return new Promise(function(resolve){
     spotifyPlayer.addListener('ready', async ({device_id}) => {
-      spotifyPlayer.activateElement();
       $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
       storageSet(DEVICE_ID, device_id);
+      
+      await spotify({url: '/me/player', method: 'PUT', body: {
+        device_ids: [storageGet(DEVICE_ID)]
+      }});
+
       resolve();
       console.log(`Spotify player ready with device id ${device_id}`);
+
+      if(window.spotifyPlayer){
+        window.spotifyPlayer.disconnect();
+      }
+
+      window.spotifyPlayer = spotifyPlayer;
     });
 
-    spotifyPlayer.on('initialization_error', () => {
+    spotifyPlayer.on('initialization_error', message => {
       console.error('Failed to initialize', message);
       $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
       retryPlayerInit();
@@ -223,11 +233,12 @@ export const initSpotifyPlayer = async () => {
       
       if(auxPreviousTrack && ourCurrentTrackIsSpotifyPrevious && auxNextTrack){
         console.log(`Spotify moved to the next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);
-        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlayback: ourNextTrackIsSpotifyCurrent});
+        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: !ourNextTrackIsSpotifyCurrent});
       }
     });
 
     (async () => {
+      await spotifyPlayer.activateElement();
       const connected = await spotifyPlayer.connect();
 
       console.log(`Connected to Spotify player: ${connected}`);

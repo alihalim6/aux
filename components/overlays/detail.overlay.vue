@@ -234,10 +234,13 @@
   .item-image {
     max-width: $overlay-width !important;
     height: 100%;
-    padding: $overlay-border-size;
     margin: 0 auto;
     border-radius: 4px;
     overflow: visible !important;
+
+    .v-image__image--cover {
+      background-size: contain;
+    }
 
     //needs to be in this file in order to display right in its parent
     .loading-container {
@@ -270,7 +273,6 @@
       background-color: transparent;
       max-width: unset;
       border: 2px solid $secondary-theme-color;
-      border-radius: 4px;
       overflow: scroll;
 
       .inner-container {

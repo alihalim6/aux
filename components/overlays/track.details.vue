@@ -18,30 +18,34 @@
     <div class="from-album-container" v-if="multiTrackAlbum">
       <div class="font-weight-bold font-italic mb-1">FROM:</div>
       
-      <div class="from-album-info" :id="`fromAlbumInfo${track.uuid}`">
-        <div class="d-flex justify-space-between mb-3">
-          <span>{{track.album.name}}</span>
+      <div class="d-flex align-start justify-space-between">
+        <div v-if="$vuetify.breakpoint.smAndUp" class="from-album-img" :style="`background-image: url(${track.imgUrl.medium || track.imgUrl.large})`" aria-hidden="true"></div>
 
-          <div class="d-flex no-wrap align-center">
-            <PlaybackIcon :item="fromAlbum" icon-class="action-icon"/>
-            <ThreeDotIcon :item="fromAlbum" icon-class="dot-icon"/>
+        <div class="from-album-info">        
+          <div class="d-flex justify-space-between mb-3">
+            <span>{{track.album.name}}</span>
+
+            <div class="d-flex no-wrap align-center">
+              <PlaybackIcon :item="fromAlbum" icon-class="action-icon"/>
+              <ThreeDotIcon :item="fromAlbum" icon-class="dot-icon"/>
+            </div>
           </div>
-        </div>
 
-        <div class="bottom-info">
-          <div class="d-flex align-center mr-2">
-            <div v-if="trackAlbumArtistsLengthsDiffer" class="d-flex align-center">
-              <ArtistList :artists="track.album.artists"/>
-              <v-icon class="white-circle-separator">mdi-checkbox-blank-circle</v-icon>
+          <div class="bottom-info">
+            <div class="d-flex align-center mr-2">
+              <div v-if="trackAlbumArtistsLengthsDiffer" class="d-flex align-center">
+                <ArtistList :artists="track.album.artists"/>
+                <v-icon class="white-circle-separator">mdi-checkbox-blank-circle</v-icon>
+              </div>
+
+              <span :class="{'ml-1': trackAlbumArtistsLengthsDiffer}">{{new Date(track.album.release_date).getFullYear()}}</span>
             </div>
 
-            <span :class="{'ml-1': trackAlbumArtistsLengthsDiffer}">{{new Date(track.album.release_date).getFullYear()}}</span>
-          </div>
-
-          <div class="sub-padding-left no-wrap">
-            <span v-if="track.album.numberOfTracks">{{track.album.numberOfTracks}}</span>
-            <v-icon v-if="track.album.numberOfTracks && albumDuration" class="white-circle-separator">mdi-checkbox-blank-circle</v-icon>
-            <span v-if="albumDuration">{{albumDuration}}</span>
+            <div class="sub-padding-left no-wrap">
+              <span v-if="track.album.numberOfTracks">{{track.album.numberOfTracks}}</span>
+              <v-icon v-if="track.album.numberOfTracks && albumDuration" class="white-circle-separator">mdi-checkbox-blank-circle</v-icon>
+              <span v-if="albumDuration">{{albumDuration}}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -103,27 +107,34 @@
 
       this.trackAlbumArtistsLengthsDiffer = this.track.album.artists.length != this.track.artists.length;
     }
-
-    mounted(){
-      if(this.multiTrackAlbum){
-        document.getElementById(`fromAlbumInfo${this.track.uuid}`).style.backgroundImage = `url(${this.track.imgUrl.large})`;
-      }
-    }
   }
 </script>
 
 <style lang="scss">
   .from-album-container {
-    margin-top: 24px;
+    margin-top: 36px;
     padding: 0px $base-padding;
     font-size: 20px;
 
+    .from-album-img {
+      $size: 81.4px;
+
+      background-size: contain;
+      background-position: center;
+      max-width: $size;
+      height: $size;
+      object-fit: cover;
+      flex: 1;
+      margin-right: 12px;
+    }
+
     .from-album-info {
+      flex: 3;
       font-size: 26px;
       width: 100%;
       padding: 6px 10px;
       font-weight: 600;
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: $spotify-green;
       color: $secondary-theme-color;
       background-size: cover;
       background-position-y: center;

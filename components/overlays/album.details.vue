@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="sub-title-container">
+    <div class="sub-title-container" :class="{'album-title-container': !album.singleTrack}">
       <div>
         <ArtistList :artists="album.artists"/>
         <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
@@ -40,4 +40,11 @@
       this.tracks = tracks;
     }
   }
-  </script>
+</script>
+
+<style lang="scss">
+  .album-title-container {
+    padding-bottom: 28px;
+    border-bottom: 2px solid #eee;
+  }
+</style>

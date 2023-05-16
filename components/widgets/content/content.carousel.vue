@@ -11,7 +11,7 @@
                   v-if="item.isArtist" 
                   class="clickable content-img artist-img" 
                   :class="{'content-hover': hover && !lastNewAndRecoCarouselItem(index)}" 
-                  :src="carouselImgSrc(item)" 
+                  :src="carouselImgSrc(item, $vuetify.breakpoint.xs)" 
                   @click="contentImgPressed(item)"
                   @keydown.enter="contentImgPressed(item)"
                   tabindex="0"
@@ -143,14 +143,14 @@
       return isSameTrack(item, this.currentlyPlayingItem);
     }
 
-    carouselImgSrc(item) {
+    carouselImgSrc(item, smallScreen) {
       //💩 code don't care :)
 
       if(this.addToPlaylist) {
         return item.imgUrl.medium || item.imgUrl.large;
       }
 
-      return item.imgUrl[this.vertical ? 'large' : 'medium'];
+      return item.imgUrl[this.vertical && !smallScreen ? 'large' : 'medium'];
     }
 
     addTrackToPlaylist(playlist) {
@@ -191,7 +191,6 @@
 
     .content-img {
       width: $content-img-size;
-      height: $content-img-size;
     }
 
     .secondary-label {

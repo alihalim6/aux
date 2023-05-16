@@ -10,6 +10,23 @@ export const PLAYED_NOT_SKIPPED_THRESHOLD = 20;
 export const DEVICE_ID = 'deviceId';
 export const AUX_DEVICE_NAME = 'PASS THE AUX';
 
+/* 
+  streaming - playback
+  user-read-email - email not used at all, scope only required due to user profile endpoint usage
+  user-read-private - display user profile names and images, and Spotify ID for uniquely attributing AUX activity
+  user-follow-modify - user has ability to follow other AUX users on Spotify
+  user-follow-read - ability to determine whether or not logged in user already follows other AUX users on Spotify
+  user-library-modify - user can like tracks and albums
+  user-library-read - determining if user already likes tracks, albums and playlists, as well as displaying user's liked tracks and albums
+  user-top-read - user has ability to view and play their top tracks and artists
+  user-read-recently-played - user has ability to view and play theirrecently played tracks
+  user-modify-playback-state - playback control
+  playlist-read-collaborative - searching and displaying playlists
+  playlist-read-private - displaying user's playlists
+  playlist-modify-public - required to be able to modify user's own playlists
+  playlist-modify-private - ability to modify user's own playlists
+*/
+
 export const AUTH = {
   ACCESS_TOKEN: 'accessToken',
   REFRESH_TOKEN: 'refreshToken',

@@ -56,11 +56,11 @@ export const actions = {
     pause
   }) => {
     try{
-      const player = getters.player;
-
-      if(!player){
+      if(!getters.player){
         await initSpotifyPlayer();
       }
+
+      const player = getters.player;
 
       if(pause){
         commit('setAudioPlaying', false);
@@ -298,7 +298,7 @@ export const actions = {
       commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
       if(!noError){
-        commit(`${UI}/setToast`, {text: 'Did not compute...', error: true}, {root: true});
+        commit(`${UI}/setToast`, {text: 'Could not compute...', error: true}, {root: true});
       }
 
       if(process.client){

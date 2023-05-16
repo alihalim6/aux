@@ -1,7 +1,7 @@
 <template>
   <v-app :class="{'item-playing': currentlyPlayingItem.uri}">
-    <audio v-if="currentlyPlayingItem.uri" controls class="hidden" loop autoplay id="silentPlayer">
-      <source src="/5-seconds-of-silence.mp3" type="audio/mpeg" controls>
+    <audio v-if="currentlyPlayingItem.uri" class="hidden" loop autoplay id="silentPlayer">
+      <source src="/5-seconds-of-silence.mp3" type="audio/mpeg">
     </audio>
 
     <AppHeader/>
@@ -18,7 +18,7 @@
     <!-- needs to be outside of above block so that up next overlay slides all the way to top (relativity issue) -->
     <CurrentlyPlaying v-show="!isLoading"/>
 
-    <LazyLoadingOverlay v-if="isLoading"/>    
+    <LoadingOverlay v-if="isLoading"/>    
     <LazyFeedAlert/>
 
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
@@ -54,7 +54,7 @@
       spotifyPlaybackSdk.setAttribute('src', 'https://sdk.scdn.co/spotify-player.js');
       document.head.appendChild(spotifyPlaybackSdk);
 
-      window.onSpotifyWebPlaybackSDKReady = async () => {
+      window.onSpotifyWebPlaybackSDKReady = () => {
         this.setSdkReady();
       };
 

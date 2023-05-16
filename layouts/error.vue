@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <div class="container">
+    <div class="error-container">
       <div class="message">{{error.customMessage ||  'Something exploded and here we are. Sorry about that.'}}</div>
 
       <div class="clickable nav-button error-button" @click="actionButtonPressed()">
@@ -41,7 +41,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .container {
+  .error-container {
     width: 100%;
     height: 100vh;
     display: flex;

@@ -2,7 +2,7 @@
   <section>
     <ActionDialog/>
 
-    <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll ref="appBar" :scroll-threshold="10">
+    <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll :scroll-threshold="10">
       <div class="aux-logo-container" tabindex="-1" aria-hidden="true">
         <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
         <div class="inline-display outlined-phrase main-label">AUX</div>
@@ -11,54 +11,50 @@
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
-        <v-menu transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
-          <template v-slot:activator="{on, attrs}">         
-            <!-- couldn't get shitty vuetify to handle pressing enter for these app header menus-->
-            <div class="clickable on-air-container" v-bind="attrs" v-on="on" :aria-label="`there are currently ${liveUsers.length} other users on AUX`">
-              <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
-              <div class="users-on-air">{{liveUsers.length}}</div>
-              <v-icon class="live-info-icon" color="black" large>mdi-chevron-down</v-icon>
-            </div>
-          </template>
+        <button class="clickable on-air-container" @click="() => showUserMenu = !showUserMenu" :aria-label="`there are currently ${liveUsers.length} other users on AUX`">
+          <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
+          <div class="users-on-air">{{liveUsers.length}}</div>
+          <v-icon class="live-info-icon" color="black" large>{{`mdi-chevron-${showUserMenu ? 'up' : 'down'}`}}</v-icon>
+        </button>
 
-          <v-list>
-            <v-list-item>
-              <div class="user-list width-100 scroll-shadow">
-                <div v-show="liveUsers.length" class="cursor-auto">
-                  <div class="following-on">FOLLOW ON SPOTIFY</div>
+        <div class="user-menu" :class="{'no-other-users': !liveUsers.length}">
+          <v-snackbar v-model="showUserMenu" :timeout="-1" absolute transition="slide-y-transition" bottom>
+            <div v-show="liveUsers.length" class="user-list width-100">
+              <div class="cursor-auto">
+                <div class="following-on">FOLLOW ON SPOTIFY</div>
+                
+                <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
+                  <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
+
+                  <div :class="{'ignored-opacity': user.ignored}" aria-hidden="true">
+                    <v-img v-show="user.img" :src="user.img" class="user-img"></v-img>
+                    <div v-show="!user.img" class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
+                  </div>
                   
-                  <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
-                    <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
-
-                    <div :class="{'ignored-opacity': user.ignored}" aria-hidden="true">
-                      <v-img v-show="user.img" :src="user.img" class="user-img"></v-img>
-                      <div v-show="!user.img" class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
-                    </div>
-                    
-                    <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
-                    
-                    <v-switch 
-                      :class="{'not-following-switch': !user.following, 'ignored-opacity': user.ignored}" 
-                      v-model="user.following" 
-                      :hide-details="true" 
-                      color="#1DB954" 
-                      @click="followingUserToggled(user)"
-                    >
-                    </v-switch>
-                  </div>
-                </div>
-
-                <div v-show="!liveUsers.length">
-                  <div class="d-flex flex-column align-center">
-                    <span class="no-other-users-message">No one else is here.</span>
-                    <v-img class="no-other-users-img" :eager="true" :src="require('~/assets/no_other_users.png')" aria-hidden="true"></v-img>
-                  </div>
+                  <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
+                  
+                  <v-switch 
+                    :class="{'not-following-switch': !user.following, 'ignored-opacity': user.ignored}" 
+                    v-model="user.following" 
+                    :hide-details="true" 
+                    color="#1DB954" 
+                    @click="followingUserToggled(user)"
+                  >
+                  </v-switch>
                 </div>
               </div>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+            </div>
 
+            <div v-show="!liveUsers.length">
+              <div class="d-flex flex-column align-center">
+                <span class="no-other-users-message">No one else is here.</span>
+                <v-img class="no-other-users-img" :eager="true" :src="require('~/assets/no_other_users.png')" alt=""></v-img>
+              </div>
+            </div>
+          </v-snackbar>
+        </div>
+
+        <!-- couldn't get shitty vuetify to handle pressing enter for app header menus-->
         <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
           <template v-slot:activator="{on, attrs}">
             <div v-bind="attrs" v-on="on" class="profile-menu-icon" tabindex="-1" aria-hidden="true">     
@@ -119,6 +115,7 @@
     isIos = false;
     zIndex = 2000;
     runningInPwa = false;
+    showUserMenu = false;
 
     @Getter('users', {namespace: FEED})
     users;
@@ -145,6 +142,8 @@
           ignored: ignoredUsers().find(userId => userId == user.id)
         };
       });
+
+      this.$forceUpdate();
     }
     
     @Watch('profile')
@@ -174,6 +173,8 @@
           Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
         }
       });
+
+      this.$forceUpdate();
     }
 
     logout(deletedActivity){
@@ -201,6 +202,8 @@
           Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
         }
       });
+
+      this.$forceUpdate();
     }
 
     async followingUserToggled(user){
@@ -218,14 +221,6 @@
       catch(error){
         handleApiError(`Oops! That ${user.following ? 'follow' : 'unfollow'} didn't go thru. Please try again.`);
         user.following = !user.following;
-      }
-    }
-
-    onScroll(){
-      // @hack: https://github.com/vuetifyjs/vuetify/issues/9993
-      const {appBar} = this.$refs
-      if(appBar.currentScroll < appBar.currentThreshold) {
-        appBar.isActive = true;
       }
     }
 
@@ -258,9 +253,7 @@
     }
 
     installPwaPressed(){
-      if(this.isIos){
-        this.setActionDialog({isIosPwaInstall: true, confirmLabel: 'GOT IT'});
-      }
+      this.setActionDialog({isIosPwaInstall: true, confirmLabel: 'GOT IT'});
     }
   }
 </script>
@@ -329,63 +322,10 @@
       align-items: center;
       justify-content: space-between;
       margin-top: 13px;
+      position: relative;
 
       @media(max-width: $max-inner-width){
         margin-top: 7px;
-      }
-
-      .on-air-container {
-        display: flex;
-        align-items: center;
-        position: relative;
-        margin-right: 20px;
-
-        @media(max-width: $max-inner-width){
-          margin-right: 14px;
-        }
-
-        .users-on-air {
-          background-color: $primary-theme-color;
-          color: $secondary-theme-color;
-          font-size: 32px;
-          font-weight: 600;
-          line-height: 0.9;
-          padding: 1px;
-          border-radius: 2px;
-
-          @media(max-width: $max-inner-width){
-            margin-right: 0px;
-          }
-        }
-
-        .live-info-icon {
-          top: 1px;
-        }
-
-        &::after {
-          content: '';
-          position: absolute;
-          height: 4px;
-          width: 10px;
-          bottom: -6px;
-          left: 28px;
-          background-color: $spotify-green;
-          animation: oscillate-live;
-          animation-duration: 3s;
-          animation-timing-function: ease-in-out;
-          animation-iteration-count: infinite;
-          animation-fill-mode: backwards;
-
-          @keyframes oscillate-live {
-            0% {transform: scaleX(1) translateX(0);}
-            10% {transform: scaleX(1.3) translateX(115%);} 
-            20% {transform: scaleX(1) translateX(0);} 
-          }
-        }
-      }
-
-      .on-air-container:focus-visible {
-        @extend .focused;
       }
 
       .profile-container {
@@ -404,6 +344,22 @@
           font-weight: bold;
           padding: 16px;
           color: $primary-theme-color;
+        }
+      }
+
+      .user-menu {        
+        .v-snack__wrapper {
+          top: 140px;
+          right: 97px;
+          background-color:  white;
+          color: $primary-theme-color;
+          border: none;
+        }
+      }
+
+      .no-other-users {        
+        .v-snack__wrapper {
+          top: 157px;
         }
       }
     }
@@ -482,6 +438,10 @@
     align-items: center;
     margin: 16px 0px;
     font-size: 14px;
+
+    .v-input--switch__track {
+      color: rgba(0, 0, 0, 0.21);
+    }
   }
 
   .ignored-opacity {
@@ -500,21 +460,24 @@
     font-size: 10px;
     align-self: flex-end;
     line-height: 2;
-    max-width: 84px;
+    max-width: 90px;
     margin-left: auto;
   }
 
   .user-list {
-    padding: 16px 24px 0px 8px;
+    padding: 16px 24px 0px 0px;
     display: flex;
     flex-direction: column;
     max-height: 400px;
     overflow: scroll;
+    background-color: white;
+    overflow-x: hidden;
   }
 
   .no-other-users-message {
     font-size: 32px;
     font-weight: bold;
+    padding: 10px 0px 16px;
   }
 
   .no-other-users-img {
@@ -523,7 +486,6 @@
     width: $size;
     max-width: $size;
     height: auto;
-    margin-bottom: 16px;
   }
 
   .here-now {
@@ -562,5 +524,59 @@
 
     height: $icon-size;
     max-width: $icon-size;
+  }
+
+  .on-air-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-right: 20px;
+
+    @media(max-width: $max-inner-width){
+      margin-right: 14px;
+    }
+
+    .users-on-air {
+      background-color: $primary-theme-color;
+      color: $secondary-theme-color;
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 0.9;
+      padding: 1px;
+      border-radius: 2px;
+
+      @media(max-width: $max-inner-width){
+        margin-right: 0px;
+      }
+    }
+
+    .live-info-icon {
+      top: 1px;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      height: 4px;
+      width: 10px;
+      bottom: -6px;
+      left: 28px;
+      background-color: $spotify-green;
+      animation: oscillate-live;
+      animation-duration: 3s;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      animation-fill-mode: backwards;
+
+      @keyframes oscillate-live {
+        0% {transform: scaleX(1) translateX(0);}
+        10% {transform: scaleX(1.3) translateX(115%);} 
+        20% {transform: scaleX(1) translateX(0);} 
+      }
+    }
+  }
+
+  .on-air-container:focus-visible {
+    @extend .focused;
   }
 </style>

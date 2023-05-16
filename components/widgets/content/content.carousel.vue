@@ -8,7 +8,7 @@
                 <div v-if="addToPlaylist" class="add-to-playlist-title">{{ item.primaryLabel }}</div>
 
                 <v-img 
-                  v-if="item.isArtist && item.imgUrl" 
+                  v-if="item.isArtist" 
                   class="clickable content-img artist-img" 
                   :class="{'content-hover': hover && !lastNewAndRecoCarouselItem(index)}" 
                   :src="carouselImgSrc(item)" 
@@ -18,7 +18,7 @@
                   :alt="`open modal with details about ${item.primaryLabel}`"
                 >
                   <template v-slot:placeholder>
-                    <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
+                    <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
                   </template>
                 </v-img>
 
@@ -36,15 +36,15 @@
                 >
                   <v-img 
                     class="content-img" 
-                    :class="{'auto-width': vertical}" v-if="item.imgUrl" 
-                    :src="carouselImgSrc(item)" 
+                    :class="{'auto-size': vertical}"
+                    :src="carouselImgSrc(item, $vuetify.breakpoint.xs)" 
                     @click="contentImgPressed(item)"
                     @keydown.enter="contentImgPressed(item)"
                     tabindex="0"
                     :alt="`open modal with details about ${item.primaryLabel}`"
                   >
                     <template v-slot:placeholder>
-                      <span class="content-placeholder" v-if="item.primaryLabel">{{item.primaryLabel.substring(0, 1)}}</span>
+                      <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
                     </template>
                   </v-img>
                 </v-card>
@@ -69,7 +69,7 @@
                           <span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
                       </button>
 
-                      <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon" aria-hidden="true"></v-img>
+                      <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon" alt=""></v-img>
                     </div>
 
                     <ThreeDotIcon v-if="!item.isPlaylist" :item="item"/>
@@ -326,8 +326,9 @@
     border-left: 1px solid $rose-red;
   }
 
-  .auto-width {
+  .auto-size {
     width: auto !important;
     min-width: $content-img-size;
+    height: auto !important;
   }
 </style>

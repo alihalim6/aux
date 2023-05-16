@@ -123,8 +123,8 @@
       width: 100%;
       padding: 6px 10px;
       font-weight: 600;
-      background-color: rgba(0, 0, 0, 0.6);
-      color: $secondary-theme-color;
+      background-color: $cream;
+      color: $primary-theme-color;
       background-size: cover;
       background-position-y: center;
       background-blend-mode: overlay;

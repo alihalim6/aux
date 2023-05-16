@@ -13,7 +13,7 @@
         <span class="min-width-fit">PLAYING: </span>
 
         <div class="track-sneak-peek">
-          <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" aria-hidden="true"></v-img>
+          <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" alt=""></v-img>
           <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
         </div>
       </div>

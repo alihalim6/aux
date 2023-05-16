@@ -173,15 +173,18 @@ export const initSpotifyPlayer = async () => {
     volume: 1
   });
 
+  const connected = await spotifyPlayer.connect();
+  console.log(`Connected to Spotify player: ${connected}`);
+
+  if(!connected){
+    console.log(`Retrying...`);
+    retryPlayerInit();
+  }
+
   return new Promise(function(resolve){
     spotifyPlayer.addListener('ready', async ({device_id}) => {
       $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
       storageSet(DEVICE_ID, device_id);
-      
-      await spotify({url: '/me/player', method: 'PUT', body: {
-        device_ids: [storageGet(DEVICE_ID)]
-      }});
-
       resolve();
       console.log(`Spotify player ready with device id ${device_id}`);
 
@@ -205,6 +208,10 @@ export const initSpotifyPlayer = async () => {
 
     spotifyPlayer.addListener('not_ready', async () => {
       console.error('Spotify player is offline...');
+    });
+
+    spotifyPlayer.addListener('autoplay_failed', () => {
+      console.log('Autoplay is not allowed by the browser autoplay rules');
     });
     
     spotifyPlayer.addListener('player_state_changed', async (currentState) => {      
@@ -236,18 +243,6 @@ export const initSpotifyPlayer = async () => {
         $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: !ourNextTrackIsSpotifyCurrent});
       }
     });
-
-    (async () => {
-      await spotifyPlayer.activateElement();
-      const connected = await spotifyPlayer.connect();
-
-      console.log(`Connected to Spotify player: ${connected}`);
-
-      if(!connected){
-        console.log(`Retrying...`);
-        retryPlayerInit();
-      }
-    })();
   });
 };
 

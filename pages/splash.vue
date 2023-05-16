@@ -6,7 +6,7 @@
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
         <div class="login-container">
           <button class="clickable nav-button login" @click="loginClicked()">
-            <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" aria-hidden="true"></v-img>
+            <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
           </button>
 
@@ -20,28 +20,37 @@
 
       <div class="big-p" aria-hidden="true">
         P
-        <v-icon class="clickable whats-p-icon" id="pToolTip" tabindex="0" aria-label="tooltip with info about what AUX is">
+        <v-icon 
+          class="clickable whats-p-icon" 
+          @click.stop="() => showTooltip = !showTooltip" 
+          tabindex="0" 
+          aria-label="tooltip with info about what AUX is"
+        >
           mdi-help-circle-outline
         </v-icon>
 
-        <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" aria-hidden="true"></v-img>
+        <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" alt=""></v-img>
+
+        <v-snackbar v-model="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip" transition="v-fade-transition">
+          <div class="d-flex align-start">
+            <div class="p-tooltip">
+              <div class="bullet-point">Enjoy your Spotify library + new releases, featured playlists, and recommendations.</div>
+              <div class="bullet-point">See and play what others are listening to.</div>
+              
+              <div class="bullet-point">
+                <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
+              </div>
+
+              <div>All with a shared <span class="on-air">FEED</span>.</div>
+            </div>
+
+            <v-icon class="clickable aux-tooltip" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
+          </div>
+        </v-snackbar>
       </div>
       <!-- <div class="width-100 d-flex flex-wrap container">
           <v-img src="/rose.png" class="roses" v-for="(n, index) of new Array(100)" :key="index"></v-img>
       </div> -->
-
-      <v-tooltip top color="#f24f44" activator="#pToolTip" role="tooltip">
-        <div class="p-tooltip">
-          <div class="bullet-point">Enjoy your Spotify library + new releases, featured playlists, and recommendations.</div>
-          <div class="bullet-point">See and play what others are listening to.</div>
-          
-          <div class="bullet-point">
-            <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
-          </div>
-
-          <div>All with a shared <span class="on-air">FEED</span>.</div>
-        </div>
-      </v-tooltip>
 
       <div class="bottom-container">
         <div class="made-info">
@@ -71,6 +80,8 @@
 
   @Component
   export default class Splash extends Vue {
+    showTooltip = false;
+
     @Mutation('setLoading', {namespace: UI})
     setLoading;
 
@@ -247,9 +258,9 @@
     flex-direction: column;
   }
 
-  .container {
+ /*  .container {
     background-color: #fcfce1;
-  }
+  } */
 
   .roses {
     margin: 18px;
@@ -274,7 +285,7 @@
     right: 2px;
   }
 
-  .whats-p-icon, .p-tooltip {
+  .whats-p-icon, .p-tooltip, .aux-tooltip {
     -webkit-text-stroke: transparent;
     color: $primary-theme-color !important;
   }

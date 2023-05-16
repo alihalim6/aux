@@ -136,7 +136,7 @@
       if(this.profile){
         this.liveStatusInterval = setInterval(() => {
           socket.emit('userLive', {userProfile: this.profile});
-        }, 5000);
+        }, 15000);
 
         this.initializeFeed();
       }

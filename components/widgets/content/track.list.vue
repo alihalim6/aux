@@ -12,6 +12,9 @@
               tabindex="0"
               :alt="`open modal with details about ${track.primaryLabel}`"
             >
+              <template v-slot:placeholder>
+                <span class="small-content-placeholder">{{track.primaryLabel.substring(0, 1)}}</span>
+              </template>
             </v-img>
             <div v-else class="track-number">{{track.track_number}}.</div>
 
@@ -30,7 +33,7 @@
                     {{track.name}}
                   </span>  
                 
-                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon" aria-hidden="true"></v-img>
+                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon" alt=""></v-img>
                 </div>
               </v-hover>
 

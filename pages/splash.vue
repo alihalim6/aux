@@ -31,7 +31,7 @@
 
         <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" alt=""></v-img>
 
-        <v-snackbar v-model="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip" transition="v-fade-transition">
+        <v-snackbar :value="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip">
           <div class="d-flex align-start">
             <div class="p-tooltip">
               <div class="bullet-point">Enjoy your Spotify library + new releases, featured playlists, and recommendations.</div>
@@ -41,7 +41,7 @@
                 <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
               </div>
 
-              <div>All with a shared <span class="on-air">FEED</span>.</div>
+              <div class="text-center">All with a shared <span class="on-air">FEED</span>.</div>
             </div>
 
             <v-icon class="clickable aux-tooltip" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
@@ -195,7 +195,7 @@
     align-items: center;
     justify-content: flex-end;
     padding: 24px 24px 0px;
-    background-color: rgba(245, 241, 182, 0.096);
+    background-color: #fcfce269;
   }
   
   .login {

@@ -119,7 +119,7 @@ export function handleApiError(message){
 }
 
 export const topItems = async (topType, config) => {
-  return await httpClient.get(`/me/top/${topType}`, config);
+  return await httpClient.get(`/me/top/${topType}?limit=${topType == 'artists' ? 10 : 20}`, config);
 };
 
 
@@ -140,22 +140,17 @@ export const getRecommendationSeeds = (artists, tracks) => {
   shuffleArray(artists.items);
   shuffleArray(tracks.items);
 
-  function addSeeds(seedObject, seed){
+  function addSeeds(seedObject, seeds){
     let i = 0;
 
-    seedObject.items.forEach(item => {
-      //API allows up to five seeds, so we'll do up to two for tracks/artists, and one genre
-      if(i === 2){
-        return;
-      }
-
-      console.log(`seed: ${item.name}`);
-  
-      seed += item.id + ',';
+    //API allows up to five seeds, so we'll do up to two for tracks/artists, and one genre
+    while(i < 2){
+      console.log(`seed: ${seedObject.items[i].name}`);
+      seeds += seedObject.items[i].id + ',';
       i++;
-    });
+    }
 
-    return seed;
+    return seeds;
   }
 
   seedArtists = addSeeds(artists, seedArtists);

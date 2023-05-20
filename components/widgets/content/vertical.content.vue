@@ -19,6 +19,7 @@
                   @keydown.enter="displayItemDetails(item)"
                   tabindex="0"
                   :alt="`open modal with details about ${item.primaryLabel}`"
+                  :transition="false"
                 >
                   <template v-slot:placeholder>
                     <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>

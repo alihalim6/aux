@@ -163,6 +163,7 @@
   @Component
   export default class CurrentlyPlaying extends Vue {
     playbackInterval = null;
+    elapsedSyncInterval = null;
     playbackIcon = 'play';
     upNextDisplaying = false;
     upNextHidden = true;
@@ -192,6 +193,9 @@
 
     @Getter('setToRepeatTrack', {namespace: SPOTIFY})
     setToRepeatTrack;
+
+    @Getter('player', {namespace: SPOTIFY})
+    player;
 
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
@@ -343,6 +347,15 @@
           }
         }
       }, 1000);
+
+      this.elapsedSyncInterval = setInterval(async () => {
+        const {is_playing, progress_ms} = await spotify({url: '/me/player/currently-playing'});
+        
+        if(is_playing && progress_ms > this.playbackElapsed.ms){
+          console.log('catching up to spotify elapsed...');
+          this.playbackElapsed.display = msToDuration(progress_ms);
+        }
+      }, 30000);
     }
 
     async repeatCurrentTrack(){
@@ -352,7 +365,9 @@
 
     stopInterval(){
       clearInterval(this.playbackInterval);
+      clearInterval(this.elapsedSyncInterval);
       this.playbackInterval = null;
+      this.elapsedSyncInterval = null;
       this.trackReady = false;
     }
 
@@ -372,7 +387,6 @@
     }
 
     async seek(secs){
-      console.log('seeking to: ' + secs + ' secs');
       this.playbackElapsed.ms = secs ? secs * 1000 : this.playbackElapsed.ms;
       await this.seekPlayback(this.playbackElapsed.ms);
       this.updateElapsedDisplay();

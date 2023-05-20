@@ -75,6 +75,10 @@ $section-title-font-size: 36px;
   font-weight: 600;
   color: #666666;
   margin: 0px $base-padding;
+
+  .secondary-label {
+    margin-top: -8px;
+  }
 }
 
 .overlay-margin {
@@ -83,7 +87,7 @@ $section-title-font-size: 36px;
 
 .record-icon {
   padding-right: 4px;
-  color: $primary-theme-color !important;
+  color: $rose-red !important;
 }
 
 .track-sneak-peek {
@@ -252,7 +256,6 @@ $section-title-font-size: 36px;
   word-break: break-word;
 }
 
-
 .menu-option-container {
   display: flex;
   padding: 0px 12px !important;
@@ -319,9 +322,9 @@ $section-title-font-size: 36px;
 
 .fade-in-animation {
   animation-name: fade-in;
-  animation-duration: 655ms;
+  animation-duration: 755ms;
   animation-timing-function: ease;
-  animation-delay: 350ms;
+  animation-delay: 400ms;
   animation-fill-mode: forwards;
 }
 

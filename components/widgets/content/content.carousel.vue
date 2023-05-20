@@ -16,6 +16,7 @@
                   @keydown.enter="contentImgPressed(item)"
                   tabindex="0"
                   :alt="`open modal with details about ${item.primaryLabel}`"
+                  :transition="false"
                 >
                   <template v-slot:placeholder>
                     <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
@@ -42,6 +43,7 @@
                     @keydown.enter="contentImgPressed(item)"
                     tabindex="0"
                     :alt="`open modal with details about ${item.primaryLabel}`"
+                    :transition="false"
                   >
                     <template v-slot:placeholder>
                       <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
@@ -191,6 +193,7 @@
 
     .content-img {
       width: $content-img-size;
+      height: $content-img-size;
     }
 
     .secondary-label {
@@ -291,6 +294,10 @@
   .artist-img {
     border-radius: 100% !important;
     max-width: $content-img-size;
+
+    .v-image__image--cover {
+      background-size: cover;
+    }
   }
 
   .see-all-container {
@@ -329,5 +336,6 @@
     width: auto !important;
     min-width: $content-img-size;
     height: auto !important;
+    min-height: $content-img-size;
   }
 </style>

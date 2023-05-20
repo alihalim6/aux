@@ -76,7 +76,7 @@
                   </div>
 
                   <LazyAllNewAndRecommended v-if="item.allNewAndRecommended" :data="item.data"/>
-                  <LazyNewReleases v-if="item.newReleases" :data="item.data"/>
+                  <LazyNewReleases v-if="item.newReleases"/>
                   <LazyTrackDetails v-if="item.isTrack" :track="item"/>
                   <LazyAlbumDetails v-if="item.isAlbum" :album="item"/>
                   <LazyArtistDetails v-if="item.isArtist" :artist="item"/>

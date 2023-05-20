@@ -90,6 +90,7 @@ export const actions = {
         return;
       }
       else {
+        await player.setVolume(1);
         commit('setAudioPlaying', true);
 
         let queue = [];
@@ -205,7 +206,12 @@ export const actions = {
 
           const samePreviousTracks = previouslyPlayingItem.uri == currentState.track_window.current_track.uri;
 
-          if(!nextTrackButtonPressed && samePreviousTracks && currentState.track_window.next_tracks.length && currentState.track_window.next_tracks[0].uri == item.uri){
+          if(!nextTrackButtonPressed && 
+            samePreviousTracks && 
+            currentState.track_window.next_tracks.length && 
+            currentState.track_window.next_tracks[0].uri == item.uri &&
+            currentState.track_window.next_tracks[0].uri != previouslyPlayingItem.uri
+          ){
             console.log(`letting Spotify play the play next track: ${item.name}`);
             makePlaybackApiCall = false;
           }

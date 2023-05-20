@@ -35,25 +35,6 @@
     options = [];
     threeDotItem;
 
-    defaultOptions = [
-      {
-        title: 'Play Now',
-        fn: this.playTrackNow,
-        playNow: true
-      },
-      {
-        title: 'Play Next',
-        fn: this.playNextPressed,
-        forQueue: true
-      },
-      {
-        title: 'Add to End of Queue',
-        fn: this.addToEndPressed,
-        addToEnd: true,
-        forQueue: true
-      }
-    ];
-
     @Prop({default: {}, required: true})
     item;
 
@@ -123,7 +104,24 @@
         this.options = [];
       }
       else{
-        this.options = [...this.defaultOptions];
+        this.options = [
+          {
+            title: 'Play Now',
+            fn: this.playTrackNow,
+            playNow: true
+          },
+          {
+            title: 'Play Next',
+            fn: this.playNextPressed,
+            forQueue: true
+          },
+          {
+            title: 'Add to End of Queue',
+            fn: this.addToEndPressed,
+            addToEnd: true,
+            forQueue: true
+          }
+        ];
         
         if(this.threeDotItem.isMultitrackAlbum){
           this.threeDotItem = await this.processAlbumDetails(this.threeDotItem);

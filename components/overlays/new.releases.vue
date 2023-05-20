@@ -9,20 +9,18 @@
 </template>
 
 <script>
-  import {Component, Vue, Prop} from 'nuxt-property-decorator';
+  import {Component, Vue} from 'nuxt-property-decorator';
   import {setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
-  import cloneDeep from 'lodash.clonedeep';//prevent modification of parent new.and.recommended.vue data
+  import spotify from '~/api/spotify';
 
   @Component
   export default class NewReleases extends Vue {
     newReleases = [];
 
-    @Prop({required: true})
-    data;
-
-    beforeMount(){
-      this.newReleases = setItemMetaData(cloneDeep(this.data));
+    async beforeMount(){
+      const {albums} = await spotify({url: '/browse/new-releases?limit=50'})
+      this.newReleases = setItemMetaData(albums.items);
 
       this.newReleases.forEach(release => {
         if(release.release_date){

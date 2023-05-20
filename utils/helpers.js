@@ -173,6 +173,10 @@ export const initSpotifyPlayer = async () => {
     volume: 1
   });
 
+  if(window.spotifyPlayer){
+    window.spotifyPlayer.disconnect();
+  }
+
   const connected = await spotifyPlayer.connect();
   console.log(`Connected to Spotify player: ${connected}`);
 
@@ -185,13 +189,13 @@ export const initSpotifyPlayer = async () => {
     spotifyPlayer.addListener('ready', async ({device_id}) => {
       $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
       storageSet(DEVICE_ID, device_id);
+
+      await spotify({url: '/me/player', method: 'PUT', body: {
+        device_ids: [device_id]
+      }});
+
       resolve();
       console.log(`Spotify player ready with device id ${device_id}`);
-
-      if(window.spotifyPlayer){
-        window.spotifyPlayer.disconnect();
-      }
-
       window.spotifyPlayer = spotifyPlayer;
     });
 
@@ -225,21 +229,30 @@ export const initSpotifyPlayer = async () => {
 
       //move to next track on our side if Spotify starts playing next track before we do
 
-      console.log(currentState.track_window.previous_tracks);
+      const spotifyPreviousTracks = currentState.track_window.previous_tracks;
+      console.log(spotifyPreviousTracks);
       console.log(currentState.track_window.current_track);
 
-      const ourCurrentTrackIsSpotifyPrevious = currentState.track_window.previous_tracks.length && $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] ? 
-        currentState.track_window.previous_tracks[0].uri == $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`].uri : false;
+      const auxCurrentTrack = $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`];
+      const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`];
+      console.log(auxCurrentTrack);
+      console.log(auxNextTrack);
+
+      const ourCurrentTrackIsSpotifyPrevious = spotifyPreviousTracks.length && $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] ? 
+        spotifyPreviousTracks[spotifyPreviousTracks.length - 1].uri == auxCurrentTrack.uri : false;
+
+      console.log(`ourCurrentTrackIsSpotifyPrevious: ${ourCurrentTrackIsSpotifyPrevious}`);
 
       const spotifyCurrentTrack = currentState.track_window.current_track;
-      const auxPreviousTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/hasPreviousTrack`];
-      const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/hasNextTrack`];
 
-      const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ?
-        spotifyCurrentTrack.uri == $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`].uri : false;
-      
-      if(auxPreviousTrack && ourCurrentTrackIsSpotifyPrevious && auxNextTrack){
-        console.log(`Spotify moved to the next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);
+      if(ourCurrentTrackIsSpotifyPrevious && (spotifyCurrentTrack.uri != auxCurrentTrack.uri) && auxNextTrack){
+        const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? spotifyCurrentTrack.uri == auxNextTrack.uri : false;
+
+          if(!ourNextTrackIsSpotifyCurrent){
+            await window.spotifyPlayer.setVolume(0);
+          }
+        
+        console.log(`Spotify moved to a different next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);
         $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: !ourNextTrackIsSpotifyCurrent});
       }
     });

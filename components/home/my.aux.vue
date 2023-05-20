@@ -219,7 +219,7 @@
               data.items = data.items.filter(item => item.track);
             }
 
-            contentToFetchFor.data = [...contentToFetchFor.data, ...this.mapData(data.items)];
+            contentToFetchFor.data.push.apply(contentToFetchFor.data, this.mapData(data.items));
             contentToFetchFor.offset += contentToFetchFor.limit;
 
             //pre-shuffle likes after they're all fetched to try and help with performance when shuffle clicked;

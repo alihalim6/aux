@@ -165,7 +165,7 @@
     margin-bottom: 48px;
 
     .track-img {
-      $track-img-size: 32px;
+      $track-img-size: 36px;
 
       max-width: $track-img-size;
       height: $track-img-size;

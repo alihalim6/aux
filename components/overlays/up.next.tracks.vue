@@ -168,7 +168,7 @@
 
     @Watch('nextTrack', {immediate: true})
     async nextTrackChanged(nextTrack){
-      if(nextTrack){
+      if(this.currentlyPlayingItem && nextTrack){//check for current item for the case of playing track now when there was nothing playing
         await setDuration(this.nextTrack);
         
         if(this.multiTrackAlbum()){

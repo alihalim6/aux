@@ -9,6 +9,7 @@
           :src="require('~/assets/Spotify_Logo_Full.png')"
           alt="open playlists on Spotify"
           tabindex="0"
+          :transition="false"
         ></v-img>
 
         <div class="d-flex align-center">

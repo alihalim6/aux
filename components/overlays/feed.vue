@@ -5,9 +5,8 @@
         <div class="d-flex flex-column">
           <div class="feed-title-container" id="feedHeader">
             <v-hover v-slot="{hover}">
-              <div class="d-flex align-center">
+              <div class="d-flex align-center" :class="{'no-visibility': !activityFeed.length}">
                 <button 
-                  v-show="activityFeed.length" 
                   class="clickable d-flex align-center" 
                   @click.stop="playAllPressed()"
                   @keydown.enter="playAllPressed()"
@@ -118,18 +117,6 @@
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
-
-    @Watch('uiFeed', {deep: true})
-    async uiFeedChanged(newVal){
-      if(newVal.display){
-        await this.$nextTick();
-        const playAll = document.getElementById('playAll');
-
-        if(playAll){
-          playAll.focus();
-        }
-      }
-    }
 
     @Watch('profile')
     currentUserProfileSet(){

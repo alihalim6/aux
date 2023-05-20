@@ -53,7 +53,6 @@
   @Component
   export default class NewAndRecommended extends Vue {
     previewItems = [];
-    newReleases = [];
     allItems = [];
     NEW_AND_RECOMMENDED = 'NEW AND RECOMMENDED';
     NEW_RELEASES = 'NEW RELEASES';
@@ -78,9 +77,8 @@
 
     async getData(){
       try {
-        const {previewItems, newReleases, allItems} = await newAndRecommended();
+        const {previewItems, allItems} = await newAndRecommended();
         this.previewItems = setItemMetaData(previewItems);
-        this.newReleases = newReleases;
         this.allItems = allItems;
       }
       catch(error){
@@ -111,8 +109,7 @@
     displayNewReleases(){
       this.displayOverlay({
         newReleases: true,
-        name: this.NEW_RELEASES,
-        data: this.newReleases
+        name: this.NEW_RELEASES
       });
     }
 

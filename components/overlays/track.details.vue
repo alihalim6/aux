@@ -35,7 +35,7 @@
             <div class="d-flex align-center mr-2">
               <div v-if="trackAlbumArtistsLengthsDiffer" class="d-flex align-center">
                 <ArtistList :artists="track.album.artists"/>
-                <v-icon class="white-circle-separator">mdi-checkbox-blank-circle</v-icon>
+                <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
               </div>
 
               <span :class="{'ml-1': trackAlbumArtistsLengthsDiffer}">{{new Date(track.album.release_date).getFullYear()}}</span>
@@ -43,7 +43,7 @@
 
             <div class="sub-padding-left no-wrap">
               <span v-if="track.album.numberOfTracks">{{track.album.numberOfTracks}}</span>
-              <v-icon v-if="track.album.numberOfTracks && albumDuration" class="white-circle-separator">mdi-checkbox-blank-circle</v-icon>
+              <v-icon v-if="track.album.numberOfTracks && albumDuration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
               <span v-if="albumDuration">{{albumDuration}}</span>
             </div>
           </div>
@@ -141,7 +141,7 @@
       background-blend-mode: overlay;
 
       .action-icon {
-        color: white !important;
+        color: $primary-theme-color !important;
         font-size: 28px !important;
       }
 

@@ -118,11 +118,15 @@
       margin: 24px 0px;
 
       .artist-image {
-        $size: 250px;
+        $size: 360px;
         width: $size;
         height: $size;
         border-radius: 100%;
         margin-bottom: 12px;
+
+        .v-image__image--cover {
+          background-size: cover;
+        }
       }
 
       .artist-genres {

@@ -13,7 +13,7 @@ async function startItemPlayback(item, nextTracks){
     requestBody = {context_uri: item.uri};
   }
 
-  return httpClient.put(`${PLAYBACK_API_PATH}?device_id=${storageGet(DEVICE_ID)}`, requestBody);
+  return httpClient.put(`${PLAYBACK_API_PATH}?device_id=${storageGet(DEVICE_ID)}`, {...requestBody, position_ms: 0});
 };
 
 export default startItemPlayback;

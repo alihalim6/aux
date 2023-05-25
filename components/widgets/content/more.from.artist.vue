@@ -19,7 +19,7 @@
     </v-card>
 
     <!-- RELATED ARTISTS -->  
-    <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="parentItem.details.relatedArtists.length">
+    <v-card class="more-from-artist-container" elevation="7" v-if="parentItem.details.relatedArtists.length">
       <div class="more-from-artist">
         <div class="more-from-artist-title mb-2 font-weight-bold">Related Artists</div>
         
@@ -118,7 +118,7 @@
       margin: 24px 0px;
 
       .artist-image {
-        $size: 360px;
+        $size: 310px;
         width: $size;
         height: $size;
         border-radius: 100%;

@@ -38,7 +38,7 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
   return {
     artistAlbums: artistAlbums.data.items,
     artistTopTracks: artistTopTracks.data.tracks,
-    relatedArtists: relatedArtists.data.artists,
+    relatedArtists: relatedArtists.data.artists ? relatedArtists.data.artists.slice(0, 6) : [],
     albumTracks,
     totalAlbumTracks,
     playlistTracks,

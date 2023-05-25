@@ -167,8 +167,8 @@
     shuffleUpNext;
 
     @Watch('nextTrack', {immediate: true})
-    async nextTrackChanged(nextTrack){
-      if(this.currentlyPlayingItem && nextTrack){//check for current item for the case of playing track now when there was nothing playing
+    async nextTrackChanged(){
+      if(this.playingSomethingWithNextTrack()){//check for current item for the case of playing track now when there was nothing playing
         await setDuration(this.nextTrack);
         
         if(this.multiTrackAlbum()){
@@ -182,8 +182,12 @@
       }
     }
 
+    playingSomethingWithNextTrack(){
+      return this.currentlyPlayingItem && this.nextTrack;
+    }
+
     multiTrackAlbum(){
-      return this.nextTrack.album && this.nextTrack.album.total_tracks > 1;
+      return this.playingSomethingWithNextTrack() && this.nextTrack.album && this.nextTrack.album.total_tracks > 1;
     }
 
     async nextTrackPressed(track, itemSet){

@@ -31,7 +31,19 @@
       </button>
     </div>
 
-    <div class="currently-playing" v-if="!upNextDisplaying">
+    <div v-if="pendingFirstPlay" class="d-flex align-center width-max-content mt-3">
+      <span class="pending-first-play">Grabbing the AUX cord...</span>
+
+      <v-progress-linear 
+        class="looking-icon" 
+        stream 
+        reverse 
+        color="#f81c03" 
+        :buffer-value="0">
+      </v-progress-linear>
+    </div>
+
+    <div class="currently-playing" v-show="!upNextDisplaying && !pendingFirstPlay">
       <div class="d-flex">
         <v-img 
           @click="displayItemDetails()" 
@@ -197,6 +209,9 @@
     @Getter('player', {namespace: SPOTIFY})
     player;
 
+    @Getter('pendingFirstPlay', {namespace: SPOTIFY})
+    pendingFirstPlay;
+
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
 
@@ -311,7 +326,7 @@
       });
 
       this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, this.handleItemLikeStatus);
-      this.$nuxt.$root.$on(LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
+      this.$nuxt.$root.$on(LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));      
     }
 
     initializeTiming(item){
@@ -349,11 +364,17 @@
       }, 1000);
 
       this.elapsedSyncInterval = setInterval(async () => {
-        const {is_playing, progress_ms} = await spotify({url: '/me/player/currently-playing'});
+        const currentState = await this.player.getCurrentState();
         
-        if(is_playing && progress_ms > this.playbackElapsed.ms){
+        if(!currentState){
+          return
+        };
+
+        const {paused, position} = currentState;
+        
+        if(!paused && position > this.playbackElapsed.ms){
           console.log('catching up to spotify elapsed...');
-          this.playbackElapsed.display = msToDuration(progress_ms);
+          this.playbackElapsed.display = msToDuration(position);
         }
       }, 30000);
     }
@@ -681,5 +702,26 @@
 
   .like-toggle:focus-visible {
     @extend .focused;
+  }
+
+  .pending-first-play {
+    font-size: 24px;
+    font-weight: bold;
+    margin-right: 12px;
+  }
+
+  .v-progress-linear--reverse .v-progress-linear__stream {
+    animation: stream-rtl 0.45s infinite linear;
+    left: -4px;
+    border-top: 4px solid;
+  }
+
+  .v-progress-linear__stream {
+    opacity: 1;
+  }
+
+  .looking-icon {
+    width: 34px;
+    font-size: 34px;
   }
 </style>

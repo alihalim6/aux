@@ -1,6 +1,6 @@
 import {handleApiError} from '~/api/_utils';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
-import {shuffleArray, initSpotifyPlayer, processAlbum, takeUntilNotATrack} from '~/utils/helpers';
+import {shuffleArray, processAlbum, takeUntilNotATrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
@@ -15,7 +15,8 @@ export const state = () => {
     newPlayback: '',
     sdkReady: false,
     player: null,
-    setToRepeatTrack: false
+    setToRepeatTrack: false,
+    pendingFirstPlay: false
   };
 };
 
@@ -40,6 +41,9 @@ export const getters = {
   },
   setToRepeatTrack: (state) => {
     return state.setToRepeatTrack;
+  },
+  pendingFirstPlay: (state) => {
+    return state.pendingFirstPlay;
   }
 };
 
@@ -171,16 +175,6 @@ export const actions = {
     nothingWasPlaying
   }) => {
     try {
-      if(getters.sdkReady){
-        //must init player on first play via user interaction (not app load) due to browser audio context requirements
-        if(!storageGet(DEVICE_ID)){
-          await initSpotifyPlayer();
-        }
-      }
-      else{
-        throw new Error('sdk not ready...');
-      }
-
       if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
         console.log('skipping Candace playback logic');
         return;
@@ -364,6 +358,7 @@ export const mutations = {
   },
   setNewPlayback(state, queueId){
     state.newPlayback = queueId;
+    state.pendingFirstPlay = false;
   },
   setSdkReady(state){
     state.sdkReady = true;
@@ -373,5 +368,8 @@ export const mutations = {
   },
   setTrackRepeat(state, value){
     state.setToRepeatTrack = value;
+  },
+  setPendingFirstPlay(state, pending){
+    state.pendingFirstPlay = pending;
   }
 };

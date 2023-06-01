@@ -29,7 +29,7 @@ async function newAndRecommended(){
     const randomOffset = Math.floor(Math.random() * (newReleasesLimit - 0 + 1) + 0);
     const {data} = await httpClient.get(`/browse/new-releases?offset=${randomOffset}&limit=${newReleasesLimit}`);
     const newReleases = data.albums.items;
-    const someShuffledNewReleases = shuffleArray(newReleases.slice(0, 5));
+    const someShuffledNewReleases = shuffleArray(newReleases.slice(0, 3));
 
     const topArtists = await topItems('artists');
     const recommendedTracks = await getRecommendedTracks(topArtists.data);

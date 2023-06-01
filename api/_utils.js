@@ -65,7 +65,7 @@ httpClient.interceptors.response.use(async response => {
 }, async error => {
   if(error.response && error.response.status == 404 && isPlaybackCall(error.config)){
     console.log('404 on playback...initializing new player');
-    await initSpotifyPlayer();
+    await initSpotifyPlayer(true);
     await retryRequest(error.config);
     return;
   }
@@ -119,7 +119,7 @@ export function handleApiError(message){
 }
 
 export const topItems = async (topType, config) => {
-  return await httpClient.get(`/me/top/${topType}?limit=${topType == 'artists' ? 10 : 20}`, config);
+  return await httpClient.get(`/me/top/${topType}?limit=${topType == 'artists' ? 5 : 20}`, config);
 };
 
 

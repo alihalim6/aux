@@ -1,6 +1,6 @@
 import {handleApiError} from '~/api/_utils';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
-import {shuffleArray, processAlbum, takeUntilNotATrack} from '~/utils/helpers';
+import {shuffleArray, processAlbum, takeUntilNotATrack, initSpotifyPlayer} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
@@ -175,9 +175,27 @@ export const actions = {
     nothingWasPlaying
   }) => {
     try {
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+      if(!isSafari){
+        if(getters.sdkReady){
+          //must init player on first play via user interaction (not app load) due to browser audio context requirements
+          if(!storageGet(DEVICE_ID)){
+            await initSpotifyPlayer();
+          }
+        }
+        else{
+          throw new Error('sdk not ready...');
+        }
+      }
+
       if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
         console.log('skipping Candace playback logic');
         return;
+      }
+
+      if(isSafari){ 
+        await getters.player.activateElement();
       }
 
       let makePlaybackApiCall = true;
@@ -239,6 +257,10 @@ export const actions = {
             spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
           }
         }
+      }
+
+      if(isSafari){ 
+        await getters.player.resume();
       }
 
       //lock screen
@@ -310,13 +332,18 @@ export const actions = {
 
     if(player && player.seek){
       try{
-        await player.seek(seekPosition);
+        if(/^((?!chrome|android).)*safari/i.test(navigator.userAgent)){
+          await spotify({url: `/me/player/seek?position_ms=${Math.floor(seekPosition)}`, method: 'PUT'});
+        }
+        else {
+          await player.seek(seekPosition);
+        }
+
         await player.resume();
         commit('setAudioPlaying', true);
       }
       catch(error){
         console.error(error);
-        dispatch('stopPlayback');
       }
     }
   },

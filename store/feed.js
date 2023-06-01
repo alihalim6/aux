@@ -82,6 +82,12 @@ export const actions = {
       return;
     }
 
+    const loggedInUser = rootGetters[`${USER}/profile`];
+
+    if(loggedInUser.id === activity.user.id){
+      return;
+    }
+
     let showAlertAndCheckAuxMode = false;
 
     const activityAlreadyInFeed = findActivityInFeed(getters.feed, activity.track);
@@ -106,7 +112,7 @@ export const actions = {
       }, {root: true});
       
       if(rootGetters[`${PLAYBACK_QUEUE}/queue`].length && storageGetBoolean(AUX_MODE)){
-        dispatch(`${PLAYBACK_QUEUE}/setTracksToPlayNext`, {tracks: [activity.track], noConfirmationToast: true}, {root: true});
+        dispatch(`${PLAYBACK_QUEUE}/setTracksToPlayNext`, {tracks: [{...activity.track, addedBy: activity.user}], noConfirmationToast: true}, {root: true});
       }
     }
 

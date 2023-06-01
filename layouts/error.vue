@@ -4,10 +4,10 @@
       <div class="message">{{error.customMessage ||  'Something exploded and here we are. Sorry about that.'}}</div>
 
       <div class="clickable nav-button error-button" @click="actionButtonPressed()">
-        <span class="nav-button-label">{{error.actionButtonLabel || 'RELOAD'}}</span>
+        <span class="nav-button-label">{{error.actionButtonLabel || 'RELOAD*'}}</span>
       </div>
 
-      <span v-if="!error.notPremium" class="note">(at the risk of causing another explosion...and possibly starting a fire...{{String.fromCodePoint(0x1F525)}})</span>
+      <span v-if="!error.notPremium" class="note">(*at the risk of causing another explosion...and possibly starting a fire...{{String.fromCodePoint(0x1F525)}})</span>
     </div>
   </v-app>
 </template>

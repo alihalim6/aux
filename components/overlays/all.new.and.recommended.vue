@@ -77,8 +77,8 @@
   }
 
   .selected-tab {
-    background-color: $primary-theme-color;
-    color: $secondary-theme-color;
+    background-color: $rose-red;
+    color: $cream;
     padding: 8px;
     border-radius: 2px;
   }

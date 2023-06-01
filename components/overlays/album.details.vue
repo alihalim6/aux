@@ -45,6 +45,6 @@
 <style lang="scss">
   .album-title-container {
     padding-bottom: 28px;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid $spotify-green;
   }
 </style>

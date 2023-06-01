@@ -3,7 +3,7 @@
     <ActionDialog/>
 
     <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll :scroll-threshold="10">
-      <div class="aux-logo-container" tabindex="-1" aria-hidden="true">
+      <div class="aux-logo-container" aria-hidden="true">
         <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
         <div class="inline-display outlined-phrase main-label">AUX</div>
       </div>
@@ -413,7 +413,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     width: 75%;
-    margin-right: 24px;
+    margin-right: 18px;
   }
   
   .small-margin-right {

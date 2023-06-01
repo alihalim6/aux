@@ -27,10 +27,12 @@
     
     <v-dialog :value="!isLoading && isSafari && !playerActivated" persistent overlay-color="red" max-width="max-content">
       <div class="activate-player">
-        <button class="clickable nav-button" @click="activatePlayer()">
+        <button v-show="!activatingPlayer" class="clickable nav-button" @click="activatePlayer()">
           <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
           <span class="nav-button-label">ACTIVATE MUSIC PLAYER</span>
         </button>
+
+        <v-progress-circular v-show="activatingPlayer" indeterminate color="#fcfce0"></v-progress-circular>
       </div>
     </v-dialog>
   </v-app>
@@ -42,12 +44,13 @@
   import {DEVICE_ID} from '~/utils/constants';
   import initSocketClient from '~/utils/init.socket.client';
   import {storageRemove} from '~/utils/storage';
-  import {handleSpotifyPlayer} from '~/utils/helpers';
+  import {initSpotifyPlayer} from '~/utils/helpers';
 
   @Component
   export default class App extends Vue {
     trackToAddToPlaylist = null;
     playerActivated = false;
+    activatingPlayer = false;
     hideCurrentlyPlaying = false;
     isSafari = false;
     
@@ -68,7 +71,7 @@
       document.head.appendChild(spotifyPlaybackSdk);
 
       window.onSpotifyWebPlaybackSDKReady = () => {
-        //this.setSdkReady();
+        this.setSdkReady();
       };
 
       storageRemove(DEVICE_ID);
@@ -82,8 +85,10 @@
       this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     }
 
-    activatePlayer(){
-      handleSpotifyPlayer(true);
+    async activatePlayer(){
+      this.activatingPlayer = true;
+      await initSpotifyPlayer(true, true);
+      this.activatingPlayer = false;
       this.playerActivated = true;
     }
 

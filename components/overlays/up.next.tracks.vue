@@ -196,7 +196,7 @@
     }
 
     async fromAlbumPressed(album){
-      setItemMetaData([album]);
+      setItemMetaData([cloneDeep(album)]);
       this.$nuxt.$root.$emit('hideUpNext');
       this.$nuxt.$root.$emit('displayDetailOverlay', album)
     }

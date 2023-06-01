@@ -113,7 +113,7 @@
   import debounce from 'lodash.debounce';
   import search from '~/api/search';
   import {handleApiError} from '~/api/_utils';
-  import {setItemMetaData, isSameTrack, handleSpotifyPlayer} from '~/utils/helpers';
+  import {setItemMetaData, isSameTrack} from '~/utils/helpers';
   import {SPOTIFY, UI, PLAYBACK_QUEUE} from '~/store/constants';
   import spotify from '~/api/spotify';
 
@@ -247,7 +247,7 @@
       }
     }
 
-    async primaryLabelPressed(item){
+    primaryLabelPressed(item){
       if(item.isCollection || item.isArtist){
         this.$nuxt.$root.$emit('displayDetailOverlay', item);
       }

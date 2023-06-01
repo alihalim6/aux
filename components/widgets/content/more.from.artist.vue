@@ -5,7 +5,7 @@
     <!-- TOP TRACKS -->  
     <v-card class="more-from-artist-container" elevation="7" v-if="parentItem.details.artistTopTracks.length">
       <div class="more-from-artist">
-        <div class="more-from-artist-title mb-0 font-weight-bold">Top Tracks</div>
+        <div class="more-from-artist-title mb-2">Top Tracks</div>
         <TrackList :tracks="parentItem.details.artistTopTracks" :tracksFromDifferentAlbums="true" :parentId="parentItem.id"/>
       </div>
     </v-card>
@@ -13,7 +13,7 @@
     <!-- ALBUMS -->  
     <v-card class="more-from-artist-container sub-padding-right" elevation="7" v-if="artistAlbums.length">
       <div class="more-from-artist">
-        <div class="more-from-artist-title font-weight-bold">Albums</div>
+        <div class="more-from-artist-title">Albums</div>
         <ContentCarousel :data="artistAlbums" :moreFromArtist="true"/>
       </div>
     </v-card>
@@ -21,7 +21,7 @@
     <!-- RELATED ARTISTS -->  
     <v-card class="more-from-artist-container" elevation="7" v-if="parentItem.details.relatedArtists.length">
       <div class="more-from-artist">
-        <div class="more-from-artist-title mb-2 font-weight-bold">Related Artists</div>
+        <div class="more-from-artist-title">Related Artists</div>
         
         <div class="related-artists-container">
           <button 
@@ -99,8 +99,12 @@
     font-size: 16px;
 
     .more-from-artist-title {
-      margin: 0px 0px 16px $base-padding;
-      text-decoration: underline;
+      margin: 6px 0px 20px $base-padding;
+      background-color: $rose-red;
+      color: $cream;
+      padding: 2px 8px;
+      width: max-content;
+      font-weight: bold;
     }
   }
 

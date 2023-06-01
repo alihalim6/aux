@@ -8,10 +8,20 @@
       <v-list-item v-for="(option, index) in options.filter(option => !option.hidden)" 
         :key="index" 
         class="clickable menu-option-container" 
+        :class="{'aux-mode-added-by': option.addedBy}"
         @click="option.fn(item)" 
         :disabled="option.forQueue && disableQueueOptions"
       >
-        <span class="option-title">{{option.title}}</span>
+        <div v-if="option.addedBy" class="d-flex flex-column py-2">
+          <div class="aux-mode">AUX MODE</div>
+
+          <div class="d-flex align-center">
+            <v-img v-if="item.addedBy.img" :src="item.addedBy.img" class="round-img-icon" alt=""></v-img>            
+            <span class="font-weight-regular mx-1">Added by </span><span>{{item.addedBy.name}}</span>
+          </div>
+        </div>
+        
+        <span v-else class="option-title">{{option.title}}</span>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -236,6 +246,10 @@
           title: `${this.threeDotItem.type == 'artist' ? 'Open' : 'Listen on'} Spotify`,
           fn: () => this.openItemInSpotify(this.threeDotItem)
         });
+
+        if(this.itemInQueue && this.threeDotItem.addedBy){
+          this.options.unshift({addedBy: true});
+        }
       }
       catch(error){
         console.log(error)
@@ -303,5 +317,22 @@
 
   .three-dots:focus-visible {
     @extend .focused;
+  }
+
+  .aux-mode-added-by {
+    background-color: $cream;
+    font-weight: bold;
+    font-size: 12px;
+    pointer-events: none;
+    cursor: auto;
+  }
+
+  .aux-mode {
+    background-color: $spotify-green;
+    color: white;
+    padding: 2px 6px;
+    margin: 4px 0px;
+    font-size: 8px;
+    width: max-content;
   }
 </style>

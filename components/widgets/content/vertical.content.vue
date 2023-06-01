@@ -11,21 +11,31 @@
         <v-hover v-slot="{hover}">
           <section>
             <div class="item-container">  
-              <v-card max-width="40%" elevation="7">
-                <v-img 
-                  :src="item.imgUrl.large" 
-                  class="clickable" 
-                  @click="displayItemDetails(item)"
-                  @keydown.enter="displayItemDetails(item)"
-                  tabindex="0"
-                  :alt="`open modal with details about ${item.primaryLabel}`"
-                  :transition="false"
-                >
-                  <template v-slot:placeholder>
-                    <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
-                  </template>
-                </v-img>
-              </v-card>
+              <div class="left-item-container">
+                <v-card elevation="7">
+                  <v-img 
+                    :src="item.imgUrl.large" 
+                    class="clickable" 
+                    @click="displayItemDetails(item)"
+                    @keydown.enter="displayItemDetails(item)"
+                    tabindex="0"
+                    :alt="`open modal with details about ${item.primaryLabel}`"
+                    :transition="false"
+                  >
+                    <template v-slot:placeholder>
+                      <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
+                    </template>
+                  </v-img>
+                </v-card>
+
+                <div class="bottom-left-container">
+                  <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
+
+                  <div class="item-icon-container">
+                    <ThreeDotIcon :item="item" icon-class="ml-1"/>
+                  </div>
+                </div>
+              </div>
 
               <v-icon class="divider">mdi-slash-forward</v-icon>
 
@@ -42,14 +52,6 @@
 
                 <span class="item-detail">{{item.secondaryLabel}}</span>
                 <div class="item-detail"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
-              </div>
-            </div>
-
-            <div class="bottom-container">
-              <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
-
-              <div class="item-icon-container">
-                <ThreeDotIcon :item="item" icon-class="ml-1"/>
               </div>
             </div>
           </section>
@@ -119,22 +121,7 @@
         text-align: left;
       }
     }
-
-    .bottom-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 41%;
-      margin-bottom: 2px;
-
-      .time-ago {
-        font-size: 14px;
-        padding-left: $base-padding;
-        font-weight: bold;
-        color: #888888;
-      }
-    }
-
+    
     .item-detail {
       font-size: 14px;
       padding-bottom: 2px;
@@ -144,5 +131,27 @@
       color: #888888;
       word-break: break-word;
     }
+  }
+
+  .bottom-left-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+    width: 100%;
+    margin-top: 8px;
+
+    .time-ago {
+      font-size: 14px;
+      padding-left: 6px;
+      font-weight: bold;
+      color: #888888;
+    }
+  }
+
+  .left-item-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 50%;
   }
 </style>

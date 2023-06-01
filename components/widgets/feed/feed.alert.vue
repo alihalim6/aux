@@ -39,7 +39,7 @@
         <span class="added-by-name">{{feedAlert.addedByName}}</span>
       </div>
 
-      <div class="d-flex align-center align-self-end" v-if="feedAlert.activityReaction">
+      <div class="d-flex align-center align-self-end mr-1" v-if="feedAlert.activityReaction">
         <v-img :src="feedAlert.track.imgUrl.small" class="small-track-img"></v-img>
       
         <span class="reaction-track-info" :class="{'clickable': !feedAlert.activityReaction}">
@@ -114,7 +114,7 @@
     async resetTimeout(){
       this.timeout = 0;
       await this.$nextTick();
-      this.timeout = this.currentAlert.timeout || 5000;
+      this.timeout = this.currentAlert.timeout || 7000;
     }
 
     trackInfoPressed(){

@@ -32,7 +32,7 @@
     </div>
 
     <div v-if="pendingFirstPlay" class="d-flex align-center width-max-content mt-3">
-      <span class="pending-first-play">Grabbing the AUX cord...</span>
+      <span class="pending-first-play">Grabbing the AUX cord</span>
 
       <v-progress-linear 
         class="looking-icon" 
@@ -374,6 +374,7 @@
         
         if(!paused && position > this.playbackElapsed.ms){
           console.log('catching up to spotify elapsed...');
+          this.playbackElapsed.ms = position;
           this.playbackElapsed.display = msToDuration(position);
         }
       }, 30000);
@@ -708,12 +709,6 @@
     font-size: 24px;
     font-weight: bold;
     margin-right: 12px;
-  }
-
-  .v-progress-linear--reverse .v-progress-linear__stream {
-    animation: stream-rtl 0.45s infinite linear;
-    left: -4px;
-    border-top: 4px solid;
   }
 
   .v-progress-linear__stream {

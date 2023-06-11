@@ -49,7 +49,7 @@
       },
       {
         data: [],
-        label: 'Artists'
+        label: 'Artist'
       }
     ];
 

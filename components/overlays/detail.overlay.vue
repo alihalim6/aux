@@ -65,7 +65,7 @@
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
-                    {{item.name}}
+                    <span :class="{'logo-style': item.isAlbum}">{{item.name}}</span>
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
                       <div class="item-icon-container">
@@ -229,7 +229,7 @@
 
 <style lang="scss">
   $full-image-cta-breakpoint: 850px;
-  $overlay-width: calc(#{$max-inner-width} - 150px);
+  $overlay-width: calc(#{$max-inner-width} - 230px);
 
   .item-image {
     max-width: $overlay-width !important;
@@ -272,8 +272,8 @@
       height: 100%;
       background-color: transparent;
       max-width: unset;
-      border: 2px solid $secondary-theme-color;
       overflow: scroll;
+      border-radius: 8px;
 
       .inner-container {
         max-width: $overlay-width;
@@ -308,7 +308,7 @@
             background-color: $primary-theme-color;
             color: $secondary-theme-color;
             padding: 8px;
-            border-radius: 4px;
+            border-radius: 3px;
             right: 30px;
             top: 12px;
             font-weight: 600;

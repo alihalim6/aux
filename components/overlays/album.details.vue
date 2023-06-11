@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="sub-title-container" :class="{'album-title-container': !album.singleTrack}">
+    <div class="sub-title-container">
       <div>
         <ArtistList :artists="album.artists"/>
         <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
@@ -41,10 +41,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-  .album-title-container {
-    padding-bottom: 28px;
-    border-bottom: 2px solid $spotify-green;
-  }
-</style>

@@ -50,7 +50,7 @@ async function newAndRecommended(){
     const allItems = [
       ...someShuffledNewReleases.map(item => ({...item, isNew: true})), 
       ...recommendedTracks.data.tracks.slice(recommendedAlbumsMax), 
-      ...recommendedArtists.data.artists.slice(0, 3),
+      recommendedArtists.data.artists[0],
       ...recommendedAlbums
     ];
 

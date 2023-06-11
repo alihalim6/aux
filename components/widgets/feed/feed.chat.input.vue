@@ -31,8 +31,7 @@
         <div class="reaction-container" v-if="!chatOnFeedAlert">
           <button 
             class="clickable reaction" 
-            :class="{'pt-1': index == 1}" 
-            v-for="(reaction, index) in reactions" 
+            v-for="reaction in reactions" 
             :key="reaction.name"
             tabindex="0"
             :aria-label="`submit ${String.fromCodePoint(reaction.code)} reaction for track`"
@@ -62,7 +61,11 @@
         name: 'fire'
       },
       {
-        code: 0x1F612,
+        code: 0x1F44D,
+        name: 'like'
+      },
+      {
+        code: 0x1F615,
         name: 'nah'
       }
     ];
@@ -147,10 +150,12 @@
     .reaction-container {
       display: flex;
       align-items: center;
+      height: 30px;
 
       .reaction {
         font-size: 18px;
         margin: 0px $reaction-emoji-margin;
+        height: -webkit-fill-available;
       }
     }
   }

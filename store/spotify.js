@@ -94,7 +94,6 @@ export const actions = {
         return;
       }
       else {
-        await player.setVolume(1);
         commit('setAudioPlaying', true);
 
         let queue = [];
@@ -208,21 +207,29 @@ export const actions = {
         }
 
         if(currentState){
-          console.log(`current Spotify track: ${currentState.track_window.current_track.name}`);
-          console.log(`next Spotify track: ${currentState.track_window.next_tracks[0] ? currentState.track_window.next_tracks[0].name : 'nada'}`);
+          const spotifyPreviousTracks = currentState.track_window.previous_tracks;
+          console.log(spotifyPreviousTracks);
+
+          const spotifyCurrentTrack = currentState.track_window.current_track;
+          console.log(`current Spotify track: ${spotifyCurrentTrack.name}`);
+
+          const spotifyNextTrack = currentState.track_window.next_tracks[0];
+          console.log(`next Spotify track: ${spotifyNextTrack ? spotifyNextTrack.name : 'nada'}`);
           
-          if(currentState.track_window.current_track && currentState.track_window.current_track.uri == item.uri){
+          if(spotifyCurrentTrack && spotifyCurrentTrack.uri == item.uri){
             console.log(`letting Spotify play the current track: ${item.name}`);
             makePlaybackApiCall = false;
           }
 
-          const samePreviousTracks = previouslyPlayingItem.uri == currentState.track_window.current_track.uri;
+          const samePreviousTracks = previouslyPlayingItem.uri == spotifyCurrentTrack.uri;
+          const theirPreviousSameAsTheirCurrent = spotifyPreviousTracks.length && spotifyNextTrack && (spotifyPreviousTracks[spotifyPreviousTracks.length - 1].uri == spotifyCurrentTrack.uri);
 
           if(!nextTrackButtonPressed && 
             samePreviousTracks && 
             currentState.track_window.next_tracks.length && 
-            currentState.track_window.next_tracks[0].uri == item.uri &&
-            currentState.track_window.next_tracks[0].uri != previouslyPlayingItem.uri
+            spotifyNextTrack.uri == item.uri &&
+            spotifyNextTrack.uri != previouslyPlayingItem.uri &&
+            !theirPreviousSameAsTheirCurrent
           ){
             console.log(`letting Spotify play the play next track: ${item.name}`);
             makePlaybackApiCall = false;
@@ -234,8 +241,8 @@ export const actions = {
         //send as many tracks as possible;
         //prevents Spotify from having no next tracks as often because when we allow them to play 2nd of the two we were sending originally,
         //they had no knowledge of what was after that in queue (as expected);
-        //doing it this way leads to sdk is used more (what we want) instead of api call due to them having correct next track more often;
-        //has to use passed in queue instead of rootGetters due to getter timing not being reliable
+        //doing it this way leads to spotify just continuing to play from their side more (what we want) instead of api call due to them having 
+        //correct next track more often; has to use passed-in queue instead of rootGetters due to getter timing not being reliable
 
         let nextTracksToSend = null;
 
@@ -247,6 +254,30 @@ export const actions = {
         }
 
         await startItemPlayback(item, nextTracksToSend);
+      
+        setTimeout(async () => {
+          if(getters.player){
+            const currentState = await getters.player.getCurrentState();
+
+            if(currentState){
+              const spotifyCurrentTrack = currentState.track_window.current_track;
+              console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
+              console.log(`our track: ${item.name}...${item.uri}`);
+
+              //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different)
+              if(spotifyCurrentTrack.name != item.name){
+                console.log('spotify playing wrong track after API call...calling again with just the correct track');
+                await startItemPlayback(item, []);
+                
+                if(nextTracksToSend){
+                  const nextTrack = nextTracksToSend[0];
+                  console.log(`now sending next track...${nextTrack.name}`);
+                  spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+                }
+              }
+            }
+          }
+        }, 0);
 
         //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
         if(queue.length > 1 && !nextTracksToSend){
@@ -259,10 +290,8 @@ export const actions = {
         }
       }
 
-      if(isSafari){ 
-        await getters.player.resume();
-      }
-
+      await getters.player.resume();
+      
       //lock screen
       if('mediaSession' in navigator){
         navigator.mediaSession.metadata = new MediaMetadata({

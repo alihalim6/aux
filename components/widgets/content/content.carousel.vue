@@ -214,7 +214,7 @@
     .primary-container {
       display: flex;
       align-items: flex-start;
-      padding: 16px 6px 4px $label-left-padding;
+      padding: 16px 0px 4px $label-left-padding;
       justify-content: space-between;
 
       .primary-label {
@@ -264,7 +264,6 @@
 
   .vertical-carousel {
     flex-direction: column;
-    padding: 0px $base-padding;
   }
   
   .content-hover {

@@ -84,11 +84,10 @@
 </template>
 
 <script>
-  import {Component, Mutation, Vue} from 'nuxt-property-decorator';
+  import {Component, Vue} from 'nuxt-property-decorator';
   import {PLAYLISTS} from '~/utils/constants';
   import playlists from '~/api/playlists';
   import {setItemMetaData} from '~/utils/helpers';
-  import {USER} from '~/store/constants';
 
   @Component
   export default class Playlists extends Vue {
@@ -112,9 +111,6 @@
         label: PLAYLISTS.LIKED
       }
     ];
-
-    @Mutation('setUserPlaylists', {namespace: USER})
-    setUserPlaylists;
 
     async beforeMount(){
       await this.getData();

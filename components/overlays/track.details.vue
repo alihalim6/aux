@@ -16,7 +16,7 @@
     </div>
 
     <div class="from-album-container" v-if="multiTrackAlbum">
-      <div class="from">FROM:</div>
+      <div class="logo-style">FROM:</div>
       
       <div class="d-flex align-start justify-space-between">
         <div v-if="$vuetify.breakpoint.smAndUp" class="from-album-img" :style="`background-image: url(${track.imgUrl.medium || track.imgUrl.large})`" aria-hidden="true"></div>
@@ -174,15 +174,5 @@
         font-size: 16px;
       }
     }
-  }
-
-  .from {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: $cream;
-    background-color: $rose-red;
-    padding: 0px 8px;
-    width: max-content;
-    transform: skewX(-9.9deg);
   }
 </style>

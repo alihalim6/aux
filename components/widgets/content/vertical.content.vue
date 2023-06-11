@@ -9,52 +9,50 @@
         elevation="3"
       >        
         <v-hover v-slot="{hover}">
-          <section>
-            <div class="item-container">  
-              <div class="left-item-container">
-                <v-card elevation="7">
-                  <v-img 
-                    :src="item.imgUrl.large" 
-                    class="clickable" 
-                    @click="displayItemDetails(item)"
-                    @keydown.enter="displayItemDetails(item)"
-                    tabindex="0"
-                    :alt="`open modal with details about ${item.primaryLabel}`"
-                    :transition="false"
-                  >
-                    <template v-slot:placeholder>
-                      <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
-                    </template>
-                  </v-img>
-                </v-card>
+          <div class="item-container">  
+            <div class="left-item-container">
+              <v-card elevation="7">
+                <v-img 
+                  :src="item.imgUrl.large" 
+                  class="clickable" 
+                  @click="displayItemDetails(item)"
+                  @keydown.enter="displayItemDetails(item)"
+                  tabindex="0"
+                  :alt="`open modal with details about ${item.primaryLabel}`"
+                  :transition="false"
+                >
+                  <template v-slot:placeholder>
+                    <span class="content-placeholder">{{item.primaryLabel.substring(0, 1)}}</span>
+                  </template>
+                </v-img>
+              </v-card>
 
-                <div class="bottom-left-container">
-                  <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
+              <div class="bottom-left-container">
+                <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
 
-                  <div class="item-icon-container">
-                    <ThreeDotIcon :item="item" icon-class="ml-1"/>
-                  </div>
+                <div class="item-icon-container">
+                  <ThreeDotIcon :item="item" icon-class="ml-1"/>
                 </div>
               </div>
-
-              <v-icon class="divider">mdi-slash-forward</v-icon>
-
-              <div class="d-flex flex-column">
-                <button 
-                  class="clickable item-title" 
-                  @click="itemTitlePressed(item)" 
-                  @keydown.enter="itemTitlePressed(item)"
-                  :class="{'lighter-black-color': hover}"
-                  :aria-label="`${item.isCollection ? `open modal with details about ${item.primaryLabel}` : `play ${item.primaryLabel} by ${item.secondaryLabel}`}`"
-                >
-                  {{item.primaryLabel}}
-                </button>
-
-                <span class="item-detail">{{item.secondaryLabel}}</span>
-                <div class="item-detail"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
-              </div>
             </div>
-          </section>
+
+            <v-icon class="divider">mdi-slash-forward</v-icon>
+
+            <div class="d-flex flex-column">
+              <button 
+                class="clickable item-title" 
+                @click="itemTitlePressed(item)" 
+                @keydown.enter="itemTitlePressed(item)"
+                :class="{'lighter-black-color': hover}"
+                :aria-label="`${item.isCollection ? `open modal with details about ${item.primaryLabel}` : `play ${item.primaryLabel} by ${item.secondaryLabel}`}`"
+              >
+                {{item.primaryLabel}}
+              </button>
+
+              <span class="item-detail">{{item.secondaryLabel}}</span>
+              <div class="item-detail"><v-icon v-if="item.numberOfTracks" class="record-icon">mdi-music-circle</v-icon>{{item.numberOfTracks}}</div>
+            </div>
+          </div>
         </v-hover>
       </div>
     </div>

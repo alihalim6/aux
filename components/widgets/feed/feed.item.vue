@@ -92,9 +92,6 @@
     @Prop()
     activity;
 
-    @Prop()
-    itemSet;
-
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
 
@@ -103,9 +100,6 @@
     
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
-
-    @Mutation('closeFeed', {namespace: UI})
-    closeFeed;
 
     @Mutation('setToast', {namespace: UI})
     setToast;

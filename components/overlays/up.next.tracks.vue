@@ -290,7 +290,7 @@
         }
      
         .info-value {
-          transform: scaleY(1.7);
+          transform: scaleY(1.6);
           padding: 2px 1px;
         }
       }

@@ -18,12 +18,12 @@
         </button>
 
         <div class="user-menu" :class="{'no-other-users': !liveUsers.length}">
-          <v-snackbar v-model="showUserMenu" :timeout="-1" absolute transition="slide-y-transition" bottom>
+          <v-snackbar v-model="showUserMenu" :timeout="-1" transition="slide-y-transition" absolute app>
             <div v-show="liveUsers.length" class="user-list width-100">
               <div class="cursor-auto">
                 <div class="following-on">FOLLOW ON SPOTIFY</div>
                 
-                <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
+                <div class="." v-for="user in liveUsers" :key="user.id">
                   <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
 
                   <div :class="{'ignored-opacity': user.ignored}" aria-hidden="true">
@@ -34,7 +34,7 @@
                   <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
                   
                   <v-switch 
-                    :class="{'not-following-switch': !user.following, 'ignored-opacity': user.ignored}" 
+                    :class="{'ignored-opacity': user.ignored}" 
                     v-model="user.following" 
                     :hide-details="true" 
                     color="#1DB954" 
@@ -55,7 +55,7 @@
         </div>
 
         <!-- couldn't get shitty vuetify to handle pressing enter for app header menus-->
-        <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y>
+        <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y :nudge-bottom="8">
           <template v-slot:activator="{on, attrs}">
             <div v-bind="attrs" v-on="on" class="profile-menu-icon" tabindex="-1" aria-hidden="true">     
               <v-img v-if="profile.img" :src="profile.img" class="round-img-icon menu-img"></v-img>
@@ -80,7 +80,21 @@
               </div>
             </v-list-item>
 
-            <v-list-item v-if="!runningInPwa && isIos" class="clickable menu-option-container" @click="installPwaPressed()">
+            <v-list-item class="clickable menu-option-container">
+              <button class="d-flex align-center" @click="setToast({text: 'Coming soon!'})">
+                <v-icon 
+                  class="clickable ml-3 mr-4" 
+                  :color="`${darkMode ? '#fcfce0' : '#191414'}`" 
+                  id="auxModeTooltipIcon"
+                >
+                  {{`mdi-${darkMode ? 'white-balance-sunny' : 'power-sleep'}`}}
+                </v-icon>
+
+                <span class="menu-label">Make It {{darkMode ? 'Light' : 'Dark'}}</span>
+              </button>
+            </v-list-item>
+
+            <v-list-item v-if="!runningInPwa && isMobile()" class="clickable menu-option-container" @click="installPwaPressed()">
               <span class="install-pwa-label on-air">Install as an App</span>
             </v-list-item>
 
@@ -113,9 +127,11 @@
   export default class AppHeader extends Vue {
     auxModeOn = true;
     isIos = false;
+    isAndroid = false;
     zIndex = 2000;
     runningInPwa = false;
     showUserMenu = false;
+    darkMode = false;
 
     @Getter('users', {namespace: FEED})
     users;
@@ -161,6 +177,8 @@
       if(navigator){
         const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
         this.isIos = iosPlatforms.find(platform => navigator.userAgent.includes(platform));
+        this.isAndroid = navigator.userAgent.toLowerCase().indexOf("android") > -1;
+
         this.runningInPwa = window.matchMedia('(display-mode: standalone)').matches || document.referrer.startsWith('android-app://') || navigator.standalone;
       }
     }
@@ -252,8 +270,12 @@
       });
     }
 
+    isMobile(){
+      return this.isIos || this.isAndroid;
+    }
+
     installPwaPressed(){
-      this.setActionDialog({isIosPwaInstall: true, confirmLabel: 'GOT IT'});
+      this.setActionDialog({isIosPwaInstall: this.isIos, isAndroidPwaInstall: this.isAndroid, confirmLabel: 'GOT IT'});
     }
   }
 </script>
@@ -347,19 +369,26 @@
         }
       }
 
-      .user-menu {        
+      .user-menu {      
+        position: absolute;
+        right: 55px;
+        top: calc(#{$app-header-height} - 24px);
+        max-width: 50vw;
+
+        .v-snack {
+          position: relative;
+        }
+                  
         .v-snack__wrapper {
-          top: 140px;
-          right: 97px;
           background-color:  white;
           color: $primary-theme-color;
           border: none;
+          max-width: none;
+          min-width: max-content;
         }
-      }
 
-      .no-other-users {        
-        .v-snack__wrapper {
-          top: 157px;
+        .theme--dark.v-input--switch .v-input--switch__track {
+          color: #ccc;
         }
       }
     }
@@ -394,7 +423,7 @@
 
     .v-label {
       @extend .menu-label;
-      padding-left: 4px;
+      padding-left: 6px;
     }
   }
 
@@ -410,9 +439,8 @@
     font-weight: bold;
     margin-left: 8px;
     overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
-    width: 75%;
+    width: 160px;
     margin-right: 18px;
   }
   
@@ -436,7 +464,7 @@
   .live-user-container {
     display: flex;
     align-items: center;
-    margin: 16px 0px;
+    margin: 24px 0px;
     font-size: 14px;
 
     .v-input--switch__track {
@@ -481,7 +509,7 @@
   }
 
   .no-other-users-img {
-    $size: 50px;
+    $size: 54px;
 
     width: $size;
     max-width: $size;
@@ -579,4 +607,6 @@
   .on-air-container:focus-visible {
     @extend .focused;
   }
+
+
 </style>

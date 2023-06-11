@@ -180,6 +180,7 @@
           font-size: 12px;
           color: #666666;
           font-weight: bold;
+          margin-top: 4px;
         }
 
         .track-duration {

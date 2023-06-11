@@ -57,7 +57,7 @@
         </v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
-          <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
+          <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold" @click="displayItemDetails()">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
 
           <div class="d-flex align-center mb-1">
             <v-slider 
@@ -285,12 +285,14 @@
       const item = this.currentlyPlayingItem;
 
       if(item && item.queueId){
+        this.player.setVolume(1);
+
         if(!this.playbackInterval){
           this.startInterval();
         }
 
         const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
-        this.itemLiked = data[0];
+        this.itemLiked = data ? data[0] : false;
         this.trackReady = true;
 
         //lock screen; https://web.dev/media-session/
@@ -342,6 +344,7 @@
           this.playbackElapsed.ms += 1000;
 
           if(this.playbackElapsed.ms > this.playbackTotal.ms){
+            this.player.setVolume(0);
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){
@@ -588,7 +591,7 @@
         }
 
         .playback-time {
-          color: #888888;
+          color: $primary-theme-color;
           font-size: 12px;
         }
 

@@ -203,7 +203,6 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
     spotifyPlayer.on('initialization_error', message => {
       console.error('Failed to initialize', message);
       $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
-      retryPlayerInit();
     });
 
     spotifyPlayer.addListener('authentication_error', async ({message}) => {
@@ -232,11 +231,11 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
 
       const spotifyPreviousTracks = currentState.track_window.previous_tracks;
       console.log(spotifyPreviousTracks);
-      console.log(currentState.track_window.current_track);
 
       const auxCurrentTrack = $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`];
-      const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`];
       console.log(auxCurrentTrack);
+
+      const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`];
       console.log(auxNextTrack);
 
       const ourCurrentTrackIsSpotifyPrevious = spotifyPreviousTracks.length && $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] ? 
@@ -250,7 +249,7 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
         const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? spotifyCurrentTrack.uri == auxNextTrack.uri : false;
 
           if(!ourNextTrackIsSpotifyCurrent){
-            await window.spotifyPlayer.setVolume(0);
+            await window.spotifyPlayer.pause();
           }
         
         console.log(`Spotify moved to a different next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);

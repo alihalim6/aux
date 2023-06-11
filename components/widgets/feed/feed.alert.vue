@@ -84,9 +84,6 @@
     @Mutation('displayFeed', {namespace: UI})
     displayFeed;
 
-    @Mutation('closeFeed', {namespace: UI})
-    closeFeed;
-
     @Mutation('toggleReplyingToFeedReaction', {namespace: UI})
     toggleReplyingToFeedReaction;
 

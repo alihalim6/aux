@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 const bodyParser = require('body-parser')
 const app = require('express')();
 const client = new MongoClient(process.env.MONGO_URI);
-const database = client.db('feed');
+const database = client.db('aux');
 const users = database.collection('users');
 
 app.use(bodyParser.json());

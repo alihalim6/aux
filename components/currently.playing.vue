@@ -22,10 +22,10 @@
       </v-img>
 
       <button class="clickable view-feed-container" @click="feedIconPressed()" @keydown.enter.prevent="feedIconPressed()">
-        <div class="d-flex align-center ml-2" tabindex="0" aria-label="toggle the activity feed">
+        <div class="d-flex align-center ml-2">
           <v-icon x-small color="red">mdi-circle</v-icon>
           <div class="on-air">FEED</div>
-          <v-icon large class="clickable on-air-chevron" color="black">mdi-chevron-up</v-icon>
+          <v-icon large class="clickable on-air-chevron" color="black" id="feedChevron">mdi-chevron-up</v-icon>
           <v-icon v-show="showUnseenDot" large class="unseen-activity-dot" color="#36a8ff">mdi-circle-small</v-icon>
         </div>
       </button>
@@ -285,8 +285,6 @@
       const item = this.currentlyPlayingItem;
 
       if(item && item.queueId){
-        this.player.setVolume(1);
-
         if(!this.playbackInterval){
           this.startInterval();
         }
@@ -319,6 +317,7 @@
     @Watch('feed', {deep: true})
     feedChanged(newVal){
       this.showUnseenDot = newVal.unseenActivity;
+      this.handleFeedChevron();
     }
 
     beforeMount(){
@@ -327,8 +326,20 @@
         this.upNextDisplaying = false;
       });
 
+      window.addEventListener('popstate', e => {
+        this.$nuxt.$root.$emit('hideUpNext');
+      });
+
       this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, this.handleItemLikeStatus);
       this.$nuxt.$root.$on(LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));      
+    }
+
+    handleFeedChevron(){
+      const feedChevron = document.getElementById('feedChevron');
+
+      if(feedChevron){
+        feedChevron.style.animation = this.feed.display ? 'rotate-180 0.2s forwards 1' : '';
+      }
     }
 
     initializeTiming(item){
@@ -344,7 +355,6 @@
           this.playbackElapsed.ms += 1000;
 
           if(this.playbackElapsed.ms > this.playbackTotal.ms){
-            this.player.setVolume(0);
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){
@@ -380,7 +390,7 @@
           this.playbackElapsed.ms = position;
           this.playbackElapsed.display = msToDuration(position);
         }
-      }, 30000);
+      }, 5000);
     }
 
     async repeatCurrentTrack(){
@@ -421,6 +431,7 @@
       if(this.hasNextTrack){
         this.upNextHidden = false;
         this.upNextDisplaying = true;
+        history.pushState({}, '');
       }
     }
 
@@ -431,6 +442,8 @@
       else{
         this.displayFeed();
       }
+
+      this.handleFeedChevron();
     }
 
     async trackLikeToggled(){
@@ -525,11 +538,11 @@
       display: flex;
       padding-top: 2px;
       position: relative;
+      top: 0px;
 
       &:hover {
         .on-air-chevron {
-          transition: translate 0.5s ease-out;
-          transform: translateY(-3px);
+          top: -2px;
         }
       }
     }
@@ -680,7 +693,7 @@
     pointer-events: none;
   }
 
-  $queue-control-threshold: 400px;
+  $queue-control-threshold: 500px;
 
   .queue-control-container {
     display: flex;
@@ -690,6 +703,7 @@
   .adjust-queue-control {
     @media(max-width: $queue-control-threshold){
       justify-content: flex-start;
+      margin-left: -4px;
     }
   }
 
@@ -721,5 +735,12 @@
   .looking-icon {
     width: 34px;
     font-size: 34px;
+  }
+
+  @keyframes rotate-180 {
+    to {
+      transform: rotate(180deg);
+      top: 0px;
+    }
   }
 </style>

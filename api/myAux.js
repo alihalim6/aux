@@ -5,13 +5,19 @@ async function myAux(){
   const limit = 50;
 
   try {
-    const likedTracks = await httpClient.get(`/me/tracks?limit=${limit}`);
-    const likedAlbums = await httpClient.get(`/me/albums?limit=${limit}`);
+    const myAuxData = await Promise.all([
+      httpClient.get(`/me/tracks?limit=${limit}`),
+      httpClient.get(`/me/albums?limit=${limit}`),
+      httpClient.get('/me/player/recently-played?limit=15'),
+      topItems('artists', 5),
+      topItems('tracks')
+    ]);
 
-    const recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=25');
-
-    const topArtists = await topItems('artists');
-    const topTracks = await topItems('tracks');
+    const likedTracks = myAuxData[0];
+    const likedAlbums = myAuxData[1];
+    const recentlyPlayed = myAuxData[2];
+    const topArtists = myAuxData[3];
+    const topTracks = myAuxData[4];
     const userTopItems = [...topArtists.data.items, ...topTracks.data.items];
 
     const {data} = await httpClient.get('/me');

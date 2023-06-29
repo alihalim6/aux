@@ -207,7 +207,8 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
 
     spotifyPlayer.addListener('authentication_error', async ({message}) => {
       console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
-      retryPlayerInit();
+      await retryPlayerInit();
+      resolve();
     });
 
     spotifyPlayer.addListener('not_ready', async () => {
@@ -239,19 +240,14 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       console.log(auxNextTrack);
 
       const ourCurrentTrackIsSpotifyPrevious = spotifyPreviousTracks.length && $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] ? 
-        spotifyPreviousTracks[spotifyPreviousTracks.length - 1].uri == auxCurrentTrack.uri : false;
+        isSameTrack(spotifyPreviousTracks[spotifyPreviousTracks.length - 1], auxCurrentTrack) : false;
 
       console.log(`ourCurrentTrackIsSpotifyPrevious: ${ourCurrentTrackIsSpotifyPrevious}`);
 
       const spotifyCurrentTrack = currentState.track_window.current_track;
 
-      if(ourCurrentTrackIsSpotifyPrevious && (spotifyCurrentTrack.uri != auxCurrentTrack.uri) && auxNextTrack){
-        const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? spotifyCurrentTrack.uri == auxNextTrack.uri : false;
-
-          if(!ourNextTrackIsSpotifyCurrent){
-            await window.spotifyPlayer.pause();
-          }
-        
+      if(ourCurrentTrackIsSpotifyPrevious && isSameTrack(spotifyCurrentTrack, auxCurrentTrack) && auxNextTrack){
+        const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? isSameTrack(spotifyCurrentTrack, auxNextTrack) : false;
         console.log(`Spotify moved to a different next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);
         $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: !ourNextTrackIsSpotifyCurrent});
       }
@@ -286,9 +282,18 @@ export function isSameTrack(trackA, trackB){
     const trackAName = trackA.name || trackA.primaryLabel;
     const trackBName = trackB.name || trackB.primaryLabel;
 
-    return (trackAName == trackBName) && 
-          (trackA.duration_ms == trackB.duration_ms) && 
-          (trackA.track_number == trackB.track_number);
+    const bothHaveName = trackAName && trackBName;
+    const bothHaveUri = trackA.uri && trackB.uri;
+
+    //not even durations can be trusted among items with same uri smh so adding uri check;
+    //Dance Now by JID even seen with different uri AND duration_ms comparing our item to sdk's
+    if(bothHaveUri && trackA.uri == trackB.uri){
+      return true;
+    }
+
+    if(bothHaveName && trackAName == trackBName){
+      return true;
+    }
   }
 
   return false;

@@ -1,9 +1,9 @@
 <template>
-  <section v-if="this.track">
+  <section v-if="track">
     <v-dialog content-class="pa-0" :value="track" width="83%" max-width="max-content" @click:outside="closeModal()" transition="v-fade-transition">
-      <div class="add-to-playlist" id="addToPlaylistContainer">
+      <div class="add-to-playlist">
         <div class="d-flex align-center justify-space-between mb-6 width-100">
-          <span class="add-track-title">Add <span class="font-weight-bold">{{ this.track.name }}</span> to...</span>
+          <span class="add-track-title">Add <span class="font-weight-bold">{{ track.name }}</span> to...</span>
           <v-icon class="clickable" color="#191414" large @click="closeModal()" aria-label="close add to playlist modal">mdi-close</v-icon>
         </div>
 

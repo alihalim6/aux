@@ -80,7 +80,8 @@ export default {
     scss: {
       implementation: require('sass'),
     },
-    analyze: true
+    analyze: true,
+    extractCSS: true
   },
 
   vuetify: {

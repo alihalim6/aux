@@ -4,7 +4,7 @@ import auth from './_auth';
 const bodyParser = require('body-parser')
 const app = require('express')();
 const client = new MongoClient(process.env.MONGO_URI, {useUnifiedTopology: true});
-const database = client.db('feed');
+const database = client.db('aux');
 
 app.use(bodyParser.json());
 
@@ -22,6 +22,9 @@ app.post('/initialize', async (req, res) => {
         if(reaction.queueId == activity.queueId){
           if(!req.body.splash && reaction.author == profile.name){
             reaction.author = 'You';
+          }
+          else if(req.body.splash){
+            reaction.timestamp = `${reaction._id}${Date.now()}`;
           }
 
           if(!activity.reactions){

@@ -31,8 +31,8 @@
           If you're good with that, here's how to install AUX as an app (makes for a way better experience) if you didn't already know:
         </div>
 
-        <div class="my-2">1. Tap the share icon in the browser bar.</div>
-        <div>2. Hit "Add to Home screen".</div>
+        <div class="my-2">1. Tap the share icon in the Safari browser bar.</div>
+        <div>2. Hit "Add to Home screen."</div>
       </div>
 
       <div v-else-if="actionDialog.isAndroidPwaInstall" class="dialog-text" id="actionDialogText">
@@ -40,7 +40,7 @@
         </div>
 
         <div class="my-2">1. Tap the three-dot icon in the browser bar.</div>
-        <div>2. Hit "Add to Home screen".</div>
+        <div>2. Hit "Add to Home screen."</div>
       </div>
 
       <span v-else class="dialog-text" id="actionDialogText">{{actionDialog.text}}</span>

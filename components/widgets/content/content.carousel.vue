@@ -11,7 +11,7 @@
                   v-if="item.isArtist" 
                   class="clickable content-img artist-img" 
                   :class="{'content-hover': hover && !lastNewAndRecoCarouselItem(index)}" 
-                  :src="carouselImgSrc(item, $vuetify.breakpoint.xs)" 
+                  :src="carouselImgSrc(item)" 
                   @click="contentImgPressed(item)"
                   @keydown.enter="contentImgPressed(item)"
                   tabindex="0"
@@ -38,7 +38,7 @@
                   <v-img 
                     class="content-img" 
                     :class="{'auto-size': vertical}"
-                    :src="carouselImgSrc(item, $vuetify.breakpoint.xs)" 
+                    :src="carouselImgSrc(item)" 
                     @click="contentImgPressed(item)"
                     @keydown.enter="contentImgPressed(item)"
                     tabindex="0"
@@ -145,14 +145,12 @@
       return isSameTrack(item, this.currentlyPlayingItem);
     }
 
-    carouselImgSrc(item, smallScreen) {
-      //💩 code don't care :)
-
+    carouselImgSrc(item) {
       if(this.addToPlaylist) {
         return item.imgUrl.medium || item.imgUrl.large;
       }
 
-      return item.imgUrl[this.vertical && !smallScreen ? 'large' : 'medium'];
+      return item.imgUrl.large;
     }
 
     addTrackToPlaylist(playlist) {
@@ -214,7 +212,7 @@
     .primary-container {
       display: flex;
       align-items: flex-start;
-      padding: 16px 0px 4px $label-left-padding;
+      padding: 18px 0px 4px $label-left-padding;
       justify-content: space-between;
 
       .primary-label {
@@ -273,8 +271,7 @@
 
   .add-to-playlist-title {
     font-size: 16px;
-    background-color: $primary-theme-color;
-    color: $secondary-theme-color;
+    color: $primary-theme-color;
     font-style: italic;
     text-align: center;
     max-width: $content-img-size;

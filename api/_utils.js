@@ -5,6 +5,7 @@ import {storageGet} from '~/utils/storage';
 import {AUTH, DEVICE_ID, SPLASH} from '~/utils/constants';
 import {UI, SPOTIFY} from '~/store/constants';
 import {initSpotifyPlayer, shuffleArray} from '~/utils/helpers';
+import artist from './artist';
 
 export const PLAYBACK_API_PATH = '/me/player/play';
 
@@ -20,7 +21,7 @@ function isPlaybackCall(config){
 }
 
 function isTrackRepeatCall(config){
-  return config.url.indexOf('/me/player/repeat') > -1;
+  return config && config.url.indexOf('/me/player/repeat') > -1;
 }
 
 httpClient.interceptors.request.use(async config => {
@@ -47,7 +48,7 @@ httpClient.interceptors.request.use(async config => {
 });
 
 function shouldRetry(responseCode){
-  return responseCode == 401 || responseCode.toString().indexOf('5') == 0;
+  return responseCode && (responseCode == 401 || responseCode.toString().indexOf('5') == 0);
 }
 
 httpClient.interceptors.response.use(async response => {
@@ -77,7 +78,7 @@ httpClient.interceptors.response.use(async response => {
   else if(shouldRetry(error.response && error.response.status)){
     retryRequest(error.config);
   }
-  else if(!isTrackRepeatCall()){
+  else if(!isTrackRepeatCall(error.config)){
     handleApiError();
   }
 });
@@ -118,35 +119,44 @@ export function handleApiError(message){
   $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
 }
 
-export const topItems = async (topType, config) => {
-  return await httpClient.get(`/me/top/${topType}?limit=${topType == 'artists' ? 5 : 20}`, config);
+export const topItems = async (topType, limit) => {
+  return await httpClient.get(`/me/top/${topType}?limit=${limit || 15}`);
 };
 
 
 //note: the artist objects in the top tracks response don't have genres; would need to use the href in there to make API call to get artist(s)
-const getSeedGenres = (artists) => {
+const getSeedGenres = async (artists) => {
   //genres associated with artists don't seem to align with the available seed genres (/recommendations/available-genre-seeds), but we'll use them for /recommendations anyway in case there's overlap
-  
-  shuffleArray(artists.items);
 
-  return artists.items.length ? artists.items[0].genres[0] : '';
+  if(!artists.length){
+    return '';
+  }
+  
+  artists = shuffleArray(artists);
+  let seedArtist = artists[0];
+
+  if(!seedArtist.genres){
+    seedArtist = await artist(seedArtist.id);
+  }
+
+  return seedArtist.genres[0];
 };
 
-export const getRecommendationSeeds = (artists, tracks) => {
+export const getRecommendationSeeds = async (artists, tracks) => {
   let seedArtists = '';
   let seedTracks = '';
 
   //randomize seeds
-  shuffleArray(artists.items);
-  shuffleArray(tracks.items);
+  artists = shuffleArray(artists);
+  tracks = shuffleArray(tracks);
 
   function addSeeds(seedObject, seeds){
     let i = 0;
 
     //API allows up to five seeds, so we'll do up to two for tracks/artists, and one genre
     while(i < 2){
-      console.log(`seed: ${seedObject.items[i].name}`);
-      seeds += seedObject.items[i].id + ',';
+      console.log(`seed: ${seedObject[i].name}`);
+      seeds += seedObject[i].id + ',';
       i++;
     }
 
@@ -155,15 +165,15 @@ export const getRecommendationSeeds = (artists, tracks) => {
 
   seedArtists = addSeeds(artists, seedArtists);
   seedTracks = addSeeds(tracks, seedTracks);
+  const genres = await getSeedGenres(artists, tracks);
 
   return {
     artists: seedArtists,
     tracks: seedTracks,
-    genres: getSeedGenres(artists, tracks)
+    genres
   };
 };
 
 export const getATopArtist = (artists) => {
-  shuffleArray(artists.items);
-  return artists.items[0];
+  return shuffleArray(artists.items)[0];
 };

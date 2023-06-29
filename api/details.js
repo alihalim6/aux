@@ -7,6 +7,8 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
   let artistAlbums = defaultResponse;
   let artistTopTracks = defaultResponse;
   let relatedArtists = defaultResponse;
+  let artistData = [];
+
   let albumTracks = defaultResponse;
   let playlistTracks = [];
   let totalPlaylistTracks;
@@ -23,10 +25,16 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
     if(singleArtistId){
       itemId = singleArtistId;
     }
-    
-    artistAlbums = await httpClient.get(`/artists/${itemId}/albums?limit=50&include_groups=album,compilation`);
-    artistTopTracks = await httpClient.get(`/artists/${itemId}/top-tracks?market=US`);
-    relatedArtists = await httpClient.get(`/artists/${itemId}/related-artists`);
+
+    artistData = await Promise.all([
+      httpClient.get(`/artists/${itemId}/albums?limit=50&include_groups=album,compilation`),
+      httpClient.get(`/artists/${itemId}/top-tracks?market=US`),
+      httpClient.get(`/artists/${itemId}/related-artists`)
+    ]);
+
+    artistAlbums = artistData[0];
+    artistTopTracks = artistData[1];
+    relatedArtists = artistData[2];
   }
   
   if(isPlaylist){

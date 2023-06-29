@@ -19,17 +19,18 @@
     <CurrentlyPlaying v-show="!isLoading && (!isSafari || playerActivated)"/>
 
     <LoadingOverlay v-if="isLoading"/>    
-    <LazyFeedAlert/>
+    <LazyFeedAlert v-show="!isSafari || playerActivated"/>
 
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
     <LazyAddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
+    <LazyUserProfile v-show="userProfile" :profile="userProfile" />
     <LazyToast/>
     
     <v-dialog :value="!isLoading && isSafari && !playerActivated" persistent overlay-color="red" max-width="max-content">
       <div class="activate-player">
         <button v-show="!activatingPlayer" class="clickable nav-button" @click="activatePlayer()">
           <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
-          <span class="nav-button-label">ACTIVATE MUSIC PLAYER</span>
+          <span class="nav-button-label">ACTIVATE SPOTIFY PLAYER</span>
         </button>
 
         <v-progress-circular v-show="activatingPlayer" indeterminate color="#fcfce0"></v-progress-circular>
@@ -53,6 +54,7 @@
     activatingPlayer = false;
     hideCurrentlyPlaying = false;
     isSafari = false;
+    userProfile = null;
     
     @Getter('isLoading', {namespace: UI})
     isLoading;
@@ -82,6 +84,13 @@
       });
 
       this.$nuxt.$root.$on('closeAddToPlaylistModal', () => this.trackToAddToPlaylist = null);
+
+      this.$nuxt.$root.$on('showUserProfileModal', user => {
+        this.userProfile = user;
+      });
+
+      this.$nuxt.$root.$on('closeUserProfileModal', () => this.userProfile = null);
+
       this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     }
 
@@ -95,6 +104,8 @@
     beforeDestroy(){
       this.$nuxt.$root.$off('addToPlaylist');
       this.$nuxt.$root.$off('closeAddToPlaylistModal');
+      this.$nuxt.$root.$off('showUserProfileModal');
+      this.$nuxt.$root.$off('closeUserProfileModal');
     }
   }
 </script>

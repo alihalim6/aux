@@ -1,26 +1,31 @@
 import socket from '~/plugins/socket.client.js';
 import {FEED, USER, UI} from '~/store/constants';
 import {ignoredUsers} from '~/utils/helpers';
+import {SPLASH} from '~/utils/constants';
+
+function isNotSplash(){
+  return window.location.href.indexOf(SPLASH) == -1;
+}
 
 function initSocketClient(){
   socket.on('handleLiveUser', userProfile => {
-    $nuxt.$store.dispatch(`${FEED}/handleLiveUser`, userProfile);
+    if(isNotSplash()) $nuxt.$store.dispatch(`${FEED}/handleLiveUser`, userProfile);
   });
 
   socket.on('handleActivity', activity => {
-    $nuxt.$store.dispatch(`${FEED}/handleActivity`, activity);
+    if(isNotSplash()) $nuxt.$store.dispatch(`${FEED}/handleActivity`, activity);
   });
 
   socket.on('handleUserDisconnect', () => {
-    $nuxt.$store.dispatch(`${FEED}/handleUserDisconnect`);
+    if(isNotSplash()) $nuxt.$store.dispatch(`${FEED}/handleUserDisconnect`);
   });
 
   socket.on('handleActivityReactionAdded', reaction => {
-    $nuxt.$store.dispatch(`${FEED}/handleActivityReaction`, reaction);
+    if(isNotSplash()) $nuxt.$store.dispatch(`${FEED}/handleActivityReaction`, reaction);
   });
 
   socket.on('handleUserFollowed', ({followedById, followedByName, followedId}) => {
-    if(($nuxt.$store.getters[`${USER}/profile`].id == followedId) && !ignoredUsers().find(userId => userId == followedById)){
+    if(isNotSplash() && ($nuxt.$store.getters[`${USER}/profile`].id == followedId) && !ignoredUsers().find(userId => userId == followedById)){
       $nuxt.$store.commit(`${UI}/setToast`, {text: `${followedByName} just followed you on Spotify!`});
     }
   });

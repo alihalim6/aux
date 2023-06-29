@@ -6,6 +6,7 @@ import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
 import {DEVICE_ID} from '~/utils/constants';
 import spotify from '~/api/spotify';
+import {isSameTrack} from '../utils/helpers';
 
 export const state = () => {
   return {
@@ -57,7 +58,8 @@ export const actions = {
     nextTrackButtonPressed, 
     playingNextTrack,
     playingNextTrackNow,
-    pause
+    pause,
+    playingOtherTrackNow
   }) => {
     try{
       if(!getters.player){
@@ -124,8 +126,7 @@ export const actions = {
 
         if(shuffle){
           console.log('item set shuffled');
-          shuffleArray(queue);
-          item = queue[0];
+          item = shuffleArray(queue)[0];
         }
 
         const queueId = playingTrackWithinExistingQueue || item.queueId ? item.queueId : uuid();
@@ -143,7 +144,8 @@ export const actions = {
           playingNextTrack,
           nextTrackButtonPressed,
           playingNextTrackNow,
-          nothingWasPlaying
+          nothingWasPlaying,
+          playingOtherTrackNow
         });
         
         commit('setNewPlayback', queueId);
@@ -171,7 +173,8 @@ export const actions = {
     playingNextTrack, 
     nextTrackButtonPressed,
     playingNextTrackNow,
-    nothingWasPlaying
+    nothingWasPlaying,
+    playingOtherTrackNow
   }) => {
     try {
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -199,40 +202,53 @@ export const actions = {
 
       let makePlaybackApiCall = true;
 
-      if(playingNextTrack && !playingNextTrackNow){
+      if(playingNextTrack && !playingNextTrackNow && !playingOtherTrackNow){
         let currentState;
       
         if(getters.player){
           currentState = await getters.player.getCurrentState();
         }
 
+        console.log('currentState:', currentState);
+
         if(currentState){
           const spotifyPreviousTracks = currentState.track_window.previous_tracks;
           console.log(spotifyPreviousTracks);
 
           const spotifyCurrentTrack = currentState.track_window.current_track;
-          console.log(`current Spotify track: ${spotifyCurrentTrack.name}`);
+          console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.duration_ms} ${spotifyCurrentTrack.uri}`);
 
           const spotifyNextTrack = currentState.track_window.next_tracks[0];
-          console.log(`next Spotify track: ${spotifyNextTrack ? spotifyNextTrack.name : 'nada'}`);
           
-          if(spotifyCurrentTrack && spotifyCurrentTrack.uri == item.uri){
+          console.log(`our item: ${item.name} ${item.duration_ms} ${item.uri}`);
+
+          if(spotifyCurrentTrack && isSameTrack(spotifyCurrentTrack, item)){
             console.log(`letting Spotify play the current track: ${item.name}`);
             makePlaybackApiCall = false;
           }
 
-          const samePreviousTracks = previouslyPlayingItem.uri == spotifyCurrentTrack.uri;
-          const theirPreviousSameAsTheirCurrent = spotifyPreviousTracks.length && spotifyNextTrack && (spotifyPreviousTracks[spotifyPreviousTracks.length - 1].uri == spotifyCurrentTrack.uri);
+          const theirPreviousSameAsTheirCurrent = spotifyPreviousTracks.length && isSameTrack(spotifyPreviousTracks[spotifyPreviousTracks.length - 1], spotifyCurrentTrack);
+          const correctNextTrack = spotifyNextTrack && isSameTrack(spotifyNextTrack, item);
+
+          if(spotifyNextTrack){
+            console.log(`NEXT SPOTIFY TRACK::: ${spotifyNextTrack.name} ${spotifyNextTrack.duration_ms} ${spotifyNextTrack.uri}`)
+          }
+
+          console.log('correctNextTrack', correctNextTrack);
 
           if(!nextTrackButtonPressed && 
-            samePreviousTracks && 
-            currentState.track_window.next_tracks.length && 
-            spotifyNextTrack.uri == item.uri &&
-            spotifyNextTrack.uri != previouslyPlayingItem.uri &&
-            !theirPreviousSameAsTheirCurrent
+            correctNextTrack &&
+            !isSameTrack(spotifyNextTrack, previouslyPlayingItem.uri)
           ){
-            console.log(`letting Spotify play the play next track: ${item.name}`);
-            makePlaybackApiCall = false;
+            if(theirPreviousSameAsTheirCurrent && correctNextTrack){
+              console.log(`thier prev same as their current but their next track correct -> using API to move to next track...`);
+              spotify({url: '/me/player/next', method: 'POST'});
+              makePlaybackApiCall = false;
+            }
+            else if(correctNextTrack){
+              console.log(`letting Spotify play the play next track: ${item.name}`);
+              makePlaybackApiCall = false;
+            }
           }
         }
       }
@@ -255,29 +271,28 @@ export const actions = {
 
         await startItemPlayback(item, nextTracksToSend);
       
-        setTimeout(async () => {
-          if(getters.player){
-            const currentState = await getters.player.getCurrentState();
+        if(getters.player){
+          const currentState = await getters.player.getCurrentState();
 
-            if(currentState){
-              const spotifyCurrentTrack = currentState.track_window.current_track;
-              console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
-              console.log(`our track: ${item.name}...${item.uri}`);
+          if(currentState){
+            const spotifyCurrentTrack = currentState.track_window.current_track;
+            console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
+            console.log(`our track: ${item.name}...${item.uri}`);
 
-              //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different)
-              if(spotifyCurrentTrack.name != item.name){
-                console.log('spotify playing wrong track after API call...calling again with just the correct track');
-                await startItemPlayback(item, []);
-                
-                if(nextTracksToSend){
-                  const nextTrack = nextTracksToSend[0];
-                  console.log(`now sending next track...${nextTrack.name}`);
-                  spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
-                }
+            //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different)
+            if(spotifyCurrentTrack.name != item.name){
+              console.log('spotify playing wrong track after API call...calling again with just the correct track (if it is a track type');
+              await startItemPlayback(item, []);
+
+              if(nextTracksToSend && nextTracksToSend[0].uri.indexOf('track') > -1){
+                console.log(`now sending next track...${nextTracksToSend[0].name}`);
+                spotify({url: `/me/player/queue?uri=${nextTracksToSend[0].uri}`, method: 'POST'});
               }
             }
           }
-        }, 0);
+        }
+        
+        await getters.player.resume();
 
         //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
         if(queue.length > 1 && !nextTracksToSend){
@@ -285,13 +300,11 @@ export const actions = {
 
           if(nextTrack && nextTrack.uri.indexOf('track') > -1){
             console.log(`adding the next track to spotify queue...${nextTrack.name}`);
-            spotify({url: `/me/player/queue?uri=${nextTrack.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+            spotify({url: `/me/player/queue?uri=${nextTrack.uri}`, method: 'POST'});
           }
         }
       }
 
-      await getters.player.resume();
-      
       //lock screen
       if('mediaSession' in navigator){
         navigator.mediaSession.metadata = new MediaMetadata({

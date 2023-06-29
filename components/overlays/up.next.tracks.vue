@@ -1,5 +1,5 @@
 <template>
-  <section class="up-next-list-container" id="upNextListContainer" v-if="nextTrack">
+  <section class="up-next-list-container" id="upNextListContainer" v-if="nextTrack" :class="{'sm-browser-up-next-container': $vuetify.breakpoint.xs && !runningInPwa}">
     <button 
       class="clickable up-next-header" 
       @click="$nuxt.$root.$emit('hideUpNext')" 
@@ -67,7 +67,7 @@
       <div class="track-info">
         <div class="info-item">
           <div class="info-label">TITLE</div>
-          <div class="info-value ellipses-text">{{nextTrack.primaryLabel.toUpperCase()}}</div>
+          <div class="info-value ellipses-text title-value">{{nextTrack.primaryLabel.toUpperCase()}}</div>
         </div>
 
         <div class="info-item">
@@ -142,6 +142,8 @@
 
   @Component
   export default class UpNextTracks extends Vue {
+    runningInPwa = false;
+
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
 
@@ -180,6 +182,10 @@
       else {
         this.$nuxt.$root.$emit('hideUpNext');
       }
+    }
+
+    beforeMount(){
+      this.runningInPwa = window.matchMedia('(display-mode: standalone)').matches || document.referrer.startsWith('android-app://') || navigator.standalone;
     }
 
     playingSomethingWithNextTrack(){
@@ -261,7 +267,7 @@
     }
 
     .next-track-container {
-      margin-top: 20px;
+      margin-top: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -351,6 +357,10 @@
     }
   }
 
+  .sm-browser-up-next-container {
+    padding-top: calc(env(safe-area-inset-top) + 12px);
+  }
+
   .plus-more {
     font-size: 20px;
     font-style: italic;
@@ -362,5 +372,10 @@
     position: absolute !important;
     top: calc(#{$img-size} / 2);
     right: -40px;
+  }
+
+  .title-value {
+    color: $cream;
+    font-weight: 900;
   }
 </style>

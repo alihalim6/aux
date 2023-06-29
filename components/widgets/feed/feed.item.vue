@@ -14,7 +14,7 @@
 
     <div class="feed-item fill-available">
       <div class="item-info-container" :class="{'mb-6': skippedNotPlayed()}">
-        <div class="track-info" :class="{'skipped': skippedNotPlayed()}">
+        <div class="track-info" :class="{'skipped': skippedNotPlayed() && !isTrackPlaying(activity.track)}">
           <button class="d-flex align-center text-left"
             @click="itemInfoPressed(activity.track)"
             @keydown.enter="itemInfoPressed(activity.track)"
@@ -68,7 +68,7 @@
         tabindex="0" 
         :aria-label="`toggle comments/reactions for ${activity.track.primaryLabel} (${activity.reactions ? activity.reactions.length : 0} comments currently ${showReactions ? 'showing' : 'hidden'})`"
       >
-        <v-icon color="white" small>{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>
+        <v-icon color="#fcfce0" class="reaction-icon">{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>
         <span v-if="activity.reactions && activity.reactions.length" class="reaction-count" aria-hidden="true">{{activity.reactions.length}}</span>
       </button>
     </div>
@@ -159,7 +159,7 @@
     margin-bottom: 48px;
 
     .track-img {
-      $track-img-size: 36px;
+      $track-img-size: 40px;
 
       max-width: $track-img-size;
       height: $track-img-size;
@@ -264,8 +264,12 @@
       margin: 4px calc(#{$reaction-toggle-margin} - 6px) 0px 12px;
     }
 
+    .reaction-icon {
+      font-size: 18px;
+    }
+
     .reaction-count {
-      font-size: 14px;
+      font-size: 18px;
       margin-left: 4px;
       padding-bottom: 2px;
     }

@@ -141,21 +141,21 @@
       var ua = navigator.userAgent.toLowerCase();
       this.isAndroid = ua.indexOf('android') > -1;
 
-      if(this.isAndroid) {
-        window.addEventListener('popstate', () => {
-          if(this.display){
-            if(this.items.length > 1){
-              this.goBack();
-            }
-            else{
-              this.closeOverlay();
-            }
+      window.addEventListener('popstate', () => {
+        if(this.display){
+          if(this.items.length > 1){
+            this.goBack();
           }
-        });
-      }
+          else{
+            this.closeOverlay();
+          }
+        }
+      });
     }
 
     async displayDetailOverlay(itemToDisplay){
+      this.fullItemImageClose();
+
       if(!this.processing){
         this.processing = true;
         const item = cloneDeep(itemToDisplay);
@@ -179,9 +179,7 @@
         this.scrolledDown = false;
         this.processing = false;
 
-        if(this.isAndroid){
-          history.pushState({}, '');
-        }
+        history.pushState({}, '');
       }
     }
 
@@ -193,6 +191,7 @@
     }
 
     goBack(){
+      this.fullItemImageClose();
       this.items.splice(this.currentIndex, 1);
       this.currentIndex--;
       this.scrolledDown = false;
@@ -229,7 +228,7 @@
 
 <style lang="scss">
   $full-image-cta-breakpoint: 850px;
-  $overlay-width: calc(#{$max-inner-width} - 230px);
+  $overlay-width: calc(#{$max-inner-width} - 175px);
 
   .item-image {
     max-width: $overlay-width !important;

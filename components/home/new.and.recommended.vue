@@ -20,7 +20,7 @@
           </v-hover>
         </div>
         
-        <div class="tab-container d-flex align-center pl-0" v-if="allItems.length">
+        <div class="tab-container d-flex align-center pl-0 mt-0" v-if="allItems.length">
           <v-hover v-slot="{hover}">
             <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayAll()">
               <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->

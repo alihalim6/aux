@@ -212,19 +212,17 @@ export const actions = {
     let isSplashFeed;
 
     const initialFeed = await Promise.all(activities.map(async activity => {
-      let track;
-
       if(activity.splash){
         isSplashFeed = true;
         const timestamp = moment(Date.now() - activity.timestampAgo).toISOString();
-        activity.user.img = activity.user.imgPath ? `${process.env.BASE_URL}/fakes/${activity.user.imgPath}.png` : '';
+        activity.user.img = activity.user.img ? `${process.env.BASE_URL}/fakes/${activity.user.img}.png` : '';
         activity.timestamp = timestamp;
         activity.updateTimestamp = timestamp;
 
         return activity;
       }
       else {
-        track = await spotify({url: `/${activity.trackType}s/${activity.track}`});
+        const track = await spotify({url: `/${activity.trackType}s/${activity.track}`});
         activity.track = setItemMetaData([track])[0];
         return activity;
       }      

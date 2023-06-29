@@ -20,19 +20,26 @@
         <div class="user-menu" :class="{'no-other-users': !liveUsers.length}">
           <v-snackbar v-model="showUserMenu" :timeout="-1" transition="slide-y-transition" absolute app>
             <div v-show="liveUsers.length" class="user-list width-100">
-              <div class="cursor-auto">
+              <div class="d-flex flex-column">
                 <div class="following-on">FOLLOW ON SPOTIFY</div>
                 
-                <div class="." v-for="user in liveUsers" :key="user.id">
+                <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
                   <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
 
-                  <div :class="{'ignored-opacity': user.ignored}" aria-hidden="true">
-                    <v-img v-show="user.img" :src="user.img" class="user-img"></v-img>
-                    <div v-show="!user.img" class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
-                  </div>
+                  <button 
+                    class="d-flex align-center justify-start width-fit" 
+                    :class="{'ignored-opacity': user.ignored, 'cursor-auto': !user.img}" 
+                    aria-hidden="true" 
+                    @click="viewUser(user)"
+                  >
+                    <div>
+                      <v-img v-show="user.img" :src="user.img" class="user-img"></v-img>
+                      <div v-show="!user.img" class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
+                    </div>
                   
-                  <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
-                  
+                    <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
+                  </button>
+
                   <v-switch 
                     :class="{'ignored-opacity': user.ignored}" 
                     v-model="user.following" 
@@ -57,7 +64,7 @@
         <!-- couldn't get shitty vuetify to handle pressing enter for app header menus-->
         <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y :nudge-bottom="8">
           <template v-slot:activator="{on, attrs}">
-            <div v-bind="attrs" v-on="on" class="profile-menu-icon" tabindex="-1" aria-hidden="true">     
+            <div v-bind="attrs" v-on="on" class="profile-menu-icon" aria-hidden="true">     
               <v-img v-if="profile.img" :src="profile.img" class="round-img-icon menu-img"></v-img>
 
               <div v-else class="profile-name-letter">
@@ -277,6 +284,12 @@
     installPwaPressed(){
       this.setActionDialog({isIosPwaInstall: this.isIos, isAndroidPwaInstall: this.isAndroid, confirmLabel: 'GOT IT'});
     }
+
+    viewUser(user){
+      if(user.img){
+        this.$nuxt.$root.$emit('showUserProfileModal', user);
+      }
+    }
   }
 </script>
 
@@ -308,7 +321,7 @@
       
       .pass-the-phrase {
         color: $rose-red;
-        transform: rotate(-80deg) scaleY(1.3) scaleX(1.1);
+        transform: rotate(-80deg) scaleY(1.2) scaleX(1.1);
         font-size: 10px;
         white-space: nowrap;
         font-style: italic;
@@ -320,7 +333,7 @@
         color: $cream;
         transform: skewX(-9.9deg);
         font-size: 26px;
-        margin-left: -21px;
+        margin-left: -23px;
         padding: 0px 2px 0px 5px;
         letter-spacing: 4px;
         line-height: 1.7;
@@ -369,7 +382,7 @@
         }
       }
 
-      .user-menu {      
+      .user-menu {   
         position: absolute;
         right: 55px;
         top: calc(#{$app-header-height} - 24px);
@@ -390,6 +403,11 @@
         .theme--dark.v-input--switch .v-input--switch__track {
           color: #ccc;
         }
+      }
+
+      .no-other-users {
+        max-width: none;
+        right: 0px;
       }
     }
 
@@ -429,7 +447,7 @@
 
   .user-img {
     @extend .round-img-icon;
-    $icon-size: 24px;
+    $icon-size: 28px;
     
     height: $icon-size;
     max-width: $icon-size;
@@ -442,6 +460,7 @@
     text-overflow: ellipsis;
     width: 160px;
     margin-right: 18px;
+    text-align: left;
   }
   
   .small-margin-right {
@@ -464,7 +483,7 @@
   .live-user-container {
     display: flex;
     align-items: center;
-    margin: 24px 0px;
+    margin: 12px 0px;
     font-size: 14px;
 
     .v-input--switch__track {
@@ -488,12 +507,12 @@
     font-size: 10px;
     align-self: flex-end;
     line-height: 2;
-    max-width: 90px;
-    margin-left: auto;
+    border-bottom: 2px solid $primary-theme-color;
+    align-self: flex-end;
   }
 
   .user-list {
-    padding: 16px 24px 0px 0px;
+    padding: 8px 12px 0px 2px;
     display: flex;
     flex-direction: column;
     max-height: 400px;

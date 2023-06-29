@@ -2,16 +2,6 @@
   <section class="mt-8 pt-3 pb-8 cream-background">
     <div class="content-container">
       <div class="home-content-title">
-        <v-img 
-          @click="spotifyLogoPressed()" 
-          @keydown.enter="spotifyLogoPressed()"
-          class="clickable spotify-full" 
-          :src="require('~/assets/Spotify_Logo_Full.png')"
-          alt="open playlists on Spotify"
-          tabindex="0"
-          :transition="false"
-        ></v-img>
-
         <div class="d-flex align-center">
           <h1 aria-label="featured Spotify playlists and playlists from your library">Playlists</h1>
 
@@ -139,10 +129,6 @@
       this.refreshingData = true;
       await this.getData();
       this.refreshingData = false;
-    }
-
-    spotifyLogoPressed(){
-      window.open('https://open.spotify.com/collection/playlists', '_blank');
     }
 
     beforeDestroy(){

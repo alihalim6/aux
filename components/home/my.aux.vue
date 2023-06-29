@@ -2,16 +2,14 @@
   <section class="pt-1 pb-12">
     <div class="content-container mt-4">
       <div class="home-content-title">
-        <v-img 
-          @click="spotifyLogoPressed()" 
-          @keydown.enter="spotifyLogoPressed()"
-          class="clickable spotify-full" 
-          :src="require('~/assets/Spotify_Logo_Full.png')"
-          alt="open Liked Songs on Spotify"
-          tabindex="0"
-        ></v-img>
-
-        <h1 aria-label="your liked tracks and albums, recently played tracks and your top Spotify tracks and artists" role="heading">My Vibe</h1>
+        <h1 
+          v-if="profile" 
+          aria-label="your liked tracks and albums, recently played tracks and your top Spotify tracks and artists" 
+          role="heading"
+          class="logo-style mb-0 mt-4 width-fit"
+        >
+          {{profile.name}}
+        </h1>
       </div>
 
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
@@ -33,7 +31,7 @@
               <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
               <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key" :my-aux-liked-tracks="tab.key == 'likedTracks'"/>
 
-              <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :disable-tracks="tab.fetchPending"/>
+              <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :disable-tracks="tab.fetchPending" :my-aux="true"/>
               <div class="my-aux-footnote">{{tab.footnote}}</div>
             </div>
             
@@ -41,7 +39,7 @@
 
             <div v-if="tab.topItems">
               <PlayAllAndShuffle v-if="!tab.fetchPending" :tracks="tab.topItems.tracks" :collectionKey="tab.key"/>
-              <TrackList :tracks="tab.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true"/>
+              <TrackList :tracks="tab.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true" :my-aux="true"/>
 
               <ContentCarousel :data="tab.topItems.artists" :vertical="true" class="mt-15" :no-secondary-label="true"/>
             </div>
@@ -55,7 +53,7 @@
 </template>
 
 <script>
-  import {Component, Vue, Mutation, Action} from 'nuxt-property-decorator';
+  import {Component, Vue, Mutation, Action, Getter} from 'nuxt-property-decorator';
   import {handleApiError} from '~/api/_utils';
   import myAux from '~/api/myAux';
   import spotify from '~/api/spotify';
@@ -110,6 +108,9 @@
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
+
+    @Getter('profile', {namespace: USER})
+    profile;
 
     mapData(data){
       return data.map(item => {
@@ -248,10 +249,6 @@
 
     getContent(){
       return this.content.filter(content => content.data.length);
-    }
-
-    spotifyLogoPressed(){
-      window.open('https://open.spotify.com/collection/tracks', '_blank');
     }
 
     beforeDestroy(){

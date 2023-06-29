@@ -1,5 +1,10 @@
 <template>
-  <section class="track-list-container" :class="{'mixed-track-list': tracksFromDifferentAlbums, 'disable-tracks': disableTracks}">
+  <section 
+    class="track-list-container" 
+    :class="{'mixed-track-list': tracksFromDifferentAlbums, 
+    'disable-tracks': disableTracks, 
+    'colored cream-background': myAux}"
+  >
       <div v-for="(track, index) in tracks.filter(track => track.uuid)" :key="track.uuid">
         <v-hover v-slot="{hover}">
           <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-4" :class="{'cream-background': hover}">
@@ -97,6 +102,9 @@
 
     @Prop()
     playlistId;
+
+    @Prop()
+    myAux;
     
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
@@ -172,7 +180,7 @@
         margin-top: 1px;
 
         .track-name {
-          font-weight: 600;
+          font-weight: 700;
           word-break: break-word;
         }
 
@@ -213,5 +221,15 @@
   .mixed-track-list {
     margin-top: 0px;
     padding: 0px $base-padding;
+  }
+
+  .colored {
+    &:hover {
+      background-color: $secondary-theme-color !important;
+    }
+
+    .left-container {
+      padding-left: $base-padding;
+    }
   }
 </style>

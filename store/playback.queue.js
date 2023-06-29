@@ -3,8 +3,6 @@ import {shuffleArray, isSameTrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import cloneDeep from 'lodash.clonedeep';
 import spotify from '~/api/spotify';
-import {storageGet} from '~/utils/storage';
-import {DEVICE_ID} from '~/utils/constants';
 
 export const state = () => {
   return {
@@ -65,7 +63,7 @@ const THREE_DOT_TOAST_TIMEOUT = 2500;
 function updateSpotifyNextTrack(track){
   if(track && track.uri.indexOf('track') > -1){
     console.log(`next track modified, resetting queue on spotify side with it...${track.name}`);
-    spotify({url: `/me/player/queue?uri=${track.uri}&device_id=${storageGet(DEVICE_ID)}`, method: 'POST'});
+    spotify({url: `/me/player/queue?uri=${track.uri}`, method: 'POST'});
   }
 }
 
@@ -117,7 +115,7 @@ export const actions = {
     }
 
     dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true, doNotUpdateSpotify: true});
-    dispatch('playNextTrack', {playingNextTrackNow});
+    dispatch('playNextTrack', {playingOtherTrackNow: true, playingNextTrackNow});
   },
   checkForEndOfQueue: ({getters, commit}) => {
     //if about to play last track in main queue and there are tracks in rest of queue, add from latter to former;

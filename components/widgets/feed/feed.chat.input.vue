@@ -31,6 +31,7 @@
         <div class="reaction-container" v-if="!chatOnFeedAlert">
           <button 
             class="clickable reaction" 
+            :class="{'fire': reaction.name == 'fire'}"
             v-for="reaction in reactions" 
             :key="reaction.name"
             tabindex="0"
@@ -63,10 +64,6 @@
       {
         code: 0x1F44D,
         name: 'like'
-      },
-      {
-        code: 0x1F615,
-        name: 'nah'
       }
     ];
 
@@ -129,6 +126,7 @@
     font-size: $chat-font-size;
     align-items: center;
     margin-bottom: 24px !important;
+    min-width: 230px;
 
     fieldset {
       border-color: white;
@@ -151,11 +149,17 @@
       display: flex;
       align-items: center;
       height: 30px;
+      position: relative;
+      top: 2px;
 
       .reaction {
         font-size: 18px;
         margin: 0px $reaction-emoji-margin;
         height: -webkit-fill-available;
+      }
+
+      .fire {
+        padding-bottom: 1px;
       }
     }
   }

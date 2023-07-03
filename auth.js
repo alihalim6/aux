@@ -2,10 +2,6 @@ import {storageGet, storageSet, storageGetAndRemove, clearStorage} from '~/utils
 import {AUTH, SPLASH} from '~/utils/constants';
 import axios from 'axios';
 
-export const auxApiClient = axios.create({
-  baseURL: process.env.BASE_URL
-});
-
 export const authorize = async () => {
   const state = Math.random().toString(36).substring(2, 15);
   const codeVerifier = pkceVerifier();

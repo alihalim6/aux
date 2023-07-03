@@ -6,7 +6,7 @@
           v-if="profile" 
           aria-label="your liked tracks and albums, recently played tracks and your top Spotify tracks and artists" 
           role="heading"
-          class="logo-style mb-0 mt-4 width-fit"
+          class="logo-style width-fit my-aux-header"
         >
           {{profile.name}}
         </h1>
@@ -285,5 +285,12 @@
     font-style: italic;
     font-size: 12px;
     margin-top: 36px;
+  }
+
+  .my-aux-header {
+    background-color: $rose-red;
+    font-size: 32px;
+    margin-bottom: 0;
+    margin-top: 16px;
   }
 </style>

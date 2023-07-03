@@ -726,6 +726,7 @@
     font-size: 24px;
     font-weight: bold;
     margin-right: 12px;
+    white-space: nowrap;
   }
 
   .v-progress-linear__stream {

@@ -26,7 +26,7 @@
           </button>
           
           <v-progress-linear 
-            v-if="(!activity.skipped && !activity.played) || (activity.skipped && isTrackPlaying(activity.track))" 
+            v-if="(!activity.skipped && !activity.played) || (activity.skipped && isTrackPlaying(activity.track) && !activity.played)" 
             class="aux-play-pending" 
             stream 
             reverse 

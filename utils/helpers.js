@@ -7,6 +7,7 @@ import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
 import {handleApiError} from '~/api/_utils';
 import {differenceInMinutes, differenceInHours, differenceInDays, parseISO} from 'date-fns';
 import details from '~/api/details';
+import axios from 'axios';
 
 //aux-ify some of the values we get from Spotify
 export const setItemMetaData = (items) => {
@@ -380,3 +381,7 @@ export const takeUntilNotATrack = (arr, fn) => {
   for (const [i, val] of arr.entries()) if (fn(val)) return arr.slice(0, i);
   return arr;
 };
+
+export const auxApiClient = axios.create({
+  baseURL: process.env.BASE_URL
+});

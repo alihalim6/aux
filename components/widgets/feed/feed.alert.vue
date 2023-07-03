@@ -9,7 +9,7 @@
     color="white"
     :timeout="timeout"
   >
-    <div class="d-flex flex-column align-center" @click.stop="alertPressed()">
+    <div class="d-flex flex-column align-center cursor-auto">
       <div class="d-flex justify-space-between fill-available">
         <span :class="{'no-visibility': !(!feedAlert.activityReaction && auxModeOn && currentlyPlayingItem.uri)}" class="up-next">UP NEXT:</span>
         <v-icon class="clickable mb-2" @click.stop="closeAlert()" color="black" aria-label="close the feed alert">mdi-close</v-icon>
@@ -81,9 +81,6 @@
     @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
     playTrackNow;
 
-    @Mutation('displayFeed', {namespace: UI})
-    displayFeed;
-
     @Mutation('toggleReplyingToFeedReaction', {namespace: UI})
     toggleReplyingToFeedReaction;
 
@@ -111,7 +108,7 @@
     async resetTimeout(){
       this.timeout = 0;
       await this.$nextTick();
-      this.timeout = this.currentAlert.timeout || 7000;
+      this.timeout = this.currentAlert.timeout || 4000;
     }
 
     trackInfoPressed(){
@@ -125,14 +122,6 @@
       this.unseenActivity(false);
     }
 
-    alertPressed(){
-      //for reaction alerts, don't want feed to open when clicked (may seem like supposed to take you directly to that track/its reactions)
-      if(!this.feedAlert.activityReaction){
-        this.displayFeed();
-        this.closeAlert();
-      }
-    }
-    
     closeAlert(){
       this.currentAlert = false;
     }

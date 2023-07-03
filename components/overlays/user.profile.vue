@@ -1,8 +1,8 @@
 <template>
   <section v-if="profile">
-    <v-dialog content-class="pa-0" :value="profile" width="83%" max-width="max-content" @click:outside="closeModal()" transition="v-fade-transition">
+    <v-dialog :value="profile" width="83%" max-width="max-content" @click:outside="$nuxt.$emit('closeModal')" transition="v-fade-transition">
       <div class="profile">
-        <v-icon class="clickable align-self-end" color="white" large @click="closeModal()" aria-label="close user profile modal">mdi-close</v-icon>
+        <v-icon class="clickable align-self-end" color="white" large @click="$nuxt.$emit('closeModal')" aria-label="close user profile modal">mdi-close</v-icon>
         <v-img :src="profile.img" class="profile-img"></v-img>
       </div>
     </v-dialog>
@@ -16,14 +16,6 @@
   export default class UserProfile extends Vue {
     @Prop({required: true})
     profile;
-
-    closeModal(){
-      this.$nuxt.$emit('closeUserProfileModal');
-    }
-
-    beforeDestroy(){
-      this.$nuxt.$root.$off('closeUserProfileModal');
-    }
   }
 </script>
 

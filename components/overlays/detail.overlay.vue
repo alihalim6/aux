@@ -90,7 +90,7 @@
         </v-carousel>
     </v-dialog>
 
-    <v-dialog :value="fullItemImage" max-width="824" transition="slide-y-transition" @click:outside="fullItemImageClose()" aria-hidden="true">
+    <v-dialog content-class="pa-0" :value="fullItemImage" max-width="824" transition="slide-y-transition" @click:outside="fullItemImageClose()" aria-hidden="true">
       <v-img class="full-item-image fill-available" :src="fullItemImage" @click.stop="fullItemImageClose()"></v-img>
     </v-dialog>
   </section>
@@ -199,6 +199,7 @@
 
 
     closeOverlay(){
+      this.fullItemImageClose();
       this.items = [];
       this.display = false;
       this.currentIndex = -1;
@@ -410,6 +411,6 @@
   }
 
   .extra-padding-bottom {
-    padding-bottom: 96px !important;
+    padding-bottom: 104px !important;
   }
 </style>

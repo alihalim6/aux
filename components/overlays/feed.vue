@@ -65,9 +65,8 @@
   import {Component, Vue, Getter, Mutation, Watch, Action} from 'nuxt-property-decorator';
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
-  import {isSameTrack} from '~/utils/helpers';
+  import {isSameTrack, auxApiClient} from '~/utils/helpers';
   import {PLAYED_NOT_SKIPPED_THRESHOLD, SPLASH} from '~/utils/constants';
-  import {auxApiClient} from '~/auth';
 
   @Component
   export default class Feed extends Vue {

@@ -1,10 +1,10 @@
 <template>
   <section v-if="track">
-    <v-dialog content-class="pa-0" :value="track" width="83%" max-width="max-content" @click:outside="closeModal()" transition="v-fade-transition">
+    <v-dialog content-class="pa-0" :value="track" width="83%" max-width="max-content" @click:outside="$nuxt.$emit('closeModal')" transition="v-fade-transition">
       <div class="add-to-playlist">
         <div class="d-flex align-center justify-space-between mb-6 width-100">
           <span class="add-track-title">Add <span class="font-weight-bold">{{ track.name }}</span> to...</span>
-          <v-icon class="clickable" color="#191414" large @click="closeModal()" aria-label="close add to playlist modal">mdi-close</v-icon>
+          <v-icon class="clickable" color="#191414" large @click="$nuxt.$emit('closeModal')" aria-label="close add to playlist modal">mdi-close</v-icon>
         </div>
 
         <v-progress-circular class="loader" color="#1DB954" indeterminate v-if="hasPlaylists && !userPlaylists.length"></v-progress-circular>
@@ -53,13 +53,9 @@
           handleApiError(`There was an issue adding the track to ${playlist.name}. Please try again.`);
         }
         finally {
-          this.$nuxt.$emit('closeAddToPlaylistModal');
+          this.$nuxt.$emit('closeModal');
         }
       });
-    }
-
-    closeModal(){
-      this.$nuxt.$emit('closeAddToPlaylistModal');
     }
 
     beforeDestroy(){

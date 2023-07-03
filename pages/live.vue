@@ -24,6 +24,7 @@
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
     <LazyAddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
     <LazyUserProfile v-show="userProfile" :profile="userProfile" />
+    <LazyBookmarks v-if="showBookmarks"/>
     <LazyToast/>
     
     <v-dialog :value="!isLoading && isSafari && !playerActivated" persistent overlay-color="red" max-width="max-content">
@@ -55,6 +56,7 @@
     hideCurrentlyPlaying = false;
     isSafari = false;
     userProfile = null;
+    showBookmarks = false;
     
     @Getter('isLoading', {namespace: UI})
     isLoading;
@@ -83,13 +85,19 @@
         this.trackToAddToPlaylist = trackToAdd;
       });
 
-      this.$nuxt.$root.$on('closeAddToPlaylistModal', () => this.trackToAddToPlaylist = null);
+      this.$nuxt.$root.$on('closeModal', () => {
+        this.trackToAddToPlaylist = null;
+        this.userProfile = null;
+        this.showBookmarks = false;
+      });
 
       this.$nuxt.$root.$on('showUserProfileModal', user => {
         this.userProfile = user;
       });
 
-      this.$nuxt.$root.$on('closeUserProfileModal', () => this.userProfile = null);
+      this.$nuxt.$root.$on('showBookmarks', () => {
+        this.showBookmarks = true;
+      });
 
       this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     }
@@ -103,9 +111,9 @@
 
     beforeDestroy(){
       this.$nuxt.$root.$off('addToPlaylist');
-      this.$nuxt.$root.$off('closeAddToPlaylistModal');
+      this.$nuxt.$root.$off('closeModal');
       this.$nuxt.$root.$off('showUserProfileModal');
-      this.$nuxt.$root.$off('closeUserProfileModal');
+      this.$nuxt.$root.$off('showBookmarks');
     }
   }
 </script>

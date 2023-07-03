@@ -226,27 +226,18 @@ export const actions = {
             console.log(`letting Spotify play the current track: ${item.name}`);
             makePlaybackApiCall = false;
           }
+          else{
+            const correctNextTrack = spotifyNextTrack && isSameTrack(spotifyNextTrack, item);
 
-          const theirPreviousSameAsTheirCurrent = spotifyPreviousTracks.length && isSameTrack(spotifyPreviousTracks[spotifyPreviousTracks.length - 1], spotifyCurrentTrack);
-          const correctNextTrack = spotifyNextTrack && isSameTrack(spotifyNextTrack, item);
-
-          if(spotifyNextTrack){
-            console.log(`NEXT SPOTIFY TRACK::: ${spotifyNextTrack.name} ${spotifyNextTrack.duration_ms} ${spotifyNextTrack.uri}`)
-          }
-
-          console.log('correctNextTrack', correctNextTrack);
-
-          if(!nextTrackButtonPressed && 
-            correctNextTrack &&
-            !isSameTrack(spotifyNextTrack, previouslyPlayingItem.uri)
-          ){
-            if(theirPreviousSameAsTheirCurrent && correctNextTrack){
-              console.log(`thier prev same as their current but their next track correct -> using API to move to next track...`);
-              spotify({url: '/me/player/next', method: 'POST'});
-              makePlaybackApiCall = false;
+            if(spotifyNextTrack){
+              console.log(`NEXT SPOTIFY TRACK::: ${spotifyNextTrack.name} ${spotifyNextTrack.duration_ms} ${spotifyNextTrack.uri}`)
             }
-            else if(correctNextTrack){
-              console.log(`letting Spotify play the play next track: ${item.name}`);
+
+            console.log('correctNextTrack', correctNextTrack);
+
+            if(correctNextTrack){
+              console.log(`using API to move to next track...`);
+              spotify({url: '/me/player/next', method: 'POST'});
               makePlaybackApiCall = false;
             }
           }

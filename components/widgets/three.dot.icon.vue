@@ -1,5 +1,12 @@
 <template>
-  <v-menu left :transition="detailOverlay || threeDotItem.isArtist ? 'slide-x-reverse-transition' : 'slide-x-transition'" z-index="2000" :nudge-left="threeDotItem.isArtist ? 100 : 20" :value="!hide">
+  <v-menu 
+    left 
+    :transition="detailOverlay || threeDotItem.isArtist ? 'slide-x-reverse-transition' : 'slide-x-transition'" 
+    z-index="2000" 
+    :nudge-left="threeDotItem.isArtist ? 100 : 20" 
+    :nudge-bottom="bookmark ? -140 : 0"
+    :value="!hide"
+  >
     <template v-slot:activator="{on, attrs}">
       <v-icon v-bind="attrs" v-on="on" @click.stop="onPress()" class="clickable three-dots" :color="iconColor || 'black'" :class="[iconClass]" tabindex="0" :aria-label="`three-dot menu for ${threeDotItem.primaryLabel}`">mdi-dots-vertical</v-icon>
     </template>
@@ -29,12 +36,21 @@
 
 <script>
   import {Component, Vue, Prop, Getter, Mutation, Action, Watch} from 'nuxt-property-decorator';
-  import {PLAYBACK_QUEUE, SPOTIFY, UI} from '~/store/constants';
+  import {PLAYBACK_QUEUE, SPOTIFY, UI, USER} from '~/store/constants';
   import spotify from '~/api/spotify';
-  import {REMOVED_FROM_LIKES, ADDED_TO_LIKES, REMOVED_LIKED_ITEM_EVENT, LIKED_ITEM_EVENT, UNFOLLOWED, NOW_FOLLOWING} from '~/utils/constants';
+  import {
+    REMOVED_FROM_LIKES, 
+    ADDED_TO_LIKES, 
+    REMOVED_LIKED_ITEM_EVENT, 
+    LIKED_ITEM_EVENT, 
+    UNFOLLOWED, 
+    NOW_FOLLOWING,
+    AUTH
+  } from '~/utils/constants';
   import details from '~/api/details';
-  import {processAlbum} from '~/utils/helpers';
+  import {processAlbum, auxApiClient} from '~/utils/helpers';
   import cloneDeep from 'lodash.clonedeep';
+  import {storageGet} from '~/utils/storage';
 
   @Component
   export default class ThreeDotIcon extends Vue {
@@ -60,11 +76,17 @@
     @Prop()
     iconColor;
 
+    @Prop()
+    bookmark;
+
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
+
+    @Getter('profile', {namespace: USER})
+    profile;
 
     @Mutation('setToast', {namespace: UI})
     setToast;
@@ -239,9 +261,40 @@
                 });
               }
             }
+
+            this.options.push(this.bookmark ? {
+              title: 'Remove from Bookmarks',
+              fn: async () => {
+                await auxApiClient.post('/user/removeBookmark', {userId: this.profile.id, bookmarkId: this.threeDotItem.uuid},
+                {
+                  headers: {
+                    Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+                  }
+                });
+
+                this.setToast({text: `${this.threeDotItem.name} was removed from Bookmarks`});
+                this.$nuxt.$root.$emit('bookmarkRemoved', this.threeDotItem.uuid);
+              }
+            }
+            : {
+              title: 'Add to Bookmarks',
+              fn: async () => {
+                const bookmark = {...this.threeDotItem, userId: this.profile.id};
+
+                await auxApiClient.post('/user/addBookmark', {bookmark},
+                {
+                  headers: {
+                    Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+                  }
+                });
+
+                this.setToast({text: `${this.threeDotItem.name} was added to Bookmarks`});
+                this.$nuxt.$root.$emit('bookmarkAdded', bookmark);
+              }
+            });
           }
         }
-
+                
         this.options.push({
           title: `${this.threeDotItem.type == 'artist' ? 'Open' : 'Listen on'} Spotify`,
           fn: () => this.openItemInSpotify(this.threeDotItem)

@@ -3,9 +3,8 @@ import moment from 'moment';
 import socket from '~/plugins/socket.client.js';
 import {AUX_MODE, AUTH} from '~/utils/constants';
 import {storageGetBoolean} from '~/utils/storage';
-import {isSameTrack, ignoredUsers, setDuration, setItemMetaData} from '~/utils/helpers';
+import {isSameTrack, ignoredUsers, setDuration, setItemMetaData, auxApiClient} from '~/utils/helpers';
 import spotify from '~/api/spotify';
-import {auxApiClient} from '~/auth';
 import {storageGet} from '~/utils/storage';
 
 function findActivityInFeed(feed, newTrack){

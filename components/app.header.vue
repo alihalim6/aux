@@ -62,7 +62,7 @@
         </div>
 
         <!-- couldn't get shitty vuetify to handle pressing enter for app header menus-->
-        <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" :close-on-content-click="false" offset-y :nudge-bottom="8">
+        <v-menu v-if="profile" bottom left transition="slide-y-transition" :z-index="zIndex" offset-y :nudge-bottom="8">
           <template v-slot:activator="{on, attrs}">
             <div v-bind="attrs" v-on="on" class="profile-menu-icon" aria-hidden="true">     
               <v-img v-if="profile.img" :src="profile.img" class="round-img-icon menu-img"></v-img>
@@ -101,6 +101,13 @@
               </button>
             </v-list-item>
 
+            <v-list-item class="clickable menu-option-container mb-5">
+              <button @click="bookmarksPressed()">
+                <v-icon class="clickable bookmarks-icon" color="black">mdi-bookmark</v-icon>
+                <span class="menu-label">Bookmarks</span>
+              </button>
+            </v-list-item>
+
             <v-list-item v-if="!runningInPwa && isMobile()" class="clickable menu-option-container" @click="installPwaPressed()">
               <span class="install-pwa-label on-air">Install as an App</span>
             </v-list-item>
@@ -124,11 +131,10 @@
   import {FEED, USER, UI} from '~/store/constants';
   import {storageSet, clearStorage, storageGet} from '~/utils/storage';
   import {AUX_MODE, SPLASH, IGNORED_USERS, AUTH} from '~/utils/constants';
-  import {ignoredUsers} from '~/utils/helpers';
+  import {ignoredUsers, auxApiClient} from '~/utils/helpers';
   import {handleApiError} from '~/api/_utils';
   import spotify from '~/api/spotify';
   import socket from '~/plugins/socket.client.js';
-  import {auxApiClient} from '~/auth';
 
   @Component
   export default class AppHeader extends Vue {
@@ -155,6 +161,9 @@
     @Mutation('setActionDialog', {namespace: UI})
     setActionDialog;
 
+    @Mutation('closeFeed', {namespace: UI})
+    closeFeed;
+
     @Watch('users', {immediate: true})
     async usersChanged(liveUsers){
       this.liveUsers = liveUsers.map(user => {
@@ -176,7 +185,7 @@
         storageSet(AUTH.AUX_API_TOKEN, data.token);
         storageSet(AUX_MODE, data.auxModeOn);
         storageSet(IGNORED_USERS, data.ignoredUsers || []);
-        this.auxModeOn = data.auxModeOn;        
+        this.auxModeOn = data.auxModeOn;      
       }
     }
     
@@ -290,6 +299,11 @@
         this.$nuxt.$root.$emit('showUserProfileModal', user);
       }
     }
+
+    bookmarksPressed(){
+      this.closeFeed();
+      this.$nuxt.$root.$emit('showBookmarks');
+    }
   }
 </script>
 
@@ -333,7 +347,7 @@
         color: $cream;
         transform: skewX(-9.9deg);
         font-size: 26px;
-        margin-left: -23px;
+        margin-left: -24px;
         padding: 0px 2px 0px 5px;
         letter-spacing: 4px;
         line-height: 1.7;
@@ -627,5 +641,8 @@
     @extend .focused;
   }
 
-
+  .bookmarks-icon {
+    margin-left: 11px;
+    margin-right: 13px;
+  }
 </style>

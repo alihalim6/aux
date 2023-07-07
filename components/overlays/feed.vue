@@ -16,8 +16,6 @@
                   <v-icon class="feed-header-icon mr-1" small aria-labelledby="playAllLabel">mdi-play</v-icon>
                   <span class="play-all-label" :class="{'text-decoration-underline': hover}" id="playAllLabel">PLAY ALL</span>
                 </button>
-
-                <v-icon class="ml-2" color="white" small aria-hidden="true">mdi-sort-descending</v-icon>
               </div>
             </v-hover>
 

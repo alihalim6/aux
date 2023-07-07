@@ -129,7 +129,7 @@ $phrase-border-color: #aaaaaa;
 }
 
 .spotify-green-color {
-  color: $spotify-green;
+  color: $spotify-green !important;
 }
 
 .white-color {
@@ -145,12 +145,12 @@ $phrase-border-color: #aaaaaa;
   backdrop-filter: blur(6px);
 }
 
-.black-background {
-  background-color: black;
-}
-
 .white-background {
   background-color: white;
+}
+
+.black-background {
+  background-color: black;
 }
 
 .width-max-content {
@@ -226,10 +226,14 @@ $phrase-border-color: #aaaaaa;
 }
 
 .cream-background {
-  background-color: #fffff1 !important;
+  background-color: $off-white !important;
 }
 
 .focused {
   border: 2px solid #ccc;
   border-radius: 2px;
+}
+
+.dark-background {
+  background-color: $dark-blue !important;
 }

@@ -66,7 +66,12 @@
                         class="clickable primary-label text-left" 
                         @click.stop="primaryLabelPressed(item)" 
                         :aria-label="`${playable(item) ? 'play' : 'open modal with details about'} ${item.primaryLabel} by ${item.secondaryLabel}`"
-                        :class="{'artist-secondary-label': item.isArtist, 'more-from-padding': moreFromArtist, 'lighter-black-color': hover, 'spotify-green-color': itemIsPlaying(item)}">
+                        :class="{
+                          'artist-secondary-label': item.isArtist, 
+                          'more-from-padding': moreFromArtist, 
+                          'lighter-black-color': hover, 
+                          'spotify-green-color': itemIsPlaying(item)}"
+                        >
                           {{item.primaryLabel}}
                           <span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
                       </button>
@@ -326,9 +331,9 @@
   }
 
   .see-all:hover {
-    color: $cream;
-    background-color: $rose-red;
-    border-left: 1px solid $rose-red;
+    color: $cream !important;
+    background-color: $rose-red !important;
+    border-left: 1px solid $rose-red !important;
   }
 
   .auto-size {

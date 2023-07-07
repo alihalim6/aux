@@ -2,19 +2,23 @@
   <section>
     <ActionDialog/>
 
-    <v-app-bar elevation="2" color="white" class="app-bar" short hide-on-scroll :scroll-threshold="10">
-      <div class="aux-logo-container" aria-hidden="true">
+    <v-app-bar elevation="2" class="app-bar" :dark="darkMode" short hide-on-scroll :scroll-threshold="10">
+      <div class="aux-logo-container" aria-hidden="true" v-if="!showEasterEgg" @click="() => showEasterEgg = true">
         <div class="outlined-pass-phrase pass-the-phrase">PASS THE</div>
         <div class="inline-display outlined-phrase main-label">AUX</div>
+      </div>
+
+      <div class="aux-logo-container" aria-hidden="true" v-if="showEasterEgg" @click="() => showEasterEgg = false">
+        <span class="outlined-phrase easter-egg">100% TAFETTA</span>
       </div>
 
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
         <button class="clickable on-air-container" @click="() => showUserMenu = !showUserMenu" :aria-label="`there are currently ${liveUsers.length} other users on AUX`">
-          <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'gray'" large>mdi-circle-small</v-icon>
+          <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'grey'" large>mdi-circle-small</v-icon>
           <div class="users-on-air">{{liveUsers.length}}</div>
-          <v-icon class="live-info-icon" color="black" large>{{`mdi-chevron-${showUserMenu ? 'up' : 'down'}`}}</v-icon>
+          <v-icon class="live-info-icon" :color="darkMode ? 'white' : 'black'" large>{{`mdi-chevron-${showUserMenu ? 'up' : 'down'}`}}</v-icon>
         </button>
 
         <div class="user-menu" :class="{'no-other-users': !liveUsers.length}">
@@ -24,21 +28,16 @@
                 <div class="following-on">FOLLOW ON SPOTIFY</div>
                 
                 <div class="live-user-container" v-for="user in liveUsers" :key="user.id">
-                  <v-icon class="clickable mr-3" small color="black" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
+                  <v-icon class="clickable mr-3" small :color="darkMode ? 'white' : 'black'" @click="ignoreUserToggled(user)">{{`mdi-eye${user.ignored ? '' : '-off'}`}}</v-icon>
 
-                  <button 
-                    class="d-flex align-center justify-start width-fit" 
-                    :class="{'ignored-opacity': user.ignored, 'cursor-auto': !user.img}" 
-                    aria-hidden="true" 
-                    @click="viewUser(user)"
-                  >
+                  <div class="d-flex align-center justify-start width-fit" :class="{'ignored-opacity': user.ignored}" aria-hidden="true">
                     <div>
                       <v-img v-show="user.img" :src="user.img" class="user-img"></v-img>
                       <div v-show="!user.img" class="round-profile-letter">{{`${user.name.substring(0, 1)}`}}</div>
                     </div>
                   
                     <div class="user-name" :class="{'ignored-opacity': user.ignored}">{{user.name}}</div>
-                  </button>
+                  </div>
 
                   <v-switch 
                     :class="{'ignored-opacity': user.ignored}" 
@@ -87,23 +86,22 @@
               </div>
             </v-list-item>
 
-            <v-list-item class="clickable menu-option-container">
-              <button class="d-flex align-center" @click="setToast({text: 'Coming soon!'})">
+            <v-list-item class="clickable menu-option-container" @click="lightOrDarkModePressed()">
+              <button class="d-flex align-center">
                 <v-icon 
-                  class="clickable ml-3 mr-4" 
-                  :color="`${darkMode ? '#fcfce0' : '#191414'}`" 
+                  class="clickable ml-3 mr-4 dark-mode-toggle"
                   id="auxModeTooltipIcon"
                 >
                   {{`mdi-${darkMode ? 'white-balance-sunny' : 'power-sleep'}`}}
                 </v-icon>
 
-                <span class="menu-label">Make It {{darkMode ? 'Light' : 'Dark'}}</span>
+                <span :id="`${darkMode}-darkModeLabel`" class="menu-label">Lights {{darkMode ? 'On' : 'Out'}}</span>
               </button>
             </v-list-item>
 
-            <v-list-item class="clickable menu-option-container mb-5">
-              <button @click="bookmarksPressed()">
-                <v-icon class="clickable bookmarks-icon" color="black">mdi-bookmark</v-icon>
+            <v-list-item class="clickable menu-option-container mb-5" @click="bookmarksPressed()">
+              <button>
+                <v-icon class="clickable bookmarks-icon" :color="darkMode ? '#fcfce0' : 'black'">mdi-bookmark</v-icon>
                 <span class="menu-label">Bookmarks</span>
               </button>
             </v-list-item>
@@ -144,7 +142,7 @@
     zIndex = 2000;
     runningInPwa = false;
     showUserMenu = false;
-    darkMode = false;
+    showEasterEgg = false;
 
     @Getter('users', {namespace: FEED})
     users;
@@ -155,11 +153,20 @@
     @Getter('isLoading', {namespace: UI})
     isLoading;
 
+    @Getter('darkMode', {namespace: UI})
+    darkMode;
+
     @Mutation('setToast', {namespace: UI})
     setToast;
 
     @Mutation('setActionDialog', {namespace: UI})
     setActionDialog;
+
+    @Mutation('setDarkMode', {namespace: UI})
+    setDarkMode;
+
+    @Mutation('toggleDarkMode', {namespace: UI})
+    toggleDarkMode;
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -182,10 +189,12 @@
     async currentUserProfileSet(){
       if(this.profile){
         const {data} = await auxApiClient.post('/user/initialize', {profile: this.profile});
+        this.$vuetify.theme.dark = data.darkModeOn;
+        this.setDarkMode(data.darkModeOn);
         storageSet(AUTH.AUX_API_TOKEN, data.token);
         storageSet(AUX_MODE, data.auxModeOn);
         storageSet(IGNORED_USERS, data.ignoredUsers || []);
-        this.auxModeOn = data.auxModeOn;      
+        this.auxModeOn = data.auxModeOn;
       }
     }
     
@@ -260,7 +269,7 @@
 
     deleteUserActivity(){
       this.setActionDialog({
-        text: `Delete tracks I've played, comments/reactions I've made, and profile info (username, photo url and Spotify user ID) that AUX has saved (bars?):`,
+        text: `Delete tracks I've played, comments I've made, and profile info that AUX has saved (bars?):`,
         cancellable: true,
         confirmLabel: 'CONFIRM AND LOGOUT',
         confirmFn: async () => {
@@ -294,15 +303,20 @@
       this.setActionDialog({isIosPwaInstall: this.isIos, isAndroidPwaInstall: this.isAndroid, confirmLabel: 'GOT IT'});
     }
 
-    viewUser(user){
-      if(user.img){
-        this.$nuxt.$root.$emit('showUserProfileModal', user);
-      }
-    }
-
     bookmarksPressed(){
       this.closeFeed();
       this.$nuxt.$root.$emit('showBookmarks');
+    }
+
+    lightOrDarkModePressed(){
+      this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
+      this.toggleDarkMode();
+
+      auxApiClient.post('/user/updateDarkMode', {profile: this.profile, darkModeOn: this.$vuetify.theme.dark}, {    
+        headers: {
+          Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
+        }
+      });
     }
   }
 </script>
@@ -312,6 +326,7 @@
     height: $app-header-height !important;
     max-height: $app-header-height;
     z-index: 30 !important;
+    background-color: white !important;
 
     @supports(-webkit-text-stroke: 2px $cream) {
       .outlined-phrase {
@@ -356,6 +371,23 @@
           @media(max-width: $max-inner-width){ 
             font-size: 22px;
           }
+      }
+
+      .easter-egg {
+        font-size: 14px;
+        line-height: 1.7;
+        margin-left: 3px;
+        opacity: 0;
+        animation-duration: 500ms;
+        animation-delay: 0;
+        @extend .fade-in-animation;
+      }
+
+      @supports(-webkit-text-fill-color: $rose-red) {
+        .easter-egg {
+          -webkit-text-stroke: 2px $rose-red;
+          -webkit-text-fill-color:  $rose-red;
+        }
       }
     }
 
@@ -407,7 +439,7 @@
         }
                   
         .v-snack__wrapper {
-          background-color:  white;
+          background-color: white;
           color: $primary-theme-color;
           border: none;
           max-width: none;
@@ -644,5 +676,9 @@
   .bookmarks-icon {
     margin-left: 11px;
     margin-right: 13px;
+  }
+
+  .dark-mode-toggle {
+    color: black !important;
   }
 </style>

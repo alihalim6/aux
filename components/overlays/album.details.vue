@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="album-details">
     <div class="sub-title-container">
       <div>
         <ArtistList :artists="album.artists"/>

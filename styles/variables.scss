@@ -3,6 +3,8 @@ $secondary-theme-color: white;
 $spotify-green: #1DB954;//spotify design guidelines
 $rose-red: #f81c03;
 $cream: #fcfce0;
+$dark-blue: #07152a;
+$off-white: #fffff1;
 
 $app-header-height: 63px;
 $max-inner-width: 640px;
@@ -23,3 +25,5 @@ $nav-button-padding: 8px 14px;
 $up-next-slide-animation: 0.29s forwards 1 ease-in-out;
 
 $tooltip-opacity: 1;
+
+$material-dark: ('background': $dark-blue);

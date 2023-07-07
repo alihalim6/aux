@@ -40,7 +40,7 @@
                   </template>
                 </v-img>
 
-                <div class="mr-2">
+                <div class="mr-2 artist-info">
                   <div class="font-weight-bold" :class="{'lighter-black-color': hover}">{{artist.name}}</div>
                   <div class="artist-genres">{{artist.secondaryLabel}}</div>
                 </div>

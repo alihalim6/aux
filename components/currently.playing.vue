@@ -145,7 +145,7 @@
 
       <div class="d-flex flex-column align-start" id="upNextToggle">
         <button class="up-next-container" @click.stop="viewUpNext()" @keydown.enter="viewUpNext()" aria-label="display next tracks in queue">
-          <v-icon class="clickable" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
+          <v-icon class="clickable" id="upNextChevron" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
           <div class="d-inline-flex align-center" :tabindex="hasNextTrack ? 0 : -1">
             <span class="clickable min-width-fit" :class="{'no-next-track': !hasNextTrack}">UP NEXT: </span>
@@ -220,6 +220,9 @@
 
     @Getter('hasNextTrack', {namespace: PLAYBACK_QUEUE})
     hasNextTrack;
+
+    @Getter('nextTrackModified', {namespace: PLAYBACK_QUEUE})
+    nextTrackModified;
 
     @Getter('feed', {namespace: UI})
     feed;
@@ -350,15 +353,18 @@
     }
 
     startInterval(){
+      const interval = 500;
+
       this.playbackInterval = setInterval(() => {
         if(this.audioPlaying){
-          this.playbackElapsed.ms += 1000;
+          this.playbackElapsed.ms += interval;
 
-          if(this.playbackElapsed.ms > this.playbackTotal.ms){
+          if(this.playbackElapsed.ms >= this.playbackTotal.ms - (this.nextTrackModified ? 500 : 0)){
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){
-              this.playNextTrack({});
+              console.log('moving to next track...nextTrackModified is ' + this.nextTrackModified);
+              this.playNextTrack({playingNextTrackNow: this.nextTrackModified});
             }
             else if(this.setToRepeatTrack){
               this.repeatCurrentTrack();
@@ -374,7 +380,7 @@
             this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
           }
         }
-      }, 1000);
+      }, interval);
 
       this.elapsedSyncInterval = setInterval(async () => {
         const currentState = await this.player.getCurrentState();
@@ -390,7 +396,7 @@
           this.playbackElapsed.ms = position;
           this.playbackElapsed.display = msToDuration(position);
         }
-      }, 5000);
+      }, 3000);
     }
 
     async repeatCurrentTrack(){
@@ -454,7 +460,7 @@
         try {
           await spotify({url: modifyLikeUrl, method: 'DELETE'});
           this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.currentlyPlayingItem);
-          this.setToast({text: REMOVED_FROM_LIKES});
+          this.setToast({text: `${this.currentlyPlayingItem.name} ${REMOVED_FROM_LIKES}`});
         }
         catch(error){
           handleApiError('Sorry! That like didn\'t go thru. Give it another will ya?');
@@ -465,7 +471,7 @@
         try {
           await spotify({url: modifyLikeUrl, method: 'PUT'});
           this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.currentlyPlayingItem);
-          this.setToast({text: ADDED_TO_LIKES});
+          this.setToast({text: `${this.currentlyPlayingItem.name} ${ADDED_TO_LIKES}`});
         }
         catch(error){
           handleApiError('Oops! That un-like didn\'t go thru. Give it another will ya?');
@@ -491,7 +497,7 @@
 
     nextTrackPressed(){
       this.stopInterval();
-      this.playNextTrack({nextTrackButtonPressed: true});
+      this.playNextTrack({playingNextTrackNow: true});
     }
 
     spotifyLogoPressed(){
@@ -565,7 +571,7 @@
         flex-direction: column;
         min-width: $playback-container-size;
         max-width: $playback-container-size;
-        padding: 0px 0px $base-padding $base-padding;
+        padding: 0px 0px $base-padding 18px;
       
         .artists {
           font-size: 12px;

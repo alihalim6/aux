@@ -75,7 +75,7 @@
 
     .playback-icon {
       color: $primary-theme-color;
-      font-size: 40px;
+      font-size: 40px !important;
       padding: $icon-padding;
     }
   }

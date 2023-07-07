@@ -32,6 +32,9 @@ export default {
   buildModules: [
     '@nuxtjs/vuetify',
   ],
+  vuetify: {
+    theme: { dark: {primary: '#07152a'} }
+  },
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [

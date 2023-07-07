@@ -3,7 +3,7 @@
     left 
     :transition="detailOverlay || threeDotItem.isArtist ? 'slide-x-reverse-transition' : 'slide-x-transition'" 
     z-index="2000" 
-    :nudge-left="threeDotItem.isArtist ? 100 : 20" 
+    :nudge-left="threeDotItem.isArtist ? 100 : (threeDotItem.isAlbum ? 32 : 20)" 
     :nudge-bottom="bookmark ? -140 : 0"
     :value="!hide"
   >
@@ -12,12 +12,11 @@
     </template>
 
     <v-list>
-      <v-list-item v-for="(option, index) in options.filter(option => !option.hidden)" 
+      <v-list-item v-for="(option, index) in options.filter(option => !option.hidden && !(option.forQueue && disableQueueOptions))" 
         :key="index" 
         class="clickable menu-option-container" 
         :class="{'aux-mode-added-by': option.addedBy}"
         @click="option.fn(item)" 
-        :disabled="option.forQueue && disableQueueOptions"
       >
         <div v-if="option.addedBy" class="d-flex flex-column py-2">
           <div class="aux-mode">AUX MODE</div>
@@ -221,14 +220,14 @@
             this.options.push(alreadyLiked ? {
               title: 'Remove from Likes',
                 fn: async () => {
-                  await apiAndToast(REMOVED_FROM_LIKES);
+                  await apiAndToast(`${this.threeDotItem.name} ${REMOVED_FROM_LIKES}`);
                   this.$nuxt.$root.$emit(REMOVED_LIKED_ITEM_EVENT, this.threeDotItem);
                 }
               } :  
               {
                 title: 'Like',
                 fn: async () => {
-                  await apiAndToast(ADDED_TO_LIKES);
+                  await apiAndToast(`${this.threeDotItem.name} ${ADDED_TO_LIKES}`);
                   this.$nuxt.$root.$emit(LIKED_ITEM_EVENT, this.threeDotItem);
                 }
               }

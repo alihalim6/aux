@@ -1,6 +1,6 @@
 <template>
   <v-dialog content-class="pa-0 mt-0" :value="true" width="max-content" @click:outside="$nuxt.$emit('closeModal')" transition="v-fade-transition">
-    <div class="container">
+    <div class="bookmarks container">
       <div class="title">
         <span>Bookmarks (/'bʊk.mɑːrks/)</span>
         <v-icon class="clickable ml-4" color="black" large @click="$nuxt.$emit('closeModal')" aria-label="close user profile modal">mdi-close</v-icon>

@@ -82,7 +82,7 @@
 
     @Getter('actionDialog', {namespace: UI})
     actionDialog;
-
+    
     @Watch('actionDialog')
     dialogChanged(dialog){
       this.currentDialog = {...dialog};
@@ -110,7 +110,6 @@
     font-weight: bold;
     font-size: 16px;
     padding: $base-padding;
-    background-color: $primary-theme-color;
     color: $secondary-theme-color;
   }
 

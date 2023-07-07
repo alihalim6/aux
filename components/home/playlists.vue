@@ -1,5 +1,5 @@
 <template>
-  <section class="mt-8 pt-3 pb-8 cream-background">
+  <section class="mt-8 pt-3 cream-background" :class="{'dark-background': darkMode, 'pb-8': !darkMode}">
     <div class="content-container">
       <div class="home-content-title">
         <div class="d-flex align-center">
@@ -33,7 +33,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs home-content cream-background py-0" id="playlistTabContent">
+      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs home-content cream-background py-0" :class="{'dark-background': darkMode}" id="playlistTabContent">
         <v-tab-item v-for="content in getTabContent()" :key="content.type">
           <div v-for="item in content.data" :key="item.uuid">
             <v-hover v-slot="{hover}">
@@ -74,10 +74,11 @@
 </template>
 
 <script>
-  import {Component, Vue} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter} from 'nuxt-property-decorator';
   import {PLAYLISTS} from '~/utils/constants';
   import playlists from '~/api/playlists';
   import {setItemMetaData} from '~/utils/helpers';
+  import {UI} from '~/store/constants';
 
   @Component
   export default class Playlists extends Vue {
@@ -101,6 +102,9 @@
         label: PLAYLISTS.LIKED
       }
     ];
+
+    @Getter('darkMode', {namespace: UI})
+    darkMode;
 
     async beforeMount(){
       await this.getData();

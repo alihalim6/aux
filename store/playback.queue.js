@@ -3,11 +3,13 @@ import {shuffleArray, isSameTrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import cloneDeep from 'lodash.clonedeep';
 import spotify from '~/api/spotify';
+import {PLAYBACK_API_PATH} from '~/api/_utils';
 
 export const state = () => {
   return {
     queue: [],
-    restOfQueue: []
+    restOfQueue: [],
+    nextTrackModified: false
   };
 };
 
@@ -55,17 +57,13 @@ export const getters = {
   //tracks after the next track
   thenTracks: (state, getters) => {
     return state.queue.slice(getters.currentlyPlayingIndex + 2);
+  },
+  nextTrackModified: (state) => {
+    return state.nextTrackModified;
   }
 };
 
 const THREE_DOT_TOAST_TIMEOUT = 2500;
-
-function updateSpotifyNextTrack(track){
-  if(track && track.uri.indexOf('track') > -1){
-    console.log(`next track modified, resetting queue on spotify side with it...${track.name}`);
-    spotify({url: `/me/player/queue?uri=${track.uri}`, method: 'POST'});
-  }
-}
 
 export const actions = {  
   playPreviousTrack: ({dispatch, getters}) => {
@@ -84,7 +82,7 @@ export const actions = {
       ...params
     });
   },
-  clearUpNext: ({getters, commit}) => {
+  clearUpNext: ({getters, commit, rootGetters}) => {
     commit('clearUpNext', getters.currentlyPlayingIndex);
   },
   addToEndOfQueue: ({commit}, tracks) => {
@@ -99,12 +97,12 @@ export const actions = {
     }
 
     if(!doNotUpdateSpotify){
-      updateSpotifyNextTrack(getters.nextTrack);
+        commit('setNextTrackModified', true);
     }
   },
   shuffleUpNext: ({commit, getters}) => {
     commit('shuffleUpNext', {nextTracks: getters.nextTracks, currentIndex: getters.currentlyPlayingIndex});
-    updateSpotifyNextTrack(getters.nextTrack);
+    commit('setNextTrackModified', true);
   },
   playTrackNow: ({dispatch, getters, commit}, track) => {
     let playingNextTrackNow = false;
@@ -130,7 +128,7 @@ export const actions = {
     commit('removeFromQueue', track);
 
     if(nextTrackRemoved){
-      updateSpotifyNextTrack(getters.nextTrack);
+      commit('setNextTrackModified', true);
     }
   }
 };
@@ -205,5 +203,8 @@ export const mutations = {
   },
   addFromRestOfQueueToMain(state){
     state.queue.push.apply(state.queue, state.restOfQueue.splice(0, QUEUE_LENGTH_LIMIT));
+  },
+  setNextTrackModified: (state, modified) => {
+    state.nextTrackModified = modified;
   }
 };

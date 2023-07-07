@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="simple-overlay-container">
     <div class="title-border"></div>
 
     <div class="new-releases-container">

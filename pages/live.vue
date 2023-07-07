@@ -1,5 +1,5 @@
 <template>
-  <v-app :class="{'item-playing': currentlyPlayingItem.uri}">
+  <v-app :class="{'item-playing': currentlyPlayingItem.uri, 'dark-mode': darkMode}">
     <audio v-if="currentlyPlayingItem.uri" class="hidden" loop autoplay id="silentPlayer">
       <source src="/5-seconds-of-silence.mp3" type="audio/mpeg">
     </audio>
@@ -23,7 +23,6 @@
 
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
     <LazyAddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
-    <LazyUserProfile v-show="userProfile" :profile="userProfile" />
     <LazyBookmarks v-if="showBookmarks"/>
     <LazyToast/>
     
@@ -55,11 +54,13 @@
     activatingPlayer = false;
     hideCurrentlyPlaying = false;
     isSafari = false;
-    userProfile = null;
     showBookmarks = false;
     
     @Getter('isLoading', {namespace: UI})
     isLoading;
+
+    @Getter('darkMode', {namespace: UI})
+    darkMode;
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
@@ -87,12 +88,7 @@
 
       this.$nuxt.$root.$on('closeModal', () => {
         this.trackToAddToPlaylist = null;
-        this.userProfile = null;
         this.showBookmarks = false;
-      });
-
-      this.$nuxt.$root.$on('showUserProfileModal', user => {
-        this.userProfile = user;
       });
 
       this.$nuxt.$root.$on('showBookmarks', () => {
@@ -112,7 +108,6 @@
     beforeDestroy(){
       this.$nuxt.$root.$off('addToPlaylist');
       this.$nuxt.$root.$off('closeModal');
-      this.$nuxt.$root.$off('showUserProfileModal');
       this.$nuxt.$root.$off('showBookmarks');
     }
   }

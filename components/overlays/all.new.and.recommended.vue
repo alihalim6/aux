@@ -1,5 +1,5 @@
 <template>
-  <section class="mt-1">
+  <section class="mt-1 simple-overlay-container">
     <div class="title-border mb-3"></div>
 
     <v-card elevation="7" class="pa-2">

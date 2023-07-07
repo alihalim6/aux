@@ -61,7 +61,7 @@
           </v-img>
         </v-card>
 
-        <ThreeDotIcon :item="nextTrack" :item-in-queue="true" iconClass="up-next-three-dot next-track-three-dot mt-10" iconColor="white"/>
+        <ThreeDotIcon :item="nextTrack" :item-in-queue="true" iconClass="up-next-three-dot next-track-three-dot mt-10" icon-color="white"/>
       </div>
 
       <div class="track-info">
@@ -123,7 +123,7 @@
       >
         <span class="track-title">{{track.primaryLabel}}</span>
         <span class="track-artists">{{track.secondaryLabel}}</span>
-        <ThreeDotIcon :item="track" :item-in-queue="true" iconClass="up-next-three-dot" iconColor="white"/>
+        <ThreeDotIcon :item="track" :item-in-queue="true" icon-class="up-next-three-dot" icon-color="white"/>
       </button>
 
       <span v-show="restOfQueueLength" class="plus-more">+ {{restOfQueueLength }} MORE... </span>
@@ -244,11 +244,11 @@
       }
     }
 
-    @supports(-webkit-text-stroke: $simple-title-border-size white) {
+    @supports(-webkit-text-stroke: $simple-title-border-size $cream) {
       .up-next-title {
         @extend .simple-overlay-title;
         -webkit-text-stroke: $simple-title-border-size $cream;
-        -webkit-text-fill-color: black;
+        -webkit-text-fill-color: $cream;
       }
     }
 

@@ -1,6 +1,6 @@
 <template>
   <section>
-    <v-dialog :value="display" fullscreen transition="fade-transition" persistent :no-click-animation="true">
+    <v-dialog :value="display" fullscreen transition="fade-transition" persistent :no-click-animation="true" content-class="detail-overlay">
       <v-carousel hide-delimiters :show-arrows="false" height="100%" :value="currentIndex" :touchless="true">
           <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">        
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
@@ -384,6 +384,10 @@
             }
           }
         }
+      }
+
+      .secondary-label {
+        max-width: 300px;
       }
     }
 

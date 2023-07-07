@@ -22,12 +22,14 @@ app.post('/initialize', async (req, res) => {
       users.insertOne({...req.body.profile});
     }
 
-    const auxModeOn = (loggedInUser && loggedInUser.auxModeOn === false) ? false : true;
+    const auxModeOn = (loggedInUser && loggedInUser.auxModeOn === true) ? true : false;
+    const darkModeOn = (loggedInUser && loggedInUser.darkModeOn === true) ? true : false;
 
     res.json({
       token,
       auxModeOn,
-      ignoredUsers: loggedInUser ? loggedInUser.ignoredUsers : []
+      ignoredUsers: loggedInUser ? loggedInUser.ignoredUsers : [],
+      darkModeOn
     });
   }
   catch(error){
@@ -112,6 +114,16 @@ app.post('/removeBookmark', async (req, res) => {
       await bookmarksCollection.updateOne({userId: id}, [{$set: {bookmarks}}]); 
     }
 
+    res.end();
+  }
+  catch(error){
+    res.sendStatus(500);
+  }
+});
+
+app.post('/updateDarkMode', async (req, res) => {
+  try{
+    await users.updateOne({id: req.body.profile.id}, [{$set: {darkModeOn: req.body.darkModeOn}}]); 
     res.end();
   }
   catch(error){

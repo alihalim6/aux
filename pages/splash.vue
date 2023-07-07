@@ -38,7 +38,7 @@
               <div class="bullet-point">See and play what others are listening to.</div>
               
               <div class="bullet-point">
-                <span><span class="font-italic">AUX Mode</span> automatically adds tracks played by others to your queue (this can be toggled off).</span>
+                <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
               </div>
 
               <div class="text-center">All with a shared <span class="on-air">FEED</span>.</div>

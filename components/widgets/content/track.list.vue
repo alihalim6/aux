@@ -7,7 +7,7 @@
   >
       <div v-for="(track, index) in tracks.filter(track => track.uuid)" :key="track.uuid">
         <v-hover v-slot="{hover}">
-          <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-4" :class="{'cream-background': hover}">
+          <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-4 track-container" :class="{'cream-background': hover && !$vuetify.breakpoint.xs}">
             <div class="left-container">
               <v-img 
                 v-if="tracksFromDifferentAlbums && track.imgUrl" 
@@ -29,7 +29,7 @@
                 <div class="d-flex align-start">
                   <span 
                     class="clickable track-name" 
-                    :class="{'lighter-black-color': hover, 'spotify-green-color': trackIsPlaying(track)}" 
+                    :class="{'lighter-black-color': hover && !$vuetify.breakpoint.xs, 'spotify-green-color': trackIsPlaying(track)}" 
                     @click.stop="trackNamePressed(track, index)"
                     @keydown.enter.stop="trackNamePressed(track, index)"
                     :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`"
@@ -147,6 +147,7 @@
   .track-list-container {
     margin: 18px auto 0px;
     padding: 0px 8px 56px;
+    border-radius: 8px;
 
     .left-container {
       $track-number-size: 25px;

@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="track-details">
     <div class="sub-title-container">
       <div class="secondary-label align-center">
         <ArtistList :artists="track.artists"/>

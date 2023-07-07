@@ -227,30 +227,19 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
 
       //keep playing if spotify paused due to there being no next tracks in its own queue
       const spotifyPausedForNoNextTracks = currentState.paused && !currentState.track_window.next_tracks.length && currentState.position == 0;
-      $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);//needed to react to headphones being taken off etc.
-
-      //move to next track on our side if Spotify starts playing next track before we do
-
-      const spotifyPreviousTracks = currentState.track_window.previous_tracks;
-      console.log(spotifyPreviousTracks);
+      $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);//needed in order to react to headphones being taken off etc.
 
       const auxCurrentTrack = $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`];
-      console.log(auxCurrentTrack);
+      //console.log(auxCurrentTrack);
 
       const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`];
-      console.log(auxNextTrack);
-
-      const ourCurrentTrackIsSpotifyPrevious = spotifyPreviousTracks.length && $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItemUri`] ? 
-        isSameTrack(spotifyPreviousTracks[spotifyPreviousTracks.length - 1], auxCurrentTrack) : false;
-
-      console.log(`ourCurrentTrackIsSpotifyPrevious: ${ourCurrentTrackIsSpotifyPrevious}`);
+      //console.log(auxNextTrack);
 
       const spotifyCurrentTrack = currentState.track_window.current_track;
+      const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? isSameTrack(spotifyCurrentTrack, auxNextTrack) : false;
 
-      if(ourCurrentTrackIsSpotifyPrevious && isSameTrack(spotifyCurrentTrack, auxCurrentTrack) && auxNextTrack){
-        const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? isSameTrack(spotifyCurrentTrack, auxNextTrack) : false;
-        console.log(`Spotify moved to a different next track ahead of us...moving ui to our next track; ourNextTrackIsSpotifyCurrent -> ${ourNextTrackIsSpotifyCurrent}`);
-        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: !ourNextTrackIsSpotifyCurrent});
+      if(!isSameTrack(auxCurrentTrack, auxNextTrack) && ourNextTrackIsSpotifyCurrent){
+        console.log('Spotify moved to the correct next next track ahead of us...');
       }
     });
 

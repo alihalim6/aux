@@ -1,5 +1,5 @@
 <template>
-  <section class="pt-1 pb-12">
+  <section class="pt-1 pb-12 my-aux">
     <div class="content-container mt-4">
       <div class="home-content-title">
         <h1 

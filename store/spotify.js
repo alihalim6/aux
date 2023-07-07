@@ -55,7 +55,6 @@ export const actions = {
     itemSet, 
     shuffle, 
     playingTrackWithinExistingQueue, 
-    nextTrackButtonPressed, 
     playingNextTrack,
     playingNextTrackNow,
     pause,
@@ -138,13 +137,10 @@ export const actions = {
 
         await dispatch('playItem', {
           item,
-          previouslyPlayingItem,
           queue,
           currentlyPlayingItemIndex,
           playingNextTrack,
-          nextTrackButtonPressed,
           playingNextTrackNow,
-          nothingWasPlaying,
           playingOtherTrackNow
         });
         
@@ -158,6 +154,40 @@ export const actions = {
         }
 
         dispatch(`${FEED}/addToFeed`, {track: item, queueId}, {root: true});
+
+        //lock screen
+        if('mediaSession' in navigator){
+          navigator.mediaSession.metadata = new MediaMetadata({
+            title: item.name,
+            artist: item.secondaryLabel,
+            album: item.trackFromAlbum ? item.album.name : '',
+            artwork: [
+              { src: item.imgUrl.small,   sizes: '96x96',   type: 'image/jpeg' },
+              { src: item.imgUrl.medium, sizes: '128x128', type: 'image/png' },
+              { src: item.imgUrl.medium, sizes: '192x192', type: 'image/png' },
+              { src: item.imgUrl.medium, sizes: '256x256', type: 'image/jpeg' },
+              { src: item.imgUrl.medium, sizes: '384x384', type: 'image/png' },
+              { src: item.imgUrl.large, sizes: '512x512', type: 'image/jpeg' },
+            ]
+          });
+
+          if(queue[currentlyPlayingItemIndex - 1]){
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+              dispatch(`${PLAYBACK_QUEUE}/playPreviousTrack`, null, {root: true});
+            });
+          }
+
+          if(queue[currentlyPlayingItemIndex + 1]){
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+              dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: true}, {root: true});
+            });
+          }
+        }
+
+        commit(`${PLAYBACK_QUEUE}/setNextTrackModified`, false, {root: true});
+
+        //skip api call if not playing anything (no device on Spotify side)
+        dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: nothingWasPlaying});
       }
     }
     catch(error){
@@ -167,13 +197,10 @@ export const actions = {
   },
   playItem: async ({getters, rootGetters, dispatch}, {
     item, 
-    previouslyPlayingItem,
     queue, 
     currentlyPlayingItemIndex, 
     playingNextTrack, 
-    nextTrackButtonPressed,
     playingNextTrackNow,
-    nothingWasPlaying,
     playingOtherTrackNow
   }) => {
     try {
@@ -216,30 +243,12 @@ export const actions = {
           console.log(spotifyPreviousTracks);
 
           const spotifyCurrentTrack = currentState.track_window.current_track;
-          console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.duration_ms} ${spotifyCurrentTrack.uri}`);
-
-          const spotifyNextTrack = currentState.track_window.next_tracks[0];
-          
+          console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.duration_ms} ${spotifyCurrentTrack.uri}`);          
           console.log(`our item: ${item.name} ${item.duration_ms} ${item.uri}`);
 
           if(spotifyCurrentTrack && isSameTrack(spotifyCurrentTrack, item)){
             console.log(`letting Spotify play the current track: ${item.name}`);
             makePlaybackApiCall = false;
-          }
-          else{
-            const correctNextTrack = spotifyNextTrack && isSameTrack(spotifyNextTrack, item);
-
-            if(spotifyNextTrack){
-              console.log(`NEXT SPOTIFY TRACK::: ${spotifyNextTrack.name} ${spotifyNextTrack.duration_ms} ${spotifyNextTrack.uri}`)
-            }
-
-            console.log('correctNextTrack', correctNextTrack);
-
-            if(correctNextTrack){
-              console.log(`using API to move to next track...`);
-              spotify({url: '/me/player/next', method: 'POST'});
-              makePlaybackApiCall = false;
-            }
           }
         }
       }
@@ -269,64 +278,18 @@ export const actions = {
             const spotifyCurrentTrack = currentState.track_window.current_track;
             console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
             console.log(`our track: ${item.name}...${item.uri}`);
+            let sendNextTrack = false;
 
-            //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different)
+            //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different) so using name
+
             if(spotifyCurrentTrack.name != item.name){
-              console.log('spotify playing wrong track after API call...calling again with just the correct track (if it is a track type');
-              await startItemPlayback(item, []);
-
-              if(nextTracksToSend && nextTracksToSend[0].uri.indexOf('track') > -1){
-                console.log(`now sending next track...${nextTracksToSend[0].name}`);
-                spotify({url: `/me/player/queue?uri=${nextTracksToSend[0].uri}`, method: 'POST'});
-              }
+              console.log('spotify playing wrong track after API call...calling again');
+              await startItemPlayback(item, nextTracksToSend);
+              sendNextTrack = true;
             }
           }
         }
-        
-        await getters.player.resume();
-
-        //if playing an album-type track and the queue has a next track, send that to Spotify to be the next track at least to help keep us on same page
-        if(queue.length > 1 && !nextTracksToSend){
-          const nextTrack = queue[currentlyPlayingItemIndex + 1];
-
-          if(nextTrack && nextTrack.uri.indexOf('track') > -1){
-            console.log(`adding the next track to spotify queue...${nextTrack.name}`);
-            spotify({url: `/me/player/queue?uri=${nextTrack.uri}`, method: 'POST'});
-          }
-        }
       }
-
-      //lock screen
-      if('mediaSession' in navigator){
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: item.name,
-          artist: item.secondaryLabel,
-          album: item.trackFromAlbum ? item.album.name : '',
-          artwork: [
-            { src: item.imgUrl.small,   sizes: '96x96',   type: 'image/jpeg' },
-            { src: item.imgUrl.medium, sizes: '128x128', type: 'image/png' },
-            { src: item.imgUrl.medium, sizes: '192x192', type: 'image/png' },
-            { src: item.imgUrl.medium, sizes: '256x256', type: 'image/jpeg' },
-            { src: item.imgUrl.medium, sizes: '384x384', type: 'image/png' },
-            { src: item.imgUrl.large, sizes: '512x512', type: 'image/jpeg' },
-          ]
-        });
-
-        if(queue[currentlyPlayingItemIndex - 1]){
-          navigator.mediaSession.setActionHandler('previoustrack', () => {
-            dispatch(`${PLAYBACK_QUEUE}/playPreviousTrack`, null, {root: true});
-          });
-        }
-
-        if(queue[currentlyPlayingItemIndex + 1]){
-          navigator.mediaSession.setActionHandler('nexttrack', () => {
-            dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {nextTrackButtonPressed: true}, {root: true});
-          });
-        }
-      }
-
-      //skip api call if not playing anything (no device on Spotify side)
-      dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: nothingWasPlaying});
     }
     catch(error){
       console.error(error);

@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="playlist-details">
     <div class="sub-title-container">
       <div class="secondary-label">{{playlist.secondaryLabel}}</div>
     </div>

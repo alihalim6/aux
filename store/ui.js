@@ -5,7 +5,8 @@ export const state = () => {
     feed: {display: false, unseenActivity: false},
     feedAlert: {},
     replyingToFeedReaction: false,
-    actionDialog: {}
+    actionDialog: {},
+    darkMode: false
   };
 };
 
@@ -28,6 +29,9 @@ export const getters = {
   actionDialog: (state) => {
     return state.actionDialog;
   },
+  darkMode: (state) => {
+    return state.darkMode;
+  }
 };
 
 export const mutations = {
@@ -58,4 +62,10 @@ export const mutations = {
   setActionDialog(state, dialog){
     state.actionDialog = dialog;
   },
+  setDarkMode(state, darkMode){
+    state.darkMode = darkMode;
+  },
+  toggleDarkMode(state, darkMode){
+    state.darkMode = !state.darkMode;
+  }
 };

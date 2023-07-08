@@ -163,7 +163,7 @@
 
   .playlist-img {
     @media(min-width: $device-size-threshold){
-      max-width: 50%;
+      max-width: 50% !important;
     }
   }
 

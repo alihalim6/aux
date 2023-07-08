@@ -359,7 +359,7 @@
         if(this.audioPlaying){
           this.playbackElapsed.ms += interval;
 
-          if(this.playbackElapsed.ms >= this.playbackTotal.ms - (this.nextTrackModified ? 500 : 0)){
+          if(this.playbackElapsed.ms >= this.playbackTotal.ms - (this.nextTrackModified ? 775 : 0)){
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){

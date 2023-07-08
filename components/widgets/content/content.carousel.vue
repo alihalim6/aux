@@ -1,7 +1,7 @@
 <template>
     <section>
       <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}">
-        <div v-for="(item, index) in data" :key="item.uuid">
+        <div v-for="(item, index) in data.filter(item => item.uuid)" :key="item.uuid">
           <section :class="{'d-flex align-center': lastNewAndRecoCarouselItem(index)}">
             <v-hover v-slot="{hover}">
               <div :class="{'d-flex flex-column align-center': item.isArtist}">
@@ -55,7 +55,7 @@
                   <v-icon color="white" large @click="addTrackToPlaylist(item)" aria-label="add track to playlist">mdi-plus</v-icon>
                 </div>
 
-                <div :class="{'pb-8': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
+                <div :class="{'pb-8 pr-2': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
                   <div class="primary-container" 
                     :class="{
                       'hovered-primary-container': hover && !vertical && !item.isArtist && !lastNewAndRecoCarouselItem(index), 

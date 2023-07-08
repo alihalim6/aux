@@ -165,7 +165,7 @@
       background-position-y: -7px;
       background-repeat: repeat;
       margin-top: 42px;
-      background-size: 188%;
+      background-size: 487px;
       margin-top: 42px;
       position: relative;
     }
@@ -195,7 +195,7 @@
     align-items: center;
     justify-content: flex-end;
     padding: 24px 24px 0px;
-    background-color: #fcfce269;
+    background-color: #fcfce269 !important;
   }
   
   .login {
@@ -229,11 +229,11 @@
 
   .splash-animation {
     width: 100%;
-    max-width: 515px;
+    max-width: 515px !important;
     transform: scale(1.2);
     margin: 0 auto;
     animation: blink 1s infinite linear;
-    position: absolute;
+    position: absolute !important;
     bottom: 75px;
 
     .v-image__image--cover {

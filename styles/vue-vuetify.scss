@@ -423,7 +423,7 @@ $dark-footer-shadow: 0px 4px 0px -2px rgb(255 255 255/ 9%), 0px -11px 7px -8px r
 //splash page (no store variable only vuetify class)
 .theme--dark {
   .splash-header {
-    background-color: $off-white;
+    background-color: $off-white !important;
   }
 
   .made-by-link {

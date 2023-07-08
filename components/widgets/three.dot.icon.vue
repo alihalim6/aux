@@ -1,9 +1,9 @@
 <template>
   <v-menu 
     left 
-    :transition="detailOverlay || threeDotItem.isArtist ? 'slide-x-reverse-transition' : 'slide-x-transition'" 
+    bottom
+    :transition="'slide-x-reverse-transition'" 
     z-index="2000" 
-    :nudge-left="threeDotItem.isArtist ? 100 : (threeDotItem.isAlbum ? 32 : 20)" 
     :nudge-bottom="bookmark ? -140 : 0"
     :value="!hide"
   >
@@ -128,9 +128,7 @@
       });
     }
 
-    async onPress(){
-      this.hide = false;
-      
+    async onPress(){     
       if(this.threeDotItem.isArtist){
         this.options = [];
       }
@@ -302,6 +300,8 @@
         if(this.itemInQueue && this.threeDotItem.addedBy){
           this.options.unshift({addedBy: true});
         }
+
+        this.hide = false;
       }
       catch(error){
         console.log(error)

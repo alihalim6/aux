@@ -80,6 +80,7 @@
           return album;
         }
         catch(error){
+          this.artistAlbums = [];
           console.error(`failed to get tracks for artists\' album to mark appropriate ones as explicit: ${error}`);
         }
       }));

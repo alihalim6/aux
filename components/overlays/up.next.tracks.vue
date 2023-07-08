@@ -112,19 +112,15 @@
     <div class="then-container" v-if="thenTracks.length">
       <span class="then-label">THEN</span>
 
-      <button 
+      <div 
         v-for="track in thenTracks" 
         :key="track.queueId" 
-        class="clickable then-track-container fill-available" 
-        @click.stop="nextTrackPressed(track, thenTracks)"
-        @keydown.enter.prevent.stop="nextTrackPressed(track, thenTracks)"
-        tabindex="0"
-        :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`"
+        class="then-track-container fill-available" 
       >
-        <span class="track-title">{{track.primaryLabel}}</span>
+        <button @click.stop="nextTrackPressed(track, thenTracks)" tabindex="0" :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`" class="track-title">{{track.primaryLabel}}</button>
         <span class="track-artists">{{track.secondaryLabel}}</span>
         <ThreeDotIcon :item="track" :item-in-queue="true" icon-class="up-next-three-dot" icon-color="white"/>
-      </button>
+      </div>
 
       <span v-show="restOfQueueLength" class="plus-more">+ {{restOfQueueLength }} MORE... </span>
     </div>

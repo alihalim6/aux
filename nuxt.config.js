@@ -70,6 +70,9 @@ export default {
           "sizes": "512x512"
         }
       ],
+    },
+    meta: {
+      theme_color: '#fffff1'
     }
   },
 

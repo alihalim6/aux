@@ -269,7 +269,7 @@
 
     deleteUserActivity(){
       this.setActionDialog({
-        text: `Delete tracks I've played, comments I've made, and profile info that AUX has saved (bars?):`,
+        text: `Delete tracks I've played, comments I've made, and profile info that AUX has saved (bars?).`,
         cancellable: true,
         confirmLabel: 'CONFIRM AND LOGOUT',
         confirmFn: async () => {

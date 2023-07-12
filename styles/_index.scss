@@ -84,8 +84,8 @@
 .spotify-full {    
   $icon-size: 70px;
 
-  width: $icon-size;
-  max-width: $icon-size;
+  width: $icon-size !important;
+  max-width: $icon-size !important;
 }
 
 .spotify-icon {

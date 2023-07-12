@@ -40,8 +40,8 @@ $dark-footer-shadow: 0px 4px 0px -2px rgb(255 255 255/ 9%), 0px -11px 7px -8px r
 
   .user-menu {         
     .v-snack__wrapper {
-      background-color: $dark-blue;
-      color: $cream;
+      background-color: $dark-blue !important;
+      color: $cream !important;
     }
 
     .user-list {
@@ -62,7 +62,8 @@ $dark-footer-shadow: 0px 4px 0px -2px rgb(255 255 255/ 9%), 0px -11px 7px -8px r
     box-shadow: 0px 5px 5px -3px rgba(255, 255, 255, 0.2), 0px 8px 10px 1px rgba(255, 255, 255, 0.14), 0px 3px 14px 2px rgba(255, 255, 255, 0.12);
   }
 
-  .v-application.dark-mode .v-sheet.v-snack__wrapper:not(.v-sheet--outlined),
+  .v-sheet,
+  .theme--dark.v-sheet,
   .bookmarks.container,
   .item-image .content-loaded,
   .add-to-playlist {
@@ -190,7 +191,7 @@ $dark-footer-shadow: 0px 4px 0px -2px rgb(255 255 255/ 9%), 0px -11px 7px -8px r
     }
 
     .playback-time, .queue-control {
-      color: $cream;
+      color: $cream !important;
     }
 
     .playback-toggle {

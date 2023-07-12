@@ -25,7 +25,7 @@ const getRecommendedArtists = async (topArtists) => {
 
 async function newAndRecommended(){
   try {
-    const newReleasesLimit = 25;
+    const newReleasesLimit = 15;
     const randomOffset = Math.floor(Math.random() * (newReleasesLimit - 0 + 1) + 0);
 
     const topArtists = await topItems('artists');

@@ -1,10 +1,10 @@
 <template>
   <section class="album-details">
     <div class="sub-title-container">
-      <div>
-        <ArtistList :artists="album.artists"/>
+      <div class="d-flex align-center">
+        <ArtistList :artists="album.artists" class="artist-list-container" />
         <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
-        {{new Date(album.release_date).getFullYear()}}
+        <span>{{new Date(album.release_date).getFullYear()}}</span>
       </div>
 
       <div class="sub-padding-left no-wrap">
@@ -41,3 +41,9 @@
     }
   }
 </script>
+
+<style lang="scss">
+  .artist-list-container {
+    max-width: 125px;
+  }
+</style>

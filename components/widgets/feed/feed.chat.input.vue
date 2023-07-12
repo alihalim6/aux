@@ -122,6 +122,9 @@
 </script>
 
 <style lang="scss">
+  @import '~/components/styles';
+  @import '~/styles/globals';
+
   .feed-chat-input {    
     font-size: $chat-font-size;
     align-items: center;

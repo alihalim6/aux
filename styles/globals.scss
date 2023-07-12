@@ -1,0 +1,18 @@
+//styles used in places too spread out to do imports
+
+.focused {
+  border: 2px solid #ccc;
+  border-radius: 2px;
+}
+
+.fade-in-animation {
+  animation-name: fade-in;
+  animation-duration: 755ms;
+  animation-timing-function: ease;
+  animation-delay: 400ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fade-in {
+  to {opacity: 1;}
+}

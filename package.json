@@ -8,14 +8,10 @@
   "scripts": {
     "dev": "nuxt",
     "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate",
-    "lint:js": "eslint --ext \".js,.vue\" --ignore-path .gitignore .",
-    "lint": "yarn run lint:js"
+    "start": "nuxt start"
   },
   "dependencies": {
     "@nuxtjs/pwa": "^3.3.5",
-    "@nuxtjs/style-resources": "^1.2.1",
     "@nuxtjs/vuetify": "^1.12.3",
     "axios": "0.27.2",
     "axios-retry": "^3.3.1",

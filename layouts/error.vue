@@ -7,7 +7,7 @@
         <span class="nav-button-label">{{error.actionButtonLabel || 'RELOAD*'}}</span>
       </div>
 
-      <span v-if="!error.notPremium" class="note">(*at the risk of causing another explosion...and possibly starting a fire...{{String.fromCodePoint(0x1F525)}})</span>
+      <span v-if="!error.notPremium" class="note">(*at the risk of causing another explosion...and possibly starting a wildfire...{{String.fromCodePoint(0x1F525)}})</span>
     </div>
   </v-app>
 </template>

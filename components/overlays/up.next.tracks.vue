@@ -216,6 +216,8 @@
 </script>
 
 <style lang="scss">  
+  @import '~/components/styles';
+
   $img-size: 250px;
 
   .up-next-list-container {
@@ -226,6 +228,7 @@
     flex-direction: column;
     overflow-y: scroll;
     padding-top: calc(env(safe-area-inset-top) + 6px);
+    padding-bottom: 200px;
 
     .up-next-header {
       font-weight: bold;
@@ -287,7 +290,7 @@
           max-width: 90vw;
 
           .info-label {
-            transform: scale(0.75, 1.4);
+            transform: scaleX(0.75);
           }
         }
      

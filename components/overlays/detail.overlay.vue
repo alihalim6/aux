@@ -54,7 +54,7 @@
                         @click="spotifyLogoPressed(item)" 
                         @keydown.enter="spotifyLogoPressed(item)" 
                         :class="{'spotify-icon': $vuetify.breakpoint.xs, 'spotify-full': $vuetify.breakpoint.smAndUp, 'clickable': !item.simpleOverlay}" 
-                        :src="require(`~/assets/Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)"
+                        :src="require(`~/assets//Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)"
                         :alt="`open ${item.name} on Spotify`"
                         tabindex="0"
                       >
@@ -68,7 +68,7 @@
                     <span :class="{'logo-style': item.isAlbum}">{{item.name}}</span>
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
-                      <div class="item-icon-container">
+                      <div class="d-flex justify-space-between align-start">
                         <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
                         <ThreeDotIcon :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true"/>
                       </div>
@@ -228,6 +228,10 @@
 </script>
 
 <style lang="scss">
+  @import './styles';
+  @import '~/components/styles';
+  @import '~/styles/globals';
+
   $full-image-cta-breakpoint: 850px;
   $overlay-width: calc(#{$max-inner-width} - 175px);
 
@@ -284,7 +288,7 @@
         .scrolled-down-top-bar {
           max-width: $overlay-width;
           position: sticky;
-          padding: 4px 0px;
+          padding: 20px 0 4px;
           width: 100%;
           z-index: 30;
           top: 0;
@@ -377,6 +381,7 @@
               @extend .action-button;
               font-size: $dots-size !important;
               padding-top: 6px;
+              margin-left: 6px;
             }
 
             .detail-overlay-dots-button:hover {
@@ -397,7 +402,7 @@
     }
 
     .simple-overlay {
-      @extend .no-animation;
+      animation: none !important;
       opacity: 1;
     }
   }

@@ -1,0 +1,113 @@
+.menu-option-container {
+  display: flex;
+  padding: 0px 12px !important;
+  min-width: max-content;
+
+  .option-title {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px;
+  }
+}
+
+.menu-option-container:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.content-placeholder {
+  font-size: 120px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-left: $base-padding;
+}
+
+.small-content-placeholder {
+  @extend .content-placeholder;
+  font-size: 12px;
+  color: white;
+}
+
+.on-air {
+  font-size: 14px;
+  color: transparent;
+  padding-left: 4px;
+  font-weight: bold;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: cover;
+  background-image: url('~/assets//feed_background.png');
+  animation: move-background 4s infinite forwards;
+
+  @keyframes move-background {
+    0% {
+      background-position: left 0%;
+    }
+
+    50% {
+      background-position: right 100%;
+    }
+
+    100% {
+      background-position: left 0%;
+    }
+  }
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  background-color: $primary-theme-color;
+  font-size: 12px;
+  border-radius: 22px;
+  align-self: flex-end;
+  margin-left: auto;
+  padding: $nav-button-padding;
+}
+
+.nav-button:hover {
+  background-color: $secondary-theme-color;
+  border: 2px solid $primary-theme-color;
+  padding: 6px 12px;
+
+  .nav-button-label {
+    color: $primary-theme-color;
+  }
+}
+
+.nav-button-label {
+  color: $secondary-theme-color;
+}
+
+.spotify-full {    
+  $icon-size: 70px;
+
+  width: $icon-size;
+  max-width: $icon-size;
+}
+
+.spotify-icon {
+  $icon-size: 21px;
+
+  width: $icon-size;
+  max-width: $icon-size;
+  height: $icon-size;
+}
+
+.spotify-full, .spotify-icon {
+  .v-image__image {
+    background-size: contain;
+  }
+}
+
+.logo-style {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: $cream;
+  background-color: $rose-red;
+  padding: 0px 8px;
+  width: max-content;
+  transform: skewX(-9.9deg);
+}

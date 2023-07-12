@@ -152,7 +152,9 @@
   }
 </script>
 
-<style lang="scss">  
+<style lang="scss">
+  @import '~/components/styles';
+  
   .feed-item-container {
     display: flex;
     align-items: flex-start;

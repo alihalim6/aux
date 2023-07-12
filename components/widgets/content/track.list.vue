@@ -39,7 +39,7 @@
                     {{track.name}}
                   </span>  
                 
-                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon" alt=""></v-img>
+                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets//new.png')" class="new-icon" alt=""></v-img>
                 </div>
 
                 <div class="track-artists">
@@ -144,6 +144,8 @@
 </script>
 
 <style lang="scss">
+  @import './styles';
+
   .track-list-container {
     margin: 18px auto 0px;
     padding: 0px 8px 56px;
@@ -189,7 +191,7 @@
           font-size: 12px;
           color: #666666;
           font-weight: bold;
-          margin-top: 4px;
+          margin-top: 6px;
         }
 
         .track-duration {

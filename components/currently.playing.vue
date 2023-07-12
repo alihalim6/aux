@@ -5,7 +5,7 @@
         @click="spotifyLogoPressed()" 
         @keydown.enter="spotifyLogoPressed()"
         class="clickable spotify-icon currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')"
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets//Spotify_Logo_Icon.png')"
         tabindex="0"
         alt="open Spotify"
       >
@@ -15,7 +15,7 @@
         @click="spotifyLogoPressed()" 
         @keydown.enter="spotifyLogoPressed()"
         class="clickable spotify-full currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets/Spotify_Logo_Full.png')"
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets//Spotify_Logo_Full.png')"
         tabindex="0"
         alt="open Spotify"
       >
@@ -32,7 +32,7 @@
     </div>
 
     <div v-if="pendingFirstPlay" class="d-flex align-center width-max-content mt-3">
-      <span class="pending-first-play">Grabbing the AUX cord</span>
+      <span class="pending-first-play">GRABBING THE AUX CORD</span>
 
       <v-progress-linear 
         class="looking-icon" 
@@ -323,13 +323,18 @@
       this.handleFeedChevron();
     }
 
+    @Watch('upNextDisplaying')
+    upNextToggled(newVal){
+      document.documentElement.style.overflowY = newVal ? 'hidden' : 'auto';
+    }
+
     beforeMount(){
       this.$nuxt.$root.$on('hideUpNext', () => {
         this.upNextHidden = true;
         this.upNextDisplaying = false;
       });
 
-      window.addEventListener('popstate', e => {
+      window.addEventListener('popstate', () => {
         this.$nuxt.$root.$emit('hideUpNext');
       });
 
@@ -359,7 +364,7 @@
         if(this.audioPlaying){
           this.playbackElapsed.ms += interval;
 
-          if(this.playbackElapsed.ms >= this.playbackTotal.ms - (this.nextTrackModified ? 775 : 0)){
+          if(this.playbackElapsed.ms >= this.playbackTotal.ms - (this.nextTrackModified ? 1000 : 0)){
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){
@@ -396,7 +401,7 @@
           this.playbackElapsed.ms = position;
           this.playbackElapsed.display = msToDuration(position);
         }
-      }, 3000);
+      }, 1000);
     }
 
     async repeatCurrentTrack(){
@@ -521,6 +526,9 @@
 </script>
 
 <style lang="scss">
+  @import './styles';
+  @import '~/styles/globals';
+
   $off-color: #cccccc;
   $top-row-margin: 12px;
 
@@ -748,6 +756,26 @@
     to {
       transform: rotate(180deg);
       top: 0px;
+    }
+  }
+
+  .track-sneak-peek {
+    width: 67vw;
+    display: flex;
+    margin-left: 4px;
+
+    .track-img {
+      $img-size: 22px;
+
+      width: $img-size;
+      max-width: $img-size;
+      height: $img-size;
+      margin: 0px 4px;
+    }
+
+    .track-artists {
+      font-weight: normal;
+      font-size: 12px;
     }
   }
 </style>

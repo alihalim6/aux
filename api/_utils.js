@@ -58,6 +58,11 @@ httpClient.interceptors.response.use(async response => {
     }
     else{
       handleApiError(response.data.error);
+
+      if(isPlaybackCall(response.config)){
+        $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
+      }
+
       return;
     }
   }
@@ -80,6 +85,10 @@ httpClient.interceptors.response.use(async response => {
   }
   else if(!isTrackRepeatCall(error.config)){
     handleApiError();
+
+    if(isPlaybackCall(error.config)){
+      $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
+    }
   }
 });
 
@@ -116,7 +125,6 @@ async function attemptTokenRefresh(){
 
 export function handleApiError(message){
   $nuxt.$store.commit(`${UI}/setToast`, {text: message || 'Something went wrong!', error: true});
-  $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
 }
 
 export const topItems = async (topType, limit) => {

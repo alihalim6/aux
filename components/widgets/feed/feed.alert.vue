@@ -17,7 +17,7 @@
 
       <div class="snackbar-container fill-available" :class="{'mb-5': !repliedToReaction}">    
         <div class="d-flex align-center pr-3" :class="{'align-start': feedAlert.trackAddedToFeed}">
-          <v-img v-if="feedAlert.img" :src="feedAlert.img" class="snackbar-img" @click.stop="trackInfoPressed()" :class="{'track-img': feedAlert.trackAddedToFeed}"></v-img>
+          <v-img v-if="feedAlert.img" :src="feedAlert.img" class="clickable snackbar-img" @click.stop="trackInfoPressed()" :class="{'track-img': feedAlert.trackAddedToFeed}"></v-img>
 
           <span class="alert-text" :class="{'ml-2': feedAlert.activityReaction}">
             <span>{{feedAlert.username}}</span><span class="ml-1 font-weight-regular">{{feedAlert.text}}</span>
@@ -145,6 +145,9 @@
 </script>
 
 <style lang="scss">  
+  @import '~/components/widgets/styles';
+  @import '~/components/styles';
+
   .feed-alert-container {
     $track-info-font-size: 12px;
     $secondary-text-color: #888888;

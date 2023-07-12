@@ -43,7 +43,7 @@
     async resetTimeout(){
       this.timeout = 0;
       await this.$nextTick();
-      this.timeout = this.currentToast.error ? -1 : 2700;
+      this.timeout = this.toast.error ? -1 : 2700;
     }
 
     closeToast(){
@@ -53,6 +53,8 @@
 </script>
 
 <style lang="scss">  
+  @import './styles';
+  
   .app-toast {
     margin-top: 6px;
     z-index: 9999999 !important;

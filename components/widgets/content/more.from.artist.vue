@@ -95,7 +95,7 @@
   }
 
   .more-from-artist-container {
-    @extend .overlay-margin;
+    margin: 10px 0px 16px;
     padding: 10px 2px $base-padding;
     font-size: 16px;
 

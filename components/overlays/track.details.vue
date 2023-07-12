@@ -38,7 +38,7 @@
                 <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
               </div>
 
-              <span :class="{'ml-1': trackAlbumArtistsLengthsDiffer}">{{new Date(track.album.release_date).getFullYear()}}</span>
+              <span>{{new Date(track.album.release_date).getFullYear()}}</span>
             </div>
 
             <div class="sub-padding-left no-wrap">
@@ -148,6 +148,7 @@
       .dot-icon {
         @extend .action-icon;
         font-size: 20px !important;
+        margin-left: 6px;
       }
 
       .bottom-info {

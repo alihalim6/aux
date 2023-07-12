@@ -100,6 +100,9 @@
 </script>
 
 <style lang="scss">
+  @import '~/components/styles';
+  @import '~/styles/globals';
+
   .collection-playback {
     color: #1DB954 !important;
   }

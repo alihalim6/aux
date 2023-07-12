@@ -42,7 +42,6 @@ export default {
     '@nuxtjs/pwa',
 
     '~/socket',
-    '@nuxtjs/style-resources',
   ],
 
   env: {
@@ -99,8 +98,4 @@ export default {
     {path: '/feed', handler: '~/serverMiddleware/feed.js'},
     {path: '/user', handler: '~/serverMiddleware/user.js'}
   ],
-
-  styleResources: {
-    scss: ['./styles/variables.scss', './styles/main.scss', './styles/simple-styles.scss']
-  }
 }

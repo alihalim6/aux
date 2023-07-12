@@ -1,0 +1,56 @@
+@import '~/styles/globals';
+
+.round-img-icon {
+  $icon-size: 28px;
+
+  border-radius: 100%;
+  height: $icon-size;
+  max-width: $icon-size;
+  color: $primary-theme-color;
+  background-color: white;
+}
+
+.snackbar-img {
+  @extend .round-img-icon;
+  $snackbar-img-size: 28px;
+  
+  margin-left: $snackbar-side-margin;
+  height: $snackbar-img-size;
+  max-width: $snackbar-img-size;
+}
+
+.oscillating-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  
+  .loading {
+    animation-name: oscillate-loading;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    width: 50%;
+    height: 45px;
+  }
+
+  @keyframes oscillate-loading {
+    0% {transform: translateX(0);}
+    50% {transform: translateX(100%);} 
+    100% {transform: translateX(0);} 
+  }
+}
+
+.hover-scale {
+  transform: scale(1.1);
+}
+
+@supports(-webkit-text-stroke: $simple-title-border-size $primary-theme-color) {
+  .simple-overlay-title {
+    -webkit-text-stroke: $simple-title-border-size $primary-theme-color;
+    -webkit-text-fill-color: $secondary-theme-color;
+    font-size: 44px !important;
+    line-height: 1;
+    word-break: break-word;
+  }
+}

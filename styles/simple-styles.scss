@@ -1,3 +1,5 @@
+@import '~/styles/globals';
+
 $phrase-border-size: 1px;
 $phrase-border-color: #aaaaaa;
 
@@ -6,8 +8,7 @@ $phrase-border-color: #aaaaaa;
 }
 
 .circle-separator {
-  padding: 4px;
-  padding-left: 8px;
+  padding: 4px 6px;
   color: $primary-theme-color !important;
   font-size: 8px !important;
 }
@@ -25,6 +26,8 @@ $phrase-border-color: #aaaaaa;
 } 
 
 .sub-padding-left {
+  display: flex;
+  align-items: center;
   padding-left: $base-padding;
 }
 
@@ -51,11 +54,6 @@ $phrase-border-color: #aaaaaa;
   max-width: unset !important;
 }
 
-.no-animation {
-  -webkit-animation: none !important;
-  animation: none !important;
-}
-
 .overflow-scroll {
   overflow: scroll;
 }
@@ -72,16 +70,6 @@ $phrase-border-color: #aaaaaa;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-@supports(-webkit-text-stroke: $simple-title-border-size $primary-theme-color) {
-  .simple-overlay-title {
-    -webkit-text-stroke: $simple-title-border-size $primary-theme-color;
-    -webkit-text-fill-color: $secondary-theme-color;
-    font-size: 44px !important;
-    line-height: 1;
-    word-break: break-word;
-  }
 }
 
 .min-width-fit {
@@ -169,10 +157,6 @@ $phrase-border-color: #aaaaaa;
   white-space: nowrap;
 }
 
-.hover-scale {
-  transform: scale(1.1);
-}
-
 .hover-tab {
   opacity: 0.8;
 }
@@ -227,11 +211,6 @@ $phrase-border-color: #aaaaaa;
 
 .cream-background {
   background-color: $off-white !important;
-}
-
-.focused {
-  border: 2px solid #ccc;
-  border-radius: 2px;
 }
 
 .dark-background {

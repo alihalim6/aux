@@ -1,9 +1,11 @@
 <template>
   <v-menu 
     left 
-    bottom
     :transition="'slide-x-reverse-transition'" 
     z-index="2000" 
+    :offset-x="true"
+    :offset-overflow="true"
+    :nudge-left="threeDotItem.isArtist ? 80 : (currentlyPlayingItem.uri ? 0 : 20)"
     :nudge-bottom="bookmark ? -140 : 0"
     :value="!hide"
   >
@@ -274,9 +276,9 @@
               }
             }
             : {
-              title: 'Add to Bookmarks',
+              title: 'Add to Bookmarks...',
               fn: async () => {
-                const bookmark = {...this.threeDotItem, userId: this.profile.id};
+                const bookmark = {id: this.threeDotItem.id, type: this.threeDotItem.type, userId: this.profile.id};
 
                 await auxApiClient.post('/user/addBookmark', {bookmark},
                 {
@@ -361,6 +363,9 @@
 </script>
 
 <style lang="scss">
+  @import '~/components/styles';
+  @import '~/styles/globals';
+
   .three-dots {
     font-size: 19px !important;
     padding-top: 4px;

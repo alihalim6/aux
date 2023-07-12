@@ -1,9 +1,9 @@
 <template>
-  <span>
+  <div class="inline-display">
     <span v-for="(artist, index) in artists" :key="artist.id">
       <button 
         :id="artist.uuid" 
-        class="clickable inline-display" 
+        class="clickable inline-display text-left width-fit-content" 
         @click.stop="$nuxt.$root.$emit('displayArtistDetails', artist)" 
         @keydown.enter.stop="$nuxt.$root.$emit('displayArtistDetails', artist)" 
         :class="{'text-decoration-underline': underline}"
@@ -13,7 +13,7 @@
         <span>{{artist.name}}</span>
       </button><span v-if="(index < artists.length - 1)">, </span>
     </span>
-  </span>
+  </div>
 </template>
 
 <script>

@@ -1,0 +1,14 @@
+.record-icon {
+  padding-right: 4px;
+  color: $rose-red !important;
+}
+
+.new-icon {
+  $size: 24px;
+
+  margin-left: 6px;
+  width: $size;
+  max-width: $size;
+  height: $size;
+  transform: rotate(-12deg);
+}

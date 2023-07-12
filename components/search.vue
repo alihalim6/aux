@@ -196,6 +196,12 @@
       }, 250);
     }
 
+    beforeMount(){
+      window.addEventListener('popstate', () => {
+        this.showSearchResults = false;
+      });
+    }
+
     mounted(){
       const resultsElement = document.querySelector('.v-input__prepend-outer');
       this.searchResultsId = 'searchResults';
@@ -231,6 +237,8 @@
       if(this.showSearchResults){
         this.focus();
       }
+
+      history.pushState({}, '');
     }
 
     filterPressed(filter){
@@ -278,7 +286,10 @@
   }
 </script>
 
-<style lang="scss">    
+<style lang="scss">  
+  @import './styles';
+  @import '~/styles/globals';
+
   #searchContainer {
     margin-top: 12px;
     max-width: 78px;

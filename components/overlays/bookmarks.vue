@@ -20,6 +20,8 @@
   import {storageGet} from '~/utils/storage';
   import {AUTH} from '~/utils/constants';
   import {USER} from '~/store/constants';
+  import {setItemMetaData} from '~/utils/helpers';
+  import spotify from '~/api/spotify';
 
   @Component
   export default class Bookmarks extends Vue {
@@ -44,8 +46,11 @@
         }
       });
 
-      if(response.data){
-        this.bookmarks = response.data.bookmarks;
+      if(response.data && response.data.bookmarks){
+        this.bookmarks = await Promise.all(response.data.bookmarks.map(async bookmark => {
+          const bookmarkItem = await spotify({url: `/${bookmark.type}s/${bookmark.id}`});
+          return setItemMetaData([bookmarkItem])[0];
+        }));
       }
     }
 

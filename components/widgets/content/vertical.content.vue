@@ -30,7 +30,7 @@
               <div class="bottom-left-container">
                 <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
 
-                <div class="item-icon-container">
+                <div class="d-flex justify-space-between align-start">
                   <ThreeDotIcon :item="item" icon-class="ml-1"/>
                 </div>
               </div>
@@ -90,6 +90,8 @@
 </script>
 
 <style lang="scss">
+  @import './styles';
+
   .vertical-content {
     display: flex;
     flex-direction: column;

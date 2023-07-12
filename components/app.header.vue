@@ -21,7 +21,7 @@
           <v-icon class="live-info-icon" :color="darkMode ? 'white' : 'black'" large>{{`mdi-chevron-${showUserMenu ? 'up' : 'down'}`}}</v-icon>
         </button>
 
-        <div class="user-menu" :class="{'no-other-users': !liveUsers.length}">
+        <div class="user-menu">
           <v-snackbar v-model="showUserMenu" :timeout="-1" transition="slide-y-transition" absolute app>
             <div v-show="liveUsers.length" class="user-list width-100">
               <div class="d-flex flex-column">
@@ -54,7 +54,7 @@
             <div v-show="!liveUsers.length">
               <div class="d-flex flex-column align-center">
                 <span class="no-other-users-message">No one else is here.</span>
-                <v-img class="no-other-users-img" :eager="true" :src="require('~/assets/no_other_users.png')" alt=""></v-img>
+                <v-img class="no-other-users-img" :eager="true" :src="require('~/assets//no_other_users.png')" alt=""></v-img>
               </div>
             </div>
           </v-snackbar>
@@ -322,6 +322,9 @@
 </script>
 
 <style lang="scss">
+  @import './styles';
+  @import '~/styles/globals';
+
   .app-bar {
     height: $app-header-height !important;
     max-height: $app-header-height;
@@ -409,30 +412,11 @@
         margin-top: 7px;
       }
 
-      .profile-container {
-        $profile-icon-size: 36px;
-
-        margin-left: 18px;
-
-        .round-img-icon {
-          max-width: $profile-icon-size;
-          height: $profile-icon-size;
-          border: 1px solid $spotify-green;
-        }
-
-        .round-profile-letter {
-          border: 2px solid $spotify-green;
-          font-weight: bold;
-          padding: 16px;
-          color: $primary-theme-color;
-        }
-      }
-
       .user-menu {   
         position: absolute;
-        right: 55px;
         top: calc(#{$app-header-height} - 24px);
-        max-width: 50vw;
+        width: max-content;
+        right: 0;
 
         .v-snack {
           position: relative;
@@ -449,11 +433,6 @@
         .theme--dark.v-input--switch .v-input--switch__track {
           color: #ccc;
         }
-      }
-
-      .no-other-users {
-        max-width: none;
-        right: 0px;
       }
     }
 
@@ -680,5 +659,20 @@
 
   .dark-mode-toggle {
     color: black !important;
+  }
+
+  .install-pwa-label.on-air {
+    font-size: 12px;
+    padding: 0px;
+  }
+
+  .round-profile-letter {
+    @extend .round-img-icon;
+    border: 2px solid $primary-theme-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px;
+    font-weight: bold;
   }
 </style>

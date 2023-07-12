@@ -27,7 +27,7 @@
 
       <div v-if="actionDialog.isIosPwaInstall" class="dialog-text" id="actionDialogText">
         <div class="pwa-title">FYI: for installed web apps (i.e. those added to Home screen), 
-          iOS unfortuantely requires them to be open in the foreground in order to play audio. 
+          iOS requires them to be open in the foreground in order to play audio. 
           If you're good with that, here's how to install AUX as an app (makes for a way better experience) if you didn't already know:
         </div>
 

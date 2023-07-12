@@ -142,6 +142,9 @@
 </script>
 
 <style lang="scss">
+  @import '~/components/styles';
+  @import '~/styles/globals';
+
   .playlist-info {
     background-color: $primary-theme-color;
     color: $secondary-theme-color;
@@ -215,6 +218,6 @@
   }
 
   #playlistTabContent .v-window__container {
-    background-color: $cream;
+    background-color: $off-white;
   }
 </style>

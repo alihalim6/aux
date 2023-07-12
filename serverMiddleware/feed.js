@@ -57,11 +57,11 @@ app.post('/deleteUserActivity', async (req, res) => {
 });
 
 app.post('/persistActivity', async (req, res) => {
-  insertItem('activities', req.body.activity, res);
+  insertItem('activities', req.body.activity, res);////
 });
 
 app.post('/persistReaction', (req, res) => {
-  insertItem('reactions', req.body.reaction, res);
+  insertItem('reactions', req.body.reaction, res);/////
 });
 
 async function insertItem(collection, item, res){

@@ -27,7 +27,7 @@
               <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
                 <div role="tooltip" tabindex="0">
                   <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
-                  <span>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed. Otherwise it's a skip that is only visible in your feed.</span>
+                  <span>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed where they can see and play it (if they want to). Otherwise it's a skip that is only visible in your feed.</span>
                   <div class="mt-2">Tracks played more than 24 hours ago are removed on app reload / every so often.</div>
                 </div>
               </v-tooltip>
@@ -47,8 +47,8 @@
             </div>
 
             <div class="no-prompt-graphic" aria-hidden="true">
-              <v-img :src="require('~/assets/world.gif')"></v-img>
-              <v-img class="animated-phrase" :src="require('~/assets/pass_the_aux.png')"></v-img>
+              <v-img :src="require('~/assets//world.gif')"></v-img>
+              <v-img class="animated-phrase" :src="require('~/assets//pass_the_aux.png')"></v-img>
             </div>
           </div>
         </div>
@@ -237,6 +237,9 @@
 </script>
 
 <style lang="scss">
+  @import './styles';
+  @import '~/components/styles';
+
   .activity-feed {
     height: 100%;
     padding: 0px 0px 12px 16px;
@@ -306,5 +309,38 @@
 
   .play-all-label {
     font-size: 14px;
+  }
+
+  .scroll-shadow-on-transparent {
+    background:
+      /* Shadow Cover TOP */
+      linear-gradient(
+        rgba(255, 255, 255, 0),
+        transparent 30%
+      ) center top,
+      
+      /* Shadow Cover BOTTOM */
+      linear-gradient(
+        transparent 70%,
+        rgba(255, 255, 255, 0)
+      ) center bottom,
+      
+      /* Shadow TOP */
+      radial-gradient(
+        farthest-side at 50% 0,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      ) center top,
+      
+      /* Shadow BOTTOM */
+      radial-gradient(
+        farthest-side at 50% 100%,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      ) center bottom;
+
+    background-repeat: no-repeat;
+    background-size: 100% 40px, 100% 40px, 100% 8px, 100% 8px;
+    background-attachment: local, local, scroll, scroll;
   }
 </style>

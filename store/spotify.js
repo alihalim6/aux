@@ -138,6 +138,7 @@ export const actions = {
         await dispatch('playItem', {
           item,
           queue,
+          previouslyPlayingItem,
           currentlyPlayingItemIndex,
           playingNextTrack,
           playingNextTrackNow,
@@ -198,6 +199,7 @@ export const actions = {
   playItem: async ({getters, rootGetters, dispatch}, {
     item, 
     queue, 
+    previouslyPlayingItem,
     currentlyPlayingItemIndex, 
     playingNextTrack, 
     playingNextTrackNow,
@@ -249,6 +251,23 @@ export const actions = {
           if(spotifyCurrentTrack && isSameTrack(spotifyCurrentTrack, item)){
             console.log(`letting Spotify play the current track: ${item.name}`);
             makePlaybackApiCall = false;
+          }
+          else{
+            const spotifyCurrentIsOurPrev = spotifyCurrentTrack && isSameTrack(previouslyPlayingItem, spotifyCurrentTrack);
+            const spotifyNextTrack = currentState.track_window.next_tracks[0];
+            const correctNextTrack = spotifyNextTrack && isSameTrack(spotifyNextTrack, item);
+            
+            if(spotifyNextTrack){
+              console.log(`NEXT SPOTIFY TRACK::: ${spotifyNextTrack.name} ${spotifyNextTrack.duration_ms} ${spotifyNextTrack.uri}`)
+            }
+
+            console.log('spotifyCurrentIsOurPrev', spotifyCurrentIsOurPrev);
+            console.log('correctNextTrack', correctNextTrack);
+            
+            if(spotifyCurrentIsOurPrev && correctNextTrack){
+              console.log(`letting Spotify play the play next track: ${item.name}`);
+              makePlaybackApiCall = false;
+            }
           }
         }
       }
@@ -316,7 +335,7 @@ export const actions = {
       commit(`${PLAYBACK_QUEUE}/clearQueue`, null, {root: true});
 
       if(!noError){
-        commit(`${UI}/setToast`, {text: 'Could not compute...', error: true}, {root: true});
+        commit(`${UI}/setToast`, {text: 'Something went wrong...', error: true}, {root: true});
       }
 
       if(process.client){

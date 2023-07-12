@@ -9,7 +9,7 @@
       </div>
 
       <div class="aux-logo-container" aria-hidden="true" v-if="showEasterEgg" @click="() => showEasterEgg = false">
-        <span class="outlined-phrase easter-egg">100% TAFETTA</span>
+        <span class="outlined-phrase easter-egg">100% TAFFETA</span>
       </div>
 
       <Search v-if="!isLoading"/>

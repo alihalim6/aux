@@ -276,7 +276,7 @@
               }
             }
             : {
-              title: 'Add to Bookmarks...',
+              title: 'Add to Bookmarks',
               fn: async () => {
                 const bookmark = {id: this.threeDotItem.id, type: this.threeDotItem.type, userId: this.profile.id};
 

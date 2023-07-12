@@ -364,7 +364,7 @@
         if(this.audioPlaying){
           this.playbackElapsed.ms += interval;
 
-          if(this.playbackElapsed.ms >= this.playbackTotal.ms - (this.nextTrackModified ? 1000 : 0)){
+          if(this.playbackElapsed.ms >= this.playbackTotal.ms - (this.nextTrackModified ? 915 : 0)){
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){
@@ -415,6 +415,8 @@
       this.playbackInterval = null;
       this.elapsedSyncInterval = null;
       this.trackReady = false;
+      this.playbackElapsed.ms = 0;
+      this.playbackElapsed.display = msToDuration(0);
     }
 
     handleError(){

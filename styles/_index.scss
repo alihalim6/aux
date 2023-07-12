@@ -91,9 +91,9 @@
 .spotify-icon {
   $icon-size: 21px;
 
-  width: $icon-size;
-  max-width: $icon-size;
-  height: $icon-size;
+  width: $icon-size !important;
+  max-width: $icon-size !important;
+  height: $icon-size !important;
 }
 
 .spotify-full, .spotify-icon {

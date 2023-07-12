@@ -2,12 +2,12 @@
   <section class="album-details">
     <div class="sub-title-container">
       <div class="d-flex align-center">
-        <ArtistList :artists="album.artists" class="artist-list-container" />
-        <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
-        <span>{{new Date(album.release_date).getFullYear()}}</span>
+        <ArtistList :artists="album.artists" />
       </div>
 
       <div class="sub-padding-left no-wrap">
+        <span>{{new Date(album.release_date).getFullYear()}}</span>
+        <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
         <span v-if="album.numberOfTracks">{{album.numberOfTracks}}</span>
         <v-icon v-if="album.numberOfTracks && duration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
         <span v-if="duration">{{duration}}</span>
@@ -41,9 +41,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-  .artist-list-container {
-    max-width: 125px;
-  }
-</style>

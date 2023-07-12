@@ -288,7 +288,7 @@
         .scrolled-down-top-bar {
           max-width: $overlay-width;
           position: sticky;
-          padding: 20px 0 4px;
+          padding: 4px 0;
           width: 100%;
           z-index: 30;
           top: 0;

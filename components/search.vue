@@ -313,7 +313,11 @@
 
       .v-input__control > .v-input__slot:before {
         border-width: 1px;
-        border-color: $primary-theme-color;
+        border-color: $cream;
+        
+        @media(min-width: $device-size-threshold){
+          border-color: $primary-theme-color;
+        }
       }
     }
   }

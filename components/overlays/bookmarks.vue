@@ -32,7 +32,10 @@
 
     async beforeMount(){
       await this.getBookmarks();
-      this.$nuxt.$root.$on('bookmarkAdded', bookmark => this.bookmarks.unshift(bookmark));
+      this.$nuxt.$root.$on('bookmarkAdded', async bookmark => {
+        const newBookmark = await this.processBookmark(bookmark);
+        this.bookmarks.unshift(newBookmark);
+      });
 
       this.$nuxt.$root.$on('bookmarkRemoved', bookmarkId => {
         this.bookmarks.splice(this.bookmarks.findIndex(existingBookmark => existingBookmark.uuid == bookmarkId), 1);
@@ -47,11 +50,13 @@
       });
 
       if(response.data && response.data.bookmarks){
-        this.bookmarks = await Promise.all(response.data.bookmarks.map(async bookmark => {
-          const bookmarkItem = await spotify({url: `/${bookmark.type}s/${bookmark.id}`});
-          return setItemMetaData([bookmarkItem])[0];
-        }));
+        this.bookmarks = await Promise.all(response.data.bookmarks.map(this.processBookmark));
       }
+    }
+
+    async processBookmark(bookmark) {
+      const bookmarkItem = await spotify({url: `/${bookmark.type}s/${bookmark.id}`});
+      return setItemMetaData([bookmarkItem])[0];
     }
 
     beforeDestroy(){

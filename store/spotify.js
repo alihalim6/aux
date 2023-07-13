@@ -295,17 +295,8 @@ export const actions = {
               //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different) so using name
 
               if(spotifyCurrentTrack.name != item.name){
-                console.log('spotify playing wrong track after API call...');
-
-                if(nextTracksToSend && nextTracksToSend.length && isSameTrack(spotifyCurrentTrack, nextTracksToSend[0])){
-                  console.log('spotify skipped over track and is playing the correct next one...moving UI to it');
-                  commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true}, {root: true});
-                  dispatch('togglePlayback', {item: nextTracksToSend[0], itemSet: nextTracksToSend, noPlaybackCall: true});
-                }
-                else{
-                  console.log('calling again...');
-                  await startItemPlayback(item, nextTracksToSend);
-                }
+                console.log('spotify playing wrong track after API call...calling again');
+                await startItemPlayback(item, nextTracksToSend);
               }
             }
           }, 0);

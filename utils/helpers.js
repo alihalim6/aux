@@ -239,7 +239,8 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? isSameTrack(spotifyCurrentTrack, auxNextTrack) : false;
 
       if(!isSameTrack(auxCurrentTrack, auxNextTrack) && ourNextTrackIsSpotifyCurrent){
-        console.log('Spotify moved to the correct next next track ahead of us...');
+        console.log('Spotify moved to the correct next next track ahead of us...moving UI to it');
+        $nust.$store.dispatch(`${SPOTIFY}/togglePlayback`, {item: auxNextTrack, noPlaybackCall: true});
       }
     });
 

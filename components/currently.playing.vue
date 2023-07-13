@@ -395,8 +395,10 @@
         };
 
         const {paused, position} = currentState;
+        //control for wild/wrong value from their side
+        const positionsValidDistanceApart = Math.abs(position - this.playbackElapsed.ms) < 10000;
         
-        if(!paused && position > this.playbackElapsed.ms){
+        if(!paused && (position > this.playbackElapsed.ms) && positionsValidDistanceApart){
           console.log('catching up to spotify elapsed...');
           this.playbackElapsed.ms = position;
           this.playbackElapsed.display = msToDuration(position);

@@ -21,7 +21,7 @@
           <v-icon class="live-info-icon" :color="darkMode ? 'white' : 'black'" large>{{`mdi-chevron-${showUserMenu ? 'up' : 'down'}`}}</v-icon>
         </button>
 
-        <div class="user-menu">
+        <div class="user-menu" @click.stop>
           <v-snackbar v-model="showUserMenu" :timeout="-1" transition="slide-y-transition" absolute app>
             <div v-show="liveUsers.length" class="user-list width-100">
               <div class="d-flex flex-column">

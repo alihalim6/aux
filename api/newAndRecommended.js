@@ -1,6 +1,7 @@
 import {topItems, getRecommendationSeeds, getATopArtist, httpClient} from './_utils';
 import {shuffleArray} from '~/utils/helpers';
 import artist from './artist';
+import search from './search';
 
 const getRecommendedTracks = async (artists, tracks) => {
   let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=10');
@@ -9,7 +10,7 @@ const getRecommendedTracks = async (artists, tracks) => {
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=25&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
+    await httpClient.get(`/recommendations?limit=20&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -45,7 +46,7 @@ async function newAndRecommended(){
     const newReleases = data.albums.items;
     const someShuffledNewReleases = shuffleArray(newReleases.slice(0, 3));
 
-    const recommendedTracks = recommendationData[1];
+    let recommendedTracks = recommendationData[1];
     const recommendedAlbums = [];
     const recommendedAlbumsMax = 2;
     let tracksToRecommendAlbums = recommendedTracks.data.tracks.slice(0, recommendedAlbumsMax);
@@ -66,9 +67,21 @@ async function newAndRecommended(){
       recommendedArtist = await artist(recommendedArtists[0].id);
     }
 
+    recommendedTracks = recommendedTracks.data.tracks.slice(recommendedAlbumsMax);
+
+    recommendedTracks = await Promise.all(recommendedTracks.filter(async track => {
+      const data = await search(track.name, 'track');
+
+      if(!data) {
+        return false;
+      }
+
+      return !!data.tracks.items.find(searchResult => searchResult.uri == track.uri);
+    }));
+
     let allItems = [
       ...someShuffledNewReleases.map(item => ({...item, isNew: true})), 
-      ...recommendedTracks.data.tracks.slice(recommendedAlbumsMax), 
+      ...recommendedTracks, 
       recommendedArtist,
       ...recommendedAlbums
     ];
@@ -77,7 +90,7 @@ async function newAndRecommended(){
 
     return {
       allItems,
-      previewItems: [...allItems].splice(0, 20),
+      previewItems: [...allItems].splice(0, 15),
       newReleases
     };
   }

@@ -20,8 +20,8 @@ function isPlaybackCall(config){
   return config && config.url.indexOf(PLAYBACK_API_PATH) > -1;
 }
 
-function isTrackRepeatCall(config){
-  return config && config.url.indexOf('/me/player/repeat') > -1;
+function ignoreError(config){
+  return config && (config.url.indexOf('/me/player/repeat') > -1 || config.url.indexOf('/search') > -1);
 }
 
 httpClient.interceptors.request.use(async config => {
@@ -83,7 +83,7 @@ httpClient.interceptors.response.use(async response => {
   else if(shouldRetry(error.response && error.response.status)){
     retryRequest(error.config);
   }
-  else if(!isTrackRepeatCall(error.config)){
+  else if(!ignoreError(error.config)){
     handleApiError();
 
     if(isPlaybackCall(error.config)){

@@ -10,7 +10,7 @@
                 <v-img 
                   v-if="item.isArtist" 
                   class="clickable content-img artist-img" 
-                  :class="{'content-hover': hover && !lastNewAndRecoCarouselItem(index)}" 
+                  :class="{'content-hover': hover && !noHover(index)}" 
                   :src="carouselImgSrc(item)" 
                   @click="contentImgPressed(item)"
                   @keydown.enter="contentImgPressed(item)"
@@ -28,7 +28,7 @@
                   elevation="10" 
                   class="clickable" 
                   :class="{
-                    'content-hover': hover && !vertical && !addToPlaylist && !lastNewAndRecoCarouselItem(index), 
+                    'content-hover': hover && !vertical && !addToPlaylist && !noHover(index), 
                     'spaced-content': moreFromArtist || addToPlaylist, 
                     'no-max-width': vertical, 
                     'last-item': !vertical && !addToPlaylist && data.length > 1 && (index == data.length - 1),
@@ -58,8 +58,8 @@
                 <div :class="{'pb-8 pr-2': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
                   <div class="primary-container" 
                     :class="{
-                      'hovered-primary-container': hover && !vertical && !item.isArtist && !lastNewAndRecoCarouselItem(index), 
-                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !lastNewAndRecoCarouselItem(index)
+                      'hovered-primary-container': hover && !vertical && !item.isArtist && !noHover(index), 
+                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !noHover(index)
                     }">
                     <div class="d-flex align-start">
                       <button 
@@ -173,6 +173,10 @@
 
     lastNewAndRecoCarouselItem(index){
       return !this.vertical && this.newAndRecommended && index == this.data.length - 1;
+    }
+
+    noHover(index){
+      return this.bookmarks || this.lastNewAndRecoCarouselItem(index);
     }
   }
 </script>

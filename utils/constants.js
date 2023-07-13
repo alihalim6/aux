@@ -9,6 +9,7 @@ export const PLAYED_NOT_SKIPPED_THRESHOLD = 30;
 
 export const DEVICE_ID = 'deviceId';
 export const AUX_DEVICE_NAME = 'PASS THE AUX';
+export const SPOTIFY_TRACK_ERROR_SKIP = 'Sorry, the last track was skipped due to an issue on Spotify\'s side.';
 
 /* 
   streaming - playback

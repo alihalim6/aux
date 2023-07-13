@@ -134,6 +134,9 @@
     @Action('playTrackNow', {namespace: PLAYBACK_QUEUE})
     playTrackNow;
 
+    @Action('togglePlayback', {namespace: SPOTIFY})
+    togglePlayback;
+
     @Watch('filterType')
     queryChanged;
 
@@ -259,6 +262,9 @@
       if(item.isCollection || item.isArtist){
         this.$nuxt.$root.$emit('displayDetailOverlay', item);
       }
+      else if(isSameTrack(this.currentlyPlayingItem, item)){
+        this.togglePlayback({item});
+      }
       else{
         this.playTrackNow(item);
       }
@@ -336,7 +342,7 @@
       padding: $base-padding;
       left: 0px;
       top: 60px;
-      max-height: 500px;
+      max-height: 445px;
       width: 100%;
       overflow: scroll;
       position: absolute;

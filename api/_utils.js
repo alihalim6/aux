@@ -2,8 +2,8 @@ import axios from 'axios';
 import axiosRetry from 'axios-retry';
 import {refreshToken, accessTokenExpired} from '~/auth';
 import {storageGet} from '~/utils/storage';
-import {AUTH, DEVICE_ID, SPLASH} from '~/utils/constants';
-import {UI, SPOTIFY} from '~/store/constants';
+import {AUTH, DEVICE_ID, SPLASH, SPOTIFY_TRACK_ERROR_SKIP} from '~/utils/constants';
+import {UI, SPOTIFY, PLAYBACK_QUEUE} from '~/store/constants';
 import {initSpotifyPlayer, shuffleArray} from '~/utils/helpers';
 import artist from './artist';
 
@@ -14,10 +14,10 @@ export const httpClient = axios.create({
 });
 
 //sometimes this retries, sometimes my retry logic gets called, so keep this
-axiosRetry(httpClient, {retries: 5});
+axiosRetry(httpClient, {retries: 1});
 
 function isPlaybackCall(config){
-  return config.url.indexOf(PLAYBACK_API_PATH) > -1;
+  return config && config.url.indexOf(PLAYBACK_API_PATH) > -1;
 }
 
 function isTrackRepeatCall(config){
@@ -52,7 +52,7 @@ function shouldRetry(responseCode){
 }
 
 httpClient.interceptors.response.use(async response => {
-  if(response.data.error){
+  if(response && response.data.error){
     if(shouldRetry(response.data.error.status)){
       retryRequest(response.config);
     }
@@ -105,6 +105,10 @@ async function retryRequest(config){
   }
   else if(!storageGet(DEVICE_ID)){
     sendToSplash();
+  }
+  else if(isPlaybackCall(config)){
+    $nuxt.$store.commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true});
+    $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`);
   }
 }
 

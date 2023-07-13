@@ -271,7 +271,6 @@
                   }
                 });
 
-                this.setToast({text: `${this.threeDotItem.name} was removed from Bookmarks`});
                 this.$nuxt.$root.$emit('bookmarkRemoved', this.threeDotItem.uuid);
               }
             }
@@ -288,7 +287,7 @@
                 });
 
                 this.setToast({text: `${this.threeDotItem.name} was added to Bookmarks`});
-                this.$nuxt.$root.$emit('bookmarkAdded', bookmark);
+                this.$nuxt.$root.$emit('bookmarkAdded', this.threeDotItem);
               }
             });
           }

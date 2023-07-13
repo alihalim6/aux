@@ -4,7 +4,7 @@ import {shuffleArray, processAlbum, takeUntilNotATrack, initSpotifyPlayer} from 
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
-import {DEVICE_ID} from '~/utils/constants';
+import {DEVICE_ID, SPOTIFY_TRACK_ERROR_SKIP} from '~/utils/constants';
 import spotify from '~/api/spotify';
 import {isSameTrack} from '../utils/helpers';
 
@@ -58,7 +58,7 @@ export const actions = {
     playingNextTrack,
     playingNextTrackNow,
     pause,
-    playingOtherTrackNow
+    noPlaybackCall
   }) => {
     try{
       if(!getters.player){
@@ -82,7 +82,7 @@ export const actions = {
       const previouslyPlayingItem = getters.currentlyPlayingItem;
       let currentlyPlayingItemUri = getters.currentlyPlayingItemUri;
       let nothingWasPlaying = !currentlyPlayingItemUri;
-      const currentItemToggled = !playingAllFeed && (currentlyPlayingItemUri === item.queueId);
+      const currentItemToggled = !playingAllFeed && isSameTrack(previouslyPlayingItem, item);
 
       console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
   
@@ -135,15 +135,16 @@ export const actions = {
         const currentlyPlayingItemIndex = item.queueIndex || queue.findIndex(setItem => setItem.uuid === item.uuid);
         queue = queue.length ? queue : [item];
 
-        await dispatch('playItem', {
-          item,
-          queue,
-          previouslyPlayingItem,
-          currentlyPlayingItemIndex,
-          playingNextTrack,
-          playingNextTrackNow,
-          playingOtherTrackNow
-        });
+        if(!noPlaybackCall){
+          await dispatch('playItem', {
+            item,
+            queue,
+            previouslyPlayingItem,
+            currentlyPlayingItemIndex,
+            playingNextTrack,
+            playingNextTrackNow
+          });
+        }
         
         commit('setNewPlayback', queueId);
 
@@ -196,14 +197,13 @@ export const actions = {
       dispatch('stopPlayback');
     }
   },
-  playItem: async ({getters, rootGetters, dispatch}, {
+  playItem: async ({getters, rootGetters, dispatch, commit}, {
     item, 
     queue, 
     previouslyPlayingItem,
     currentlyPlayingItemIndex, 
     playingNextTrack, 
-    playingNextTrackNow,
-    playingOtherTrackNow
+    playingNextTrackNow
   }) => {
     try {
       const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -225,13 +225,9 @@ export const actions = {
         return;
       }
 
-      if(isSafari){ 
-        await getters.player.activateElement();
-      }
-
       let makePlaybackApiCall = true;
 
-      if(playingNextTrack && !playingNextTrackNow && !playingOtherTrackNow){
+      if(playingNextTrack && !playingNextTrackNow){
         let currentState;
       
         if(getters.player){
@@ -241,9 +237,6 @@ export const actions = {
         console.log('currentState:', currentState);
 
         if(currentState){
-          const spotifyPreviousTracks = currentState.track_window.previous_tracks;
-          console.log(spotifyPreviousTracks);
-
           const spotifyCurrentTrack = currentState.track_window.current_track;
           console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.duration_ms} ${spotifyCurrentTrack.uri}`);          
           console.log(`our item: ${item.name} ${item.duration_ms} ${item.uri}`);
@@ -297,14 +290,21 @@ export const actions = {
             const spotifyCurrentTrack = currentState.track_window.current_track;
             console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
             console.log(`our track: ${item.name}...${item.uri}`);
-            let sendNextTrack = false;
 
             //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different) so using name
 
             if(spotifyCurrentTrack.name != item.name){
-              console.log('spotify playing wrong track after API call...calling again');
-              await startItemPlayback(item, nextTracksToSend);
-              sendNextTrack = true;
+              console.log('spotify playing wrong track after API call...');
+
+              if(nextTracksToSend && nextTracksToSend.length && isSameTrack(spotifyCurrentTrack, nextTracksToSend[0])){
+                console.log('spotify skipped over track and is playing the correct next one...moving UI to it');
+                commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true}, {root: true});
+                dispatch('togglePlayback', {item: nextTracksToSend[0], itemSet: nextTracksToSend, noPlaybackCall: true});
+              }
+              else{
+                console.log('calling again...');
+                await startItemPlayback(item, nextTracksToSend);
+              }
             }
           }
         }
@@ -312,7 +312,6 @@ export const actions = {
     }
     catch(error){
       console.error(error);
-      dispatch('stopPlayback');
       handleApiError('Something went wrong with playback...');
     }
   },
@@ -400,7 +399,7 @@ export const mutations = {
   },
   setNewPlayback(state, queueId){
     state.newPlayback = queueId;
-    state.pendingFirstPlay = false;
+    state.pendingFirstPlay = false;/////
   },
   setSdkReady(state){
     state.sdkReady = true;

@@ -154,6 +154,7 @@
     }
 
     async displayDetailOverlay(itemToDisplay){
+      console.log(itemToDisplay.uri);
       this.fullItemImageClose();
 
       if(!this.processing){

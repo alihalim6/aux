@@ -16,17 +16,17 @@
     <LazyFeed/>
 
     <!-- needs to be outside of above block so that up next overlay slides all the way to top (relativity issue) -->
-    <CurrentlyPlaying v-show="!isLoading && (!isMobile || playerActivated)"/>
+    <CurrentlyPlaying v-show="!isLoading && (!isSafari || playerActivated)"/>
 
     <LoadingOverlay v-if="isLoading"/>    
-    <LazyFeedAlert v-show="!isMobile || playerActivated"/>
+    <LazyFeedAlert v-show="!isSafari || playerActivated"/>
 
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
     <LazyAddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
     <LazyBookmarks v-if="showBookmarks"/>
     <LazyToast/>
     
-    <v-dialog :value="!isLoading && isMobile && !playerActivated" persistent overlay-color="red" max-width="max-content">
+    <v-dialog :value="!isLoading && isSafari && !playerActivated" persistent overlay-color="red" max-width="max-content">
       <div class="activate-player">
         <button v-show="!activatingPlayer" class="clickable nav-button" @click="activatePlayer()">
           <v-img class="spotify-icon" :src="require('~/assets//Spotify_Logo_Icon.png')" alt=""></v-img>
@@ -53,7 +53,7 @@
     playerActivated = false;
     activatingPlayer = false;
     hideCurrentlyPlaying = false;
-    isMobile = false;
+    isSafari = false;
     showBookmarks = false;
     
     @Getter('isLoading', {namespace: UI})
@@ -95,7 +95,7 @@
         this.showBookmarks = true;
       });
 
-      this.isMobile = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || /(android)/i.test(navigator.userAgent);;
+      this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     }
 
     async activatePlayer(){

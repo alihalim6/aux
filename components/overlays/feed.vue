@@ -28,7 +28,7 @@
                 <div role="tooltip" tabindex="0">
                   <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
                   <span>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed where they can see and play it (if they want to). Otherwise it's a skip that is only visible in your feed.</span>
-                  <div class="mt-2">Tracks played more than 24 hours ago are removed on app reload / every so often.</div>
+                  <div class="mt-2">Tracks played more than 12 hours ago are removed on app reload / every so often.</div>
                 </div>
               </v-tooltip>
 

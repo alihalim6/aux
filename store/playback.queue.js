@@ -2,8 +2,6 @@ import {SPOTIFY, UI} from './constants';
 import {shuffleArray, isSameTrack} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import cloneDeep from 'lodash.clonedeep';
-import spotify from '~/api/spotify';
-import {PLAYBACK_API_PATH} from '~/api/_utils';
 
 export const state = () => {
   return {
@@ -74,13 +72,18 @@ export const actions = {
     });
   },
   playNextTrack: ({dispatch, getters}, params) => {
-    playTrackWithinQueue({
-      getters,
-      dispatch,
-      index: getters.currentlyPlayingIndex + 1,
-      playingNextTrack: true,
-      ...params
-    });
+    if(!getters.hasNextTrack){
+      dispatch(`${SPOTIFY}/stopPlayback`, true, {root: true});
+    }
+    else{
+      playTrackWithinQueue({
+        getters,
+        dispatch,
+        index: getters.currentlyPlayingIndex + 1,
+        playingNextTrack: true,
+        ...params
+      });
+    }
   },
   clearUpNext: ({getters, commit, rootGetters}) => {
     commit('clearUpNext', getters.currentlyPlayingIndex);
@@ -105,15 +108,12 @@ export const actions = {
     commit('setNextTrackModified', true);
   },
   playTrackNow: ({dispatch, getters, commit}, track) => {
-    let playingNextTrackNow = false;
-
     if(getters.nextTrack && isSameTrack(track, getters.nextTrack)){
       commit('removeFromQueue', getters.nextTrack);
-      playingNextTrackNow = true;
     }
 
     dispatch('setTracksToPlayNext', {tracks: [track], noConfirmationToast: true, doNotUpdateSpotify: true});
-    dispatch('playNextTrack', {playingOtherTrackNow: true, playingNextTrackNow});
+    dispatch('playNextTrack', {playingNextTrackNow: true});
   },
   checkForEndOfQueue: ({getters, commit}) => {
     //if about to play last track in main queue and there are tracks in rest of queue, add from latter to former;

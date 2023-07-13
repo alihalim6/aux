@@ -32,16 +32,13 @@
           </div>
 
           <div class="bottom-info">
-            <div class="d-flex align-center mr-2">
-              <div v-if="trackAlbumArtistsLengthsDiffer" class="d-flex align-center">
-                <ArtistList :artists="track.album.artists"/>
-                <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
-              </div>
-
-              <span>{{new Date(track.album.release_date).getFullYear()}}</span>
+            <div v-if="trackAlbumArtistsLengthsDiffer" class="d-flex align-center mr-2">
+              <ArtistList :artists="track.album.artists"/>
             </div>
 
-            <div class="sub-padding-left no-wrap">
+            <div class="sub-padding-left no-wrap ml-auto">
+              <span>{{new Date(track.album.release_date).getFullYear()}}</span>
+              <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
               <span v-if="track.album.numberOfTracks">{{track.album.numberOfTracks}}</span>
               <v-icon v-if="track.album.numberOfTracks && albumDuration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
               <span v-if="albumDuration">{{albumDuration}}</span>

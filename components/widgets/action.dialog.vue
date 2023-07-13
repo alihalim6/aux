@@ -28,7 +28,7 @@
       <div v-if="actionDialog.isIosPwaInstall" class="dialog-text" id="actionDialogText">
         <div class="pwa-title">FYI: iOS unfortunately requires installed web apps (i.e. those added to Home screen) 
           to be displaying (screen unlocked and app in foreground) for audio to play. 
-          If you're good with that, here's how to install AUX as an app (makes for a better experience) if you didn't already know:
+          If you're good with that, here's how to install AUX as an app if you didn't already know:
         </div>
 
         <div class="my-2">1. Tap the share icon in the Safari browser bar.</div>
@@ -36,7 +36,7 @@
       </div>
 
       <div v-else-if="actionDialog.isAndroidPwaInstall" class="dialog-text" id="actionDialogText">
-        <div class="pwa-title">Here's how to install AUX as an app (makes for a better experience) if you didn't already know:
+        <div class="pwa-title">Here's how to install AUX as an app if you didn't already know:
         </div>
 
         <div class="my-2">1. Tap the three-dot icon in the browser bar.</div>

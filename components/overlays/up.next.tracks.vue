@@ -1,5 +1,5 @@
 <template>
-  <section class="up-next-list-container" id="upNextListContainer" v-if="nextTrack" :class="{'sm-browser-up-next-container': $vuetify.breakpoint.xs && !runningInPwa}">
+  <section class="up-next-list-container" id="upNextListContainer" v-if="nextTrack && !pendingFirstPlay" :class="{'sm-browser-up-next-container': $vuetify.breakpoint.xs && !runningInPwa}">
     <button 
       class="clickable up-next-header" 
       @click="$nuxt.$root.$emit('hideUpNext')" 
@@ -154,6 +154,9 @@
 
     @Getter('currentlyPlayingItem', {namespace: SPOTIFY})
     currentlyPlayingItem;
+
+    @Getter('pendingFirstPlay', {namespace: SPOTIFY})
+    pendingFirstPlay;
 
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
@@ -353,6 +356,10 @@
           padding: $track-item-padding 0px;
         }
       }
+    }
+
+    .back-to-top-container {
+      bottom: calc(env(safe-area-inset-bottom) + -20%);
     }
   }
 

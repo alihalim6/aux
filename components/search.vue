@@ -342,7 +342,6 @@
       padding: $base-padding;
       left: 0px;
       top: 60px;
-      max-height: 445px;
       width: 100%;
       overflow: scroll;
       position: absolute;

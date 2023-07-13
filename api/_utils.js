@@ -14,7 +14,7 @@ export const httpClient = axios.create({
 });
 
 //sometimes this retries, sometimes my retry logic gets called, so keep this
-axiosRetry(httpClient, {retries: 1});
+axiosRetry(httpClient, {retries: 3});
 
 function isPlaybackCall(config){
   return config && config.url.indexOf(PLAYBACK_API_PATH) > -1;

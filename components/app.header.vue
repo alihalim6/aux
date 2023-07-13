@@ -15,7 +15,7 @@
       <Search v-if="!isLoading"/>
 
       <div class="user-menu-container">
-        <button class="clickable on-air-container" @click="() => showUserMenu = !showUserMenu" :aria-label="`there are currently ${liveUsers.length} other users on AUX`">
+        <button class="clickable on-air-container" @click="() => showUserMenu = !showUserMenu" :aria-label="`there are currently ${liveUsers.length} other users on AUX`" v-click-outside="() => showUserMenu = false">
           <v-icon class="live-dot" :color="liveUsers.length ? 'red' : 'grey'" large>mdi-circle-small</v-icon>
           <div class="users-on-air">{{liveUsers.length}}</div>
           <v-icon class="live-info-icon" :color="darkMode ? 'white' : 'black'" large>{{`mdi-chevron-${showUserMenu ? 'up' : 'down'}`}}</v-icon>

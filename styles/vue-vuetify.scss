@@ -6,6 +6,7 @@ $alert-container-base-bottom: 10px;
 $feed-height: 63vh;
 $feed-height-smaller: 95vh;
 $feed-base-bottom: 15px;
+$search-results-delta: 83px;
 
 .v-application {
   font-family: 'Public Sans', sans-serif !important;
@@ -41,6 +42,10 @@ $feed-base-bottom: 15px;
         height: $max-footer-height-not-playing;
       }
     }
+  }
+
+  #searchResults {
+    max-height: calc((100vh - calc(#{$max-footer-height-not-playing}) - #{$search-results-delta}));
   }
 }
 
@@ -79,6 +84,10 @@ $feed-base-bottom: 15px;
         height: $max-footer-height-playing;
       }
     }
+  }
+
+  #searchResults {
+    max-height: calc((100vh - calc(#{$max-footer-height-playing}) - #{$search-results-delta}));
   }
 }
 

@@ -284,35 +284,37 @@ export const actions = {
         await startItemPlayback(item, nextTracksToSend);
       
         if(getters.player){
-          const currentState = await getters.player.getCurrentState();
+          setTimeout(async () => {  
+            const currentState = await getters.player.getCurrentState();
 
-          if(currentState){
-            const spotifyCurrentTrack = currentState.track_window.current_track;
-            console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
-            console.log(`our track: ${item.name}...${item.uri}`);
+            if(currentState){
+              const spotifyCurrentTrack = currentState.track_window.current_track;
+              console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
+              console.log(`our track: ${item.name}...${item.uri}`);
 
-            //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different) so using name
+              //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different) so using name
 
-            if(spotifyCurrentTrack.name != item.name){
-              console.log('spotify playing wrong track after API call...');
+              if(spotifyCurrentTrack.name != item.name){
+                console.log('spotify playing wrong track after API call...');
 
-              if(nextTracksToSend && nextTracksToSend.length && isSameTrack(spotifyCurrentTrack, nextTracksToSend[0])){
-                console.log('spotify skipped over track and is playing the correct next one...moving UI to it');
-                commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true}, {root: true});
-                dispatch('togglePlayback', {item: nextTracksToSend[0], itemSet: nextTracksToSend, noPlaybackCall: true});
-              }
-              else{
-                console.log('calling again...');
-                await startItemPlayback(item, nextTracksToSend);
+                if(nextTracksToSend && nextTracksToSend.length && isSameTrack(spotifyCurrentTrack, nextTracksToSend[0])){
+                  console.log('spotify skipped over track and is playing the correct next one...moving UI to it');
+                  commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true}, {root: true});
+                  dispatch('togglePlayback', {item: nextTracksToSend[0], itemSet: nextTracksToSend, noPlaybackCall: true});
+                }
+                else{
+                  console.log('calling again...');
+                  await startItemPlayback(item, nextTracksToSend);
+                }
               }
             }
-          }
+          }, 0);
         }
       }
     }
     catch(error){
       console.error(error);
-      handleApiError('Something went wrong with playback...');
+      handleApiError('Something went wrong playing music...');
     }
   },
   stopPlayback({commit, getters}, noError){

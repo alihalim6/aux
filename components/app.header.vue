@@ -54,7 +54,7 @@
             <div v-show="!liveUsers.length">
               <div class="d-flex flex-column align-center">
                 <span class="no-other-users-message">No one else is here.</span>
-                <v-img class="no-other-users-img" :eager="true" :src="require('~/assets//no_other_users.png')" alt=""></v-img>
+                <v-img class="no-other-users-img" :eager="true" :src="require('~/assets/no_other_users.png')" alt=""></v-img>
               </div>
             </div>
           </v-snackbar>
@@ -346,14 +346,14 @@
     }
 
     .aux-logo-container {
-      margin-top: 8px;
+      margin-top: 10px;
       font-weight: 700;
       display: flex;
       align-items: center;
       
       .pass-the-phrase {
         color: $rose-red;
-        transform: rotate(-80deg) scaleY(1.2) scaleX(1.1);
+        transform: rotate(-80deg) scaleY(1.2) scaleX(1.2);
         font-size: 10px;
         white-space: nowrap;
         font-style: italic;
@@ -517,7 +517,7 @@
   }
 
   .ignored-opacity {
-    opacity: 0.3;
+    opacity: 0.5;
   }
 
   .v-input--selection-controls {

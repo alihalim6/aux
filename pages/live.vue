@@ -29,7 +29,7 @@
     <v-dialog :value="!isLoading && isSafari && !playerActivated" persistent overlay-color="red" max-width="max-content">
       <div class="activate-player">
         <button v-show="!activatingPlayer" class="clickable nav-button" @click="activatePlayer()">
-          <v-img class="spotify-icon" :src="require('~/assets//Spotify_Logo_Icon.png')" alt=""></v-img>
+          <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
           <span class="nav-button-label">ACTIVATE SPOTIFY PLAYER</span>
         </button>
 

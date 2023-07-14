@@ -6,7 +6,7 @@
       <div class="splash-header blurred" :class="{'hide-for-feed': feed.display}">
         <div class="login-container">
           <button class="clickable nav-button login" @click="loginClicked()">
-            <v-img class="spotify-icon" :src="require('~/assets//Spotify_Logo_Icon.png')" alt=""></v-img>
+            <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
           </button>
 
@@ -29,7 +29,7 @@
           mdi-help-circle-outline
         </v-icon>
 
-        <v-img class="splash-animation" :src="require('~/assets//pass_the_aux_green.png')" alt=""></v-img>
+        <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" alt=""></v-img>
 
         <v-snackbar :value="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip">
           <div class="d-flex align-start">
@@ -48,6 +48,7 @@
           </div>
         </v-snackbar>
       </div>
+
       <!-- <div class="width-100 d-flex flex-wrap container">
           <v-img src="/rose.png" class="roses" v-for="(n, index) of new Array(100)" :key="index"></v-img>
       </div> -->

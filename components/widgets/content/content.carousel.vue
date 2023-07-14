@@ -76,7 +76,7 @@
                           <span v-if="moreFromArtist && item.explicit" class="explicit">E</span>
                       </button>
 
-                      <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets//new.png')" class="new-icon" alt=""></v-img>
+                      <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon" alt=""></v-img>
                     </div>
 
                     <ThreeDotIcon v-if="!item.isPlaylist" :item="item" :bookmark="bookmarks"/>

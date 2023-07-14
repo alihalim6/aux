@@ -39,7 +39,7 @@
                     {{track.name}}
                   </span>  
                 
-                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets//new.png')" class="new-icon" alt=""></v-img>
+                  <v-img v-if="newAndRecommended && track.isNew" :src="require('~/assets/new.png')" class="new-icon" alt=""></v-img>
                 </div>
 
                 <div class="track-artists">

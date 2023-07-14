@@ -3,14 +3,11 @@
     <div class="sub-title-container">
       <div class="secondary-label align-center">
         <ArtistList :artists="track.artists"/>
-        
-        <div v-if="!multiTrackAlbum" class="white-space-no-wrap">
-          <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
-          {{new Date(track.album ? track.album.release_date : track.release_date).getFullYear()}}
-        </div>
       </div>
 
       <div class="sub-padding-left no-wrap">
+        <span v-if="!multiTrackAlbum" class="white-space-no-wrap">{{new Date(track.album ? track.album.release_date : track.release_date).getFullYear()}}</span>
+        <v-icon v-if="!multiTrackAlbum && duration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
         <span v-if="duration">{{duration}}</span>
       </div>
     </div>
@@ -150,7 +147,7 @@
 
       .bottom-info {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         font-size: 12px;
       }

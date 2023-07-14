@@ -43,7 +43,7 @@
     async resetTimeout(){
       this.timeout = 0;
       await this.$nextTick();
-      this.timeout = this.toast.error ? -1 : 2700;
+      this.timeout = this.toast.error ? 5000 : 2700;
     }
 
     closeToast(){

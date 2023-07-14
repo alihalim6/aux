@@ -5,7 +5,7 @@
         @click="spotifyLogoPressed()" 
         @keydown.enter="spotifyLogoPressed()"
         class="clickable spotify-icon currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets//Spotify_Logo_Icon.png')"
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')"
         tabindex="0"
         alt="open Spotify"
       >
@@ -15,7 +15,7 @@
         @click="spotifyLogoPressed()" 
         @keydown.enter="spotifyLogoPressed()"
         class="clickable spotify-full currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets//Spotify_Logo_Full.png')"
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets/Spotify_Logo_Full.png')"
         tabindex="0"
         alt="open Spotify"
       >
@@ -159,7 +159,7 @@
       </div>
     </div>
     
-    <UpNextTracks/>
+    <UpNextTracks v-show="upNextDisplaying" />
   </v-footer>
 </template>
 

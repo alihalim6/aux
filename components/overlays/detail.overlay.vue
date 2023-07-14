@@ -54,7 +54,7 @@
                         @click="spotifyLogoPressed(item)" 
                         @keydown.enter="spotifyLogoPressed(item)" 
                         :class="{'spotify-icon': $vuetify.breakpoint.xs, 'spotify-full': $vuetify.breakpoint.smAndUp, 'clickable': !item.simpleOverlay}" 
-                        :src="require(`~/assets//Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)"
+                        :src="require(`~/assets/Spotify_Logo_${$vuetify.breakpoint.smAndUp ? 'Full' : 'Icon'}.png`)"
                         :alt="`open ${item.name} on Spotify`"
                         tabindex="0"
                       >
@@ -154,7 +154,6 @@
     }
 
     async displayDetailOverlay(itemToDisplay){
-      console.log(itemToDisplay.uri);
       this.fullItemImageClose();
 
       if(!this.processing){

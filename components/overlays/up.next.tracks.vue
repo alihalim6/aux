@@ -92,8 +92,6 @@
             <button 
               class="clickable info-value ellipses-text underlined" 
               @click.stop="fromAlbumPressed(nextTrack.album)"
-              @keydown.enter.prevent.stop="fromAlbumPressed(nextTrack.album)"
-              tabindex="0"
               :aria-label="`open modal with details about ${nextTrack.album.name}`"
             >
               {{nextTrack.album.name.toUpperCase()}}
@@ -201,9 +199,8 @@
     }
 
     async fromAlbumPressed(album){
-      setItemMetaData([cloneDeep(album)]);
       this.$nuxt.$root.$emit('hideUpNext');
-      this.$nuxt.$root.$emit('displayDetailOverlay', album)
+      this.$nuxt.$root.$emit('displayDetailOverlay', setItemMetaData([cloneDeep(album)])[0])
     }
 
     clearUpNextPressed(){

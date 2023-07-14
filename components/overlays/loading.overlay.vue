@@ -1,9 +1,10 @@
 <template>
-  <section class="loading-container">
-    <div class="no-prompt-graphic loading" aria-hidden="true">
-      <v-img :src="require('~/assets//world.gif')"></v-img>
-      <v-img class="animated-phrase" :src="require('~/assets//pass_the_aux_green.png')"></v-img>
+  <section class="loading-container" aria-hidden="true">
+    <div class="loading-overlay" >
+      <div v-for="(phrase, index) in new Array(20)" :key="index" class="phrase animated">JUST PASS IT.</div>
     </div>
+
+    <div class="phrase filled-phrase">JUST PASS IT.</div>
   </section>
 </template>
 
@@ -15,18 +16,42 @@
 </script>
 
 <style lang="scss">
-  @import './styles';
+  $loading-phrase-border-size: 3px;
 
   .loading-container {
+    font-size: 38px;
+    font-style: italic;
+    font-weight: bold;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 90%;
+    height: 40%;
 
-    .loading {
-      height: 33vh;
-      overflow: visible;
+    .loading-overlay {
+      height: 25vh;
+      overflow: hidden;
+      border-top: $loading-phrase-border-size solid $rose-red;
+    }
+
+    .animated {
+      animation: scroll-up 0.75s infinite linear;
+    }
+
+    @keyframes scroll-up {
+      to {transform: translateY(-100%)};
+    }
+
+    @supports(-webkit-text-stroke: $loading-phrase-border-size $rose-red) {
+      .phrase {
+        -webkit-text-stroke: $loading-phrase-border-size $rose-red;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .filled-phrase {
+        -webkit-text-fill-color: $rose-red;
+        margin-top: -16px;
+      }
     }
   }
 </style>

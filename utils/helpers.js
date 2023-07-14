@@ -240,7 +240,7 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
 
       if(!isSameTrack(auxCurrentTrack, auxNextTrack) && ourNextTrackIsSpotifyCurrent){
         console.log('Spotify moved to the correct next next track ahead of us...moving UI to it');
-        $nust.$store.dispatch(`${SPOTIFY}/togglePlayback`, {item: auxNextTrack, noPlaybackCall: true});
+        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlaybackCall: true});
       }
     });
 

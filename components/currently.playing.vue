@@ -395,15 +395,18 @@
         };
 
         const {paused, position} = currentState;
-        //control for wild/wrong value from their side
-        const positionsValidDistanceApart = Math.abs(position - this.playbackElapsed.ms) < 10000;
         
-        if(!paused && (position > this.playbackElapsed.ms) && positionsValidDistanceApart){
+        if(!paused && (position > this.playbackElapsed.ms) && this.validSeek(position)){
           console.log('catching up to spotify elapsed...');
           this.playbackElapsed.ms = position;
           this.playbackElapsed.display = msToDuration(position);
         }
       }, 1000);
+    }
+
+    //control for wild/wrong value from their side
+    validSeek(value){
+      return Math.abs(value - this.playbackElapsed.ms) < 10000;
     }
 
     async repeatCurrentTrack(){
@@ -437,8 +440,16 @@
     }
 
     async seek(secs){
-      this.playbackElapsed.ms = secs ? secs * 1000 : this.playbackElapsed.ms;
-      await this.seekPlayback(this.playbackElapsed.ms);
+      console.log(`attempting seek to ${secs} secs...or this.playbackElapsed.ms -> ${this.playbackElapsed.ms} if no secs`);
+      const newElapsed = secs ? secs * 1000 : this.playbackElapsed.ms;
+
+      if(!this.validSeek(newElapsed)){
+        console.log(`ignoring wild seek amount: ${secs}`);
+        return;
+      }
+
+      this.playbackElapsed.ms = newElapsed;
+      await this.seekPlayback(newElapsed);
       this.updateElapsedDisplay();
     }
 

@@ -4,7 +4,7 @@ import {shuffleArray, processAlbum, takeUntilNotATrack, initSpotifyPlayer} from 
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
-import {DEVICE_ID, SPOTIFY_TRACK_ERROR_SKIP} from '~/utils/constants';
+import {DEVICE_ID} from '~/utils/constants';
 import spotify from '~/api/spotify';
 import {isSameTrack} from '../utils/helpers';
 
@@ -57,8 +57,7 @@ export const actions = {
     playingTrackWithinExistingQueue, 
     playingNextTrack,
     playingNextTrackNow,
-    pause,
-    noPlaybackCall
+    pause
   }) => {
     try{
       if(!getters.player){
@@ -135,16 +134,14 @@ export const actions = {
         const currentlyPlayingItemIndex = item.queueIndex || queue.findIndex(setItem => setItem.uuid === item.uuid);
         queue = queue.length ? queue : [item];
 
-        if(!noPlaybackCall){
-          await dispatch('playItem', {
-            item,
-            queue,
-            previouslyPlayingItem,
-            currentlyPlayingItemIndex,
-            playingNextTrack,
-            playingNextTrackNow
-          });
-        }
+        await dispatch('playItem', {
+          item,
+          queue,
+          previouslyPlayingItem,
+          currentlyPlayingItemIndex,
+          playingNextTrack,
+          playingNextTrackNow
+        });
         
         commit('setNewPlayback', queueId);
 
@@ -299,7 +296,7 @@ export const actions = {
                 await startItemPlayback(item, nextTracksToSend);
               }
             }
-          }, 0);
+          }, 200);
         }
       }
     }

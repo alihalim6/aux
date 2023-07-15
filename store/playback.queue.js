@@ -85,7 +85,7 @@ export const actions = {
       });
     }
   },
-  clearUpNext: ({getters, commit, rootGetters}) => {
+  clearUpNext: ({getters, commit}) => {
     commit('clearUpNext', getters.currentlyPlayingIndex);
   },
   addToEndOfQueue: ({commit}, tracks) => {

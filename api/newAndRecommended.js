@@ -10,7 +10,7 @@ const getRecommendedTracks = async (artists, tracks) => {
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=20&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}`) :
+    await httpClient.get(`/recommendations?limit=23&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -69,15 +69,14 @@ async function newAndRecommended(){
 
     recommendedTracks = recommendedTracks.data.tracks.slice(recommendedAlbumsMax);
 
-    recommendedTracks = await Promise.all(recommendedTracks.filter(async track => {
-      const data = await search(track.name, 'track');
-
-      if(!data) {
-        return false;
+    recommendedTracks = recommendedTracks.filter(track => {
+      if(track.restrictions){
+        console.log('filtering out ' + track.name);
+        console.log(track.restrictions);
       }
-
-      return !!data.tracks.items.find(searchResult => searchResult.uri == track.uri);
-    }));
+      
+      return !track.restrictions;
+    });
 
     let allItems = [
       ...someShuffledNewReleases.map(item => ({...item, isNew: true})), 
@@ -90,7 +89,7 @@ async function newAndRecommended(){
 
     return {
       allItems,
-      previewItems: [...allItems].splice(0, 15),
+      previewItems: [...allItems].splice(0, 18),
       newReleases
     };
   }

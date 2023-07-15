@@ -17,6 +17,7 @@
 
 <style lang="scss">
   $loading-phrase-border-size: 3px;
+  $padding: 0 8px;
 
   .loading-container {
     font-size: 38px;
@@ -26,12 +27,14 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 40%;
+    height: 70%;
 
     .loading-overlay {
       height: 25vh;
       overflow: hidden;
-      border-top: $loading-phrase-border-size solid $rose-red;
+      border: $loading-phrase-border-size solid $rose-red;
+      border-bottom: none;
+      padding: $padding;
     }
 
     .animated {
@@ -51,6 +54,10 @@
       .filled-phrase {
         -webkit-text-fill-color: $rose-red;
         margin-top: -16px;
+        border: $loading-phrase-border-size solid $rose-red;
+        border-top: none;
+        padding: $padding;
+        padding-bottom: 8px;
       }
     }
   }

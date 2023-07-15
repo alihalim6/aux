@@ -1,5 +1,5 @@
 import {storageGet, storageSet} from '~/utils/storage';
-import {AUTH, IGNORED_USERS, DEVICE_ID, AUX_DEVICE_NAME} from '~/utils/constants';
+import {AUTH, IGNORED_USERS, DEVICE_ID, AUX_DEVICE_NAME, SPOTIFY_TRACK_ERROR_SKIP} from '~/utils/constants';
 import {refreshToken, handleAuthError} from '~/auth';
 import spotify from '~/api/spotify';
 import {v4 as uuid} from 'uuid';
@@ -206,7 +206,7 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
     });
 
-    spotifyPlayer.addListener('authentication_error', async ({message}) => {
+    spotifyPlayer.on('authentication_error', async ({message}) => {
       console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
       await retryPlayerInit();
       resolve();
@@ -239,9 +239,14 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? isSameTrack(spotifyCurrentTrack, auxNextTrack) : false;
 
       if(!isSameTrack(auxCurrentTrack, auxNextTrack) && ourNextTrackIsSpotifyCurrent){
-        console.log('Spotify moved to the correct next next track ahead of us...moving UI to it');
-        $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {noPlaybackCall: true});
+        console.log('Spotify moved to the correct next next track ahead of us...');
       }
+    });
+
+    spotifyPlayer.on('playback_error', ({ message }) => {
+      console.error('Failed to perform playback', message);
+      $nuxt.$store.commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true});
+      $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`);
     });
 
     spotifyPlayer.connect();

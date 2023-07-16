@@ -72,6 +72,7 @@
 
  .add-track-title {
    font-size: 22px;
+   padding-right: 8px;
  }
 
  .loader {

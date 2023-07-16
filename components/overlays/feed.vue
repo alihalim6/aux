@@ -28,7 +28,7 @@
                 <div role="tooltip" tabindex="0">
                   <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
                   <span>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed where they can see and play it (if they want to). Otherwise it's a skip that is only visible in your feed.</span>
-                  <div class="mt-2">Tracks played more than 12 hours ago are removed on app reload / every so often.</div>
+                  <div class="mt-2">Tracks played more than {{TTL_HOURS}} hours ago are removed on app reload / every so often.</div>
                 </div>
               </v-tooltip>
 
@@ -43,7 +43,7 @@
           <div v-else class="d-flex flex-column">
             <div class="no-feed-prompt">
               <div>Tracks that you and others play show here.</div>
-              <div class="sub-prompt">Nothing's been played in the last 24 hours. Kick things off by playing something and tell a friend!</div>
+              <div class="sub-prompt">Nothing's been played in the last {{TTL_HOURS}} hours. Kick things off by playing something and tell a friend!</div>
             </div>
 
             <div class="no-prompt-graphic" aria-hidden="true">
@@ -64,7 +64,7 @@
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
   import {isSameTrack, auxApiClient} from '~/utils/helpers';
-  import {PLAYED_NOT_SKIPPED_THRESHOLD, SPLASH} from '~/utils/constants';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD, SPLASH, TTL_HOURS} from '~/utils/constants';
 
   @Component
   export default class Feed extends Vue {
@@ -72,6 +72,7 @@
     secsOfTrackPlayed = 0;
     skipOrPlay = {};
     minSecsForPlay = PLAYED_NOT_SKIPPED_THRESHOLD;
+    TTL_HOURS = 12;
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -273,10 +274,6 @@
         .feed-header-icon {
           color: $secondary-theme-color;
           margin-right: 8px;
-        }
-
-        .feed-header-icon:hover {
-          @extend .hover-scale;
         }
       }
 

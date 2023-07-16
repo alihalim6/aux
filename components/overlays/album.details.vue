@@ -8,8 +8,6 @@
       <div class="sub-padding-left no-wrap">
         <span>{{new Date(album.release_date).getFullYear()}}</span>
         <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
-        <span v-if="album.numberOfTracks">{{album.numberOfTracks}}</span>
-        <v-icon v-if="album.numberOfTracks && duration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
         <span v-if="duration">{{duration}}</span>
       </div>
     </div>

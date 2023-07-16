@@ -234,7 +234,7 @@
             contentToFetchFor.fetchPending = false;
           }
           catch(error){
-            handleApiError('Sorry, there was an issue loading your all of your Liked Songs.');
+            handleApiError('Sorry, there was an issue loading your Likes.');
             contentToFetchFor.fetchPending = false;
             break;
           }

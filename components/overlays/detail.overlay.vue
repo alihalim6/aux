@@ -65,7 +65,7 @@
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
-                    <span :class="{'logo-style': item.isAlbum}">{{item.name}}</span>
+                    <span :class="{'logo-style album-title': item.isAlbum}">{{item.name}}</span>
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
                       <div class="d-flex justify-space-between align-start">
@@ -421,5 +421,9 @@
 
   .extra-padding-bottom {
     padding-bottom: 104px !important;
+  }
+
+  .album-title {
+    max-width: 320px;
   }
 </style>

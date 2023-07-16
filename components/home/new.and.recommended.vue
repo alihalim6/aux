@@ -69,21 +69,15 @@
 
     async beforeMount(){
       await this.getData();
-      this.setLoading(false);
-
       this.$nuxt.$root.$on('newAndRecoOverlayShown', () => this.overlayLoading = false);
       this.$nuxt.$on('showAllNewAndReco', this.displayAll);
     }
 
     async getData(){
-      try {
-        const {previewItems, allItems} = await newAndRecommended();
-        this.previewItems = setItemMetaData(previewItems);
-        this.allItems = allItems;
-      }
-      catch(error){
-        console.error(error);
-      }
+      const {previewItems, allItems} = await newAndRecommended();
+      this.previewItems = setItemMetaData(previewItems);
+      this.setLoading(false);
+      this.allItems = allItems;
     }
 
     displayOverlay({name, ...rest}){

@@ -41,10 +41,6 @@
   }
 }
 
-.hover-scale {
-  transform: scale(1.1);
-}
-
 @supports(-webkit-text-stroke: $simple-title-border-size $primary-theme-color) {
   .simple-overlay-title {
     -webkit-text-stroke: $simple-title-border-size $primary-theme-color;

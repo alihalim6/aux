@@ -1,10 +1,6 @@
 <template>
   <v-app :class="{'item-playing': currentlyPlayingItem.uri, 'dark-mode': darkMode}">
-    <audio v-if="currentlyPlayingItem.uri" class="hidden" loop autoplay id="silentPlayer">
-      <source src="/5-seconds-of-silence.mp3" type="audio/mpeg">
-    </audio>
-
-    <AppHeader/>
+    <AppHeader v-show="!isLoading"/>
 
     <div v-show="!isLoading" class="base-app-container">
       <NewAndRecommended/>
@@ -36,6 +32,10 @@
         <v-progress-circular v-show="activatingPlayer" indeterminate color="#fcfce0"></v-progress-circular>
       </div>
     </v-dialog>
+
+    <audio v-if="currentlyPlayingItem.uri" class="hidden" loop autoplay id="silentPlayer">
+      <source src="/5-seconds-of-silence.mp3" type="audio/mpeg">
+    </audio>
   </v-app>
 </template>
 
@@ -103,6 +103,10 @@
       await initSpotifyPlayer(true, true);
       this.activatingPlayer = false;
       this.playerActivated = true;
+
+      if(window.spotifyPlayer){
+        window.spotifyPlayer.activateElement();
+      }
     }
 
     beforeDestroy(){

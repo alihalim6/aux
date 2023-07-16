@@ -302,7 +302,7 @@ export const actions = {
     }
     catch(error){
       console.error(error);
-      handleApiError('Something went wrong playing music...');
+      handleApiError('Something went wrong...');
     }
   },
   stopPlayback({commit, getters}, noError){

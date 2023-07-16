@@ -1,16 +1,15 @@
 import {topItems, getRecommendationSeeds, getATopArtist, httpClient} from './_utils';
 import {shuffleArray} from '~/utils/helpers';
 import artist from './artist';
-import search from './search';
 
 const getRecommendedTracks = async (artists, tracks) => {
-  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=10');
+  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=7');
   recentlyPlayed = recentlyPlayed.data.items.map(item => item.track).filter(item => item.id);
 
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=23&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
+    await httpClient.get(`/recommendations?limit=25&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -31,9 +30,10 @@ async function newAndRecommended(){
 
     const topArtists = await topItems('artists');
     const topTracks = await topItems('tracks');
-    const likedAlbums = await httpClient.get('/me/albums?limit=15');
-    const likedAlbumTracks = likedAlbums.data.items.map(item => shuffleArray(item.album.tracks.items)[0]);
-    const seedTracks = [...likedAlbumTracks, ...topTracks.data.items];
+    const likedAlbums = await httpClient.get('/me/albums?limit=5');
+    const likedAlbumTracks = likedAlbums.data.items.map(item => shuffleArray(item.album.tracks.items)[0]);//take first track of each shuffled album
+    let likedTracks = await httpClient.get('/me/tracks?limit=7');
+    const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.data.items.map(like => like.track)];
     const seedArtists = [...topArtists.data.items, ...topTracks.data.items.map(track => track.artists[0])];
 
     const recommendationData = await Promise.all([
@@ -68,15 +68,6 @@ async function newAndRecommended(){
     }
 
     recommendedTracks = recommendedTracks.data.tracks.slice(recommendedAlbumsMax);
-
-    recommendedTracks = recommendedTracks.filter(track => {
-      if(track.restrictions){
-        console.log('filtering out ' + track.name);
-        console.log(track.restrictions);
-      }
-      
-      return !track.restrictions;
-    });
 
     let allItems = [
       ...someShuffledNewReleases.map(item => ({...item, isNew: true})), 

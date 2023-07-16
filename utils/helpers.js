@@ -155,7 +155,7 @@ export async function setDuration(item){
 const retryPlayerInit = async () => {
   try{
     await refreshToken();
-    await initSpotifyPlayer();
+    await initSpotifyPlayer(true, true);
   }
   catch(error){
     handleAuthError('Couldn\'t init player.');

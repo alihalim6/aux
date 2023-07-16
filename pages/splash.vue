@@ -9,12 +9,8 @@
             <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
           </button>
-
-          <p class="disclaimer text-right">
-            By logging in, you agree to 
-            <a class="clickable text-decoration-underline primary-color" tabindex="0" @click="showTerms()" @keydown.enter="showTerms()">these terms</a> and 
-            <a class="clickable text-decoration-underline primary-color" @click="showPrivacyPolicy()" tabindex="0" @keydown.enter="showPrivacyPolicy()">this privacy notice</a>.
-          </p>
+          
+          <span class="disclaimer font-italic">Chrome on laptop/desktop recommended.</span>
         </div>
       </div>
 
@@ -105,27 +101,6 @@
 
     loginClicked(){
       authorize();
-    }
-
-    showTerms(){
-      this.setActionDialog({
-        text: `AUX does not make any warranties or representations on behalf of Spotify. All warranties with respect to the 
-          Spotify Platform, Spotify Service and Spotify Content, including the implied warranties of merchantability, fitness for a particular purpose and non-infringement are disclaimed.
-          Modifying or creating derivative works based on the Spotify Platform, Spotify Service or Spotify Content is prohibited.
-          Decompiling, reverse-engineering, disassembling, and otherwise reducing the Spotify Platform, Spotify Service, and Spotify Content to source code or other human-perceivable form, 
-          to the full extent allowed by law is prohibited. AUX is responsible for itself and any liability on the part of third parties (e.g., Spotify) is disclaimed. 
-          Spotify is a third party beneficiary of this agreement and privacy notice and is entitled to directly enforce this agreement.`,
-        confirmLabel: 'OK'
-      });
-    }
-
-     showPrivacyPolicy(){
-      this.setActionDialog({
-        text: `AUX uses and stores your profile photo url, Spotify ID and username in order to associate you with the tracks that you play as well as 
-          the comments and reactions you make on other users' tracks. The same info is used to indicate to other AUX users that you're "live" on AUX
-          whenever you're on. This data can always be removed via the AUX profile menu. AUX itself does not use cookies and does not allow any third party cookies.`,
-        confirmLabel: 'OK'
-      });
     }
   }
 </script>
@@ -254,9 +229,8 @@
   }
 
   .disclaimer {
-    padding: $base-padding;
-    font-size: 12px;
-    max-width: 250px;
+    font-size: 10px;
+    padding: 24px 0 12px;
   }
 
   .login-container {

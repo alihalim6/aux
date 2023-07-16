@@ -59,7 +59,8 @@
                   <div class="primary-container" 
                     :class="{
                       'hovered-primary-container': hover && !vertical && !item.isArtist && !noHover(index), 
-                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !noHover(index)
+                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !noHover(index),
+                      'more-from-primary': moreFromArtist
                     }">
                     <div class="d-flex align-start">
                       <button 
@@ -244,6 +245,11 @@
 
     .hovered-primary-last-container {
       width: $content-img-size;
+    }
+
+    .more-from-primary {
+      max-width: calc(#{$content-img-size} + 4px);
+      padding-left: 0;
     }
 
     .artist-genres {

@@ -111,3 +111,16 @@
   width: max-content;
   transform: skewX(-9.9deg);
 }
+
+.hover-scale {
+  transform: scale(1.1);
+}
+
+.queue-control:hover,
+.v-icon.mdi-close:hover,
+.add-button:hover,
+.feed-header-icon:hover,
+.playback-toggle:not(.disabled-control):hover,
+.reaction-toggle-container:hover {
+  @extend .hover-scale;
+}

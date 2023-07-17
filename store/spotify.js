@@ -170,6 +170,12 @@ export const actions = {
             ]
           });
 
+          navigator.mediaSession.setPositionState({
+            duration: item.duration_ms / 1000,
+            playbackRate: 1,
+            position: 0
+          });
+
           if(queue[currentlyPlayingItemIndex - 1]){
             navigator.mediaSession.setActionHandler('previoustrack', () => {
               dispatch(`${PLAYBACK_QUEUE}/playPreviousTrack`, null, {root: true});

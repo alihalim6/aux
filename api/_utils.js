@@ -109,9 +109,6 @@ async function retryRequest(config){
     console.log('retrying request...');
     return httpClient.request(config);
   }
-  else if(!storageGet(DEVICE_ID)){
-    sendToSplash();
-  }
   else if(isPlaybackCall(config)){
     $nuxt.$store.commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true});
     $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`);

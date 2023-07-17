@@ -187,7 +187,7 @@ export const actions = {
             dispatch('seekPlayback', newPosition);
 
             navigator.mediaSession.setPositionState({
-              duration: item.duration_ms * 1000,
+              duration: item.duration_ms / 1000,
               playbackRate: 1,
               position: newPosition
             });

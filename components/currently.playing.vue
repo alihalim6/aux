@@ -363,9 +363,9 @@
             this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
 
             navigator.mediaSession.setPositionState({
-              duration: this.currentlyPlayingItem.duration_ms * 1000,
+              duration: this.currentlyPlayingItem.duration_ms / 1000,
               playbackRate: 1,
-              position: this.playbackElapsed.ms * 1000
+              position: this.playbackElapsed.ms / 1000
             });
           }
         }

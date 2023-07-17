@@ -37,7 +37,7 @@
         </v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
-          <span v-if="currentlyPlayingItem.uri" class="ellipses-text font-weight-bold" @click="displayItemDetails()">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
+          <span v-if="currentlyPlayingItem.uri" class="clickable ellipses-text font-weight-bold" @click="displayItemDetails()">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
 
           <div class="d-flex align-center mb-1">
             <v-slider 
@@ -290,6 +290,16 @@
             await this.seek(Math.min((this.playbackElapsed.ms / 1000) + skipTime, this.playbackTotal.ms / 1000), true);
           });
 
+          navigator.mediaSession.setActionHandler('seekto', async ({seekTime}) => {
+            await this.seek(seekTime, true);
+
+            navigator.mediaSession.setPositionState({
+              duration: item.duration_ms / 1000,
+              playbackRate: 1,
+              position: seekTime
+            });
+          });
+
           this.mediaSessionApiInitialized = true;
         }
       }
@@ -310,6 +320,7 @@
       this.$nuxt.$root.$on('hideUpNext', () => {
         this.upNextHidden = true;
         this.upNextDisplaying = false;
+        this.$nuxt.$root.$emit('upNextDisplaying', false);
       });
 
       window.addEventListener('popstate', () => {
@@ -358,6 +369,7 @@
             }
 
             this.stopInterval();
+            navigator.mediaSession.setPositionState(null);
           }
           else{
             this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
@@ -442,6 +454,7 @@
         this.upNextHidden = false;
         this.upNextDisplaying = true;
         history.pushState({}, '');
+        this.$nuxt.$root.$emit('upNextDisplaying', true);
       }
     }
 

@@ -114,6 +114,7 @@
     fullItemImage = '';
     processing = false;
     isAndroid = false;
+    upNextDisplaying = false;
     
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -141,8 +142,10 @@
       var ua = navigator.userAgent.toLowerCase();
       this.isAndroid = ua.indexOf('android') > -1;
 
+      this.$nuxt.$root.$on('upNextDisplaying', displaying => this.upNextDisplaying = displaying);
+
       window.addEventListener('popstate', () => {
-        if(this.display){
+        if(!this.upNextDisplaying && this.display){
           if(this.items.length > 1){
             this.goBack();
           }

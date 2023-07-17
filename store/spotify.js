@@ -187,17 +187,6 @@ export const actions = {
               dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: true}, {root: true});
             });
           }
-
-          navigator.mediaSession.setActionHandler('seekto', ({seekTime}) => {
-            const newPosition = seekTime * 1000;//secs to ms
-            dispatch('seekPlayback', newPosition);
-
-            navigator.mediaSession.setPositionState({
-              duration: item.duration_ms / 1000,
-              playbackRate: 1,
-              position: newPosition
-            });
-          });
         }
 
         commit(`${PLAYBACK_QUEUE}/setNextTrackModified`, false, {root: true});

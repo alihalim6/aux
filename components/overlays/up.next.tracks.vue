@@ -227,7 +227,7 @@
     display: inline-flex;
     flex-direction: column;
     overflow-y: scroll;
-    padding-top: calc(env(safe-area-inset-top) + 10px);
+    padding-top: calc(env(safe-area-inset-top) + 16px);
     padding-bottom: 200px;
 
     .up-next-header {

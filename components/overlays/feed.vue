@@ -37,7 +37,7 @@
           </div>
 
           <div class="activity-item" v-if="activityFeed.length">
-            <FeedItem v-for="item in activityFeed" :key="item.updateTimestamp" :activity="item" :itemSet="activityFeed.map(activity => activity.track)"/>
+            <FeedItem v-for="item in activityFeed" :key="item.updateTimestamp" :activity="item"/>
           </div>
 
           <div v-else class="d-flex flex-column">
@@ -64,7 +64,7 @@
   import {UI, USER, FEED, SPOTIFY} from '~/store/constants';
   import socket from '~/plugins/socket.client.js';
   import {isSameTrack, auxApiClient} from '~/utils/helpers';
-  import {PLAYED_NOT_SKIPPED_THRESHOLD, SPLASH, TTL_HOURS} from '~/utils/constants';
+  import {PLAYED_NOT_SKIPPED_THRESHOLD, SPLASH} from '~/utils/constants';
 
   @Component
   export default class Feed extends Vue {
@@ -76,9 +76,6 @@
 
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
-
-    @Mutation('clearOldActivity', {namespace: FEED})
-    clearOldActivity;
 
     @Mutation('setToast', {namespace: UI})
     setToast;
@@ -171,10 +168,10 @@
         await this.initializeFeed();
         return;
       }
-
-      setInterval(() => {
-        this.clearOldActivity();
-      }, 1.8e+6);//30 mins
+      
+      window.addEventListener('popstate', () => {
+        this.closeFeed();
+      });
     }
 
     isSplashPage(){

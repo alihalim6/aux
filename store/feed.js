@@ -296,11 +296,5 @@ export const mutations = {
   },
   setInitialFeed(state, feed){
     state.feed = feed;
-  },
-  clearOldActivity(state){
-    state.feed = state.feed.filter(activity => {
-      const feedCutoffTime = moment(new Date()).subtract(24, 'hours');
-      return moment(activity.timestamp).isAfter(feedCutoffTime);
-    });
   }
 };

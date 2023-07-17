@@ -77,8 +77,14 @@ httpClient.interceptors.response.use(async response => {
   }
 
   //401 on a retry
-  if(error.config && error.config._retry && error.response && error.response.status == 401){
-    sendToSplash();
+  if(error.config && error.response && error.response.status == 401){
+    if(error.config._retry){
+      sendToSplash();
+    }
+    else{
+      await attemptTokenRefresh();
+      await retryRequest(error.config);
+    }
   }
   else if(shouldRetry(error.response && error.response.status)){
     retryRequest(error.config);
@@ -120,6 +126,7 @@ function sendToSplash(){
 
 async function attemptTokenRefresh(){
   try{
+    console.log('attempting to refresh token');
     await refreshToken();
   }
   catch(error){
@@ -132,9 +139,8 @@ export function handleApiError(message){
 }
 
 export const topItems = async (topType, limit) => {
-  return await httpClient.get(`/me/top/${topType}?limit=${limit || 15}`);
+  return await httpClient.get(`/me/top/${topType}?limit=${limit || 10}`);
 };
-
 
 //note: the artist objects in the top tracks response don't have genres; would need to use the href in there to make API call to get artist(s)
 const getSeedGenres = async (artists) => {
@@ -154,30 +160,23 @@ const getSeedGenres = async (artists) => {
   return seedArtist.genres[0];
 };
 
+export const randomIntFromInterval = (max) => { // min and max included 
+  return Math.floor(Math.random() * (max - 0 + 1) + 0);
+}
+
 export const getRecommendationSeeds = async (artists, tracks) => {
-  let seedArtists = '';
-  let seedTracks = '';
-
   //randomize seeds
-  artists = shuffleArray(artists);
-  tracks = shuffleArray(tracks);
+  const artist1 = artists[randomIntFromInterval(artists.length - 1)];
+  const artist2 = artists[randomIntFromInterval(artists.length - 1)];
 
-  function addSeeds(seedObject, seeds){
-    let i = 0;
+  const track1 = tracks[randomIntFromInterval(tracks.length - 1)];
+  const track2 = tracks[randomIntFromInterval(tracks.length - 1)];
 
-    //API allows up to five seeds, so we'll do up to two for tracks/artists, and one genre
-    while(i < 2){
-      console.log(`seed: ${seedObject[i].name}`);
-      seeds += seedObject[i].id + ',';
-      i++;
-    }
-
-    return seeds;
-  }
-
-  seedArtists = addSeeds(artists, seedArtists);
-  seedTracks = addSeeds(tracks, seedTracks);
+  const seedArtists = `${artist1.id},${artist2.id},`;
+  const seedTracks = `${track1.id},${track2.id},`;
   const genres = await getSeedGenres(artists, tracks);
+
+  console.log(`seeds: ${artist1.name},${artist2.name},${track1.name},${track2.name},${genres}`);
 
   return {
     artists: seedArtists,
@@ -187,5 +186,5 @@ export const getRecommendationSeeds = async (artists, tracks) => {
 };
 
 export const getATopArtist = (artists) => {
-  return shuffleArray(artists.items)[0];
+  return artists.items[randomIntFromInterval(artists.items.length - 1)];
 };

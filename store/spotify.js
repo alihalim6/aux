@@ -181,6 +181,17 @@ export const actions = {
               dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: true}, {root: true});
             });
           }
+
+          navigator.mediaSession.setActionHandler('seekto', ({seekTime}) => {
+            const newPosition = seekTime * 1000;//secs to ms
+            dispatch('seekPlayback', newPosition);
+
+            navigator.mediaSession.setPositionState({
+              duration: item.duration_ms * 1000,
+              playbackRate: 1,
+              position: newPosition
+            });
+          });
         }
 
         commit(`${PLAYBACK_QUEUE}/setNextTrackModified`, false, {root: true});
@@ -299,10 +310,14 @@ export const actions = {
           }, 200);
         }
       }
+
+      if(getters.player){
+        getters.player.resume();
+      }
     }
     catch(error){
       console.error(error);
-      handleApiError('Something went wrong...');
+      handleApiError('Something went wrong playing music...');
     }
   },
   stopPlayback({commit, getters}, noError){
@@ -331,7 +346,7 @@ export const actions = {
         storageRemove(DEVICE_ID);
       }
   },
-  async seekPlayback({getters, dispatch, commit}, seekPosition){
+  async seekPlayback({getters, commit}, seekPosition){
     const player = getters.player;
 
     if(player && player.seek){
@@ -389,7 +404,7 @@ export const mutations = {
   },
   setNewPlayback(state, queueId){
     state.newPlayback = queueId;
-    state.pendingFirstPlay = false;/////
+    state.pendingFirstPlay = false;
   },
   setSdkReady(state){
     state.sdkReady = true;

@@ -8,9 +8,7 @@
           <button class="clickable nav-button login" @click="loginClicked()">
             <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
             <span class="nav-button-label">LOG {{ $route.params.loggedIn ? 'BACK' : ''}} IN</span>
-          </button>
-          
-          <span class="disclaimer font-italic">Chrome on laptop/desktop recommended.</span>
+          </button>          
         </div>
       </div>
 
@@ -30,14 +28,12 @@
         <v-snackbar :value="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip">
           <div class="d-flex align-start">
             <div class="p-tooltip">
-              <div class="bullet-point">Enjoy your Spotify library + new releases, featured playlists, and recommendations.</div>
-              <div class="bullet-point">See and play what others are listening to (if you want to).</div>
+              <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations.</div>
+              <div class="bullet-point">See and play what others are listening to.</div>
               
               <div class="bullet-point">
                 <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
               </div>
-
-              <div class="text-center">All with a shared <span class="on-air">FEED</span>.</div>
             </div>
 
             <v-icon class="clickable aux-tooltip" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
@@ -56,6 +52,10 @@
           <span>using</span>
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's API</a>
         </div>
+
+        <span class="made-info mt-1 d-flex align-center">
+          <v-img class="logo" :src="require('~/assets/chrome-logo.png')" alt=""></v-img><span>&nbsp;recommended (no iOS)</span>
+        </span>
 
         <span class="made-info mt-1">Works for Spotify Premium users only</span>
       </div>
@@ -175,13 +175,14 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding: 24px 24px 0px;
+    padding: 24px;
     background-color: #fcfce269 !important;
   }
   
   .login {
     margin-right: $header-margin;
-
+    white-space: nowrap;
+    
     @media(min-width: $splash-device-size-threshold){
       font-size: 16px;
     }
@@ -228,11 +229,6 @@
     33% {opacity: 1;}
   }
 
-  .disclaimer {
-    font-size: 10px;
-    padding: 24px 0 12px;
-  }
-
   .login-container {
     display: flex;
     flex-direction: column;
@@ -277,6 +273,12 @@
   }
 
   .bullet-point {
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .logo {
+    $size: 20px;
+    width: $size;
+    max-width: $size;
   }
 </style>

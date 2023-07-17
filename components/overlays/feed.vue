@@ -27,8 +27,8 @@
               <v-tooltip bottom color="#1DB954" attach="#feedHeader" activator="#feedToolTip" :open-delay="150">
                 <div role="tooltip" tabindex="0">
                   <div v-if="isSplashPage()" class="mb-6 font-italic">THIS IS A MOCK FEED. LOG IN TO SEE IT FOR REAL!</div>
-                  <span>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed where they can see and play it (if they want to). Otherwise it's a skip that is only visible in your feed.</span>
-                  <div class="mt-2">Tracks played more than {{TTL_HOURS}} hours ago are removed on app reload / every so often.</div>
+                  <span>Once you listen to {{minSecsForPlay}} seconds of a track, it's added to everyone's feed where they can see it, play it and comment on it. Otherwise it's a skip that is only visible in your feed.</span>
+                  <div class="mt-2">Tracks played more than {{TTL_HOURS}} hours ago are removed from the feed on page refresh / every so often.</div>
                 </div>
               </v-tooltip>
 

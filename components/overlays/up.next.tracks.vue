@@ -227,7 +227,7 @@
     display: inline-flex;
     flex-direction: column;
     overflow-y: scroll;
-    padding-top: calc(env(safe-area-inset-top) + 16px);
+    padding-top: calc(env(safe-area-inset-top) + 10px);
     padding-bottom: 200px;
 
     .up-next-header {
@@ -295,7 +295,7 @@
         }
      
         .info-value {
-          transform: scaleY(1.6);
+          transform: scaleY(1.4);
           padding: 2px 1px;
         }
       }
@@ -327,7 +327,7 @@
         display: flex;
         align-items: center;
         justify-content: space-around;
-        margin: 4px 0px;
+        margin: 8px 0px;
 
         .track-item {
           width: 50%;

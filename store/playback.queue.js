@@ -88,7 +88,11 @@ export const actions = {
   clearUpNext: ({getters, commit}) => {
     commit('clearUpNext', getters.currentlyPlayingIndex);
   },
-  addToEndOfQueue: ({commit}, tracks) => {
+  addToEndOfQueue: ({commit, getters}, tracks) => {
+    if(!getters.hasNextTrack){
+      commit('setNextTrackModified', true);
+    }
+
     commit('addToEndOfQueue', tracks);
     commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${tracks.length > 1 ? 's' : ''} added to end of queue`}, {root: true});
   },
@@ -100,7 +104,7 @@ export const actions = {
     }
 
     if(!doNotUpdateSpotify){
-        commit('setNextTrackModified', true);
+      commit('setNextTrackModified', true);
     }
   },
   shuffleUpNext: ({commit, getters}) => {

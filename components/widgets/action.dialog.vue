@@ -36,7 +36,7 @@
       </div>
 
       <div v-else-if="actionDialog.isAndroidPwaInstall" class="dialog-text" id="actionDialogText">
-        <div class="pwa-title">Here's how to install AUX as an app if you didn't already know:
+        <div class="pwa-title">FYI: Chrome Canary is recommended for Android (audio playback doesn't work on regular Chrome). Now here's how to install AUX as an app if you didn't already know:
         </div>
 
         <div class="my-2">1. Tap the three-dot icon in the browser bar.</div>

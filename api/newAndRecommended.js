@@ -1,9 +1,9 @@
-import {topItems, getRecommendationSeeds, getATopArtist, httpClient} from './_utils';
+import {topItems, getRecommendationSeeds, getATopArtist, httpClient, randomIntFromInterval} from './_utils';
 import {shuffleArray} from '~/utils/helpers';
 import artist from './artist';
 
 const getRecommendedTracks = async (artists, tracks) => {
-  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=7');
+  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=5');
   recentlyPlayed = recentlyPlayed.data.items.map(item => item.track).filter(item => item.id);
 
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
@@ -15,8 +15,8 @@ const getRecommendedTracks = async (artists, tracks) => {
 
 const getRecommendedArtists = async (topArtists) => {
   if(topArtists.items.length){
-    const topArtist = await getATopArtist(topArtists);
-    console.log(`top artist seed for related artists: ${topArtist.name}`);
+    const topArtist = getATopArtist(topArtists);
+    console.log(`top artist seed for recommended artist: ${topArtist.name}`);
     return await httpClient.get(`/artists/${topArtist.id}/related-artists`);
   }
 
@@ -26,15 +26,17 @@ const getRecommendedArtists = async (topArtists) => {
 async function newAndRecommended(){
   try {
     const newReleasesLimit = 15;
-    const randomOffset = Math.floor(Math.random() * (newReleasesLimit - 0 + 1) + 0);
+    const randomOffset = randomIntFromInterval(newReleasesLimit);
 
     const topArtists = await topItems('artists');
     const topTracks = await topItems('tracks');
-    const likedAlbums = await httpClient.get('/me/albums?limit=5');
-    const likedAlbumTracks = likedAlbums.data.items.map(item => shuffleArray(item.album.tracks.items)[0]);//take first track of each shuffled album
-    let likedTracks = await httpClient.get('/me/tracks?limit=7');
-    const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.data.items.map(like => like.track)];
+
+    const likedAlbums = await httpClient.get('/me/albums?limit=10');
+    const likedAlbumTracks = likedAlbums.data.items.map(item =>  item.album.tracks.items[randomIntFromInterval(item.album.tracks.items.length - 1)]);
+    let likedTracks = await httpClient.get('/me/tracks?limit=25');
+    
     const seedArtists = [...topArtists.data.items, ...topTracks.data.items.map(track => track.artists[0])];
+    const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.data.items.map(like => like.track)];
 
     const recommendationData = await Promise.all([
       httpClient.get(`/browse/new-releases?offset=${randomOffset}&limit=${newReleasesLimit}`),
@@ -44,7 +46,7 @@ async function newAndRecommended(){
     
     const {data} = recommendationData[0];
     const newReleases = data.albums.items;
-    const someShuffledNewReleases = shuffleArray(newReleases.slice(0, 3));
+    const someNewReleases = newReleases.slice(0, 3);
 
     let recommendedTracks = recommendationData[1];
     const recommendedAlbums = [];
@@ -52,25 +54,23 @@ async function newAndRecommended(){
     let tracksToRecommendAlbums = recommendedTracks.data.tracks.slice(0, recommendedAlbumsMax);
 
     if(tracksToRecommendAlbums.length){
-      for(const track of tracksToRecommendAlbums){
-        if(track.album && track.album.album_type.toLowerCase() == 'album'){
-          const {data} = await httpClient.get(`/albums/${track.album.id}`);
-          recommendedAlbums.push(data);
-        }
+      for(const track of tracksToRecommendAlbums.filter(track => track.album && track.album.album_type.toLowerCase() == 'album')){
+        const {data} = await httpClient.get(`/albums/${track.album.id}`);
+        recommendedAlbums.push(data);
       }
     }
 
-    const recommendedArtists = shuffleArray([...recommendationData[2].data.artists, ...recommendedTracks.data.tracks.map(track => track.artists[0])]);
-    let recommendedArtist = recommendedArtists[0];
+    const artists = [...recommendationData[2].data.artists, ...recommendedTracks.data.tracks.map(track => track.artists[0])];
+    let recommendedArtist = artists[randomIntFromInterval(artists.length - 1)];
     
-    if(!recommendedArtist.imgaes){
-      recommendedArtist = await artist(recommendedArtists[0].id);
+    if(!recommendedArtist.images){
+      recommendedArtist = await artist(recommendedArtist.id);
     }
 
     recommendedTracks = recommendedTracks.data.tracks.slice(recommendedAlbumsMax);
 
     let allItems = [
-      ...someShuffledNewReleases.map(item => ({...item, isNew: true})), 
+      ...someNewReleases.map(item => ({...item, isNew: true})), 
       ...recommendedTracks, 
       recommendedArtist,
       ...recommendedAlbums

@@ -54,7 +54,7 @@
             <div v-show="!liveUsers.length">
               <div class="d-flex flex-column align-center">
                 <span class="no-other-users-message">No one else is here.</span>
-                <v-img class="no-other-users-img" :eager="true" :src="require('~/assets/no_other_users.png')" alt=""></v-img>
+                <v-img class="no-other-users-img" :src="require('~/assets/no_other_users.png')" alt=""></v-img>
               </div>
             </div>
           </v-snackbar>
@@ -474,8 +474,8 @@
     @extend .round-img-icon;
     $icon-size: 28px;
     
-    height: $icon-size;
-    max-width: $icon-size;
+    height: $icon-size !important;
+    max-width: $icon-size !important;
   }
 
   .user-name {

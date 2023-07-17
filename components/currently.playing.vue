@@ -1,26 +1,6 @@
 <template>
   <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
-    <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-3">
-      <v-img 
-        @click="spotifyLogoPressed()" 
-        @keydown.enter="spotifyLogoPressed()"
-        class="clickable spotify-icon currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')"
-        tabindex="0"
-        alt="open Spotify"
-      >
-      </v-img>
-
-      <v-img 
-        @click="spotifyLogoPressed()" 
-        @keydown.enter="spotifyLogoPressed()"
-        class="clickable spotify-full currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets/Spotify_Logo_Full.png')"
-        tabindex="0"
-        alt="open Spotify"
-      >
-      </v-img>
-
+    <div v-if="!upNextDisplaying" class="d-flex justify-end align-center width-100 mb-1">
       <button class="clickable view-feed-container" @click="feedIconPressed()" @keydown.enter.prevent="feedIconPressed()">
         <div class="d-flex align-center ml-2">
           <v-icon x-small color="red">mdi-circle</v-icon>
@@ -31,7 +11,7 @@
       </button>
     </div>
 
-    <div v-if="pendingFirstPlay" class="d-flex align-center width-max-content mt-3">
+    <div v-if="pendingFirstPlay" class="d-flex flex-column align-center width-max-content mt-3">
       <span class="pending-first-play">GRABBING THE AUX CORD</span>
 
       <v-progress-linear 
@@ -298,18 +278,16 @@
 
         //lock screen; https://web.dev/media-session/
         if(!this.mediaSessionApiInitialized && ('mediaSession' in navigator)){
-          const defaultSkipTime = 20;
+          const defaultSkipTime = 15;
 
           navigator.mediaSession.setActionHandler('seekbackward', async details => {
             const skipTime = details.seekOffset || defaultSkipTime;
-            console.log('skipTime', skipTime);
-            await this.seek(Math.max((this.playbackElapsed.ms / 1000) - skipTime, 0));
+            await this.seek(Math.max((this.playbackElapsed.ms / 1000) - skipTime, 0), true);
           });
 
           navigator.mediaSession.setActionHandler('seekforward', async details => {
             const skipTime = details.seekOffset || defaultSkipTime;
-            console.log('skipTime', skipTime);
-            await this.seek(Math.min((this.playbackElapsed.ms / 1000) + skipTime, this.playbackTotal.ms / 1000));
+            await this.seek(Math.min((this.playbackElapsed.ms / 1000) + skipTime, this.playbackTotal.ms / 1000), true);
           });
 
           this.mediaSessionApiInitialized = true;
@@ -439,11 +417,11 @@
       this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
     }
 
-    async seek(secs){
-      console.log(`attempting seek to ${secs} secs...or this.playbackElapsed.ms -> ${this.playbackElapsed.ms} if no secs`);
+    async seek(secs, userSeek){
+      console.log(`attempting seek to ${secs} secs...`);
       const newElapsed = secs ? secs * 1000 : this.playbackElapsed.ms;
 
-      if(!this.validSeek(newElapsed)){
+      if(!userSeek && !this.validSeek(newElapsed)){
         console.log(`ignoring wild seek amount: ${secs}`);
         return;
       }
@@ -520,10 +498,6 @@
       this.playNextTrack({playingNextTrackNow: true});
     }
 
-    spotifyLogoPressed(){
-      window.open('https://www.spotify.com', '_blank');
-    }
-
     async repeatPressed(){
       //Spotify not reliably clearing repeat, so call twice
       const newRepeatStatus = !this.setToRepeatTrack;
@@ -577,7 +551,7 @@
     }
 
     .currently-playing {
-      $item-img-size: 100px;
+      $item-img-size: 90px;
 
       display: flex;
       flex-direction: column;
@@ -765,6 +739,7 @@
   .looking-icon {
     width: 34px;
     font-size: 34px;
+    margin-top: 10px;
   }
 
   @keyframes rotate-180 {

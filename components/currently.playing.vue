@@ -743,7 +743,7 @@
   }
 
   .looking-icon {
-    width: 34px;
+    max-width: 34px;
     font-size: 34px;
     margin-top: 10px;
   }

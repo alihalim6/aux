@@ -183,7 +183,8 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       //can't be async so we'll have to hope our logic has a fresh one stored
       callback(storageGet(AUTH.ACCESS_TOKEN));
     },
-    volume: 1
+    volume: 1,
+    enableMediaSession: true
   });
 
   return new Promise((resolve) => {

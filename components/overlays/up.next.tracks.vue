@@ -243,11 +243,13 @@
       }
     }
 
-    @supports(-webkit-text-stroke: $simple-title-border-size $cream) {
+    @supports(-webkit-text-stroke: $simple-title-border-size $rose-red) {
       .up-next-title {
         @extend .simple-overlay-title;
-        -webkit-text-stroke: $simple-title-border-size $cream;
-        -webkit-text-fill-color: $cream;
+        -webkit-text-stroke: $simple-title-border-size $rose-red;
+        -webkit-text-fill-color: $rose-red;
+        background-color: $cream;
+        padding: 8px;
       }
     }
 
@@ -327,7 +329,7 @@
         display: flex;
         align-items: center;
         justify-content: space-around;
-        margin: 8px 0px;
+        margin: 6px 0px;
 
         .track-item {
           width: 50%;

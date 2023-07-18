@@ -66,11 +66,20 @@ export const actions = {
 
       const player = getters.player;
 
+      const handlePause = () => {
+        const audioPlaying = getters.audioPlaying;
+
+        if('mediaSession' in navigator && !audioPlaying){
+          navigator.mediaSession.playbackState = 'paused';
+        }
+      }
+
       if(pause){
         commit('setAudioPlaying', false);
 
         try{
           await player.pause();
+          handlePause();
         }
         catch{}
         finally{
@@ -91,6 +100,7 @@ export const actions = {
 
       if(currentItemToggled){
         await player.togglePlay();
+        handlePause();
         return;
       }
       else {
@@ -161,19 +171,13 @@ export const actions = {
             artist: item.secondaryLabel,
             album: item.trackFromAlbum ? item.album.name : '',
             artwork: [
-              { src: item.imgUrl.small,   sizes: '96x96',   type: 'image/jpeg' },
+              { src: item.imgUrl.small, sizes: '96x96', type: 'image/png' },
               { src: item.imgUrl.medium, sizes: '128x128', type: 'image/png' },
               { src: item.imgUrl.medium, sizes: '192x192', type: 'image/png' },
-              { src: item.imgUrl.medium, sizes: '256x256', type: 'image/jpeg' },
+              { src: item.imgUrl.medium, sizes: '256x256', type: 'image/png' },
               { src: item.imgUrl.medium, sizes: '384x384', type: 'image/png' },
-              { src: item.imgUrl.large, sizes: '512x512', type: 'image/jpeg' },
+              { src: item.imgUrl.large, sizes: '512x512', type: 'image/png' },
             ]
-          });
-
-          navigator.mediaSession.setPositionState({
-            duration: item.duration_ms / 1000,
-            playbackRate: 1,
-            position: 0
           });
 
           if(queue[currentlyPlayingItemIndex - 1]){
@@ -187,10 +191,14 @@ export const actions = {
               dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: true}, {root: true});
             });
           }
+
+          navigator.mediaSession.setActionHandler('pause', function() {});
+          navigator.mediaSession.setActionHandler('play', function() {});
+
+          navigator.mediaSession.playbackState = 'playing';
         }
 
         commit(`${PLAYBACK_QUEUE}/setNextTrackModified`, false, {root: true});
-
         //skip api call if not playing anything (no device on Spotify side)
         dispatch('toggleTrackRepeat', {repeat: false, skipApiCall: nothingWasPlaying});
       }
@@ -200,7 +208,7 @@ export const actions = {
       dispatch('stopPlayback');
     }
   },
-  playItem: async ({getters, rootGetters, dispatch, commit}, {
+  playItem: async ({getters, rootGetters}, {
     item, 
     queue, 
     previouslyPlayingItem,
@@ -339,6 +347,10 @@ export const actions = {
 
       if(process.client){
         storageRemove(DEVICE_ID);
+
+        if('mediaSession' in navigator){
+          navigator.mediaSession.setPositionState(null);
+        }
       }
   },
   async seekPlayback({getters, commit}, seekPosition){

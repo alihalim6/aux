@@ -1,4 +1,4 @@
-import {topItems, getRecommendationSeeds, getATopArtist, httpClient, randomIntFromInterval} from './_utils';
+import {topItems, getRecommendationSeeds, getATopArtist, httpClient, randomInt} from './_utils';
 import {shuffleArray} from '~/utils/helpers';
 import artist from './artist';
 
@@ -9,7 +9,7 @@ const getRecommendedTracks = async (artists, tracks) => {
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    await httpClient.get(`/recommendations?limit=25&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
+    httpClient.get(`/recommendations?limit=22&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -17,7 +17,7 @@ const getRecommendedArtists = async (topArtists) => {
   if(topArtists.items.length){
     const topArtist = getATopArtist(topArtists);
     console.log(`top artist seed for recommended artist: ${topArtist.name}`);
-    return await httpClient.get(`/artists/${topArtist.id}/related-artists`);
+    return httpClient.get(`/artists/${topArtist.id}/related-artists`);
   }
 
   return Promise.resolve({data: {artists: []}});
@@ -25,14 +25,15 @@ const getRecommendedArtists = async (topArtists) => {
 
 async function newAndRecommended(){
   try {
-    const newReleasesLimit = 15;
-    const randomOffset = randomIntFromInterval(newReleasesLimit);
+    performance.mark('precall');
+    const newReleasesLimit = 3;
+    const randomOffset = randomInt(newReleasesLimit);
 
     const topArtists = await topItems('artists');
     const topTracks = await topItems('tracks');
 
     const likedAlbums = await httpClient.get('/me/albums?limit=10');
-    const likedAlbumTracks = likedAlbums.data.items.map(item =>  item.album.tracks.items[randomIntFromInterval(item.album.tracks.items.length - 1)]);
+    const likedAlbumTracks = likedAlbums.data.items.map(item =>  item.album.tracks.items[randomInt(item.album.tracks.items.length - 1)]);
     let likedTracks = await httpClient.get('/me/tracks?limit=25');
     
     const seedArtists = [...topArtists.data.items, ...topTracks.data.items.map(track => track.artists[0])];
@@ -45,8 +46,7 @@ async function newAndRecommended(){
     ]);
     
     const {data} = recommendationData[0];
-    const newReleases = data.albums.items;
-    const someNewReleases = newReleases.slice(0, 3);
+    const someNewReleases = data.albums.items;
 
     let recommendedTracks = recommendationData[1];
     const recommendedAlbums = [];
@@ -61,7 +61,7 @@ async function newAndRecommended(){
     }
 
     const artists = [...recommendationData[2].data.artists, ...recommendedTracks.data.tracks.map(track => track.artists[0])];
-    let recommendedArtist = artists[randomIntFromInterval(artists.length - 1)];
+    let recommendedArtist = artists[randomInt(artists.length - 1)];
     
     if(!recommendedArtist.images){
       recommendedArtist = await artist(recommendedArtist.id);
@@ -80,8 +80,8 @@ async function newAndRecommended(){
 
     return {
       allItems,
-      previewItems: [...allItems].splice(0, 18),
-      newReleases
+      previewItems: [...allItems].splice(0, 16),
+      someNewReleases
     };
   }
   catch(error){

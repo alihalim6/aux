@@ -1,6 +1,25 @@
 <template>
   <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
-    <div v-if="!upNextDisplaying" class="d-flex justify-end align-center width-100 mb-1">
+    <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-1">
+      <v-img 
+        @click="spotifyLogoPressed()" 
+        @keydown.enter="spotifyLogoPressed()"
+        class="clickable spotify-icon currently-playing-spotify-icon" 
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')"
+        tabindex="0"
+        alt="open Spotify"
+      >
+      </v-img>
+      <v-img 
+        @click="spotifyLogoPressed()" 
+        @keydown.enter="spotifyLogoPressed()"
+        class="clickable spotify-full currently-playing-spotify-icon" 
+        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.xs}" :src="require('~/assets/Spotify_Logo_Full.png')"
+        tabindex="0"
+        alt="open Spotify"
+      >
+      </v-img>
+
       <button class="clickable view-feed-container" @click="feedIconPressed()" @keydown.enter.prevent="feedIconPressed()">
         <div class="d-flex align-center ml-2">
           <v-icon x-small color="red">mdi-circle</v-icon>
@@ -278,6 +297,12 @@
 
         //lock screen; https://web.dev/media-session/
         if(!this.mediaSessionApiInitialized && ('mediaSession' in navigator)){
+          navigator.mediaSession.setPositionState({
+            duration: item.duration_ms / 1000,
+            playbackRate: 1,
+            position: 0
+          });
+
           const defaultSkipTime = 15;
 
           navigator.mediaSession.setActionHandler('seekbackward', async details => {
@@ -369,7 +394,6 @@
             }
 
             this.stopInterval();
-            navigator.mediaSession.setPositionState(null);
           }
           else{
             this.playbackElapsed.display = msToDuration(this.playbackElapsed.ms);
@@ -529,6 +553,10 @@
       this.$nuxt.$root.$off('hideUpNext');
       this.$nuxt.$root.$off(REMOVED_LIKED_ITEM_EVENT);
       this.$nuxt.$root.$off(LIKED_ITEM_EVENT);
+    }
+
+    spotifyLogoPressed(){
+      window.open('https://www.spotify.com', '_blank');
     }
   }
 </script>

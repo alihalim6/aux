@@ -78,13 +78,8 @@ httpClient.interceptors.response.use(async response => {
 
   //401 on a retry
   if(error.config && error.response && error.response.status == 401){
-    if(error.config._retry){
-      sendToSplash();
-    }
-    else{
-      await attemptTokenRefresh();
-      await retryRequest(error.config);
-    }
+    await attemptTokenRefresh();
+    await retryRequest(error.config);
   }
   else if(shouldRetry(error.response && error.response.status)){
     retryRequest(error.config);
@@ -115,12 +110,6 @@ async function retryRequest(config){
   }
 }
 
-function sendToSplash(){
-  console.log('refresh/retry failed, sending back to splash...');
-  $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
-  $nuxt.$router.replace({name: SPLASH, params: {failedRefreshRetry: true}});
-}
-
 async function attemptTokenRefresh(){
   try{
     console.log('attempting to refresh token');
@@ -136,7 +125,7 @@ export function handleApiError(message){
 }
 
 export const topItems = async (topType, limit) => {
-  return await httpClient.get(`/me/top/${topType}?limit=${limit || 10}`);
+  return httpClient.get(`/me/top/${topType}?limit=${limit || 5}`);
 };
 
 //note: the artist objects in the top tracks response don't have genres; would need to use the href in there to make API call to get artist(s)
@@ -157,17 +146,17 @@ const getSeedGenres = async (artists) => {
   return seedArtist.genres[0];
 };
 
-export const randomIntFromInterval = (max) => { // min and max included 
+export const randomInt = (max) => { // min and max included 
   return Math.floor(Math.random() * (max - 0 + 1) + 0);
 }
 
 export const getRecommendationSeeds = async (artists, tracks) => {
   //randomize seeds
-  const artist1 = artists[randomIntFromInterval(artists.length - 1)];
-  const artist2 = artists[randomIntFromInterval(artists.length - 1)];
+  const artist1 = artists[randomInt(artists.length - 1)];
+  const artist2 = artists[randomInt(artists.length - 1)];
 
-  const track1 = tracks[randomIntFromInterval(tracks.length - 1)];
-  const track2 = tracks[randomIntFromInterval(tracks.length - 1)];
+  const track1 = tracks[randomInt(tracks.length - 1)];
+  const track2 = tracks[randomInt(tracks.length - 1)];
 
   const seedArtists = `${artist1.id},${artist2.id},`;
   const seedTracks = `${track1.id},${track2.id},`;
@@ -183,5 +172,5 @@ export const getRecommendationSeeds = async (artists, tracks) => {
 };
 
 export const getATopArtist = (artists) => {
-  return artists.items[randomIntFromInterval(artists.items.length - 1)];
+  return artists.items[randomInt(artists.items.length - 1)];
 };

@@ -10,7 +10,7 @@ async function myAux(){
       httpClient.get(`/me/albums?limit=${limit}`),
       httpClient.get('/me/player/recently-played?limit=15'),
       topItems('artists', 5),
-      topItems('tracks')
+      topItems('tracks', 20)
     ]);
 
     const likedTracks = myAuxData[0];

@@ -146,8 +146,9 @@ const getSeedGenres = async (artists) => {
   return seedArtist.genres[0];
 };
 
-export const randomInt = (max) => { // min and max included 
-  return Math.floor(Math.random() * (max - 0 + 1) + 0);
+export const randomInt = (max, min) => { // min and max included 
+  min = min || 0;
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
 export const getRecommendationSeeds = async (artists, tracks) => {

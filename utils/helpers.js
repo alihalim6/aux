@@ -189,7 +189,6 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
   return new Promise((resolve) => {
     spotifyPlayer.addListener('ready', async ({device_id}) => {
       $nuxt.$store.commit(`${SPOTIFY}/setPlayer`, spotifyPlayer);
-      storageSet(DEVICE_ID, device_id);
 
       if(transferPlayback){
         await spotify({url: '/me/player', method: 'PUT', body: {
@@ -198,6 +197,7 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       }
 
       resolve();
+      storageSet(DEVICE_ID, device_id);
       console.log(`Spotify player ready with device id ${device_id}`);
     });
 

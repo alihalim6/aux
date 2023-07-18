@@ -5,7 +5,7 @@
           <v-carousel-item v-for="(item, index) in items" :key="item.overlayId">        
             <!-- v-show so that timing of img then content stays consistent as carousel nav happens -->
             <v-img class="clickable item-image" :src="item.imgUrl.large" v-show="currentIndex === index" alt="">
-              <div v-show="!item.details" class="loading-container">
+              <div v-show="!item.details" class="oscillating-loading-container">
                 <div class="blurred loading"></div>
               </div>            
 
@@ -247,11 +247,6 @@
 
     .v-image__image--cover {
       background-size: contain;
-    }
-
-    //needs to be in this file in order to display right in its parent
-    .loading-container {
-      @extend .oscillating-loading-container;
     }
 
     .full-item-image-cta-outer {

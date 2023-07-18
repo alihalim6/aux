@@ -25,10 +25,6 @@ const getRecommendedArtists = async (topArtists) => {
 
 async function newAndRecommended(){
   try {
-    performance.mark('precall');
-    const newReleasesLimit = 3;
-    const randomOffset = randomInt(newReleasesLimit);
-
     const topArtists = await topItems('artists');
     const topTracks = await topItems('tracks');
 
@@ -40,13 +36,13 @@ async function newAndRecommended(){
     const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.data.items.map(like => like.track)];
 
     const recommendationData = await Promise.all([
-      httpClient.get(`/browse/new-releases?offset=${randomOffset}&limit=${newReleasesLimit}`),
+      httpClient.get('/browse/new-releases?limit=25'),
       getRecommendedTracks(seedArtists, seedTracks),
       getRecommendedArtists(topArtists.data)
     ]);
     
     const {data} = recommendationData[0];
-    const someNewReleases = data.albums.items;
+    const someNewReleases = shuffleArray(data.albums.items).slice(0, 3);
 
     let recommendedTracks = recommendationData[1];
     const recommendedAlbums = [];

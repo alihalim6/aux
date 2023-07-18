@@ -338,9 +338,9 @@
       }
     }
 
-    @supports(-webkit-text-stroke: 1px $rose-red) {
+    @supports(-webkit-text-stroke: 1.5px $rose-red) {
       .outlined-pass-phrase {
-        -webkit-text-stroke: 1.3px $rose-red;
+        -webkit-text-stroke: 1.5px $rose-red;
         -webkit-text-fill-color: $rose-red;
       }
     }
@@ -353,7 +353,7 @@
       
       .pass-the-phrase {
         color: $rose-red;
-        transform: rotate(-80deg) scaleY(1.2) scaleX(1.1);
+        transform: rotate(-80deg) scaleY(1.15);
         font-size: 10px;
         white-space: nowrap;
         font-style: italic;

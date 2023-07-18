@@ -372,7 +372,7 @@
     }
 
     startInterval(){
-      const interval = 500;
+      const interval = 250;
 
       this.playbackInterval = setInterval(() => {
         if(this.audioPlaying){

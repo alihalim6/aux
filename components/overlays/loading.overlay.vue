@@ -15,7 +15,7 @@
   export default class LoadingOverlay extends Vue {}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   $loading-phrase-border-size: 3px;
   $padding: 0 8px;
 

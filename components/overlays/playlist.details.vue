@@ -1,7 +1,7 @@
 <template>
   <section class="playlist-details">
     <div class="sub-title-container">
-      <div class="secondary-label">{{playlist.secondaryLabel}}</div>
+      <div>{{playlist.secondaryLabel}}</div>
     </div>
 
     <v-card class="mt-3 pa-2" elevation="7" v-if="tracks.length">

@@ -56,8 +56,8 @@
         <div v-if="validQuery() && !loadingResults && !results.length" class="result-message">Couldn't find anything for that search. Do try again, ya hear?</div>
         <div v-if="!loadingResults && !validQuery()" class="result-message"><div>Ready when you are.</div><div>3 character minumum.</div></div>
 
-        <div v-if="loadingResults" class="oscillating-loading-container">
-          <div class="white-background loading mt-12 mb-8"></div>
+        <div v-if="loadingResults" class="oscillating-loading-container mt-12 mb-8">
+          <div class="white-background loading"></div>
         </div>      
 
         <div class="d-flex justify-space-between my-8" v-for="item in results" :key="item.id" :class="{'track-playing': isTrackPlaying(item)}">

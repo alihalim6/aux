@@ -227,8 +227,12 @@
     display: inline-flex;
     flex-direction: column;
     overflow-y: scroll;
-    padding-top: calc(env(safe-area-inset-top) + 16px);
+    padding-top: calc(env(safe-area-inset-top) + 4px);
     padding-bottom: 200px;
+
+    @media(max-width: $device-size-threshold){
+      padding-top: 16px;
+    }
 
     .up-next-header {
       font-weight: bold;
@@ -297,8 +301,8 @@
         }
      
         .info-value {
-          transform: scaleY(1.4);
-          padding: 2px 1px;
+          transform: scaleY(1.2);
+          padding: 1px 1px;
         }
       }
     }

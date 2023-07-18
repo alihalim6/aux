@@ -9,6 +9,11 @@
       <div class="subtitle">Shit you wanna listen to at a later point in time.</div>
 
       <ContentCarousel v-if="bookmarks.length" :data="bookmarks" :bookmarks="true"/>
+
+      <div v-else-if="loading" class="oscillating-loading-container mt-2">
+        <div class="black-background loading"></div>
+      </div>
+
       <span v-else>Add items via three-dot menus.</span>
     </div>
   </v-dialog>
@@ -26,20 +31,14 @@
   @Component
   export default class Bookmarks extends Vue {
     bookmarks = [];
+    loading = false;
 
     @Getter('profile', {namespace: USER})
     profile;
 
     async beforeMount(){
-      await this.getBookmarks();
-      this.$nuxt.$root.$on('bookmarkAdded', bookmark => this.bookmarks.unshift(bookmark));
-
-      this.$nuxt.$root.$on('bookmarkRemoved', bookmarkId => {
-        this.bookmarks.splice(this.bookmarks.findIndex(existingBookmark => existingBookmark.uuid == bookmarkId), 1);
-      });
-    }
-
-    async getBookmarks(){
+      this.loading = true;
+      
       const response = await auxApiClient.get(`/user/bookmarks?userId=${this.profile.id}`, {
         headers: {
           Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`
@@ -52,6 +51,14 @@
           return setItemMetaData([bookmarkItem])[0];
         }));
       }
+
+      this.loading = false;
+
+      this.$nuxt.$root.$on('bookmarkAdded', bookmark => this.bookmarks.unshift(bookmark));
+
+      this.$nuxt.$root.$on('bookmarkRemoved', bookmarkId => {
+        this.bookmarks.splice(this.bookmarks.findIndex(existingBookmark => existingBookmark.uuid == bookmarkId), 1);
+      });
     }
 
     beforeDestroy(){

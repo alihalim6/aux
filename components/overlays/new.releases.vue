@@ -3,7 +3,11 @@
     <div class="title-border"></div>
 
     <div class="new-releases-container">
-      <VerticalContent :data="newReleases"/>
+      <VerticalContent v-if="newReleases.length" :data="newReleases"/>
+
+      <div v-else class="oscillating-loading-container mt-4">
+        <div class="black-background loading"></div>
+      </div>    
     </div>
   </section>
 </template>

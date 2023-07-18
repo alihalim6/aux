@@ -60,7 +60,7 @@ export const actions = {
     pause
   }) => {
     try{
-      if(!getters.player){
+      if(getters.sdkReady && !getters.player){
         await initSpotifyPlayer();
       }
 
@@ -105,7 +105,6 @@ export const actions = {
       }
       else {
         commit('setAudioPlaying', true);
-
         let queue = [];
 
         if(item.isCollection){

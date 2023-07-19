@@ -152,7 +152,7 @@
     border-radius: 8px;
 
     .left-container {
-      $track-number-size: 25px;
+      $track-number-size: 36px;
       $track-img-size: 40px;
       display: flex;
 
@@ -163,8 +163,6 @@
         font-size: 18px;
         font-weight: 600;
         text-align: center;
-        padding: 0px 4px;
-        margin-right: 10px;
       }
 
       .track-album-img {

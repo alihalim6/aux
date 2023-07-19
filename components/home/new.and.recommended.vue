@@ -22,7 +22,7 @@
         
         <div class="tab-container d-flex align-center pl-0 mt-1" v-if="allItems.length">
           <v-hover v-slot="{hover}">
-            <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayAll()">
+            <div class="clickable tab-label" :class="{'hover-scale': hover && !$vuetify.breakpoint.xs}" @click="displayAll()">
               <span v-if="overlayLoading === NEW_AND_RECOMMENDED">...</span><!-- tried progress circular but it freezes for some reason -->
               <button v-else class="new-and-reco-tab" aria-label="open modal with all new and recommended tracks, albums and artists">SEE ALL</button>
             </div>
@@ -31,7 +31,7 @@
           <span class="tab-divider" aria-hidden="true">/</span>
           
           <v-hover v-slot="{hover}">
-            <div class="clickable tab-label" :class="{'hover-scale': hover}" @click="displayNewReleases()">
+            <div class="clickable tab-label" :class="{'hover-scale': hover && !$vuetify.breakpoint.xs}" @click="displayNewReleases()">
               <span v-if="overlayLoading === NEW_RELEASES">...</span>
               <button v-else class="new-and-reco-tab" aria-label="open modal with new releases only">NEW RELEASES ONLY</button>
             </div>

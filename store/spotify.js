@@ -191,8 +191,13 @@ export const actions = {
             });
           }
 
-          navigator.mediaSession.setActionHandler('pause', function() {});
-          navigator.mediaSession.setActionHandler('play', function() {});
+          navigator.mediaSession.setActionHandler('pause', function() {
+            navigator.mediaSession.playbackState = 'paused';
+          });
+          
+          navigator.mediaSession.setActionHandler('play', function() {
+            navigator.mediaSession.playbackState = 'playing';
+          });
 
           navigator.mediaSession.playbackState = 'playing';
         }

@@ -49,7 +49,7 @@
     AUTH
   } from '~/utils/constants';
   import details from '~/api/details';
-  import {processAlbum, auxApiClient} from '~/utils/helpers';
+  import {processAlbum, auxApiClient, isSameTrack} from '~/utils/helpers';
   import cloneDeep from 'lodash.clonedeep';
   import {storageGet} from '~/utils/storage';
 
@@ -144,7 +144,8 @@
           {
             title: 'Play Next',
             fn: this.playNextPressed,
-            forQueue: true
+            forQueue: true,
+            playNext: true
           },
           {
             title: 'Add to End of Queue',
@@ -209,7 +210,12 @@
               }
             );
           }
-          else{ 
+          else{
+            if(this.nextTrack && isSameTrack(this.nextTrack, this.threeDotItem)){
+              const playNextIndex = this.options.findIndex(option => option.playNext);
+              this.options.splice(playNextIndex, 1);
+            }
+
             const likeType = this.threeDotItem.type == 'album' ? 'albums' : 'tracks';
             const modifyLikeUrl = `/me/${likeType}?ids=${this.threeDotItem.id}`;
             const data = await spotify({url: `/me/${likeType}/contains?ids=${this.threeDotItem.id}`});
@@ -329,20 +335,6 @@
     }
 
     playNextPressed(){
-      const nextTrackUri = this.nextTrack ? this.nextTrack.uri : '';
-      let itemSet;
-      let nextCollectionTrackUri;
-
-      if(nextTrackUri && this.threeDotItem.isCollection){
-        itemSet = this.threeDotItem.isPlaylist ? this.threeDotItem.details.playlistTracks : this.threeDotItem.details.albumTracks;
-        nextCollectionTrackUri = itemSet[0].uri;
-      }
-
-      //if already next, ignore
-      if(nextTrackUri == this.threeDotItem.uri || nextTrackUri == nextCollectionTrackUri){
-        return;
-      }
-
       //for item already in queue, move it from where it is to next in line
       if(this.itemInQueue){
         this.removeFromQueue(this.threeDotItem);

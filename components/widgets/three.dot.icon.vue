@@ -270,7 +270,7 @@
             this.options.push(this.bookmark ? {
               title: 'Remove from Bookmarks',
               fn: async () => {
-                await auxApiClient.post('/user/removeBookmark', {userId: this.profile.id, bookmarkId: this.threeDotItem.uuid},
+                await auxApiClient.post('/user/removeBookmark', {userId: this.profile.id, bookmarkId: this.threeDotItem.id},
                 {
                   headers: {
                     Authorization: `Bearer ${storageGet(AUTH.AUX_API_TOKEN)}`

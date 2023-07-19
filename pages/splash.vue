@@ -13,43 +13,42 @@
       </div>
 
       <div class="big-p" aria-hidden="true">
-        P
-        <v-icon 
-          class="clickable whats-p-icon" 
-          @click.stop="() => showTooltip = !showTooltip" 
-          tabindex="0" 
-          aria-label="tooltip with info about what AUX is"
-        >
-          mdi-help-circle-outline
-        </v-icon>
+        <div class="d-flex align-end">
+          <span>P</span>
 
-        <v-img class="splash-animation" :src="require('~/assets/pass_the_aux_green.png')" alt=""></v-img>
+          <v-icon 
+            class="clickable whats-p-icon" 
+            @click.stop="() => showTooltip = !showTooltip" 
+            tabindex="0" 
+            aria-label="tooltip with info about what AUX is"
+          >
+            mdi-help-circle-outline
+          </v-icon>
+        </div>
 
-        <v-snackbar :value="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip">
-          <div class="d-flex align-start">
-            <div class="p-tooltip">
-              <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations.</div>
-              <div class="bullet-point">See and play what others are listening to.</div>
-              
-              <div class="bullet-point">
-                <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
-              </div>
-            </div>
-
-            <v-icon class="clickable aux-tooltip" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
-          </div>
-        </v-snackbar>
+        <div class="aux-title">PASS THE AUX</div>
       </div>
 
-      <!-- <div class="width-100 d-flex flex-wrap container">
-          <v-img src="/rose.png" class="roses" v-for="(n, index) of new Array(100)" :key="index"></v-img>
-      </div> -->
+      <v-snackbar :value="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip" centered>
+        <div class="d-flex align-start">
+          <div class="p-tooltip">
+            <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations.</div>
+            <div class="bullet-point">See and play what others are listening to.</div>
+            
+            <div class="bullet-point">
+              <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
+            </div>
+          </div>
+
+          <v-icon class="clickable aux-tooltip ml-3" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
+        </div>
+      </v-snackbar>
 
       <div class="bottom-container">
         <div class="made-info">
           <span>Created by</span>
           <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank" tabindex="0">Ali Halim</a>
-          <span>using</span>
+          <span>with</span>
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's API</a>
         </div>
 
@@ -134,6 +133,12 @@
 
   @supports(-webkit-text-stroke: $phrase-border-size $spotify-green) {
     .big-p {
+      $p-margin: 170px;
+
+      span {
+        line-height: calc(#{$p-margin} + 110px);
+      }
+
       @extend .fade-in;
       -webkit-text-stroke: $phrase-border-size $spotify-green;
       -webkit-background-clip: text;
@@ -142,13 +147,15 @@
       font-size: 375px;
       color: transparent;
       font-family: 'Arvo', serif;
-      background-position-x: -13px;
-      background-position-y: -7px;
+      background-position-x: -10px;
+      background-position-y: -56px;
       background-repeat: repeat;
-      margin-top: 42px;
       background-size: 487px;
-      margin-top: 42px;
+      margin-top: $p-margin;
       position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
   }
 
@@ -209,26 +216,6 @@
     }
   }
 
-  .splash-animation {
-    width: 100%;
-    max-width: 515px !important;
-    transform: scale(1.2);
-    margin: 0 auto;
-    animation: blink 1s infinite linear;
-    position: absolute !important;
-    bottom: 75px;
-
-    .v-image__image--cover {
-      background-size: contain;
-    }
-  }
-
-  @keyframes blink {
-    0% {opacity: 1;}
-    12% {opacity: 0;}
-    33% {opacity: 1;}
-  }
-
   .login-container {
     display: flex;
     flex-direction: column;
@@ -252,13 +239,7 @@
     align-items: center;
     justify-content: center;
     padding-bottom: 16px;
-    margin-top: 24px;
-  }
-
-  .whats-p-icon {
-    position: absolute !important;
-    bottom: 144px;
-    right: 2px;
+    margin-top: 100px;
   }
 
   .whats-p-icon, .p-tooltip, .aux-tooltip {
@@ -280,5 +261,19 @@
     $size: 20px;
     width: $size;
     max-width: $size;
+  }
+
+  $stroke-size: 4px;
+
+  @supports(-webkit-text-stroke: $stroke-size $spotify-green) {
+    .aux-title {
+      font-size: 40px;
+      font-style: italic;
+      font-weight: bold;
+      -webkit-text-stroke: $stroke-size $spotify-green;
+      -webkit-text-fill-color: $spotify-green;
+      font-family: 'Public Sans', sans-serif;
+      margin-top: 16px;
+    }
   }
 </style>

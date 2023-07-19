@@ -110,7 +110,7 @@ app.post('/removeBookmark', async (req, res) => {
 
     if(response){
       const {bookmarks} = response;
-      bookmarks.splice(bookmarks.findIndex(existingBookmark => existingBookmark.uuid == req.body.bookmarkId), 1);
+      bookmarks.splice(bookmarks.findIndex(existingBookmark => existingBookmark.id == req.body.bookmarkId), 1);
       await bookmarksCollection.updateOne({userId: id}, [{$set: {bookmarks}}]); 
     }
 

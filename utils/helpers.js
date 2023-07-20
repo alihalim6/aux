@@ -78,7 +78,16 @@ export const setItemMetaData = (items) => {
     }
     else if(item.isPlaylist){
       item.primaryLabel = item.name;
-      item.secondaryLabel = item.description;
+
+      try{
+        const parser = new DOMParser();
+        const description = parser.parseFromString(item.description, 'text/html');
+        item.secondaryLabel = description.documentElement.textContent;
+      }
+      catch{
+        item.secondaryLabel = item.description;
+      }
+
       item.numberOfTracks = `${item.tracks.total} Tracks`;
       item.albumType = 'PLAYLIST';
     }

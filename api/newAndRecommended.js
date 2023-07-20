@@ -95,7 +95,7 @@ async function newAndRecommended(userLikes){
 
     return {
       allItems,
-      previewItems: allItems.slice(0, 16),
+      previewItems: allItems.slice(0, 20),
       someNewReleases
     };
   }

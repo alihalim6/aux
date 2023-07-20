@@ -83,7 +83,7 @@
     addReactionToActivity;
 
     chatMessageSubmitted(){
-      if(this.chatMessage.trim()){
+      if(this.chatMessage && this.chatMessage.trim()){
         this.addReactionToActivity({activity: this.activity, message: this.chatMessage, splash: this.isSplashPage()});
         this.handleFeedAlert();
         this.chatMessage = '';

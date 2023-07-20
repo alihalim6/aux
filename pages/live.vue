@@ -273,7 +273,7 @@
 
   .refresh-data {
     margin-left: 20px;
-    font-size: 32px !important;
+    font-size: 28px !important;
     background-color: $off-white;
     padding: 2px;
     border-radius: 100%;

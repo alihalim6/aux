@@ -41,7 +41,7 @@ app.post('/initialize', async (req, res) => {
     res.json({activities: sortedActivities});
   }
   catch(error){
-    console.log(error)
+    //console.log(error)
     res.sendStatus(500);
   }
 });

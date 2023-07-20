@@ -165,14 +165,14 @@
 
         //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
         this.$nuxt.$on('playPreShuffledLikes', async function(playbackItem){
-          console.log('playing preshuffled tracks');
+          //console.log('playing preshuffled tracks');
           await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
           //set a new shuffle for next time
           this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
         }.bind(this));
       }
       catch(error){
-        console.error(error);
+        //console.error(error);
       }
     }
 
@@ -223,12 +223,18 @@
             contentToFetchFor.data.push.apply(contentToFetchFor.data, this.mapData(data.items));
             contentToFetchFor.offset += contentToFetchFor.limit;
 
-            //pre-shuffle likes after they're all fetched to try and help with performance when shuffle clicked;
-            //this of course blocks the pending overlay to clear until shuffling is done but we're taking our chances that user 
-            //won't be waiting for that to clear then immediately click shuffle; instead, more likely is that by the time user gets down to
-            //likes, the fetching and pre-shuffling will be done already
             if(contentToFetchFor.trackList && contentToFetchFor.offset >= contentToFetchFor.total){
-              this.preShuffledLikes = shuffleArray([...contentToFetchFor.data]);
+              //pre-shuffle likes after they're all fetched to try and help with performance when shuffle clicked;
+              //this of course blocks the pending overlay to clear until shuffling is done but we're taking our chances that user 
+              //won't be waiting for that to clear then immediately click shuffle; instead, more likely is that by the time user gets down to
+              //likes, the fetching and pre-shuffling will be done already
+              this.preShuffledLikes = shuffleArray(contentToFetchFor.data);
+
+              //send some data for new and reco refresh seeding
+              this.$nuxt.$root.$emit('likedTracksAndAlbums', {
+                tracks: contentToFetchFor.data.map(item => ({track: item})), 
+                albums: this.content.find(item => item.likedAlbums).data.map(item => ({album: {tracks: item.tracks}}))
+              });
             }
 
             contentToFetchFor.fetchPending = false;

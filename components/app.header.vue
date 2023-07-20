@@ -353,7 +353,7 @@
       
       .pass-the-phrase {
         color: $rose-red;
-        transform: rotate(-80deg) scaleY(1.15);
+        transform: rotate(-80deg) scaleY(1.1);
         font-size: 10px;
         white-space: nowrap;
         font-style: italic;

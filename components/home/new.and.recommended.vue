@@ -58,6 +58,7 @@
     NEW_RELEASES = 'NEW RELEASES';
     overlayLoading = false;
     refreshingData = false;
+    likedTracksAndAlbums = null;
 
     baseOverlay = {
       simpleOverlay: true,
@@ -71,13 +72,22 @@
       await this.getData();
       this.$nuxt.$root.$on('newAndRecoOverlayShown', () => this.overlayLoading = false);
       this.$nuxt.$on('showAllNewAndReco', this.displayAll);
+
+      this.$nuxt.$root.$on('likedTracksAndAlbums', likes => {
+        this.likedTracksAndAlbums = likes;
+      });
     }
 
     async getData(){
-      const {previewItems, allItems} = await newAndRecommended();
-      this.previewItems = setItemMetaData(previewItems);
+      let response;
+      try {
+       response = await newAndRecommended(this.likedTracksAndAlbums);
+      }catch(e){
+        //console.log(e);
+      }
+      this.previewItems = setItemMetaData(response.previewItems);
       this.setLoading(false);
-      this.allItems = allItems;
+      this.allItems = response.allItems;
     }
 
     displayOverlay({name, ...rest}){
@@ -108,14 +118,17 @@
     }
 
     async refreshData(){
-      this.refreshingData = true;
-      await this.getData();
-      this.refreshingData = false;
+      if(!this.refreshingData){
+        this.refreshingData = true;
+        await this.getData();
+        this.refreshingData = false;
+      }
     }
 
     beforeDestroy(){
       this.$nuxt.$root.$off('newAndRecoOverlayShown');
       this.$nuxt.$off('showAllNewAndReco');
+      this.$nuxt.$root.$off('likedTracksAndAlbums');
     }
   }
 </script>

@@ -198,26 +198,26 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
 
       resolve();
       storageSet(DEVICE_ID, device_id);
-      console.log(`Spotify player ready with device id ${device_id}`);
+      //console.log(`Spotify player ready with device id ${device_id}`);
     });
 
     spotifyPlayer.on('initialization_error', message => {
-      console.error('Failed to initialize', message);
+      //console.error('Failed to initialize', message);
       $nuxt.$store.dispatch(`${SPOTIFY}/stopPlayback`);
     });
 
     spotifyPlayer.on('authentication_error', async ({message}) => {
-      console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
+      //console.error(`Unauthorized to connect with Spotify player: ${message}. Refreshing token and retrying.`);
       await retryPlayerInit();
       resolve();
     });
 
     spotifyPlayer.addListener('not_ready', async () => {
-      console.error('Spotify player is offline...');
+      //console.error('Spotify player is offline...');
     });
 
     spotifyPlayer.addListener('autoplay_failed', () => {
-      console.error('Autoplay is not allowed by the browser autoplay rules');
+      //console.error('Autoplay is not allowed by the browser autoplay rules');
     });
     
     spotifyPlayer.addListener('player_state_changed', async (currentState) => {      
@@ -230,21 +230,21 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);//needed in order to react to headphones being taken off etc.
 
       const auxCurrentTrack = $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`];
-      //console.log(auxCurrentTrack);
+      ////console.log(auxCurrentTrack);
 
       const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`];
-      //console.log(auxNextTrack);
+      ////console.log(auxNextTrack);
 
       const spotifyCurrentTrack = currentState.track_window.current_track;
       const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? isSameTrack(spotifyCurrentTrack, auxNextTrack) : false;
 
       if(!isSameTrack(auxCurrentTrack, auxNextTrack) && ourNextTrackIsSpotifyCurrent){
-        console.log('Spotify moved to the correct next next track ahead of us...');
+        //console.log('Spotify moved to the correct next next track ahead of us...');
       }
     });
 
     spotifyPlayer.on('playback_error', ({ message }) => {
-      console.error('Failed to perform playback', message);
+      //console.error('Failed to perform playback', message);
       $nuxt.$store.commit(`${UI}/setToast`, {text: SPOTIFY_TRACK_ERROR_SKIP, error: true});
       $nuxt.$store.dispatch(`${PLAYBACK_QUEUE}/playNextTrack`);
     });

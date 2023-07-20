@@ -92,7 +92,7 @@ export const actions = {
       let nothingWasPlaying = !currentlyPlayingItemUri;
       const currentItemToggled = !playingAllFeed && isSameTrack(previouslyPlayingItem, item);
 
-      console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
+      //console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
   
       if(nothingWasPlaying || currentItemToggled){
         commit('setAudioPlaying', !getters.audioPlaying);
@@ -109,7 +109,7 @@ export const actions = {
 
         if(item.isCollection){
           const collectionUri = item.uri;
-          console.log(`collection toggled: ${item.name} - ${collectionUri}`);
+          //console.log(`collection toggled: ${item.name} - ${collectionUri}`);
 
           if(item.isPlaylist){
             queue = item.details.playlistTracks;
@@ -132,7 +132,7 @@ export const actions = {
         }
 
         if(shuffle){
-          console.log('item set shuffled');
+          //console.log('item set shuffled');
           item = shuffleArray(queue)[0];
         }
 
@@ -208,7 +208,7 @@ export const actions = {
       }
     }
     catch(error){
-      console.log(error);
+      //console.log(error);
       dispatch('stopPlayback');
     }
   },
@@ -236,7 +236,7 @@ export const actions = {
       }
 
       if(rootGetters[`${USER}/profile`].id == '22xmerkgpsippbpbm4b2ka74y'){//don't take playback from Candace
-        console.log('skipping Candace playback logic');
+        //console.log('skipping Candace playback logic');
         return;
       }
 
@@ -249,15 +249,15 @@ export const actions = {
           currentState = await getters.player.getCurrentState();
         }
 
-        console.log('currentState:', currentState);
+        //console.log('currentState:', currentState);
 
         if(currentState){
           const spotifyCurrentTrack = currentState.track_window.current_track;
-          console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.duration_ms} ${spotifyCurrentTrack.uri}`);          
-          console.log(`our item: ${item.name} ${item.duration_ms} ${item.uri}`);
+          //console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.duration_ms} ${spotifyCurrentTrack.uri}`);          
+          //console.log(`our item: ${item.name} ${item.duration_ms} ${item.uri}`);
 
           if(spotifyCurrentTrack && isSameTrack(spotifyCurrentTrack, item)){
-            console.log(`letting Spotify play the current track: ${item.name}`);
+            //console.log(`letting Spotify play the current track: ${item.name}`);
             makePlaybackApiCall = false;
           }
           else{
@@ -266,14 +266,14 @@ export const actions = {
             const correctNextTrack = spotifyNextTrack && isSameTrack(spotifyNextTrack, item);
             
             if(spotifyNextTrack){
-              console.log(`NEXT SPOTIFY TRACK::: ${spotifyNextTrack.name} ${spotifyNextTrack.duration_ms} ${spotifyNextTrack.uri}`)
+              //console.log(`NEXT SPOTIFY TRACK::: ${spotifyNextTrack.name} ${spotifyNextTrack.duration_ms} ${spotifyNextTrack.uri}`)
             }
 
-            console.log('spotifyCurrentIsOurPrev', spotifyCurrentIsOurPrev);
-            console.log('correctNextTrack', correctNextTrack);
+            //console.log('spotifyCurrentIsOurPrev', spotifyCurrentIsOurPrev);
+            //console.log('correctNextTrack', correctNextTrack);
             
             if(spotifyCurrentIsOurPrev && correctNextTrack){
-              console.log(`letting Spotify play the play next track: ${item.name}`);
+              //console.log(`letting Spotify play the play next track: ${item.name}`);
               makePlaybackApiCall = false;
             }
           }
@@ -293,7 +293,7 @@ export const actions = {
           nextTracksToSend = takeUntilNotATrack(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album');
         }
         else{
-          console.log('about to play an album-type track -> won\'t send next track uris');
+          //console.log('about to play an album-type track -> won\'t send next track uris');
         }
 
         await startItemPlayback(item, nextTracksToSend);
@@ -304,13 +304,13 @@ export const actions = {
 
             if(currentState){
               const spotifyCurrentTrack = currentState.track_window.current_track;
-              console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
-              console.log(`our track: ${item.name}...${item.uri}`);
+              //console.log(`current spotify track per sdk after api call: ${spotifyCurrentTrack.name}...${spotifyCurrentTrack.uri}`);
+              //console.log(`our track: ${item.name}...${item.uri}`);
 
               //comparing uris nor using isSameTrack() worked (they seem to pull a different version of track often so even the track number has been seen to be different) so using name
 
               if(spotifyCurrentTrack.name != item.name){
-                console.log('spotify playing wrong track after API call...calling again');
+                //console.log('spotify playing wrong track after API call...calling again');
                 await startItemPlayback(item, nextTracksToSend);
               }
             }
@@ -323,7 +323,7 @@ export const actions = {
       }
     }
     catch(error){
-      console.error(error);
+      //console.error(error);
       handleApiError('Something went wrong playing music...');
     }
   },
@@ -373,7 +373,7 @@ export const actions = {
         commit('setAudioPlaying', true);
       }
       catch(error){
-        console.error(error);
+        //console.error(error);
       }
     }
   },
@@ -386,7 +386,7 @@ export const actions = {
         await spotify({url: `/me/player/repeat?state=${repeatTrack ? 'track' : 'off'}`, method: 'PUT'});
       }
       catch(error){
-        console.error(error);
+        //console.error(error);
       }
     }
   },
@@ -410,7 +410,7 @@ export const mutations = {
     params.item.playbackIcon = params.icon;
   },
   setAudioPlaying(state, playing){
-    ////console.log(`setting audioPlaying to ${playing}`);
+    //////console.log(`setting audioPlaying to ${playing}`);
     state.audioPlaying = playing;
   },
   setNewPlayback(state, queueId){

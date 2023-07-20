@@ -32,7 +32,7 @@ httpClient.interceptors.request.use(async config => {
   const playbackRetry = config._retry && isPlaybackCall(config);
 
   if(playbackRetry){
-    console.log(`retrying playback request with device id ${storageGet(DEVICE_ID)}`);
+    //console.log(`retrying playback request with device id ${storageGet(DEVICE_ID)}`);
   }
 
   return {
@@ -70,7 +70,7 @@ httpClient.interceptors.response.use(async response => {
   return response;
 }, async error => {
   if(error.response && error.response.status == 404 && isPlaybackCall(error.config)){
-    console.log('404 on playback...initializing new player');
+    //console.log('404 on playback...initializing new player');
     await initSpotifyPlayer(true, true);
     await retryRequest(error.config);
     return;
@@ -101,7 +101,7 @@ async function retryRequest(config){
       await attemptTokenRefresh();
     }
 
-    console.log('retrying request...');
+    //console.log('retrying request...');
     return httpClient.request(config);
   }
   else if(isPlaybackCall(config)){
@@ -112,7 +112,7 @@ async function retryRequest(config){
 
 async function attemptTokenRefresh(){
   try{
-    console.log('attempting to refresh token');
+    //console.log('attempting to refresh token');
     await refreshToken();
   }
   catch(error){
@@ -163,7 +163,7 @@ export const getRecommendationSeeds = async (artists, tracks) => {
   const seedTracks = `${track1.id},${track2.id},`;
   const genres = await getSeedGenres(artists, tracks);
 
-  console.log(`seeds: ${artist1.name},${artist2.name},${track1.name},${track2.name},${genres}`);
+  //console.log(`seeds: ${artist1.name},${artist2.name},${track1.name},${track2.name},${genres}`);
 
   return {
     artists: seedArtists,

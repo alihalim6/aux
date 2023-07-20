@@ -280,10 +280,11 @@
       }
 
       .no-feed-prompt {
-        font-size: 20px;
+        font-size: 26px;
         font-weight: bold;
         line-height: 1.4;
         padding: 0px 14px 0px 2px;
+        color: $off-white;
 
         .sub-prompt {
           font-size: 14px;

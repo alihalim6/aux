@@ -272,8 +272,16 @@
   }
 
   .refresh-data {
-    margin-left: 12px;
-    font-size: 28px !important;
+    margin-left: 20px;
+    font-size: 32px !important;
+    background-color: $off-white;
+    padding: 2px;
+    border-radius: 100%;
+
+    @media(max-width: $device-size-threshold){
+      margin-left: 14px;
+      font-size: 28px !important;
+    }
   }
 
   .refresh-data:focus-visible {

@@ -16,24 +16,43 @@ const getRecommendedTracks = async (artists, tracks) => {
 const getRecommendedArtists = async (topArtists) => {
   if(topArtists.items.length){
     const topArtist = getATopArtist(topArtists);
-    console.log(`top artist seed for recommended artist: ${topArtist.name}`);
+    //console.log(`top artist seed for recommended artist: ${topArtist.name}`);
     return httpClient.get(`/artists/${topArtist.id}/related-artists`);
   }
 
   return Promise.resolve({data: {artists: []}});
 };
 
-async function newAndRecommended(){
+async function newAndRecommended(userLikes){
   try {
     const topArtists = await topItems('artists');
     const topTracks = await topItems('tracks');
 
-    const likedAlbums = await httpClient.get('/me/albums?limit=10');
-    const likedAlbumTracks = likedAlbums.data.items.map(item =>  item.album.tracks.items[randomInt(item.album.tracks.items.length - 1)]);
-    let likedTracks = await httpClient.get('/me/tracks?limit=25');
-    
-    const seedArtists = [...topArtists.data.items, ...topTracks.data.items.map(track => track.artists[0])];
-    const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.data.items.map(like => like.track)];
+    const sliceLikes = (items) => {
+      const randomUserLikesStart = randomInt(items.length - 1);
+      const randomUserLikesEnd = randomInt(randomUserLikesStart, randomUserLikesStart + 25);
+      return items.slice(randomUserLikesStart, randomUserLikesEnd);
+    };
+
+    const likedAlbums = userLikes ? sliceLikes(userLikes.albums) :
+      await (await httpClient.get('/me/albums?limit=10')).data.items;
+
+    const likedAlbumTracks = likedAlbums.map(item =>  item.album.tracks.items[randomInt(item.album.tracks.items.length - 1)]);
+
+    const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : 
+      await (await httpClient.get('/me/tracks?limit=25')).data.items;
+
+    const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.map(like => like.track)];
+
+    const getTrackArtist = track => {
+      return track.artists[0];
+    };
+
+    const seedArtists = [
+      ...topArtists.data.items, 
+      ...topTracks.data.items.map(getTrackArtist), 
+      ...likedTracks.map(item => getTrackArtist(item.track))
+    ];
 
     const recommendationData = await Promise.all([
       httpClient.get('/browse/new-releases?limit=25'),
@@ -76,12 +95,12 @@ async function newAndRecommended(){
 
     return {
       allItems,
-      previewItems: [...allItems].splice(0, 16),
+      previewItems: allItems.slice(0, 16),
       someNewReleases
     };
   }
   catch(error){
-    console.error(error);
+    //console.error(error);
   }
 }
 

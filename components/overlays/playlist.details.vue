@@ -5,7 +5,7 @@
     </div>
 
     <v-card class="mt-3 pa-2" elevation="7" v-if="tracks.length">
-      <TrackList :tracks="tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true" :playlist-id="userOwned() ? playlist.id : null"/>
+      <TrackList :tracks="tracks.filter(track => track.type != 'episode')" :tracksFromDifferentAlbums="true" :hideAlbums="true" :playlist-id="userOwned() ? playlist.id : null"/>
     </v-card>
   </section>
 </template>

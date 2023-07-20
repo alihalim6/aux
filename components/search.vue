@@ -179,7 +179,7 @@
                     searchResult.explicit = !!items.find(item => item.explicit);
                   }
                   catch(error){
-                    console.error(`failed to get tracks for searched albums to mark appropriate ones as explicit: ${error}`);
+                    //console.error(`failed to get tracks for searched albums to mark appropriate ones as explicit: ${error}`);
                   }
                 }
 

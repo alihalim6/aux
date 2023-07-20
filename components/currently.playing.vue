@@ -56,7 +56,7 @@
         </v-img>
 
         <div class="playback-container" :class="{'pa-0': !currentlyPlayingItem.uri}">
-          <span v-if="currentlyPlayingItem.uri" class="clickable ellipses-text font-weight-bold" @click="displayItemDetails()">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
+          <span v-if="currentlyPlayingItem.uri" class="clickable ellipses-text font-weight-bold width-fit" @click="displayItemDetails()">{{currentlyPlayingItem.primaryLabel}} /<span class="artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
 
           <div class="d-flex align-center mb-1">
             <v-slider 
@@ -382,7 +382,7 @@
             this.playbackElapsed.ms = this.playbackTotal.ms;
 
             if(this.hasNextTrack && !this.setToRepeatTrack){
-              console.log('moving to next track...nextTrackModified is ' + this.nextTrackModified);
+              //console.log('moving to next track...nextTrackModified is ' + this.nextTrackModified);
               this.playNextTrack({playingNextTrackNow: this.nextTrackModified});
             }
             else if(this.setToRepeatTrack){
@@ -417,7 +417,7 @@
         const {paused, position} = currentState;
         
         if(!paused && (position > this.playbackElapsed.ms) && this.validSeek(position)){
-          console.log('catching up to spotify elapsed...');
+          //console.log('catching up to spotify elapsed...');
           this.playbackElapsed.ms = position;
           this.playbackElapsed.display = msToDuration(position);
         }
@@ -460,11 +460,11 @@
     }
 
     async seek(secs, userSeek){
-      console.log(`attempting seek to ${secs} secs...`);
+      //console.log(`attempting seek to ${secs} secs...`);
       const newElapsed = secs ? secs * 1000 : this.playbackElapsed.ms;
 
       if(!userSeek && !this.validSeek(newElapsed)){
-        console.log(`ignoring wild seek amount: ${secs}`);
+        //console.log(`ignoring wild seek amount: ${secs}`);
         return;
       }
 

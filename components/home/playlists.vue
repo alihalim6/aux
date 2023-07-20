@@ -121,7 +121,7 @@
         });
       }
       catch(error){
-        console.error(error);
+        //console.error(error);
       }
     }
 
@@ -130,9 +130,11 @@
     }
 
     async refreshData(){
-      this.refreshingData = true;
-      await this.getData();
-      this.refreshingData = false;
+      if(!this.refreshingData){
+        this.refreshingData = true;
+        await this.getData();
+        this.refreshingData = false;
+      }
     }
 
     beforeDestroy(){

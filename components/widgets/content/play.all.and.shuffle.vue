@@ -57,7 +57,7 @@
         this.$nuxt.$emit('playPreShuffledLikes', this.playbackItem);
       }
       else{
-        await this.togglePlayback({item: this.playbackItem, itemSet: shuffleArray(this.tracks)});
+        await this.togglePlayback({item: this.playbackItem, itemSet: shuffleArray([...this.tracks])});
       }
     }
   }

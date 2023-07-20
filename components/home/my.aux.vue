@@ -228,7 +228,7 @@
               //this of course blocks the pending overlay to clear until shuffling is done but we're taking our chances that user 
               //won't be waiting for that to clear then immediately click shuffle; instead, more likely is that by the time user gets down to
               //likes, the fetching and pre-shuffling will be done already
-              this.preShuffledLikes = shuffleArray(contentToFetchFor.data);
+              this.preShuffledLikes = shuffleArray([...contentToFetchFor.data]);
 
               //send some data for new and reco refresh seeding
               this.$nuxt.$root.$emit('likedTracksAndAlbums', {

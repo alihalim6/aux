@@ -616,6 +616,10 @@
         min-width: $playback-container-size;
         max-width: $playback-container-size;
         padding: 0px 0px $base-padding 18px;
+
+        .ellipses-text {
+          width: $playback-container-size;
+        }
       
         .artists {
           font-size: 12px;

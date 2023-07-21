@@ -49,7 +49,7 @@
           <span>Created by</span>
           <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank" tabindex="0">Ali Halim</a>
           <span>with</span>
-          <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's API</a>
+          <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's official API</a>
         </div>
 
         <span class="made-info mt-1 d-flex align-center">

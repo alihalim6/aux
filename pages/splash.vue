@@ -33,11 +33,13 @@
         <div class="d-flex align-start">
           <div class="p-tooltip">
             <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations.</div>
-            <div class="bullet-point">See and play what others are listening to.</div>
+            <div class="bullet-point">See and play what others are listening to (other users can be toggled to ignored if desired).</div>
             
             <div class="bullet-point">
               <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
             </div>
+
+            <div class="bullet-point boldest mt-8">Hop on with a friend to discover and enjoy music together!</div>
           </div>
 
           <v-icon class="clickable aux-tooltip ml-3" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
@@ -275,5 +277,9 @@
       font-family: 'Public Sans', sans-serif;
       margin-top: 16px;
     }
+  }
+
+  .boldest {
+    font-weight: 900;
   }
 </style>

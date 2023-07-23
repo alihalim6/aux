@@ -20,7 +20,7 @@
             </v-hover>
 
             <div>
-              <v-icon class="clickable feed-header-icon" id="feedToolTip" v-show="activityFeed.length" tabindex="0" aria-label="display feed tooltip">
+              <v-icon class="clickable feed-header-icon" id="feedToolTip" tabindex="0" aria-label="display feed tooltip">
                 mdi-help-circle-outline
               </v-icon>
 

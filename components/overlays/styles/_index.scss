@@ -27,8 +27,7 @@
   justify-content: center;
   position: relative;
   overflow-x: hidden;
-  width: 250px;
-  margin: 30px auto; 
+  width: -webkit-fill-available;
 }
 
 .animated-phrase {

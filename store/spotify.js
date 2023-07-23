@@ -179,16 +179,22 @@ export const actions = {
             ]
           });
 
-          if(queue[currentlyPlayingItemIndex - 1]){
+          if(playingTrackWithinExistingQueue && queue[currentlyPlayingItemIndex - 1]){
             navigator.mediaSession.setActionHandler('previoustrack', () => {
               dispatch(`${PLAYBACK_QUEUE}/playPreviousTrack`, null, {root: true});
             });
+          }
+          else{
+            navigator.mediaSession.setActionHandler('previoustrack', null);
           }
 
           if(queue[currentlyPlayingItemIndex + 1]){
             navigator.mediaSession.setActionHandler('nexttrack', () => {
               dispatch(`${PLAYBACK_QUEUE}/playNextTrack`, {playingNextTrackNow: true}, {root: true});
             });
+          }
+          else{
+            navigator.mediaSession.setActionHandler('nexttrack', null);
           }
 
           navigator.mediaSession.setActionHandler('pause', function() {

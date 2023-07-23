@@ -63,6 +63,12 @@ export const getters = {
 
 const THREE_DOT_TOAST_TIMEOUT = 2500;
 
+const handleMediaSessionNext = dispatch => {
+  navigator.mediaSession.setActionHandler('nexttrack', () => {
+    dispatch('playNextTrack', {playingNextTrackNow: true});
+  });
+}
+
 export const actions = {  
   playPreviousTrack: ({dispatch, getters}) => {
     playTrackWithinQueue({
@@ -87,16 +93,18 @@ export const actions = {
   },
   clearUpNext: ({getters, commit}) => {
     commit('clearUpNext', getters.currentlyPlayingIndex);
+    navigator.mediaSession.setActionHandler('nexttrack', null);
   },
-  addToEndOfQueue: ({commit, getters}, tracks) => {
+  addToEndOfQueue: ({commit, getters, dispatch}, tracks) => {
     if(!getters.hasNextTrack){
       commit('setNextTrackModified', true);
+      handleMediaSessionNext(dispatch);
     }
 
     commit('addToEndOfQueue', tracks);
     commit(`${UI}/setToast`, {timeout: THREE_DOT_TOAST_TIMEOUT, text: `Track${tracks.length > 1 ? 's' : ''} added to end of queue`}, {root: true});
   },
-  setTracksToPlayNext: ({commit, getters}, {tracks, noConfirmationToast, doNotUpdateSpotify}) => {
+  setTracksToPlayNext: ({commit, getters, dispatch}, {tracks, noConfirmationToast, doNotUpdateSpotify}) => {
     commit('setPlayNext', {currentIndex: getters.currentlyPlayingIndex, tracks});
 
     if(!noConfirmationToast){
@@ -105,6 +113,7 @@ export const actions = {
 
     if(!doNotUpdateSpotify){
       commit('setNextTrackModified', true);
+      handleMediaSessionNext(dispatch);
     }
   },
   shuffleUpNext: ({commit, getters}) => {
@@ -133,6 +142,7 @@ export const actions = {
 
     if(nextTrackRemoved){
       commit('setNextTrackModified', true);
+      navigator.mediaSession.setActionHandler('nexttrack', null);
     }
   }
 };

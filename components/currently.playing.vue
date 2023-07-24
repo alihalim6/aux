@@ -618,7 +618,7 @@
         padding: 0px 0px $base-padding 18px;
 
         .ellipses-text {
-          width: $playback-container-size;
+          width: $playback-container-size !important;
         }
       
         .artists {

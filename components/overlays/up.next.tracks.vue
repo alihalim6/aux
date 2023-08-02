@@ -254,6 +254,9 @@
         -webkit-text-fill-color: $rose-red;
         background-color: $cream;
         padding: 8px;
+        border-radius: 4px;
+        border-left: 4px solid $rose-red;
+        border-bottom: 6px solid $rose-red;
       }
     }
 
@@ -261,13 +264,15 @@
       display: flex;
       align-items: center;
       justify-content: space-evenly;
-      width: 225px;
+      width: 300px;
       margin-top: 8px;
 
       .up-next-action {
         display: flex;
         align-items: center;
         font-weight: bold;
+        color: $cream;
+        font-size: 18px;
       }
     }
 

@@ -105,7 +105,7 @@
             </div>
           </div>
 
-          <div class="queue-control-container" :class="{'adjust-queue-control': currentlyPlayingItem.uri}">
+          <div class="queue-control-container" :class="{'adjust-queue-control': currentlyPlayingItem.uri && (hasPreviousTrack || hasNextTrack)}">
             <v-icon 
               class="clickable queue-control previous-track-button" 
               :class="{'no-visibility': !hasPreviousTrack, 'disable-playback-control': !trackReady}" 

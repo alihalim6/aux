@@ -370,6 +370,9 @@
         letter-spacing: 4px;
         line-height: 1.7;
         margin-top: 4px;
+        border-right: 1px solid $dark-blue;
+        border-bottom: 2px solid $dark-blue;
+        border-radius: 4px;
 
           @media(max-width: $max-inner-width){ 
             font-size: 22px;

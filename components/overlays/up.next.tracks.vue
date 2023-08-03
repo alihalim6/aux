@@ -272,7 +272,7 @@
         align-items: center;
         font-weight: bold;
         color: $cream;
-        font-size: 18px;
+        font-size: 14px;
       }
     }
 

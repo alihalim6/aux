@@ -264,7 +264,7 @@
       display: flex;
       align-items: center;
       justify-content: space-evenly;
-      width: 300px;
+      width: 250px;
       margin-top: 8px;
 
       .up-next-action {

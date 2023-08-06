@@ -368,11 +368,8 @@
         margin-left: -24px;
         padding: 0px 2px 0px 5px;
         letter-spacing: 4px;
-        line-height: 1.7;
+        line-height: 1.6;
         margin-top: 4px;
-        border-right: 1px solid $dark-blue;
-        border-bottom: 2px solid $dark-blue;
-        border-radius: 4px;
 
           @media(max-width: $max-inner-width){ 
             font-size: 22px;

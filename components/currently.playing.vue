@@ -294,15 +294,18 @@
         const data = await spotify({url: `/me/${item.type == 'album' ? 'albums' : 'tracks'}/contains?ids=${item.id}`});
         this.itemLiked = data ? data[0] : false;
         this.trackReady = true;
-
-        //lock screen; https://web.dev/media-session/
-        if(!this.mediaSessionApiInitialized && ('mediaSession' in navigator)){
+        const hasMediaSession = 'mediaSession' in navigator;
+               
+        if(hasMediaSession){
           navigator.mediaSession.setPositionState({
             duration: item.duration_ms / 1000,
             playbackRate: 1,
             position: 0
           });
+        }
 
+        //lock screen; https://web.dev/media-session/
+        if(!this.mediaSessionApiInitialized && hasMediaSession){
           const defaultSkipTime = 15;
 
           navigator.mediaSession.setActionHandler('seekbackward', async details => {

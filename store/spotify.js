@@ -48,6 +48,21 @@ export const getters = {
   }
 };
 
+const handlePause = (getters, playing) => {
+  const audioPlaying = getters ? getters.audioPlaying : playing;
+
+  if('mediaSession' in navigator){
+    const audioElement = document.getElementById('silentPlayer');
+
+    if(audioElement){
+      if(audioPlaying) audioElement.play();
+      else audioElement.pause();
+    }
+    
+    navigator.mediaSession.playbackState = audioPlaying ? 'playing' : 'paused';
+  }
+}
+
 export const actions = {
   togglePlayback: async ({commit, getters, dispatch}, {
     item, 
@@ -66,20 +81,11 @@ export const actions = {
 
       const player = getters.player;
 
-      const handlePause = () => {
-        const audioPlaying = getters.audioPlaying;
-
-        if('mediaSession' in navigator && !audioPlaying){
-          navigator.mediaSession.playbackState = 'paused';
-        }
-      }
-
       if(pause){
         commit('setAudioPlaying', false);
 
         try{
           await player.pause();
-          handlePause();
         }
         catch{}
         finally{
@@ -100,7 +106,7 @@ export const actions = {
 
       if(currentItemToggled){
         await player.togglePlay();
-        handlePause();
+        handlePause(getters);
         return;
       }
       else {
@@ -198,11 +204,11 @@ export const actions = {
           }
 
           navigator.mediaSession.setActionHandler('pause', function() {
-            navigator.mediaSession.playbackState = 'paused';
+            dispatch('togglePlayback', {pause: true});
           });
           
           navigator.mediaSession.setActionHandler('play', function() {
-            navigator.mediaSession.playbackState = 'playing';
+            dispatch('togglePlayback', {item});
           });
 
           navigator.mediaSession.playbackState = 'playing';
@@ -418,6 +424,10 @@ export const mutations = {
   setAudioPlaying(state, playing){
     //////console.log(`setting audioPlaying to ${playing}`);
     state.audioPlaying = playing;
+
+    if(process.client){
+      handlePause(null, playing);
+    }
   },
   setNewPlayback(state, queueId){
     state.newPlayback = queueId;

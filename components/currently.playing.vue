@@ -95,8 +95,6 @@
                 class="clickable small-circle repeat" 
                 :class="{'repeat-set': setToRepeatTrack}" 
                 @click.stop="repeatPressed()" 
-                @keydown.enter.prevent="repeatPressed()"
-                tabindex="0"
                 :aria-label="`toggle repeat ${setToRepeatTrack ? 'off' : 'on'}`"
               >
                 <span class="small-circle-top-letters">RE</span>
@@ -143,18 +141,18 @@
       </div>
 
       <div class="d-flex flex-column align-start" id="upNextToggle">
-        <button class="up-next-container" @click.stop="viewUpNext()" @keydown.enter="viewUpNext()" aria-label="display next tracks in queue">
+        <div class="up-next-container">
           <v-icon class="clickable" id="upNextChevron" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
           <div class="d-inline-flex align-center" :tabindex="hasNextTrack ? 0 : -1">
             <span class="clickable min-width-fit" :class="{'no-next-track': !hasNextTrack}">UP NEXT: </span>
 
-            <div v-if="hasNextTrack" class="clickable track-sneak-peek">
+            <button v-if="hasNextTrack" class="clickable track-sneak-peek" @click.stop="viewUpNext()" aria-label="display next tracks in queue">
               <v-img class="track-img" :src="nextTrack.imgUrl.medium || currentlyPlayingItem.imgUrl.large"></v-img>
               <span class="ellipses-text">{{nextTrack.primaryLabel}} /<span class="track-artists"> {{nextTrack.secondaryLabel}}</span></span>
-            </div>
+            </button>
           </div>
-        </button>
+        </div>
       </div>
     </div>
     

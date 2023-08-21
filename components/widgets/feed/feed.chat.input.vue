@@ -34,10 +34,8 @@
             :class="{'fire': reaction.name == 'fire'}"
             v-for="reaction in reactions" 
             :key="reaction.name"
-            tabindex="0"
             :aria-label="`submit ${String.fromCodePoint(reaction.code)} reaction for track`"
             @click.stop="emojiReactionPressed(reaction.code)"
-            @keydown.enter="emojiReactionPressed(reaction.code)" 
           >
             {{String.fromCodePoint(reaction.code)}}
           </button>

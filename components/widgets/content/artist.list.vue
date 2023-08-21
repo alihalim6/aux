@@ -5,10 +5,8 @@
         :id="artist.uuid" 
         class="clickable inline-display text-left width-fit-content" 
         @click.stop="$nuxt.$root.$emit('displayArtistDetails', artist)" 
-        @keydown.enter.stop="$nuxt.$root.$emit('displayArtistDetails', artist)" 
         :class="{'text-decoration-underline': underline}"
         :aria-label="`open modal with details about ${artist.name}`"
-        tabindex="0"
       >
         <span>{{artist.name}}</span>
       </button><span v-if="(index < artists.length - 1)">, </span>

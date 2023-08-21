@@ -42,10 +42,8 @@
           <button 
             v-for="(filter, index) in filters" 
             :key="filter.label" 
-            tabindex="0"
             :aria-label="`set search category to: ${filter.label}`"
             @click.stop="filterPressed(filter)"
-            @keydown.enter="filterPressed(filter)"
             class="clickable filter" 
             :class="{'selected-filter': filterType == filter.type, 'first-filter': index == 0}"
           >
@@ -79,8 +77,6 @@
               <button 
                 class="clickable result-name" 
                 @click.stop="primaryLabelPressed(item)" 
-                @keydown.stop.enter="primaryLabelPressed(item)" 
-                tabindex="0"
                 :aria-label="`${item.isCollection ? 'display details for' : 'play'} ${item.primaryLabel} by ${item.secondaryLabel}`"
               >
                 {{item.primaryLabel}}<span class="track-artists" v-if="secondaryLabel(item)"> / {{secondaryLabel(item)}}</span><span v-if="item.explicit" class="explicit">E</span>

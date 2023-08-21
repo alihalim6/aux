@@ -42,7 +42,6 @@
               <button 
                 class="clickable item-title" 
                 @click="itemTitlePressed(item)" 
-                @keydown.enter="itemTitlePressed(item)"
                 :class="{'lighter-black-color': hover}"
                 :aria-label="`${item.isCollection ? `open modal with details about ${item.primaryLabel}` : `play ${item.primaryLabel} by ${item.secondaryLabel}`}`"
               >

@@ -17,8 +17,6 @@
         <div class="track-info" :class="{'skipped': skippedNotPlayed() && !isTrackPlaying(activity.track)}">
           <button class="d-flex align-center text-left"
             @click="itemInfoPressed(activity.track)"
-            @keydown.enter="itemInfoPressed(activity.track)"
-            tabindex="0"
             :class="{'track-playing font-italic': !activity.splash && isTrackPlaying(activity.track)}"
             :aria-label="`play ${activity.track.primaryLabel} by ${activity.track.secondaryLabel} ${skippedNotPlayed() ? '(track was previously skipped)' : ''}`"
           >
@@ -64,8 +62,6 @@
 
       <button class="clickable reaction-toggle-container" 
         @click.stop="toggleReactions()" 
-        @keydown.enter="toggleReactions()" 
-        tabindex="0" 
         :aria-label="`toggle comments/reactions for ${activity.track.primaryLabel} (${activity.reactions ? activity.reactions.length : 0} comments currently ${showReactions ? 'showing' : 'hidden'})`"
       >
         <v-icon color="#fcfce0" class="reaction-icon">{{`mdi-chat${activity.reactions && activity.reactions.length ? '' : '-outline'}`}}</v-icon>

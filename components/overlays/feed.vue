@@ -9,8 +9,6 @@
                 <button 
                   class="clickable d-flex align-center" 
                   @click.stop="playAllPressed()"
-                  @keydown.enter="playAllPressed()"
-                  tabindex="0"
                   id="playAll"
                 >
                   <v-icon class="feed-header-icon mr-1" small aria-labelledby="playAllLabel">mdi-play</v-icon>

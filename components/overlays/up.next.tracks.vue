@@ -27,8 +27,6 @@
           <button 
             class="underlined" 
             @click.stop="shuffleUpNext()" 
-            @keydown.enter.stop.prevent="shuffleUpNext()" 
-            tabindex="0" 
             aria-label="shuffle next tracks in queue"
           >
             SHUFFLE
@@ -41,8 +39,6 @@
           <button 
             class="underlined" 
             @click.stop="clearUpNextPressed()"
-            @keydown.enter.stop.prevent="clearUpNextPressed()" 
-            tabindex="0" 
             aria-label="remove next tracks in queue"
           >
             <span v-if="nextTracks.length > 1">REMOVE ALL</span>

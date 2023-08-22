@@ -52,7 +52,7 @@ async function newAndRecommended(userLikes){
     ];
 
     const recommendationData = await Promise.all([
-      httpClient.get('/browse/new-releases?limit=22'),
+      httpClient.get('/browse/new-releases?limit=19'),
       getRecommendedTracks(seedArtists, seedTracks),
       getRecommendedArtists(topArtists.data)
     ]);
@@ -92,7 +92,7 @@ async function newAndRecommended(userLikes){
 
     return {
       allItems,
-      previewItems: allItems.slice(0, 20),
+      previewItems: allItems.slice(0, 16),
       someNewReleases
     };
   }

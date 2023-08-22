@@ -1,11 +1,10 @@
 <template>
   <v-menu 
+    class="menu"
     left 
     :transition="'slide-x-reverse-transition'" 
     z-index="2000" 
-    :offset-x="true"
     :offset-overflow="true"
-    :nudge-left="threeDotItem.isArtist ? 80 : (currentlyPlayingItem.uri ? 0 : 20)"
     :nudge-bottom="bookmark ? -140 : 0"
     :value="!hide"
   >
@@ -211,6 +210,11 @@
             );
           }
           else{
+            if(this.currentlyPlayingItem && isSameTrack(this.currentlyPlayingItem, this.threeDotItem)){
+              const playNowIndex = this.options.findIndex(option => option.playNow);
+              this.options.splice(playNowIndex, 1);
+            }
+
             if(this.nextTrack && isSameTrack(this.nextTrack, this.threeDotItem)){
               const playNextIndex = this.options.findIndex(option => option.playNext);
               this.options.splice(playNextIndex, 1);
@@ -382,5 +386,9 @@
     margin: 4px 0px;
     font-size: 8px;
     width: max-content;
+  }
+
+  .menu {
+    min-width: 200px;
   }
 </style>

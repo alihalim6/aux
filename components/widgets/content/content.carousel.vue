@@ -9,7 +9,7 @@
 
                 <v-img 
                   v-if="item.isArtist" 
-                  class="clickable content-img artist-img" 
+                  class="clickable animate content-img artist-img" 
                   :class="{'content-hover': hover && !noHover(index)}" 
                   :src="carouselImgSrc(item)" 
                   @click="contentImgPressed(item)"
@@ -26,7 +26,7 @@
                 <v-card 
                   v-else
                   elevation="10" 
-                  class="clickable" 
+                  class="clickable animate" 
                   :class="{
                     'content-hover': hover && !vertical && !addToPlaylist && !noHover(index), 
                     'spaced-content': moreFromArtist || addToPlaylist, 
@@ -185,7 +185,7 @@
 <style lang="scss">
   @import './styles';
   
-  $content-img-size: 300px;
+  $content-img-size: 320px;
   $label-left-padding: 6px;
   $secondary-label-font-size: 12px;
   $primary-label-font-size: 14px;
@@ -203,7 +203,7 @@
     .last-item {
       max-width: $content-img-size !important;
     }
-
+ 
     .content-img {
       width: $content-img-size;
       height: $content-img-size;
@@ -353,5 +353,9 @@
     min-width: $content-img-size;
     height: auto !important;
     min-height: $content-img-size;
+  }
+
+  .animate {
+    transition: transform 0.12s;
   }
 </style>

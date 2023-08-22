@@ -233,4 +233,8 @@
       padding-left: $base-padding;
     }
   }
+
+  .track-container {
+    transition: background-color 0.02s;
+  }
 </style>

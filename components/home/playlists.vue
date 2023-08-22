@@ -159,6 +159,7 @@
     justify-content: space-between;
     width: -webkit-fill-available;
     padding: 18px 20px; 
+    transition: color 0.23s;
 
     @media(min-width: $device-size-threshold){
       padding: 48px 20px 16px;

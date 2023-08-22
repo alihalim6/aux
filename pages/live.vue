@@ -176,7 +176,7 @@
   }
 
   .selected-tab {
-    color: $secondary-theme-color;
+    color: $secondary-theme-color !important;
     background-color: $spotify-green;
     font-weight: bold;
     padding: 8px;

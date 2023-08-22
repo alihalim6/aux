@@ -33,7 +33,7 @@
         <div class="d-flex align-start">
           <div class="p-tooltip">
             <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations.</div>
-            <div class="bullet-point">See and play what others are listening to (other users can be toggled to ignored if desired).</div>
+            <div class="bullet-point">See and play what others are listening to (other users can be ignored if desired).</div>
             
             <div class="bullet-point">
               <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
@@ -141,6 +141,10 @@
         line-height: calc(#{$p-margin} + 110px);
       }
 
+      &:hover {
+        filter: blur(4px);
+      }
+
       @extend .fade-in;
       -webkit-text-stroke: $phrase-border-size $spotify-green;
       -webkit-background-clip: text;
@@ -149,7 +153,7 @@
       font-size: 375px;
       color: transparent;
       font-family: 'Arvo', serif;
-      background-position-x: -10px;
+      background-position-x: 4px;
       background-position-y: -56px;
       background-repeat: repeat;
       background-size: 487px;
@@ -250,13 +254,12 @@
   }
 
   .p-tooltip {
-    font-family: 'Public Sans', sans-serif;
     color: white !important;
     font-weight: bold;
   }
 
   .bullet-point {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
   .logo {
@@ -265,16 +268,15 @@
     max-width: $size;
   }
 
-  $stroke-size: 4px;
+  $stroke-size: 1px;
 
   @supports(-webkit-text-stroke: $stroke-size $spotify-green) {
     .aux-title {
-      font-size: 40px;
+      font-size: 38px;
       font-style: italic;
-      font-weight: bold;
       -webkit-text-stroke: $stroke-size $spotify-green;
       -webkit-text-fill-color: $spotify-green;
-      font-family: 'Public Sans', sans-serif;
+      font-family: 'Archivo Black', sans-serif;
       margin-top: 16px;
     }
   }

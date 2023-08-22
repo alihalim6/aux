@@ -48,7 +48,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    font-family: 'Public Sans', sans-serif;
     font-weight: bold;
   }
   

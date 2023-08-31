@@ -129,19 +129,14 @@ export const actions = {
             queue = shuffle ? item.details.preShuffledTracks : item.details.playlistTracks;
 
             //for next time
-            if(shuffle){
-              if(item.details.allTracksFetched){
-                item.details.preShuffledTracks = shuffleArray(item.details.preShuffledTracks);
-              }
-              else{ 
-                getMoreTracksForQueue({
-                  totalTracks: item.details.totalPlaylistTracks, 
-                  url: `/playlists/${item.id}`, 
-                  itemOffset: item.details.offset
-                }).then(function({tracks}){
-                  this.preShuffledTracks = tracks;
-                }.bind(item.details));
-              }
+            if(shuffle && !item.details.allTracksFetched){
+              getMoreTracksForQueue({
+                totalTracks: item.details.totalPlaylistTracks, 
+                url: `/playlists/${item.id}`, 
+                itemOffset: item.details.offset
+              }).then(function({tracks}){
+                this.preShuffledTracks = tracks;
+              }.bind(item.details));
             }
           }
           else if(item.isAlbum){
@@ -394,6 +389,7 @@ export const actions = {
       }
 
       commit('setShuffled', false);
+      commit('setCurrentlyPlayingCollection', null);
   },
   async seekPlayback({getters, commit}, seekPosition){
     const player = getters.player;

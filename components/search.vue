@@ -1,5 +1,5 @@
 <template>
-  <section id="searchContainer" :class="{'searching': showSearchResults}" v-click-outside="blurred" @keydown.esc="blurred()">
+  <section id="searchContainer" :class="{'searching': showSearchResults, 'large-search-container': $vuetify.breakpoint.smAndUp}" v-click-outside="blurred" @keydown.esc="blurred()">
     <!-- LARGER SCREENS -->
     <div class="hidden block-display" id="largeInputLabel">search Spotify content</div>
     
@@ -7,6 +7,7 @@
       dense 
       hide-details="auto" 
       class="search-input search-field" 
+      :class="{'large-search-input': $vuetify.breakpoint.smAndUp}"
       color="black"
       v-model="query"
       clearable
@@ -23,6 +24,7 @@
 
         <!-- SMALLER SCREENS -->
         <v-text-field 
+          v-if="$vuetify.breakpoint.xs"
           dense 
           hide-details="auto" 
           class="device-search-input search-field" 
@@ -100,7 +102,7 @@
       </template>
     </v-text-field>
 
-    <v-icon class="clickable search-icon" @click="searchIconPressed()" aria-label="search Spotify content">mdi-magnify</v-icon>
+    <v-icon v-if="$vuetify.breakpoint.xs" class="clickable search-icon" @click="searchIconPressed()" aria-label="search Spotify content">mdi-magnify</v-icon>
   </section>
 </template>
 
@@ -247,7 +249,7 @@
     }
 
     focus(){
-      const inputContainer = document.querySelector('.search-input');
+      const inputContainer = document.querySelector('.search-input:not([style*="display:none"]):not([style*="display: none"])');
       const inputField = inputContainer.querySelector('input');
 
       if(inputField){
@@ -292,15 +294,11 @@
 <style lang="scss">  
   @import './styles';
   @import '~/styles/globals';
+  @import '~vuetify/src/styles/settings/_variables.scss';
 
   #searchContainer {
     margin-top: 12px;
     max-width: 78px;
-
-    @media(min-width: $device-size-threshold){
-      margin-top: 16px;
-      position: relative;
-    }
 
     .v-input__prepend-outer {
       display: none;
@@ -317,16 +315,21 @@
       .v-input__control > .v-input__slot:before {
         border-width: 1px;
         border-color: $cream;
-        
-        @media(min-width: $device-size-threshold){
-          border-color: $primary-theme-color;
-        }
       }
+    }
+
+    .large-search-input .v-input__control > .v-input__slot:before {
+      border-color: $primary-theme-color;
     }
   }
 
-  #searchContainer.searching {  
-    .v-input__prepend-outer, .search-results {
+  .large-search-container {
+    margin-top: 16px;
+    position: relative;
+  }
+
+  #searchContainer.searching {
+    .v-input__prepend-outer {
       @extend .fade-in-animation;
       animation-duration: 150ms;
       animation-delay: 0s;
@@ -344,32 +347,32 @@
       position: absolute;
       box-shadow: 0px 4px 5px -2px rgb(0 0 0 / 20%), 0px 7px 10px 1px rgb(0 0 0 / 14%), 0px 2px 16px 1px rgb(0 0 0 / 12%);
       z-index: 400;
-
-      @media(min-width: $device-size-threshold){
-        max-height: 400px;
-        top: 42px;
-        height: auto;
-        width: 320px;
-      }
     }
+  }
+  
+  #searchContainer.large-search-container.searching .v-input__prepend-outer {
+    max-height: 400px;
+    top: 42px;
+    height: auto;
+    width: 320px;
   }
 
   .search-input {
     .v-input__control {
       display: none;
-
-      @media(min-width: $device-size-threshold){
-        display: inherit;
-        background-color: $cream;
-        min-width: 162px;
-        padding: 6px 20px 12px;
-        border-radius: 22px;
-      }
     }
     
     .v-text-field > .v-input__control > .v-input__slot:before {
       border-width: 1px;
     }
+  }
+
+  .large-search-input .v-input__control {
+    display: inherit;
+    background-color: $cream;
+    min-width: 162px;
+    padding: 6px 20px 12px;
+    border-radius: 22px;
   }
 
   .device-search-input {
@@ -382,20 +385,12 @@
     .v-input__control {
       display: inherit !important;
     }
-    
-    @media(min-width: $device-size-threshold){
-      display: none;
-    }
   }
 
   .search-icon {
     color: black !important;
     border-bottom: 2px solid $primary-theme-color;
     margin-left: 12px;
-
-    @media(min-width: $device-size-threshold){
-      display: none !important;
-    }
   }
 
   .filter {

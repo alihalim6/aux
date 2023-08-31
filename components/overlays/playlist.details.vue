@@ -39,7 +39,7 @@
     addToRestOfQueue;
 
     @Watch('currentlyPlayingCollection')
-    async handleRestOfQueueFlag(newVal){
+    async handleCollectionChange(newVal){
       if(newVal == this.playlist.name && !this.isShuffled){
         const {tracks} = await getMoreTracksForQueue({
           url: `/playlists/${this.playlist.id}`, 
@@ -63,13 +63,15 @@
 
       this.tracks = processTracks(playlistTracks);
       this.playlist.details.playlistTracks = this.tracks;
+      this.playlist.details.preShuffledTracks = [...this.tracks];
       this.playlist.details.offset = playlistTracks.length;
+      this.playlist.details.allTracksFetched = playlistTracks.length >= totalPlaylistTracks;
 
       this.$nuxt.$root.$on('overlayScrolled', async function(e){
         e.stopPropagation();
         const playlistOverlay = e.target;
         
-        if(!this.addingMoreTracks && this.playlist.details.offset < totalPlaylistTracks && (playlistOverlay.scrollTop + playlistOverlay.offsetHeight >= (playlistOverlay.scrollHeight - 2000))){
+        if(!this.playlist.details.allTracksFetched && !this.addingMoreTracks && this.playlist.details.offset < totalPlaylistTracks && (playlistOverlay.scrollTop + playlistOverlay.offsetHeight >= (playlistOverlay.scrollHeight - 2000))){
           this.addingMoreTracks = true;
           const {items} = await spotify({url: `/playlists/${this.playlist.id}/tracks?limit=${collectionTrackLimit}&offset=${this.playlist.details.offset}`});
           this.playlist.details.offset += collectionTrackLimit;

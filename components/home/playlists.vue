@@ -1,5 +1,5 @@
 <template>
-  <section class="mt-8 pt-3 cream-background" :class="{'dark-background': darkMode, 'pb-8': !darkMode}">
+  <section class="mt-8 pt-3 cream-background" :class="{'deep-blue-background pb-8': darkMode, 'pb-8': !darkMode}">
     <div class="content-container">
       <div class="home-content-title">
         <div class="d-flex align-center">
@@ -222,5 +222,9 @@
 
   #playlistTabContent .v-window__container {
     background-color: $off-white;
+  }
+
+  .dark-playlists {
+    padding-bottom: 30px;
   }
 </style>

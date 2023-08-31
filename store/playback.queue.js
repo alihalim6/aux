@@ -219,7 +219,8 @@ export const mutations = {
     state.queue = [state.queue[params.currentIndex], ...shuffledQueue.slice(0, QUEUE_LENGTH_LIMIT)];
   },
   addFromRestOfQueueToMain(state){
-    state.queue.push.apply(state.queue, state.restOfQueue.splice(0, QUEUE_LENGTH_LIMIT));
+    state.queue.push.apply(state.queue, state.restOfQueue);
+    state.restOfQueue = [];
   },
   setNextTrackModified: (state, modified) => {
     state.nextTrackModified = modified;

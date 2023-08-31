@@ -8,6 +8,10 @@
       </div>
 
       <span v-if="!error.notPremium" class="note">(*at the risk of causing another explosion...and possibly starting a wildfire...{{String.fromCodePoint(0x1F525)}})</span>
+      
+      <div class="fire-container">
+        <v-img :src="require('~/assets/FIRE.PNG')" alt=""></v-img>
+      </div>
     </div>
   </v-app>
 </template>
@@ -41,6 +45,8 @@
 </script>
 
 <style lang="scss" scoped>
+  @import '~/styles/simple-styles';
+
   .error-container {
     width: 100%;
     height: 100vh;
@@ -49,15 +55,14 @@
     align-items: center;
     justify-content: flex-start;
     font-weight: bold;
+    padding: 14px 30px;
   }
   
   .message {
-    width: 100%;
     font-size: 38px;
-    color: $cream;
-    background-color: $rose-red;
-    padding: 14px 10px;
+    color: $primary-theme-color;
     margin-top: 48px;
+    line-height: 35px;
   }
 
   .note {
@@ -69,12 +74,23 @@
   .error-button {
     background-color: $rose-red;
     align-self: center;
-    margin: 24px 0;
     font-size: 18px;
-    margin-bottom: 4px;
+    margin: 16px 4px;
+    padding: 10px;
+    border-radius: 24px;
 
     .nav-button-label {
       color: $cream;
     }
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .fire-container {
+    width: 65vw;
+    margin-top: 26px;
+    max-width: 600px;
   }
 </style>

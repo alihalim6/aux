@@ -34,7 +34,7 @@ async function newAndRecommended(userLikes){
       return items.slice(randomUserLikesStart, randomUserLikesEnd);
     };
 
-    const likedAlbums = userLikes ? sliceLikes(userLikes.albums) : (await httpClient.get('/me/albums?limit=8')).data.items;
+    const likedAlbums = userLikes ? sliceLikes(userLikes.albums) : (await httpClient.get('/me/albums?limit=6')).data.items;
     const likedAlbumTracks = likedAlbums.map(item =>  item.album.tracks.items[randomInt(item.album.tracks.items.length - 1)]);
 
     const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : (await httpClient.get('/me/tracks?limit=22')).data.items;
@@ -52,7 +52,7 @@ async function newAndRecommended(userLikes){
     ];
 
     const recommendationData = await Promise.all([
-      httpClient.get('/browse/new-releases?limit=21'),
+      httpClient.get('/browse/new-releases?limit=22'),
       getRecommendedTracks(seedArtists, seedTracks),
       getRecommendedArtists(topArtists.data)
     ]);

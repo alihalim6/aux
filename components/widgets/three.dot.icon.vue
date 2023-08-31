@@ -79,6 +79,9 @@
     @Prop()
     bookmark;
 
+    @Prop()
+    disableShuffle;
+
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
 
@@ -119,6 +122,13 @@
       }
     }
 
+    @Watch('disableShuffle')
+    shuffleEnablementChanged(newVal, oldVal){
+      if(this.threeDotItem.isPlaylist && oldVal && !newVal){
+        this.addShuffle();
+      }
+    }
+
     async beforeMount(){
       this.threeDotItem = this.item;
 
@@ -136,7 +146,7 @@
       else{
         this.options = [
           {
-            title: 'Play Now',
+            title: 'Play',
             fn: this.playTrackNow,
             playNow: true
           },
@@ -171,14 +181,11 @@
         });
       }
       else if(this.threeDotItem.isCollection){
-        const playNowIndex = this.options.findIndex(option => option.playNow);
+        this.options.splice(this.options.findIndex(option => option.playNow), 1);
 
-        this.options.splice(playNowIndex, 1, {
-          title: 'Shuffle \'n\' Play',
-          fn: async () => {
-            await this.togglePlayback({item: this.threeDotItem, shuffle: true});
-          }
-        });
+        if(!this.disableShuffle){
+          this.addShuffle();
+        }
       }
             
       try {
@@ -349,6 +356,15 @@
 
     addToEndPressed(){
       this.addToEndOfQueue(this.getTracksToPlayNext());
+    }
+
+    addShuffle(){
+      this.options.unshift({
+        title: 'Shuffle \'n\' Play',
+        fn: async () => {
+          await this.togglePlayback({item: this.threeDotItem, shuffle: true});
+        }
+      });
     }
 
     beforeDestroy(){

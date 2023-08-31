@@ -3,8 +3,6 @@
     <button 
       class="clickable up-next-header" 
       @click="$nuxt.$root.$emit('hideUpNext')" 
-      @keydown.enter.stop.prevent="$nuxt.$root.$emit('hideUpNext')"
-      tabindex="0"
       aria-label="hide next tracks in queue"
     >
       <v-icon class="align-self-start" x-large color="white">mdi-chevron-down</v-icon>
@@ -61,7 +59,7 @@
       </div>
 
       <div class="track-info">
-        <div class="info-item">
+        <div class="info-item title-item">
           <div class="info-label">TITLE</div>
           <div class="info-value ellipses-text title-value">{{nextTrack.primaryLabel.toUpperCase()}}</div>
         </div>
@@ -116,7 +114,7 @@
         <ThreeDotIcon :item="track" :item-in-queue="true" icon-class="up-next-three-dot" icon-color="white"/>
       </div>
 
-      <span v-show="restOfQueueLength" class="plus-more">+ {{restOfQueueLength }} MORE... </span>
+      <span v-show="restOfQueueLength" class="plus-more">AND MORE... </span>
     </div>
 
     <BackToTop elementId="upNextListContainer" arrowColor="#1DB954"/>
@@ -302,7 +300,7 @@
         }
      
         .info-value {
-          transform: scaleY(1.2);
+          transform: scaleY(1.3);
           padding: 1px 1px;
         }
       }
@@ -352,6 +350,7 @@
           text-align: left;
           font-weight: normal;
           margin-left: $item-margin;
+          font-style: italic;
         }
 
         .up-next-three-dot {
@@ -387,5 +386,9 @@
   .title-value {
     color: $cream;
     font-weight: 900;
+  }
+
+  .title-item {
+    margin-right: 6px;
   }
 </style>

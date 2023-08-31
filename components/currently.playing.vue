@@ -20,7 +20,7 @@
       >
       </v-img>
 
-      <button class="clickable view-feed-container" @click="feedIconPressed()" @keydown.enter.prevent="feedIconPressed()">
+      <button class="clickable view-feed-container" @click="feedIconPressed()">
         <div class="d-flex align-center ml-2">
           <v-icon x-small color="red">mdi-circle</v-icon>
           <div class="on-air">FEED</div>
@@ -659,8 +659,9 @@
         }
 
         .playback-time {
-          color: $primary-theme-color;
+          color: #666;
           font-size: 12px;
+          font-weight: bold;
         }
 
         .view-history {
@@ -730,10 +731,10 @@
     color: $color;
     border: 2px solid $color;
     position: absolute;
-    right: -5px;
+    right: -8px;
     top: 32px;
     transform: scale(0.73);
-    padding: 5px 5px 4px !important;
+    padding: 7px 5px 7px !important;
   }
 
   .repeat-set {
@@ -771,6 +772,10 @@
   .currently-playing-spotify-icon {
     margin-top: 4px;
     margin-left: $top-row-margin;
+  }
+
+  .like-toggle:hover {
+    transform: scale(1.2);
   }
 
   .like-toggle:focus-visible {

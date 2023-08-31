@@ -204,6 +204,9 @@ export const mutations = {
       state.queue.push(...setQueueIds(tracks));
     }
   },
+  addToRestOfQueue(state, tracks){
+    state.restOfQueue.push(...tracks);
+  },
   shuffleUpNext(state, params){
     let shuffledQueue = [];
     //https://stackoverflow.com/questions/51287428/how-does-the-spread-syntax-affect-array-splice (the simpler syntax gets funky to work with (creates nested array))

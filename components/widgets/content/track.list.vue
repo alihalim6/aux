@@ -2,12 +2,11 @@
   <section 
     class="track-list-container" 
     :class="{'mixed-track-list': tracksFromDifferentAlbums, 
-    'disable-tracks': disableTracks, 
     'colored cream-background': myAux}"
   >
       <div v-for="(track, index) in tracks.filter(track => track.uuid)" :key="track.uuid">
         <v-hover v-slot="{hover}">
-          <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-4 track-container" :class="{'cream-background': hover && !$vuetify.breakpoint.xs}">
+          <div v-show="parentId !== track.id" class="d-flex justify-space-between align-start pt-3 pb-4 pr-2 track-container" :class="{'cream-background': hover && !$vuetify.breakpoint.xs}">
             <div class="left-container">
               <v-img 
                 v-if="tracksFromDifferentAlbums && track.imgUrl" 
@@ -96,9 +95,6 @@
 
     @Prop()
     newAndRecommended;
-
-    @Prop()
-    disableTracks;
 
     @Prop()
     playlistId;
@@ -212,11 +208,6 @@
         font-size: 14px;
       }
     }
-  }
-
-  .disable-tracks {
-    pointer-events: none;
-    opacity: 0.5;
   }
 
   .mixed-track-list {

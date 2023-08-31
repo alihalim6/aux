@@ -19,7 +19,6 @@
 
     beforeMount(){
       const artistDetails = this.artist.details;
-
       setItemMetaData(artistDetails.artistAlbums);
       setItemMetaData(artistDetails.artistTopTracks);
       setItemMetaData(artistDetails.relatedArtists);

@@ -29,14 +29,14 @@
         <div class="aux-title">PASS THE AUX</div>
       </div>
 
-      <v-snackbar :value="showTooltip" timeout="-1" absolute color="#f24f44" role="tooltip" centered>
+      <v-snackbar :value="showTooltip" timeout="-1" absolute color="#fcfce0" role="tooltip" centered>
         <div class="d-flex align-start">
           <div class="p-tooltip">
-            <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations.</div>
-            <div class="bullet-point">See and play what others are listening to (other users can be ignored if desired).</div>
+            <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations / </div>
+            <div class="bullet-point">See and play what others are listening to (other users can be ignored if desired) / </div>
             
             <div class="bullet-point">
-              <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
+              <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue / </span>
             </div>
 
             <div class="bullet-point boldest mt-8">Hop on with a friend to discover and enjoy music together!</div>
@@ -53,10 +53,6 @@
           <span>with</span>
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's official API</a>
         </div>
-
-        <span class="made-info mt-1 d-flex align-center">
-          <v-img class="logo" :src="require('~/assets/chrome-logo.png')" alt=""></v-img><span>&nbsp;recommended (no iOS)</span>
-        </span>
 
         <span class="made-info mt-1">Works for Spotify Premium users only</span>
       </div>
@@ -254,18 +250,11 @@
   }
 
   .p-tooltip {
-    color: white !important;
     font-weight: bold;
   }
 
   .bullet-point {
     margin-bottom: 8px;
-  }
-
-  .logo {
-    $size: 20px;
-    width: $size;
-    max-width: $size;
   }
 
   $stroke-size: 1px;

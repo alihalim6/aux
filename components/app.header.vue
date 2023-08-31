@@ -333,7 +333,7 @@
 
     @supports(-webkit-text-stroke: 2px $cream) {
       .outlined-phrase {
-        -webkit-text-stroke: 2px $cream;
+        -webkit-text-stroke: 0px $cream;
         -webkit-text-fill-color: $cream;
       }
     }
@@ -366,10 +366,11 @@
         transform: skewX(-9.9deg);
         font-size: 26px;
         margin-left: -24px;
-        padding: 0px 2px 0px 5px;
-        letter-spacing: 4px;
+        padding: 0px 4px 0px 5px;
+        letter-spacing: 1px;
         line-height: 1.6;
         margin-top: 4px;
+        font-family: 'Archivo Black', sans-serif;
 
           @media(max-width: $max-inner-width){ 
             font-size: 22px;

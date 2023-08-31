@@ -240,13 +240,14 @@
       history.pushState({}, '');
     }
 
-    filterPressed(filter){
+    async filterPressed(filter){
       this.filterType = filter.type;
+      await this.$nextTick();
       this.focus();
     }
 
     focus(){
-      const inputContainer = document.querySelector('.device-search-input');
+      const inputContainer = document.querySelector('.search-input');
       const inputField = inputContainer.querySelector('input');
 
       if(inputField){

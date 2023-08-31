@@ -136,7 +136,7 @@ const getSeedGenres = async (artists) => {
     return '';
   }
   
-  artists = shuffleArray(artists);
+  shuffleArray(artists);
   let seedArtist = artists[0];
 
   if(!seedArtist.genres){

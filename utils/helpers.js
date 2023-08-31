@@ -239,10 +239,10 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
       $nuxt.$store.commit(`${SPOTIFY}/setAudioPlaying`, spotifyPausedForNoNextTracks ? true : !currentState.paused);//needed in order to react to headphones being taken off etc.
 
       const auxCurrentTrack = $nuxt.$store.getters[`${SPOTIFY}/currentlyPlayingItem`];
-      ////console.log(auxCurrentTrack);
+      //console.log(auxCurrentTrack);
 
       const auxNextTrack = $nuxt.$store.getters[`${PLAYBACK_QUEUE}/nextTrack`];
-      ////console.log(auxNextTrack);
+      //console.log(auxNextTrack);
 
       const spotifyCurrentTrack = currentState.track_window.current_track;
       const ourNextTrackIsSpotifyCurrent = spotifyCurrentTrack && auxNextTrack ? isSameTrack(spotifyCurrentTrack, auxNextTrack) : false;
@@ -389,3 +389,45 @@ export const takeUntilNotATrack = (arr, fn) => {
 export const auxApiClient = axios.create({
   baseURL: process.env.BASE_URL
 });
+
+export async function getMoreTracksForQueue({totalTracks, url, itemOffset, addingToLongPlaylist}){
+  let tracks = [];
+  const maxForManyTracks = 150;
+  const limit = 50;
+  const usedOffsets = new Set();
+
+  const notManyTracks = addingToLongPlaylist || totalTracks <= 200;
+
+  if(addingToLongPlaylist) totalTracks = itemOffset + maxForManyTracks;
+
+  //due to fact that offset can sometimes bring back less than limit (if toward end of total), may not reach max with two pulls, so cap them
+  const maxPulls = maxForManyTracks / limit;
+  let pulls = 0;
+
+  while((notManyTracks ? itemOffset < totalTracks : tracks.length < maxForManyTracks) && pulls < maxPulls){
+    let offset;
+
+    do {
+      offset = notManyTracks ? itemOffset : Math.floor(Math.random() * (totalTracks - 0 + 1)) + 0;
+      //console.log(`offset: ${offset}`);
+    } while(usedOffsets.has(offset))
+
+    // Prevent overlapping offsets on subsequent calls (via chatgpt)
+    for (let i = 1; i < limit; i++) {
+      usedOffsets.add(offset + i);
+    }
+
+    const {items} = await spotify({url: `${url}/tracks?limit=${limit}&offset=${offset}`});
+    const processedTracks = items.filter(item => item.track && item.track.id).map(item => item.track);
+    tracks.push.apply(tracks, setItemMetaData(processedTracks));
+    itemOffset += limit;
+    pulls++;
+  }
+
+  //remove dupes for many-track sets (in case e.g. offset 251 then 250 used)
+  if(!notManyTracks){
+    tracks = [...new Map(tracks.map(item => [item['id'], item])).values()];
+  }
+
+  return {tracks, allTracksFetched: notManyTracks};
+}

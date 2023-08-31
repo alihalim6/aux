@@ -3,13 +3,13 @@ import {shuffleArray} from '~/utils/helpers';
 import artist from './artist';
 
 const getRecommendedTracks = async (artists, tracks) => {
-  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=5');
+  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=7');
   recentlyPlayed = recentlyPlayed.data.items.map(item => item.track).filter(item => item.id);
 
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    httpClient.get(`/recommendations?limit=19&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
+    httpClient.get(`/recommendations?limit=20&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -52,7 +52,7 @@ async function newAndRecommended(userLikes){
     ];
 
     const recommendationData = await Promise.all([
-      httpClient.get('/browse/new-releases?limit=19'),
+      httpClient.get('/browse/new-releases?limit=21'),
       getRecommendedTracks(seedArtists, seedTracks),
       getRecommendedArtists(topArtists.data)
     ]);
@@ -88,11 +88,11 @@ async function newAndRecommended(userLikes){
       ...recommendedAlbums
     ];
 
-    allItems = shuffleArray(allItems);
+    shuffleArray(allItems);
 
     return {
       allItems,
-      previewItems: allItems.slice(0, 16),
+      previewItems: allItems.slice(0, 18),
       someNewReleases
     };
   }

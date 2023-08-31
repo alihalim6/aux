@@ -1,6 +1,6 @@
 <template>
     <section>
-      <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}">
+      <div class="content-carousel" :class="{'more-from-artist-carosuel': moreFromArtist, 'vertical-carousel': vertical}" v-scroll.self="scrolled">
         <div v-for="(item, index) in data.filter(item => item.uuid)" :key="item.uuid">
           <section :class="{'d-flex align-center': lastNewAndRecoCarouselItem(index)}">
             <v-hover v-slot="{hover}">
@@ -55,11 +55,10 @@
                   <v-icon color="white" large @click="addTrackToPlaylist(item)" aria-label="add track to playlist">mdi-plus</v-icon>
                 </div>
 
-                <div :class="{'pb-8 pr-2': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
+                <div :class="{'pb-10 pr-2': vertical, 'd-flex flex-column align-center': item.isArtist}" v-if="!addToPlaylist">
                   <div class="primary-container" 
                     :class="{
                       'hovered-primary-container': hover && !vertical && !item.isArtist && !noHover(index), 
-                      'hovered-primary-last-container': hover && !vertical && index == data.length - 1 && !item.isArtist && !noHover(index),
                       'more-from-primary': moreFromArtist
                     }">
                     <div class="d-flex align-start">
@@ -134,6 +133,9 @@
     @Prop()
     bookmarks;
 
+    @Prop({default: () => null})
+    handleScroll;
+
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
@@ -176,8 +178,13 @@
       return !this.vertical && this.newAndRecommended && index == this.data.length - 1;
     }
 
-    noHover(index){
-      return this.bookmarks || this.lastNewAndRecoCarouselItem(index);
+    noHover(){
+      return this.bookmarks;
+    }
+
+    //can't bind v-scroll directly to prop fn
+    scrolled(){
+      if(this.handleScroll) this.handleScroll();
     }
   }
 </script>
@@ -241,10 +248,6 @@
     .hovered-primary-container {
       margin-top: 4px;
       width: $content-img-partial-size;
-    }
-
-    .hovered-primary-last-container {
-      width: $content-img-size;
     }
 
     .more-from-primary {
@@ -356,6 +359,6 @@
   }
 
   .animate {
-    transition: transform 0.12s;
+    transition: transform 0.09s;
   }
 </style>

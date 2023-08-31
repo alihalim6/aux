@@ -8,7 +8,7 @@ async function myAux(){
     const myAuxData = await Promise.all([
       httpClient.get(`/me/tracks?limit=${limit}`),
       httpClient.get(`/me/albums?limit=${limit}`),
-      httpClient.get('/me/player/recently-played?limit=15'),
+      httpClient.get('/me/player/recently-played?limit=25'),
       topItems('artists', 5),
       topItems('tracks', 20)
     ]);

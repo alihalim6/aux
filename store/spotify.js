@@ -1,12 +1,11 @@
 import {handleApiError} from '~/api/_utils';
 import {PLAYBACK_QUEUE, FEED, UI, USER} from './constants';
-import {shuffleArray, processAlbum, takeUntilNotATrack, initSpotifyPlayer} from '~/utils/helpers';
+import {shuffleArray, processAlbum, takeUntilNotATrack, initSpotifyPlayer, isSameTrack, getMoreTracksForQueue} from '~/utils/helpers';
 import {v4 as uuid} from 'uuid';
 import startItemPlayback from '~/api/startItemPlayback';
 import {storageGet, storageRemove} from '~/utils/storage';
 import {DEVICE_ID} from '~/utils/constants';
 import spotify from '~/api/spotify';
-import {isSameTrack} from '../utils/helpers';
 
 export const state = () => {
   return {
@@ -17,7 +16,9 @@ export const state = () => {
     sdkReady: false,
     player: null,
     setToRepeatTrack: false,
-    pendingFirstPlay: false
+    pendingFirstPlay: false,
+    currentlyPlayingCollection: null,
+    shuffle: false
   };
 };
 
@@ -45,6 +46,12 @@ export const getters = {
   },
   pendingFirstPlay: (state) => {
     return state.pendingFirstPlay;
+  },
+  currentlyPlayingCollection: (state) => {
+    return state.currentlyPlayingCollection;
+  },
+  isShuffled: (state) => {
+    return state.shuffled;
   }
 };
 
@@ -96,7 +103,7 @@ export const actions = {
       const previouslyPlayingItem = getters.currentlyPlayingItem;
       let currentlyPlayingItemUri = getters.currentlyPlayingItemUri;
       let nothingWasPlaying = !currentlyPlayingItemUri;
-      const currentItemToggled = !playingAllFeed && isSameTrack(previouslyPlayingItem, item);
+      const currentItemToggled = !playingAllFeed && !shuffle && isSameTrack(previouslyPlayingItem, item);
 
       //console.log(`togglePlay pressed for ${item.name} (previously playing: ${previouslyPlayingItem.name || 'nothing'})`);
   
@@ -110,15 +117,32 @@ export const actions = {
         return;
       }
       else {
-        commit('setAudioPlaying', true);
+        commit('setShuffled', shuffle);
         let queue = [];
 
         if(item.isCollection){
+          commit('setCurrentlyPlayingCollection', item.name);
           const collectionUri = item.uri;
           //console.log(`collection toggled: ${item.name} - ${collectionUri}`);
 
           if(item.isPlaylist){
-            queue = item.details.playlistTracks;
+            queue = shuffle ? item.details.preShuffledTracks : item.details.playlistTracks;
+
+            //for next time
+            if(shuffle){
+              if(item.details.allTracksFetched){
+                item.details.preShuffledTracks = shuffleArray(item.details.preShuffledTracks);
+              }
+              else{ 
+                getMoreTracksForQueue({
+                  totalTracks: item.details.totalPlaylistTracks, 
+                  url: `/playlists/${item.id}`, 
+                  itemOffset: item.details.offset
+                }).then(function({tracks}){
+                  this.preShuffledTracks = tracks;
+                }.bind(item.details));
+              }
+            }
           }
           else if(item.isAlbum){
             if(!item.details){
@@ -138,10 +162,10 @@ export const actions = {
         }
 
         if(shuffle){
-          //console.log('item set shuffled');
           item = shuffleArray(queue)[0];
         }
 
+        commit('setAudioPlaying', true);
         const queueId = playingTrackWithinExistingQueue || item.queueId ? item.queueId : uuid();
         commit('setCurrentlyPlayingItem', {...item, queueId});
         commit('setCurrentlyPlayingItemUri', queueId);
@@ -302,7 +326,7 @@ export const actions = {
         let nextTracksToSend = null;
 
         if(item.uri.indexOf('track') > 0){
-          nextTracksToSend = takeUntilNotATrack(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album');
+          nextTracksToSend = takeUntilNotATrack(queue.slice(currentlyPlayingItemIndex + 1), item => item.type == 'album').slice(0, 20);
         }
         else{
           //console.log('about to play an album-type track -> won\'t send next track uris');
@@ -368,6 +392,8 @@ export const actions = {
           navigator.mediaSession.setPositionState(null);
         }
       }
+
+      commit('setShuffled', false);
   },
   async seekPlayback({getters, commit}, seekPosition){
     const player = getters.player;
@@ -444,5 +470,11 @@ export const mutations = {
   },
   setPendingFirstPlay(state, pending){
     state.pendingFirstPlay = pending;
+  },
+  setCurrentlyPlayingCollection: (state, collection) => {
+    state.currentlyPlayingCollection = collection;
+  },
+  setShuffled: (state, shuffled) => {
+    state.shuffled = shuffled;
   }
 };

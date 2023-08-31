@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <ContentCarousel :data="previewItems" :new-and-recommended="true"/>
+    <ContentCarousel :data="previewItems" :new-and-recommended="true" :handle-scroll="() => $nuxt.$emit('activatePlayer')"/>
   </section>
 </template>
 
@@ -93,13 +93,11 @@
     displayOverlay({name, ...rest}){
       this.overlayLoading = name;
 
-      setTimeout(() => {
-        this.$nuxt.$root.$emit('displayDetailOverlay', {
-          ...this.baseOverlay,
-          name,
-          ...rest
-        });
-      }, 10);
+      this.$nuxt.$root.$emit('displayDetailOverlay', {
+        ...this.baseOverlay,
+        name,
+        ...rest
+      });
     }
 
     displayAll(){
@@ -139,13 +137,13 @@
   .new-and-reco-tab {
     border: 2px solid $primary-theme-color;
     border-radius: 16px;
-    padding: 6px;
+    padding: 6px 10px;
   }
 
    .tab-label {
     color: rgba(0, 0, 0, 0.6);
     font-size: 14px;
     font-weight: bold;
-    letter-spacing: 0px;
+    letter-spacing: normal;
   }
 </style>

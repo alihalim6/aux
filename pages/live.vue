@@ -12,26 +12,15 @@
     <LazyFeed/>
 
     <!-- needs to be outside of above block so that up next overlay slides all the way to top (relativity issue) -->
-    <CurrentlyPlaying v-show="!isLoading && (!isSafari || playerActivated)"/>
+    <CurrentlyPlaying v-show="!isLoading"/>
 
     <LoadingOverlay v-if="isLoading"/>    
-    <LazyFeedAlert v-show="!isSafari || playerActivated"/>
+    <LazyFeedAlert/>
 
     <!-- must be show since we don't want remounts on every three dot opening (new emit listener every time) -->
     <LazyAddToPlaylist v-show="trackToAddToPlaylist" :track="trackToAddToPlaylist"/>
     <LazyBookmarks v-if="showBookmarks"/>
     <LazyToast/>
-    
-    <v-dialog :value="!isLoading && isSafari && !playerActivated" persistent overlay-color="red" max-width="max-content">
-      <div class="activate-player">
-        <button v-show="!activatingPlayer" class="clickable nav-button" @click="activatePlayer()">
-          <v-img class="spotify-icon" :src="require('~/assets/Spotify_Logo_Icon.png')" alt=""></v-img>
-          <span class="nav-button-label">ACTIVATE SPOTIFY PLAYER</span>
-        </button>
-
-        <v-progress-circular v-show="activatingPlayer" indeterminate color="#fcfce0"></v-progress-circular>
-      </div>
-    </v-dialog>
 
     <audio v-if="currentlyPlayingItem.uri" class="hidden" loop autoplay id="silentPlayer">
       <source src="/5-seconds-of-silence.mp3" type="audio/mpeg">
@@ -53,7 +42,6 @@
     playerActivated = false;
     activatingPlayer = false;
     hideCurrentlyPlaying = false;
-    isSafari = false;
     showBookmarks = false;
     
     @Getter('isLoading', {namespace: UI})
@@ -95,17 +83,23 @@
         this.showBookmarks = true;
       });
 
-      this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      window.addEventListener('scroll', this.activatePlayer);
+      this.$nuxt.$on('activatePlayer', this.activatePlayer);
     }
 
     async activatePlayer(){
-      this.activatingPlayer = true;
-      await initSpotifyPlayer(true, true);
-      this.activatingPlayer = false;
-      this.playerActivated = true;
+      //console.log('activating...')
+      if(!this.activatingPlayer && !this.playerActivated){
+        this.activatingPlayer = true;
+        await initSpotifyPlayer(true, true);
+        this.activatingPlayer = false;
+        this.playerActivated = true;
 
-      if(window.spotifyPlayer){
-        window.spotifyPlayer.activateElement();
+        if(window.spotifyPlayer){
+          window.spotifyPlayer.activateElement();
+          window.removeEventListener('scroll', this.activatePlayer);
+          this.$nuxt.$off('activatePlayer');
+        }
       }
     }
 
@@ -113,6 +107,7 @@
       this.$nuxt.$root.$off('addToPlaylist');
       this.$nuxt.$root.$off('closeModal');
       this.$nuxt.$root.$off('showBookmarks');
+      this.$nuxt.$off('activatePlayer');
     }
   }
 </script>
@@ -124,15 +119,6 @@
 
   .base-app-container {
     margin-top: 51px;
-  }
-
-  .activate-player {
-    width: max-content;
-
-    span {
-      font-weight: bold;
-      margin-left: 12px;
-    }
   }
 </style>
 
@@ -171,7 +157,7 @@
 
     .tab-container {
       font-weight: normal;
-      margin-top: 6px;
+      margin: 6px 0;
     }
   }
 

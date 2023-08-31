@@ -1,6 +1,6 @@
 <template>
   <section class="pt-1 pb-12 my-aux">
-    <div class="content-container mt-4">
+    <div class="content-container mt-10">
       <div class="home-content-title">
         <h1 
           v-if="profile" 
@@ -13,7 +13,7 @@
       </div>
 
       <v-tabs class="tab-container home-content-responsive" v-model="selectedTab" background-color="transparent" color="rgba(0, 0, 0, 0.8)" hide-slider center-active>
-        <v-tab v-for="(tab, index) in getContent()" :key="tab.key" :disabled="getContent()[selectedTab].fetchPending" @change="tabChanged">
+        <v-tab v-for="(tab, index) in getContent()" :key="tab.key" @change="tabChanged">
           <v-hover v-slot="{hover}">
             <div class="tab-label" :class="{'selected-tab': selectedTab === index, 'hover-tab': hover}">
               <span :id="`myAuxTabLabel${index}`">{{tab.label}}</span>
@@ -28,17 +28,19 @@
         <v-tab-item v-for="(tab, index) in getContent()" :key="tab.key">
           <div class="home-content-with-shadow" :id="`myAux${index}`" v-if="tab.data.length">
             <div v-if="tab.trackList">
-              <v-progress-circular v-if="tab.fetchPending" class="fetch-in-progress" width="2" indeterminate large color="black"></v-progress-circular>
-              <PlayAllAndShuffle v-else :tracks="tab.data" :collectionKey="tab.key" :my-aux-liked-tracks="tab.key == 'likedTracks'"/>
-
-              <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :disable-tracks="tab.fetchPending" :my-aux="true"/>
-              <div class="my-aux-footnote">{{tab.footnote}}</div>
+              <PlayAllAndShuffle 
+                :tracks="tab.data" 
+                :collectionKey="tab.key" 
+                :my-aux-liked-tracks="tab.key == 'likedTracks'" 
+                :disable-shuffle="tab.key == 'likedTracks' && !likesPreShuffleReady"
+              />
+              <TrackList :tracks="tab.data" :tracksFromDifferentAlbums="true" :hideAlbums="true" :my-aux="true"/>
             </div>
             
             <ContentCarousel v-if="tab.likedAlbums" :data="tab.data" :vertical="true"/>
 
             <div v-if="tab.topItems">
-              <PlayAllAndShuffle v-if="!tab.fetchPending" :tracks="tab.topItems.tracks" :collectionKey="tab.key"/>
+              <PlayAllAndShuffle :tracks="tab.topItems.tracks" :collectionKey="tab.key"/>
               <TrackList :tracks="tab.topItems.tracks" :tracksFromDifferentAlbums="true" :hideAlbums="true" :my-aux="true"/>
 
               <ContentCarousel :data="tab.topItems.artists" :vertical="true" class="mt-15" :no-secondary-label="true"/>
@@ -53,13 +55,13 @@
 </template>
 
 <script>
-  import {Component, Vue, Mutation, Action, Getter} from 'nuxt-property-decorator';
+  import {Component, Vue, Mutation, Action, Getter, Watch} from 'nuxt-property-decorator';
   import {handleApiError} from '~/api/_utils';
   import myAux from '~/api/myAux';
   import spotify from '~/api/spotify';
-  import {setItemMetaData, msToDuration, handleItemCollection, shuffleArray} from '~/utils/helpers';
+  import {setItemMetaData, msToDuration, handleItemCollection, shuffleArray, getMoreTracksForQueue} from '~/utils/helpers';
   import {MY_AUX, LIKED_ITEM_EVENT, REMOVED_LIKED_ITEM_EVENT} from '~/utils/constants';
-  import {SPOTIFY, USER} from '~/store/constants';
+  import {SPOTIFY, USER, PLAYBACK_QUEUE} from '~/store/constants';
   import {v4 as uuid} from 'uuid';
   import cloneDeep from 'lodash.clonedeep';
 
@@ -67,6 +69,8 @@
   export default class MyAux extends Vue {
     selectedTab = 0;
     preShuffledLikes = [];
+    addTracksToEndOfQueue = false
+    likesPreShuffleReady = false;
 
     defaultContent = {
       data: [],
@@ -79,6 +83,7 @@
         ...this.defaultContent,
         key: 'likedTracks',
         label: MY_AUX.LIKED_TRACKS,
+        likedTracks: true,
         trackList: true,
         api: 'tracks',
         type: 'track',
@@ -98,19 +103,38 @@
         key: 'recentlyPlayed',
         label: MY_AUX.RECENTLY_PLAYED,
         trackList: true,
-        id: uuid(),
-        footnote: '*On Spotify'
+        id: uuid()
       }
     ];
 
     @Mutation('setProfile', {namespace: USER})
     setProfile;
 
+    @Mutation('addToRestOfQueue', {namespace: PLAYBACK_QUEUE})
+    addToRestOfQueue;
+
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
     @Getter('profile', {namespace: USER})
     profile;
+
+    @Getter('currentlyPlayingCollection', {namespace: SPOTIFY})
+    currentlyPlayingCollection;
+
+    @Getter('isShuffled', {namespace: SPOTIFY})
+    isShuffled;
+
+    @Getter('queue', {namespace: PLAYBACK_QUEUE})
+    queue;
+
+    @Getter('restOfQueueLength', {namespace: PLAYBACK_QUEUE})
+    restOfQueueLength;
+
+    @Watch('currentlyPlayingCollection')
+    handleRestOfQueueFlag(newVal){
+      this.addTracksToEndOfQueue = newVal == 'likedTracks' && !this.isShuffled;
+    }
 
     mapData(data){
       return data.map(item => {
@@ -124,6 +148,26 @@
 
     async beforeMount(){
       try {
+        //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
+        this.$nuxt.$on('playPreShuffledLikes', async function(playbackItem){
+          await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes, shuffle: true});
+        
+          //set a new shuffle for next time
+          
+          //console.log('playing preshuffled tracks and shuffling some for next time...');
+          const likedTracks = this.content.find(item => item.likedTracks);
+
+          if(likedTracks.offset < likedTracks.total){
+            //console.log('likes not done loading...setting more random tracks');
+            this.preShuffledLikes = [];
+            this.getRandomLikes(likedTracks);
+          }
+          else{
+            //console.log('likes done loading...shuffling existing tracks');
+            shuffleArray(this.preShuffledLikes);
+          }
+        }.bind(this));
+
         const data = await myAux();
 
         if(data.profile.product != 'premium'){
@@ -146,8 +190,6 @@
           item.limit = item.offset = data[item.key].limit;
         });
 
-        await this.fetchRemainingData();
-
         //data structure for top items response is different than the others, so no mapping needed
         this.content = [...this.content, {
           key: 'topItems',
@@ -160,16 +202,10 @@
           }
         }];
 
+        await this.fetchRemainingData();
+
         this.$nuxt.$root.$on(REMOVED_LIKED_ITEM_EVENT, item => this.handleItemLikeStatus(item, true));
         this.$nuxt.$root.$on(LIKED_ITEM_EVENT, this.handleItemLikeStatus);
-
-        //can't use same logic for up next likes because up next tracks can always change and using a pre-shuffled array would overwrite tracks added/removed etc.;
-        this.$nuxt.$on('playPreShuffledLikes', async function(playbackItem){
-          //console.log('playing preshuffled tracks');
-          await this.togglePlayback({item: playbackItem, itemSet: this.preShuffledLikes});
-          //set a new shuffle for next time
-          this.preShuffledLikes = shuffleArray(this.preShuffledLikes);
-        }.bind(this));
       }
       catch(error){
         //console.error(error);
@@ -206,46 +242,48 @@
     //confirmed works for albums
     async fetchRemainingData(){
       const contentToFetchFor = this.content[this.selectedTab];
+      const moreDataToFetch = () => contentToFetchFor.api && contentToFetchFor.offset < contentToFetchFor.total;
 
-      while(contentToFetchFor.api && contentToFetchFor.offset < contentToFetchFor.total){
-        if(!contentToFetchFor.fetchPending){
-          contentToFetchFor.fetchPending = true;
+      if(moreDataToFetch()){
+        this.getRandomLikes(contentToFetchFor);
+      }
 
-          try{
-            const data = await spotify({
-              url: `/me/${contentToFetchFor.api}?limit=${contentToFetchFor.limit}&offset=${contentToFetchFor.offset}`
-            });
+      while(moreDataToFetch()){
+        try{
+          const response = await spotify({
+            url: `/me/${contentToFetchFor.api}?limit=${contentToFetchFor.limit}&offset=${contentToFetchFor.offset}`
+          });
+          
+          let items = response.items;
 
-            if(contentToFetchFor.trackList){
-              data.items = data.items.filter(item => item.track);
-            }
-
-            contentToFetchFor.data.push.apply(contentToFetchFor.data, this.mapData(data.items));
-            contentToFetchFor.offset += contentToFetchFor.limit;
-
-            if(contentToFetchFor.trackList && contentToFetchFor.offset >= contentToFetchFor.total){
-              //pre-shuffle likes after they're all fetched to try and help with performance when shuffle clicked;
-              //this of course blocks the pending overlay to clear until shuffling is done but we're taking our chances that user 
-              //won't be waiting for that to clear then immediately click shuffle; instead, more likely is that by the time user gets down to
-              //likes, the fetching and pre-shuffling will be done already
-              this.preShuffledLikes = shuffleArray([...contentToFetchFor.data]);
-
-              //send some data for new and reco refresh seeding
-              this.$nuxt.$root.$emit('likedTracksAndAlbums', {
-                tracks: contentToFetchFor.data.map(item => ({track: item})), 
-                albums: this.content.find(item => item.likedAlbums).data.map(item => ({album: {tracks: item.tracks}}))
-              });
-            }
-
-            contentToFetchFor.fetchPending = false;
+          if(contentToFetchFor.trackList){
+            items = items.filter(item => item.track && item.track.id);
           }
-          catch(error){
-            handleApiError('Sorry, there was an issue loading your Likes.');
-            contentToFetchFor.fetchPending = false;
-            break;
+
+          contentToFetchFor.data.push.apply(contentToFetchFor.data, this.mapData(items));
+          contentToFetchFor.offset += contentToFetchFor.limit;
+
+          if(contentToFetchFor.offset >= contentToFetchFor.total && contentToFetchFor.trackList){
+            if(this.addTracksToEndOfQueue){
+              this.addToRestOfQueue(contentToFetchFor.data.slice(this.queue.length + this.restOfQueueLength));
+            }
+
+            this.preShuffledLikes = shuffleArray([...contentToFetchFor.data]);
+
+            //send some data for new and reco refresh seeding
+            this.$nuxt.$root.$emit('likedTracksAndAlbums', {
+              tracks: contentToFetchFor.data.map(item => ({track: item})), 
+              albums: this.content.find(item => item.likedAlbums).data.map(item => ({album: {tracks: item.tracks}}))
+            });
           }
         }
+        catch(error){
+          handleApiError('Sorry, there was an issue loading your Likes.');
+          break;
+        }
       }
+      
+      this.likesPreShuffleReady = true;
     }
 
     async tabChanged(){
@@ -257,6 +295,15 @@
       return this.content.filter(content => content.data.length);
     }
 
+    getRandomLikes(contentToFetchFor){
+      getMoreTracksForQueue({totalTracks: contentToFetchFor.total, url: '/me', itemOffset: contentToFetchFor.offset}).then(({tracks}) => {
+        if(!this.preShuffledLikes.length){
+          this.preShuffledLikes = tracks;
+          this.likesPreShuffleReady = true;
+        }
+      });
+    }
+
     beforeDestroy(){
       this.$nuxt.$root.$off(REMOVED_LIKED_ITEM_EVENT);
       this.$nuxt.$root.$off(LIKED_ITEM_EVENT);
@@ -265,11 +312,6 @@
 </script>
 
 <style lang="scss">
-  .fetch-in-progress {
-    width: 100% !important;
-    margin: 16px auto;
-  }
-
   .v-tab {
     padding: 0px !important;
   }
@@ -284,13 +326,6 @@
   
   .color-black {
     color: black !important;
-  }
-
-  .my-aux-footnote {
-    color: #888888;
-    font-style: italic;
-    font-size: 12px;
-    margin-top: 36px;
   }
 
   .my-aux-header {

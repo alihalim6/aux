@@ -2,7 +2,7 @@
   <section class="play-all-and-shuffle-container fill-available" v-if="playbackItem">
     <PlaybackIcon :item="playbackItem" :itemSet="playbackItem.itemSet" iconClass="playback-icon"/>
     
-    <button class="clickable small-circle shuffle" @click="shuffleAndPlay()" @keydown.enter="shuffleAndPlay()" tabindex="0" >
+    <button v-show="!disableShuffle" class="clickable small-circle shuffle" @click="shuffleAndPlay()">
       <span class="small-circle-top-letters">SHU</span>
       <span class="small-circle-bottom-letters">FFLE</span>
     </button>
@@ -27,12 +27,14 @@
     @Prop()
     myAuxLikedTracks;
 
+    @Prop()
+    disableShuffle;
+
     @Action('togglePlayback', {namespace: SPOTIFY})
     togglePlayback;
 
     @Watch('tracks', {immediate: true})
     updateTracks(newVal, oldVal){
-      //doesn't work to check length (https://v2.vuejs.org/v2/api/#vm-watch) so this just runs on first load (undefined to defined)
       if(newVal && !oldVal){
         this.playbackItem = {
           isCollection: true,
@@ -48,7 +50,9 @@
     
     setTracksCollection(tracks){
       for(const track of tracks){
-        handleItemCollection(track, this.collectionKey);
+        if(!track.fromCollection || (track.fromCollection && !track.fromCollection.includes(this.collectionKey))){
+          handleItemCollection(track, this.collectionKey);
+        }
       }
     }
 
@@ -65,13 +69,12 @@
 
 <style lang="scss">
   .play-all-and-shuffle-container {
-    $icon-padding: 0px 4px;
+    $icon-padding: 0px 16px;
 
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin: 14px auto 10px;
-    max-width: 91px;
 
     .playback-icon {
       color: $primary-theme-color;

@@ -13,7 +13,13 @@
                 <v-icon color="white" small class="eye">mdi-eye</v-icon>
               </div>
 
-              <div class="overlay-content fill-available" :id="`overlayContent${index}`" :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" @click.stop>
+              <div 
+                class="overlay-content fill-available" 
+                :id="`overlayContent${index}`" 
+                :class="{'simple-overlay': item.simpleOverlay, 'content-loaded': item.details}" 
+                @click.stop
+                v-scroll.self="overlayScrolled"
+              >
                 <div class="inner-container" v-if="item.details" :class="{'extra-padding-bottom': item.isPlaylist || item.allNewAndRecommended}">
                   <div v-if="scrolledDown" class="scrolled-down-top-bar blurred">
                     <v-icon 
@@ -70,7 +76,7 @@
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
                       <div class="d-flex justify-space-between align-start">
                         <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
-                        <ThreeDotIcon :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true"/>
+                        <ThreeDotIcon :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
                       </div>
                     </div>
                   </div>
@@ -101,7 +107,7 @@
   import {UI, SPOTIFY} from '~/store/constants';
   import artist from '~/api/artist';
   import details from '~/api/details';
-  import {setItemMetaData, setDuration} from '~/utils/helpers';
+  import {setItemMetaData, setDuration, handleItemCollection, getMoreTracksForQueue} from '~/utils/helpers';
   import {v4 as uuid} from 'uuid';
   import cloneDeep from 'lodash.clonedeep';
 
@@ -115,6 +121,7 @@
     processing = false;
     isAndroid = false;
     upNextDisplaying = false;
+    disableShuffle = false;
     
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
@@ -183,6 +190,33 @@
         this.processing = false;
 
         history.pushState({}, '');
+        const overlayDetails = this.items[this.items.length - 1].details;
+        const incompletePlaylist = item.isPlaylist && overlayDetails.collectionTrackLimit < overlayDetails.totalPlaylistTracks;
+        this.disableShuffle = incompletePlaylist;
+
+        if(incompletePlaylist){
+          getMoreTracksForQueue({
+            totalTracks: overlayDetails.totalPlaylistTracks, 
+            url: `/playlists/${item.id}`, 
+            itemOffset: overlayDetails.collectionTrackLimit
+          }).then(({tracks, allTracksFetched}) => {
+            tracks.forEach(track => handleItemCollection(track, item.uri));
+            
+            if(allTracksFetched){
+              overlayDetails.playlistTracks.push.apply(overlayDetails.playlistTracks, tracks);
+              overlayDetails.preShuffledTracks = [...overlayDetails.playlistTracks];
+              overlayDetails.allTracksFetched = true;
+            }
+            else{
+              overlayDetails.preShuffledTracks = tracks;
+            }
+
+            //console.log(tracks);
+            this.disableShuffle = false;
+          });
+        }
+
+        this.$nuxt.$emit('activatePlayer');
       }
     }
 
@@ -219,6 +253,10 @@
 
     hideBackButton(index){
       return (index === 0) || this.isAndroid;
+    }
+
+    overlayScrolled(e){
+      this.$nuxt.$root.$emit('overlayScrolled', e);
     }
 
     beforeDestroy(){

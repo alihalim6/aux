@@ -33,7 +33,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs home-content cream-background py-0" :class="{'dark-background': darkMode}" id="playlistTabContent">
+      <v-tabs-items v-model="selectedTab" class="overflow-scroll home-tabs home-content cream-background py-0" :class="{'deep-blue-background': darkMode}" id="playlistTabContent">
         <v-tab-item v-for="content in getTabContent()" :key="content.type">
           <div v-for="item in content.data" :key="item.uuid">
             <v-hover v-slot="{hover}">

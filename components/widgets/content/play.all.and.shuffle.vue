@@ -74,11 +74,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 14px auto 10px;
+    margin: 10px auto 22px;
 
     .playback-icon {
       color: $primary-theme-color;
-      font-size: 40px !important;
+      font-size: 48px !important;
       padding: $icon-padding;
     }
   }

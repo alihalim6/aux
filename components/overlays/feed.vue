@@ -4,19 +4,6 @@
       <div class="feed-container scroll-shadow-on-transparent" id="feedContainer">
         <div class="d-flex flex-column">
           <div class="feed-title-container" id="feedHeader">
-            <v-hover v-slot="{hover}">
-              <div class="d-flex align-center" :class="{'no-visibility': !activityFeed.length}">
-                <button 
-                  class="clickable d-flex align-center" 
-                  @click.stop="playAllPressed()"
-                  id="playAll"
-                >
-                  <v-icon class="feed-header-icon mr-1" small aria-labelledby="playAllLabel">mdi-play</v-icon>
-                  <span class="play-all-label" :class="{'text-decoration-underline': hover}" id="playAllLabel">PLAY ALL</span>
-                </button>
-              </div>
-            </v-hover>
-
             <div>
               <v-icon class="clickable feed-header-icon" id="feedToolTip" tabindex="0" aria-label="display feed tooltip">
                 mdi-help-circle-outline
@@ -75,9 +62,6 @@
     @Mutation('closeFeed', {namespace: UI})
     closeFeed;
 
-    @Mutation('setToast', {namespace: UI})
-    setToast;
-
     @Getter('feed', {namespace: UI})
     uiFeed;
 
@@ -107,9 +91,6 @@
 
     @Action('setInitialFeed', {namespace: FEED})
     setInitialFeed;
-
-    @Action('togglePlayback', {namespace: SPOTIFY})
-    togglePlayback;
 
     @Watch('profile')
     currentUserProfileSet(){
@@ -215,15 +196,6 @@
         }
       }, 1000);
     }
-
-    playAllPressed() {
-      if(this.isSplashPage()){
-        this.setToast({text: 'Gotta be logged in to play music!'});
-      }
-      else{
-        this.togglePlayback({item: this.activityFeed.map(activity => activity).reverse()[0].track, itemSet: this.activityFeed.map(activity => activity.track).reverse(), playingAllFeed: true});
-      }
-    }
     
     beforeDestroy(){
       clearInterval(this.liveStatusInterval);
@@ -263,7 +235,7 @@
         margin: 6px 0px 24px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-end;
         font-size: 24px;
         
         .feed-header-icon {
@@ -298,10 +270,6 @@
       left: 10px !important;
       max-width: 90%;
     }
-  }
-
-  .play-all-label {
-    font-size: 14px;
   }
 
   .scroll-shadow-on-transparent {

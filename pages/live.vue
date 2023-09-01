@@ -29,7 +29,7 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Mutation} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter, Mutation, Watch} from 'nuxt-property-decorator';
   import {UI, SPOTIFY} from '~/store/constants';
   import {DEVICE_ID} from '~/utils/constants';
   import initSocketClient from '~/utils/init.socket.client';
@@ -55,6 +55,15 @@
 
     @Mutation('setSdkReady', {namespace: SPOTIFY})
     setSdkReady;
+
+    @Watch('currentlyPlayingItem')
+    restoreScrollListeners(newVal, oldVal){
+      if(oldVal && (!newVal || !newVal.id)){
+        window.addEventListener('scroll', this.activatePlayer);
+        this.$nuxt.$on('activatePlayer', this.activatePlayer);
+        this.playerActivated = false;
+      }
+    }
 
     beforeMount(){
       initSocketClient();

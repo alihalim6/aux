@@ -29,21 +29,32 @@
         <div class="aux-title">PASS THE AUX</div>
       </div>
 
-      <v-snackbar :value="showTooltip" timeout="-1" absolute color="#fcfce0" role="tooltip" centered>
-        <div class="d-flex align-start">
-          <div class="p-tooltip">
-            <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations / </div>
-            <div class="bullet-point">See and play what others are listening to (other users can be ignored if desired) / </div>
-            
-            <div class="bullet-point">
-              <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue / </span>
-            </div>
+      <v-snackbar :value="showTooltip" timeout="-1" absolute color="white" role="tooltip" centered>
+        <div class="p-tooltip">
+          <v-icon 
+            class="clickable align-self-end" 
+            @click="() => showTooltip = false" 
+            color="#191414" 
+            aria-label="close the tooltip" 
+            tabindex="0" 
+            large
+          >
+            mdi-close
+          </v-icon>
 
-            <div class="bullet-point boldest mt-8">Hop on with a friend to discover and enjoy music together!</div>
+          <div class="bullet-point">Listen to your Spotify library, new releases, featured playlists, and recommendations. </div>
+          <div class="bullet-point">See and play what other AUX users listen to (other users can be ignored if desired). </div>
+          
+          <div class="bullet-point">
+            <span>Turn <span class="font-italic">AUX Mode</span> on to automatically add tracks played by others to your queue.</span>
           </div>
 
-          <v-icon class="clickable aux-tooltip ml-3" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
+          <div class="width-100 d-flex justify-center">
+            <button class="clickable bullet-point boldest" @click="loginClicked()">Hop on with a friend to discover and enjoy music together!</button>
+          </div>
         </div>
+
+        <v-icon class="clickable aux-tooltip ml-3" color="white" @click="() => showTooltip = false" aria-label="close AUX info tooltip">mdi-close</v-icon>
       </v-snackbar>
 
       <div class="bottom-container">
@@ -135,10 +146,6 @@
 
       span {
         line-height: calc(#{$p-margin} + 110px);
-      }
-
-      &:hover {
-        filter: blur(4px);
       }
 
       @extend .fade-in;
@@ -250,11 +257,16 @@
   }
 
   .p-tooltip {
-    font-weight: bold;
+    padding: 8px 8px 0;
+    display: flex;
+    flex-direction: column;
   }
 
   .bullet-point {
-    margin-bottom: 8px;
+    margin-bottom: 20px;
+    font-family: 'Archivo Black';
+    font-weight: 100;
+    max-width: 90%;
   }
 
   $stroke-size: 1px;
@@ -271,6 +283,17 @@
   }
 
   .boldest {
-    font-weight: 900;
+    font-weight: normal;
+    background-color: $primary-theme-color;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-align: center;
+    width: fit-content;
+    margin-top: 30px;
+
+    &:hover {
+      transform: scale(1.02);
+    }
   }
 </style>

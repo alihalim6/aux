@@ -59,7 +59,8 @@
 
       <div class="bottom-container">
         <div class="made-info">
-          <span>Created </span>
+          <span>Created by</span>
+          <a class="made-by-link" href="https://linktr.ee/alihalim" target="_blank" tabindex="0">Ali Halim</a>
           <span>with</span>
           <a class="made-by-link" href="https://developer.spotify.com" target="_blank" tabindex="0">Spotify's official API</a>
         </div>

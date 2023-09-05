@@ -292,7 +292,7 @@
       height: 48px;
       width: 25px;
       background-color: $primary-theme-color;
-      right: -21px;
+      right: -25px;
       top: 53px;
       border-radius: 0px 4px 4px 0px;
       display: flex;
@@ -349,7 +349,7 @@
             color: $secondary-theme-color;
             padding: 8px;
             border-radius: 3px;
-            right: 30px;
+            right: 25px;
             top: 12px;
             font-weight: 600;
             font-size: 12px;

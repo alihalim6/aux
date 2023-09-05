@@ -85,6 +85,7 @@
 
     &:hover {
       transform: scale(1.1);
+      margin-bottom: 20px;
     }
   }
 

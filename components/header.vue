@@ -135,7 +135,7 @@
   import socket from '~/plugins/socket.client.js';
 
   @Component
-  export default class AppHeader extends Vue {
+  export default class Header extends Vue {
     auxModeOn = true;
     isIos = false;
     isAndroid = false;

@@ -6,13 +6,14 @@ $cream: #fcfce0;
 $dark-blue: #07152a;
 $off-white: #fffff1;
 
+$base-footer-size: 152px;
 $app-header-height: 63px;
 $max-inner-width: 711px;
 $base-padding: 14px;
 $home-content-padding: 36px;
 $max-home-content-height: 525px;
-$max-footer-height-not-playing: calc(env(safe-area-inset-bottom) + 132px);
-$max-footer-height-playing: calc(env(safe-area-inset-bottom) + 181px);
+$max-footer-height-not-playing: calc(env(safe-area-inset-bottom) + #{$base-footer-size});
+$max-footer-height-playing: calc(env(safe-area-inset-bottom) + calc(#{$base-footer-size} + 44px));
 $overlay-border-size: 4px;
 $simple-title-border-size: 3px;
 $text-field-filled-full-width-outlined-single-line-slot-min-height: 20px;

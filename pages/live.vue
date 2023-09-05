@@ -1,6 +1,6 @@
 <template>
   <v-app :class="{'item-playing': currentlyPlayingItem.uri, 'dark-mode': darkMode}">
-    <AppHeader v-show="!isLoading"/>
+    <Header v-show="!isLoading"/>
 
     <div v-show="!isLoading" class="base-app-container">
       <NewAndRecommended/>
@@ -110,6 +110,11 @@
           this.$nuxt.$off('activatePlayer');
         }
       }
+    }
+
+    head(){
+      const title = this.currentlyPlayingItem && this.currentlyPlayingItem.id ? `${this.currentlyPlayingItem.primaryLabel} / ${this.currentlyPlayingItem.secondaryLabel} ::` : '';
+      return { title: `${title} AUX - Just Pass It.` };
     }
 
     beforeDestroy(){

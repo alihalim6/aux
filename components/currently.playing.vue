@@ -1,15 +1,6 @@
 <template>
   <v-footer class="currently-playing-container" id="footer" :class="{'up-next-displaying': upNextDisplaying, 'up-next-hidden': upNextHidden}">
-    <div v-if="!upNextDisplaying" class="d-flex justify-space-between align-center width-100 mb-1">
-      <v-img 
-        @click="spotifyLogoPressed()" 
-        @keydown.enter="spotifyLogoPressed()"
-        class="clickable spotify-icon currently-playing-spotify-icon" 
-        :class="{'no-visibility': !currentlyPlayingItem.uri, 'd-none': currentlyPlayingItem.uri && $vuetify.breakpoint.smAndUp}" :src="require('~/assets/Spotify_Logo_Icon.png')"
-        tabindex="0"
-        alt="open Spotify"
-      >
-      </v-img>
+    <div v-if="!upNextDisplaying" class="d-flex align-center width-100 mb-5" :class="{'justify-space-between': $vuetify.breakpoint.smAndUp, 'justify-end': $vuetify.breakpoint.xs}">
       <v-img 
         @click="spotifyLogoPressed()" 
         @keydown.enter="spotifyLogoPressed()"
@@ -24,7 +15,7 @@
         <div class="d-flex align-center ml-2">
           <v-icon x-small color="red">mdi-circle</v-icon>
           <div class="on-air">FEED</div>
-          <v-icon large class="clickable on-air-chevron" color="black" id="feedChevron">mdi-chevron-up</v-icon>
+          <v-icon class="clickable on-air-chevron" color="black" id="feedChevron">mdi-chevron-up</v-icon>
           <v-icon v-show="showUnseenDot" large class="unseen-activity-dot" color="#36a8ff">mdi-circle-small</v-icon>
         </div>
       </button>
@@ -587,10 +578,13 @@
       align-self: flex-end;
       margin-right: $top-row-margin;
       display: flex;
-      padding-top: 2px;
+      padding: 4px;
       position: relative;
       top: 0px;
-
+      background-color: $cream;
+      border-radius: 28px;
+      margin-top: 8px;
+  
       &:hover {
         .on-air-chevron {
           top: -2px;

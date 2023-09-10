@@ -48,7 +48,7 @@ async function newAndRecommended(userLikes){
     const likedAlbums = userLikes ? sliceLikes(userLikes.albums) : (await httpClient.get(`/me/albums?offset=${likedAlbumOffset}&limit=5`)).data.items;
     const likedAlbumTracks = likedAlbums.map(item =>  item.album.tracks.items[randomInt(item.album.tracks.items.length - 1)]);
 
-    const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : (await httpClient.get(`/me/tracks?offset=${likedTracksOffset}&limit=10`)).data.items;
+    const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : (await httpClient.get(`/me/tracks?offset=${likedTracksOffset}&limit=15`)).data.items;
 
     const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.map(like => like.track)];
 

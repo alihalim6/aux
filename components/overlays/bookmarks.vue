@@ -91,12 +91,13 @@
     }
 
     .subtitle {
-      background-color: $primary-theme-color;
-      color: $secondary-theme-color;
+      background-color: $rose-red;
+      color: $cream;
       font-weight: 700;
       padding: 4px 6px;
-      margin-bottom: 24px;
+      margin: 8px 0 24px;
       width: fit-content;
+      border-radius: 6px;
     }
   }
 </style>

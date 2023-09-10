@@ -125,7 +125,7 @@ export function handleApiError(message){
 }
 
 export const topItems = async (topType, limit) => {
-  return httpClient.get(`/me/top/${topType}?limit=${limit || 5}`);
+  return httpClient.get(`/me/top/${topType}?limit=${limit || 10}`);
 };
 
 //note: the artist objects in the top tracks response don't have genres; would need to use the href in there to make API call to get artist(s)

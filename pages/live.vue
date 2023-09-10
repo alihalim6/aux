@@ -65,6 +65,11 @@
       }
     }
 
+    head(){
+      const title = this.currentlyPlayingItem && this.currentlyPlayingItem.id ? `${this.currentlyPlayingItem.primaryLabel} / ${this.currentlyPlayingItem.secondaryLabel} ::` : '';
+      return { title: `${title} AUX - Just Pass It.` };
+    }
+
     beforeMount(){
       initSocketClient();
       //add SDK to scripts
@@ -110,11 +115,6 @@
           this.$nuxt.$off('activatePlayer');
         }
       }
-    }
-
-    head(){
-      const title = this.currentlyPlayingItem && this.currentlyPlayingItem.id ? `${this.currentlyPlayingItem.primaryLabel} / ${this.currentlyPlayingItem.secondaryLabel} ::` : '';
-      return { title: `${title} AUX - Just Pass It.` };
     }
 
     beforeDestroy(){

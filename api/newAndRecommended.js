@@ -3,7 +3,7 @@ import {shuffleArray} from '~/utils/helpers';
 import artist from './artist';
 
 const getRecommendedTracks = async (artists, tracks) => {
-  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=7');
+  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=10');
   recentlyPlayed = recentlyPlayed.data.items.map(item => item.track).filter(item => item.id);
 
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
@@ -34,10 +34,21 @@ async function newAndRecommended(userLikes){
       return items.slice(randomUserLikesStart, randomUserLikesEnd);
     };
 
-    const likedAlbums = userLikes ? sliceLikes(userLikes.albums) : (await httpClient.get('/me/albums?limit=6')).data.items;
+    let likedAlbumOffset = 0;
+    let likedTracksOffset = 0;
+
+    if(!userLikes){
+      const albums = await httpClient.get('/me/albums?limit=1');
+      likedAlbumOffset = randomInt(0, albums.data.total);
+
+      const tracks = await httpClient.get('/me/tracks?limit=1');
+      likedTracksOffset = randomInt(0, tracks.data.total);
+    }
+
+    const likedAlbums = userLikes ? sliceLikes(userLikes.albums) : (await httpClient.get(`/me/albums?offset=${likedAlbumOffset}&limit=5`)).data.items;
     const likedAlbumTracks = likedAlbums.map(item =>  item.album.tracks.items[randomInt(item.album.tracks.items.length - 1)]);
 
-    const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : (await httpClient.get('/me/tracks?limit=22')).data.items;
+    const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : (await httpClient.get(`/me/tracks?offset=${likedTracksOffset}&limit=10`)).data.items;
 
     const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.map(like => like.track)];
 
@@ -52,7 +63,7 @@ async function newAndRecommended(userLikes){
     ];
 
     const recommendationData = await Promise.all([
-      httpClient.get('/browse/new-releases?limit=22'),
+      httpClient.get('/browse/new-releases?limit=25'),
       getRecommendedTracks(seedArtists, seedTracks),
       getRecommendedArtists(topArtists.data)
     ]);

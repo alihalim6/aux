@@ -228,6 +228,7 @@
     focused(){
       this.closeFeed();
       this.showSearchResults = true;
+      this.$nuxt.$emit('activatePlayer');
     }
 
     async searchIconPressed(){

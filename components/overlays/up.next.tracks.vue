@@ -247,13 +247,15 @@
       }
     }
 
-    @supports(-webkit-text-stroke: $simple-title-border-size $rose-red) {
+    $up-next-title-border-size: 5px;
+
+    @supports(-webkit-text-stroke: $up-next-title-border-size $rose-red) {
       .up-next-title {
         @extend .simple-overlay-title;
         display: flex;
         align-items: center;
         font-size: 62px !important;
-        -webkit-text-stroke: $simple-title-border-size white;
+        -webkit-text-stroke: $up-next-title-border-size white;
         -webkit-text-fill-color: white;
         padding: 8px;
       }

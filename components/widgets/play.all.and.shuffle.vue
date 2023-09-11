@@ -50,9 +50,7 @@
     
     setTracksCollection(tracks){
       for(const track of tracks){
-        if(!track.fromCollection || (track.fromCollection && !track.fromCollection.includes(this.collectionKey))){
-          handleItemCollection(track, this.collectionKey);
-        }
+        handleItemCollection(track, this.collectionKey);
       }
     }
 

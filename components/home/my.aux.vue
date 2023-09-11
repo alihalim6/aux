@@ -136,13 +136,16 @@
       this.addTracksToEndOfQueue = newVal == 'likedTracks' && !this.isShuffled;
     }
 
-    mapData(data){
+    mapData(data, fromCollection){
       return data.map(item => {
-        return {
+        const mappedItem = {
           ...setItemMetaData([item.track || item.album])[0],
           hideAlbum: true,
           duration: item.track ? msToDuration(item.track.duration_ms) : 0
-        }
+        };
+
+        handleItemCollection(mappedItem, fromCollection);
+        return mappedItem;
       });
     };
 
@@ -184,7 +187,7 @@
             items = items.filter(item => item.track);
           }
 
-          item.data = this.mapData(items);
+          item.data = this.mapData(items, item.key);
           item.total = data[item.key].total;
           //lazy loading/pagination
           item.limit = item.offset = data[item.key].limit;
@@ -260,7 +263,7 @@
             items = items.filter(item => item.track && item.track.id);
           }
 
-          contentToFetchFor.data.push.apply(contentToFetchFor.data, this.mapData(items));
+          contentToFetchFor.data.push.apply(contentToFetchFor.data, this.mapData(items, contentToFetchFor.key));
           contentToFetchFor.offset += contentToFetchFor.limit;
 
           if(contentToFetchFor.offset >= contentToFetchFor.total && contentToFetchFor.trackList){

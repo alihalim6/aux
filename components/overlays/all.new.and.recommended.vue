@@ -74,7 +74,7 @@
     color: #888888;
     font-weight: bold;
     text-transform: none;
-    font-weight: 900;
+    font-weight: bold;
   }
 
   .selected-tab {
@@ -82,5 +82,6 @@
     color: $cream;
     padding: 8px;
     border-radius: 2px;
+    font-weight: 900;
   }
 </style>

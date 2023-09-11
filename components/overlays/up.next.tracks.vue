@@ -18,12 +18,13 @@
     </button>
     
     <div class="d-flex flex-column align-center">
-      <span class="up-next-title">UP NEXT</span>
+      <div class="up-next-title">
+        <span class="up">UP</span><span>NEXT</span>
+      </div>
 
       <div class="up-next-actions">
         <div class="clickable up-next-action" v-if="nextTracks.length > 1"> 
           <button 
-            class="underlined" 
             @click.stop="shuffleUpNext()" 
             aria-label="shuffle next tracks in queue"
           >
@@ -35,7 +36,6 @@
 
          <div class="clickable up-next-action"> 
           <button 
-            class="underlined" 
             @click.stop="clearUpNextPressed()"
             aria-label="remove next tracks in queue"
           >
@@ -51,7 +51,12 @@
     <div class="next-track-container">
       <div class="position-relative">
         <v-card elevation="6" class="clickable mt-10 next-track">
-          <v-img :src="nextTrack.imgUrl.medium" class="next-track-img" @click.stop="nextTrackArtworkPressed()" aria-hidden="true">
+          <v-img 
+            :src="$vuetify.breakpoint.smAndUp ? (nextTrack.imgUrl.large || nextTrack.imgUrl.medium) : nextTrack.imgUrl.medium" 
+            class="next-track-img" 
+            @click.stop="nextTrackArtworkPressed()" 
+            aria-hidden="true"
+          >
           </v-img>
         </v-card>
 
@@ -213,6 +218,7 @@
   @import '~/components/styles';
 
   $img-size: 250px;
+  $large-img-size: 500px;
 
   .up-next-list-container {
     width: 100%;
@@ -244,13 +250,12 @@
     @supports(-webkit-text-stroke: $simple-title-border-size $rose-red) {
       .up-next-title {
         @extend .simple-overlay-title;
-        -webkit-text-stroke: $simple-title-border-size $rose-red;
-        -webkit-text-fill-color: $rose-red;
-        background-color: $cream;
+        display: flex;
+        align-items: center;
+        font-size: 62px !important;
+        -webkit-text-stroke: $simple-title-border-size white;
+        -webkit-text-fill-color: white;
         padding: 8px;
-        border-radius: 4px;
-        border-left: 4px solid $rose-red;
-        border-bottom: 6px solid $rose-red;
       }
     }
 
@@ -258,15 +263,22 @@
       display: flex;
       align-items: center;
       justify-content: space-evenly;
-      width: 250px;
+      width: 275px;
       margin-top: 8px;
 
       .up-next-action {
         display: flex;
         align-items: center;
         font-weight: bold;
-        color: $cream;
+        color: white;
         font-size: 14px;
+        padding: 6px 10px;
+        border-radius: 20px;
+        background-color: $spotify-green;
+
+        &:hover {
+          transform: scale(1.03);
+        }
       }
     }
 
@@ -279,6 +291,11 @@
       .next-track-img {
         width: $img-size;
         height: $img-size;
+
+        @media(min-width: $max-inner-width){
+          width: $large-img-size;
+          height: $large-img-size;
+        }
       }
 
       .track-info {
@@ -381,6 +398,10 @@
     position: absolute !important;
     top: calc(#{$img-size} / 2);
     right: -40px;
+
+    @media(min-width: $max-inner-width){
+      top: calc(#{$large-img-size} / 2);
+    }
   }
 
   .title-value {
@@ -390,5 +411,12 @@
 
   .title-item {
     margin-right: 6px;
+  }
+
+  .up {
+    margin-top: 3px;
+    transform: rotate(-90deg);
+    font-size: 40px;
+    margin-right: -5px;
   }
 </style>

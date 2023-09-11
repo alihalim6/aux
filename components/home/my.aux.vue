@@ -6,7 +6,7 @@
           v-if="profile" 
           aria-label="your liked tracks and albums, recently played tracks and your top Spotify tracks and artists" 
           role="heading"
-          class="logo-style width-fit my-aux-header"
+          class="logo-style width-fit my-aux-header py-1"
         >
           {{profile.name}}
         </h1>
@@ -20,7 +20,7 @@
             </div>
           </v-hover>
 
-          <span v-if="index < (content.length - 1)" class="tab-divider color-black">/</span>
+          <v-icon v-if="index < (content.length - 1)" class="tab-divider color-dark-blue">mdi-circle</v-icon>
         </v-tab>
       </v-tabs>
 
@@ -324,8 +324,8 @@
     opacity: 0 !important;
   }
   
-  .color-black {
-    color: black !important;
+  .color-dark-blue {
+    color: $dark-blue !important;
   }
 
   .my-aux-header {

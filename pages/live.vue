@@ -139,8 +139,6 @@
 <style lang="scss">
   @import '~/styles/globals';
   
-  $section-title-font-size: 40px;
-
   .content-container {
     display: flex;
     flex-direction: column;
@@ -188,12 +186,12 @@
   }
 
   .tab-divider {
-    font-size: $section-title-font-size;
+    font-size: 10px !important;
     padding: 0px 10px;
   }
 
   h1 {
-    font-size: $section-title-font-size;
+    font-size: 40px;
   }
 
   .scroll-shadow {

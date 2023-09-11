@@ -74,6 +74,7 @@
     color: #888888;
     font-weight: bold;
     text-transform: none;
+    font-weight: 900;
   }
 
   .selected-tab {

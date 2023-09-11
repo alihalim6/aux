@@ -29,7 +29,7 @@
             </div>
           </v-hover>
 
-          <span v-if="index < (content.length - 1)" class="tab-divider color-black">/</span>
+          <v-icon v-if="index < (content.length - 1)" class="tab-divider color-dark-blue">mdi-circle</v-icon>
         </v-tab>
       </v-tabs>
 

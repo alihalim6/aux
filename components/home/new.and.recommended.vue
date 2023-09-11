@@ -27,7 +27,7 @@
             </div>
           </v-hover>
           
-          <span class="tab-divider" aria-hidden="true">/</span>
+          <v-icon class="tab-divider color-dark-blue" aria-hidden="true">mdi-circle</v-icon>
           
           <v-hover v-slot="{hover}">
             <div class="clickable tab-label" :class="{'hover-scale': hover && !overlayLoading && !$vuetify.breakpoint.xs}" @click="displayNewReleases()">

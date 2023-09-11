@@ -192,7 +192,7 @@
 <style lang="scss">
   @import './styles';
   
-  $content-img-size: 320px;
+  $content-img-size: 364px;
   $label-left-padding: 6px;
   $secondary-label-font-size: 12px;
   $primary-label-font-size: 14px;
@@ -359,6 +359,6 @@
   }
 
   .animate {
-    transition: transform 0.09s;
+    transition: transform 0.05s;
   }
 </style>

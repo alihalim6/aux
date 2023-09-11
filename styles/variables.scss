@@ -15,7 +15,7 @@ $max-home-content-height: 525px;
 $max-footer-height-not-playing: calc(env(safe-area-inset-bottom) + #{$base-footer-size});
 $max-footer-height-playing: calc(env(safe-area-inset-bottom) + calc(#{$base-footer-size} + 44px));
 $overlay-border-size: 4px;
-$simple-title-border-size: 3px;
+$simple-title-border-size: 5px;
 $text-field-filled-full-width-outlined-single-line-slot-min-height: 20px;
 $device-size-threshold: 600px;//keep 600
 $snackbar-side-margin: 8px;

@@ -116,6 +116,7 @@
       background-size: contain;
       background-position: center;
       max-width: $size;
+      min-width: $size;
       height: $size;
       object-fit: cover;
       flex: 1;

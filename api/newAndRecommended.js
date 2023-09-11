@@ -9,7 +9,7 @@ const getRecommendedTracks = async (artists, tracks) => {
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    httpClient.get(`/recommendations?limit=20&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
+    httpClient.get(`/recommendations?limit=23&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
     Promise.resolve({data: {tracks: []}});
 };
 

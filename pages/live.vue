@@ -244,6 +244,10 @@
   .home-content-with-shadow {
     @extend .home-content;
     @extend .scroll-shadow;
+    
+    .track-list-container {
+      border: 2px solid rgba(0, 0, 0, 0.1);
+    }
   }
 
   .home-content-responsive {

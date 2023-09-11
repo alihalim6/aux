@@ -244,11 +244,13 @@
   .home-content-with-shadow {
     @extend .home-content;
     @extend .scroll-shadow;
-    
-    .track-list-container {
-      border: 2px solid rgba(0, 0, 0, 0.1);
-    }
   }
+  
+  .home-content-with-shadow.border {
+    border: 2px solid rgba(0, 0, 0, 0.06);
+    border-radius: 10px;
+  }
+  
 
   .home-content-responsive {
     @media(min-width: $max-inner-width){

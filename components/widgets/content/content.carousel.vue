@@ -25,7 +25,7 @@
 
                 <v-card 
                   v-else
-                  elevation="10" 
+                  elevation="8" 
                   class="clickable animate" 
                   :class="{
                     'content-hover': hover && !vertical && !addToPlaylist && !noHover(index), 

@@ -64,7 +64,7 @@
       </div>
 
       <div class="track-info">
-        <div class="info-item title-item">
+        <div class="info-item more-margin">
           <div class="info-label">TITLE</div>
           <div class="info-value ellipses-text title-value">{{nextTrack.primaryLabel.toUpperCase()}}</div>
         </div>
@@ -79,7 +79,7 @@
         </div>
 
         <div v-if="multiTrackAlbum()" class="d-flex">
-          <div class="info-item">
+          <div class="info-item more-margin">
             <div class="info-label">TRACK NO.</div><div class="info-value">{{nextTrack.track_number}}</div>
           </div>
         </div>
@@ -412,7 +412,7 @@
     font-weight: 900;
   }
 
-  .title-item {
+  .more-margin {
     margin-right: 6px;
   }
 

@@ -24,7 +24,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="selectedTab" class="mt-2 home-tabs">
+      <v-tabs-items v-model="selectedTab" class="home-tabs">
         <v-tab-item v-for="(tab, index) in getContent()" :key="tab.key">
           <div class="home-content-with-shadow" :class="{'border': tab.trackList || tab.topItems}" :id="`myAux${index}`" v-if="tab.data.length">
             <div v-if="tab.trackList">

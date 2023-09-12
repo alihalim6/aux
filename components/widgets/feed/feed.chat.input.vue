@@ -62,6 +62,10 @@
       {
         code: 0x1F44D,
         name: 'like'
+      },
+      {
+        code: 0x1F44E,
+        name: 'dislike'
       }
     ];
 

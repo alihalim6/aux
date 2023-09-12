@@ -169,7 +169,7 @@
 
     .tab-container {
       font-weight: normal;
-      margin: 6px 0;
+      margin: 6px 0 8px;
     }
   }
 

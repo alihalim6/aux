@@ -20,7 +20,7 @@
           </v-hover>
         </div>
         
-        <div class="tab-container d-flex align-center pl-0 mt-1" v-if="allItems.length">
+        <div class="tab-container d-flex align-center pl-0 mt-2" v-if="allItems.length">
           <v-hover v-slot="{hover}">
             <div class="clickable tab-label" :class="{'hover-scale': hover && !overlayLoading && !$vuetify.breakpoint.xs}" @click="displayAll()">
               <button class="new-and-reco-tab" aria-label="open modal with all new and recommended tracks, albums and artists">SEE ALL</button>

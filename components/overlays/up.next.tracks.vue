@@ -312,6 +312,7 @@
           display: flex;
           align-items: flex-end;
           max-width: 90vw;
+          font-weight: 900;
 
           .info-label {
             transform: scaleX(0.75);

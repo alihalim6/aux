@@ -13,6 +13,7 @@
         <div class="track-sneak-peek">
           <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" alt=""></v-img>
           <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
+          <v-progress-circular :size="20" :width="2" class="current-elapsed-circle" :rotate="-90" :value="currentElapsed" color="#1DB954"></v-progress-circular>
         </div>
       </div>
     </button>
@@ -127,7 +128,7 @@
 </template>
 
 <script>
-  import {Component, Vue, Getter, Watch, Action} from 'nuxt-property-decorator';
+  import {Component, Vue, Getter, Watch, Action, Prop} from 'nuxt-property-decorator';
   import {PLAYBACK_QUEUE, SPOTIFY} from '~/store/constants';
   import {setDuration, setItemMetaData} from '~/utils/helpers';
   import moment from 'moment';
@@ -136,6 +137,9 @@
   @Component
   export default class UpNextTracks extends Vue {
     runningInPwa = false;
+
+    @Prop()
+    currentElapsed;
 
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
@@ -421,5 +425,10 @@
     transform: rotate(-90deg);
     font-size: 40px;
     margin-right: -5px;
+  }
+
+  .current-elapsed-circle {
+    margin-left: 12px;
+    top: 1px;
   }
 </style>

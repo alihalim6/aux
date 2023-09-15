@@ -71,7 +71,7 @@
 <style lang="scss" scoped>
   .container {
     background-color: $secondary-theme-color;
-    padding: 20px;
+    padding: 26px;
 
     .title {
       display: flex;
@@ -83,6 +83,7 @@
         font-size: 36px;
         color: $primary-theme-color;
         margin-bottom: 12px;
+        font-weight: 900;
 
         @media(min-width: $max-inner-width){
           font-size: 48px;

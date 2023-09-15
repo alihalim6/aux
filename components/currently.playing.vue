@@ -147,7 +147,7 @@
       </div>
     </div>
     
-    <UpNextTracks v-show="upNextDisplaying" />
+    <UpNextTracks v-show="upNextDisplaying" :current-elapsed="currentElapsed()" />
   </v-footer>
 </template>
 
@@ -549,6 +549,10 @@
 
     spotifyLogoPressed(){
       window.open('https://www.spotify.com', '_blank');
+    }
+
+    currentElapsed(){
+      return this.playbackElapsed.ms / this.playbackTotal.ms * 100;
     }
   }
 </script>

@@ -366,11 +366,12 @@
         transform: skewX(-9.9deg);
         font-size: 26px;
         margin-left: -24px;
-        padding: 0px 4px 0px 5px;
+        padding: 0px 6px 0px 5px;
         letter-spacing: 1px;
         line-height: 1.6;
         margin-top: 4px;
         font-family: 'Archivo Black', sans-serif;
+        border-radius: 2px;
 
           @media(max-width: $max-inner-width){ 
             font-size: 22px;

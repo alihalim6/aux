@@ -1,9 +1,12 @@
 <template>
-  <v-dialog content-class="pa-0 mt-0" :value="true" width="max-content" @click:outside="$nuxt.$emit('closeModal')" transition="v-fade-transition">
+  <v-dialog content-class="pa-0 mt-0" :value="true" width="fill-available" @click:outside="$nuxt.$emit('closeModal')" transition="v-fade-transition">
     <div class="bookmarks container">
-      <div class="title">
-        <span>Bookmarks (/'bʊk.mɑːrks/)</span>
-        <v-icon class="clickable ml-4" color="black" large @click="$nuxt.$emit('closeModal')" aria-label="close user profile modal">mdi-close</v-icon>
+      <div class="d-flex flex-column title-container">
+        <v-icon class="clickable ml-4 align-self-end" color="black" large @click="$nuxt.$emit('closeModal')" aria-label="close user profile modal">mdi-close</v-icon>
+
+        <div class="title">
+          <span>Bookmarks</span><span class="ml-1">(/'bʊk.mɑːrks/)</span
+        ></div>
       </div>
 
       <div class="subtitle">Shit you wanna listen to at a later point in time.</div>
@@ -78,16 +81,21 @@
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 4px;
+      flex-wrap: wrap;
+      width: fit-content;
 
       span {
         font-size: 36px;
         color: $primary-theme-color;
         margin-bottom: 12px;
-        font-weight: 900;
 
         @media(min-width: $max-inner-width){
           font-size: 48px;
         }
+      }
+
+      span:first-child {
+        font-weight: 900;
       }
     }
 

@@ -244,6 +244,10 @@
   .home-content-with-shadow {
     @extend .home-content;
     @extend .scroll-shadow;
+    
+    @media(max-width: $device-size-threshold){
+      margin: 24px;
+    }
   }
   
   .home-content-with-shadow.border {

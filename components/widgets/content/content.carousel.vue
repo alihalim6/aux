@@ -10,7 +10,7 @@
                 <v-img 
                   v-if="item.isArtist" 
                   class="clickable animate content-img artist-img" 
-                  :class="{'content-hover': hover && !noHover(index)}" 
+                  :class="{'content-hover': hover && !noHover(index), 'auto-size': vertical, 'min-size': $vuetify.breakpoint.smAndUp}" 
                   :src="carouselImgSrc(item)" 
                   @click="contentImgPressed(item)"
                   @keydown.enter="contentImgPressed(item)"
@@ -37,7 +37,7 @@
                 >
                   <v-img 
                     class="content-img" 
-                    :class="{'auto-size': vertical}"
+                    :class="{'auto-size': vertical, 'min-size': $vuetify.breakpoint.smAndUp}"
                     :src="carouselImgSrc(item)" 
                     @click="contentImgPressed(item)"
                     @keydown.enter="contentImgPressed(item)"
@@ -312,7 +312,6 @@
 
   .artist-img {
     border-radius: 100% !important;
-    max-width: $content-img-size;
 
     .v-image__image--cover {
       background-size: cover;
@@ -353,8 +352,11 @@
 
   .auto-size {
     width: auto !important;
-    min-width: $content-img-size;
     height: auto !important;
+  }
+
+  .min-size {
+    min-width: $content-img-size;
     min-height: $content-img-size;
   }
 

@@ -5,7 +5,7 @@
       @click="$nuxt.$root.$emit('hideUpNext')" 
       aria-label="hide next tracks in queue"
     >
-      <v-icon class="align-self-start" x-large color="white">mdi-chevron-down</v-icon>
+      <v-icon class="align-self-start" large color="white">mdi-chevron-down</v-icon>
 
       <div class="d-inline-flex align-center">
         <span class="min-width-fit">PLAYING: </span>
@@ -13,7 +13,39 @@
         <div class="track-sneak-peek">
           <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" alt=""></v-img>
           <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
-          <v-progress-circular :size="20" :width="2" class="current-elapsed-circle" :rotate="-90" :value="currentElapsed" color="#1DB954"></v-progress-circular>
+          
+          <div class="current-track-control" @click.stop>
+            <v-icon 
+              v-if="togglePreviousTrack"
+              class="clickable" 
+              @click.stop="togglePreviousTrack()"
+              aria-label="go to previous track"
+            >
+              mdi-skip-previous
+            </v-icon>
+
+            <v-progress-circular 
+              :size="30" 
+              :width="2" 
+              :rotate="-90" 
+              :value="currentElapsed" 
+              color="#1DB954" 
+              class="clickable mx-2" 
+              :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
+            >
+              <v-icon @click.stop="toggleCurrentPlayback()">
+                {{`mdi-${playbackIcon}`}}
+              </v-icon>   
+            </v-progress-circular>
+
+            <v-icon 
+              class="clickable" 
+              @click.stop="toggleNextTrack()"
+              aria-label="skip to next track"
+            >
+              mdi-skip-next
+            </v-icon>
+          </div>
         </div>
       </div>
     </button>
@@ -115,7 +147,7 @@
         :key="track.queueId" 
         class="then-track-container fill-available" 
       >
-        <button @click.stop="nextTrackPressed(track, thenTracks)" tabindex="0" :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`" class="track-title">{{track.primaryLabel}}</button>
+        <button @click.stop="nextTrackPressed(track, thenTracks)" :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`" class="track-title">{{track.primaryLabel}}</button>
         <span class="track-artists">{{track.secondaryLabel}}</span>
         <ThreeDotIcon :item="track" :item-in-queue="true" icon-class="up-next-three-dot" icon-color="white"/>
       </div>
@@ -140,6 +172,18 @@
 
     @Prop()
     currentElapsed;
+
+    @Prop()
+    playbackIcon;
+
+    @Prop()
+    toggleCurrentPlayback;
+
+    @Prop()
+    togglePreviousTrack;
+
+    @Prop()
+    toggleNextTrack;
 
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
@@ -231,7 +275,7 @@
     display: inline-flex;
     flex-direction: column;
     overflow-y: scroll;
-    padding-top: calc(env(safe-area-inset-top) + 4px);
+    padding-top: calc(env(safe-area-inset-top) + 12px);
     padding-bottom: 200px;
 
     @media(max-width: $device-size-threshold){
@@ -427,8 +471,17 @@
     margin-right: -5px;
   }
 
-  .current-elapsed-circle {
-    margin-left: 12px;
-    top: 1px;
+  .current-track-control {
+    margin-left: 16px;
+    white-space: nowrap;
+
+    button {
+      color: $cream !important;
+      font-size: 20px !important;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
   }
 </style>

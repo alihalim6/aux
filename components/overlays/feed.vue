@@ -17,7 +17,7 @@
                 </div>
               </v-tooltip>
 
-              <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed" tabindex="0">mdi-chevron-down</v-icon>
+              <v-icon class="clickable feed-header-icon" large @click.stop="closeFeed()" aria-label="close feed">mdi-chevron-down</v-icon>
             </div>
           </div>
 

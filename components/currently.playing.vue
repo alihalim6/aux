@@ -76,7 +76,6 @@
                 @click.stop="trackLikeToggled()" 
                 color="#1DB954" 
                 :aria-label="`${itemLiked ? 'remove track from' : 'add track to'} liked songs`"
-                tabindex="0"
               >
                 mdi-heart{{itemLiked ? '' : '-outline'}}
               </v-icon>
@@ -99,9 +98,8 @@
               class="clickable queue-control previous-track-button" 
               :class="{'no-visibility': !hasPreviousTrack, 'disable-playback-control': !trackReady}" 
               @click.stop="previousTrackPressed()"
-              aria-label="skip to previous track"
+              aria-label="go to previous track"
               :aria-disabled="!hasPreviousTrack"
-              :tabindex="hasPreviousTrack ? 0 : -1"
             >
               mdi-skip-previous
             </v-icon>
@@ -112,7 +110,6 @@
               @click.stop="playbackToggled()"
               :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
               :aria-disabled="!currentlyPlayingItem.uri"
-              :tabindex="currentlyPlayingItem.uri ? 0 : -1"
             >
               {{`mdi-${playbackIcon}`}}
             </v-icon>        
@@ -147,7 +144,14 @@
       </div>
     </div>
     
-    <UpNextTracks v-show="upNextDisplaying" :current-elapsed="currentElapsed()" />
+    <UpNextTracks 
+      v-show="upNextDisplaying" 
+      :current-elapsed="currentElapsed()" 
+      :playback-icon="playbackIcon" 
+      :toggle-current-playback="playbackToggled" 
+      :toggle-previous-track="hasPreviousTrack ? previousTrackPressed : null"
+      :toggle-next-track="nextTrackPressed"
+    />
   </v-footer>
 </template>
 
@@ -807,6 +811,7 @@
   .track-sneak-peek {
     width: 67vw;
     display: flex;
+    align-items: center;
     margin-left: 4px;
 
     .track-img {

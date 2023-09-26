@@ -50,7 +50,6 @@
                       class="back-button overlay-button" 
                       large 
                       @click="goBack()"
-                      tabindex="0"
                     >
                       mdi-arrow-left
                     </v-icon>
@@ -67,7 +66,7 @@
                       </v-img>
                     </div>
 
-                    <v-icon class="close-button overlay-button" large @click="closeOverlay()" aria-label="close modal" tabindex="0">mdi-close</v-icon>
+                    <v-icon class="close-button overlay-button" large @click="closeOverlay()" aria-label="close modal">mdi-close</v-icon>
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">

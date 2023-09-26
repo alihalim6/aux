@@ -23,8 +23,6 @@
           :color="submitIconColor" 
           class="clickable mr-2 submit-reaction" 
           @click.stop="chatMessageSubmitted()" 
-          @keydown.enter="chatMessageSubmitted()" 
-          tabindex="0" 
           :aria-label="`submit comment/reaction for ${activity.track.primaryLabel}`">mdi-arrow-up-circle
         </v-icon>
         

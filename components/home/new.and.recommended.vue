@@ -8,12 +8,10 @@
           <v-hover v-slot="{hover}">
             <v-icon 
               @click="refreshData()" 
-              @keydown.enter="refreshData()"
               class="clickable refresh-data" 
               :class="{'hover-scale': hover, 'refreshing-data': refreshingData}" 
               color="#1DB954"
               aria-label="refresh new and recommended Spotify tracks, albums and artists"
-              tabindex="0"
             >
               mdi-refresh
             </v-icon>

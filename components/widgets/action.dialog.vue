@@ -50,9 +50,7 @@
           class="clickable nav-button cancel" 
           v-if="actionDialog.cancellable" 
           @click.stop="closeDialog()" 
-          tabindex="0" 
           aria-label="close the dialog"
-          @keydown.esc="closeDialog()" 
         >
           <span class="nav-button-label">CANCEL</span>
         </button>    

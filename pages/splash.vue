@@ -19,7 +19,6 @@
           <v-icon 
             class="clickable whats-p-icon" 
             @click.stop="() => showTooltip = !showTooltip" 
-            tabindex="0" 
             aria-label="tooltip with info about what AUX is"
           >
             mdi-help-circle-outline

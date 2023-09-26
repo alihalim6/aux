@@ -8,7 +8,6 @@
         v-if="!item.isArtist && !collectionPlaying()" 
         @click.stop="togglePlay(item)"
         :aria-label="`${item.playbackIcon} ${item.name}`"
-        tabindex="0"
       >
         {{`mdi-${item.playbackIcon}`}}
       </v-icon>

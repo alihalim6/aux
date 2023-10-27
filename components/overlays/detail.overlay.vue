@@ -292,7 +292,7 @@
       width: 25px;
       background-color: $primary-theme-color;
       right: -25px;
-      top: 53px;
+      top: 78px;
       border-radius: 0px 4px 4px 0px;
       display: flex;
       justify-content: center;

@@ -13,43 +13,43 @@
         <div class="track-sneak-peek">
           <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" alt=""></v-img>
           <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
-          
-          <div class="current-track-control" @click.stop>
-            <v-icon 
-              v-if="togglePreviousTrack"
-              class="clickable" 
-              @click.stop="togglePreviousTrack()"
-              aria-label="go to previous track"
-            >
-              mdi-skip-previous
-            </v-icon>
-
-            <v-progress-circular 
-              :size="30" 
-              :width="2" 
-              :rotate="-90" 
-              :value="currentElapsed" 
-              color="#1DB954" 
-              class="clickable mx-2" 
-              :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
-            >
-              <v-icon @click.stop="toggleCurrentPlayback()">
-                {{`mdi-${playbackIcon}`}}
-              </v-icon>   
-            </v-progress-circular>
-
-            <v-icon 
-              class="clickable" 
-              @click.stop="toggleNextTrack()"
-              aria-label="skip to next track"
-            >
-              mdi-skip-next
-            </v-icon>
-          </div>
         </div>
       </div>
     </button>
-    
+
+    <div class="current-track-control" :class="{'has-previous': togglePreviousTrack}" @click.stop>
+      <v-icon 
+        v-if="togglePreviousTrack"
+        class="clickable" 
+        @click.stop="togglePreviousTrack()"
+        aria-label="go to previous track"
+      >
+        mdi-skip-previous
+      </v-icon>
+
+      <v-progress-circular 
+        :size="30" 
+        :width="2" 
+        :rotate="-90" 
+        :value="currentElapsed" 
+        color="#1DB954" 
+        class="clickable mx-2" 
+        :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
+      >
+        <v-icon @click.stop="toggleCurrentPlayback()">
+          {{`mdi-${playbackIcon}`}}
+        </v-icon>   
+      </v-progress-circular>
+
+      <v-icon 
+        class="clickable" 
+        @click.stop="toggleNextTrack()"
+        aria-label="skip to next track"
+      >
+        mdi-skip-next
+      </v-icon>
+    </div>
+
     <div class="d-flex flex-column align-center">
       <div class="up-next-title">
         <span class="up">UP</span><span>NEXT</span>
@@ -288,7 +288,7 @@
       align-items: center;
       justify-content: flex-start;
       width: 100%;
-      margin-bottom: 24px;
+      margin-bottom: 10px;
 
       .track-sneak-peek {
         width: 62vw;
@@ -306,6 +306,7 @@
         -webkit-text-stroke: $up-next-title-border-size white;
         -webkit-text-fill-color: white;
         padding: 8px;
+        margin-right: 10px;
       }
     }
 
@@ -472,8 +473,10 @@
   }
 
   .current-track-control {
-    margin-left: 16px;
+    margin-left: 30px;
     white-space: nowrap;
+    align-self: flex-start;
+    margin-bottom: 32px;
 
     button {
       color: $cream !important;
@@ -482,6 +485,10 @@
       &:hover {
         transform: scale(1.1);
       }
+    }
+
+    &.has-previous {
+      margin-left: 34px;
     }
   }
 </style>

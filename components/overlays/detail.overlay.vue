@@ -398,6 +398,7 @@
             justify-content: space-between;
             align-items: center;
             padding-left: 6px;
+            align-self: flex-start;
 
             .action-button {
               right: -$base-padding;

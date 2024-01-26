@@ -16,15 +16,13 @@
       <div class="logo-style">FROM:</div>
       
       <div class="d-flex align-start justify-space-between">
-        <div v-if="$vuetify.breakpoint.smAndUp" class="from-album-img" :style="`background-image: url(${track.imgUrl.medium || track.imgUrl.large})`" aria-hidden="true"></div>
-
-        <div class="from-album-info">        
+        <div class="from-album-info" :id="`fromAlbumInfo${track.uuid}`">        
           <div class="d-flex justify-space-between mb-3">
             <span>{{track.album.name}}</span>
 
             <div class="d-flex no-wrap align-center">
               <PlaybackIcon :item="fromAlbum" icon-class="action-icon"/>
-              <ThreeDotIcon :item="fromAlbum" icon-class="dot-icon"/>
+              <ThreeDotMenu :item="fromAlbum" icon-class="dot-icon"/>
             </div>
           </div>
 
@@ -101,6 +99,12 @@
 
       this.trackAlbumArtistsLengthsDiffer = this.track.album.artists.length != this.track.artists.length;
     }
+
+     mounted(){
+      if(this.multiTrackAlbum){
+        document.getElementById(`fromAlbumInfo${this.track.uuid}`).style.backgroundImage = `url(${this.track.imgUrl.large ?? this.track.imgUrl.medium})`;
+      }
+    }
   }
 </script>
 
@@ -110,33 +114,20 @@
     padding: 0px $base-padding;
     font-size: 20px;
 
-    .from-album-img {
-      $size: 81.4px;
-
-      background-size: contain;
-      background-position: center;
-      max-width: $size;
-      min-width: $size;
-      height: $size;
-      object-fit: cover;
-      flex: 1;
-      margin-right: 12px;
-    }
-
     .from-album-info {
       flex: 3;
       font-size: 26px;
       width: 100%;
       padding: 6px 10px;
       font-weight: 600;
-      background-color: $cream;
-      color: $primary-theme-color;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: $secondary-theme-color;
       background-size: cover;
       background-position-y: center;
       background-blend-mode: overlay;
 
       .action-icon {
-        color: $primary-theme-color !important;
+        color: $secondary-theme-color !important;
         font-size: 28px !important;
       }
 

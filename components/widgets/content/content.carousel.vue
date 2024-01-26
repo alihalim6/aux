@@ -79,7 +79,7 @@
                       <v-img v-if="newAndRecommended && item.isNew" :src="require('~/assets/new.png')" class="new-icon" alt=""></v-img>
                     </div>
 
-                    <ThreeDotIcon v-if="!item.isPlaylist" :item="item" :bookmark="bookmarks"/>
+                    <ThreeDotMenu v-if="!item.isPlaylist" :item="item" :bookmark="bookmarks"/>
                   </div>
 
                   <span v-if="!moreFromArtist && !noSecondaryLabel" class="secondary-label" :class="{'artist-genres': item.isArtist}" aria-hidden="true">{{item.secondaryLabel}}</span>
@@ -192,7 +192,7 @@
 <style lang="scss">
   @import './styles';
   
-  $content-img-size: 364px;
+  $content-img-size: 375px;
   $label-left-padding: 6px;
   $secondary-label-font-size: 12px;
   $primary-label-font-size: 14px;

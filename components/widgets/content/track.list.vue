@@ -62,7 +62,7 @@
               </div>
             </div>
 
-            <ThreeDotIcon :item="{...track, playlistId}"/>
+            <ThreeDotMenu :item="{...track, playlistId}"/>
           </div>
         </v-hover>
       </div>

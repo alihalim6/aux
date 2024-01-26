@@ -28,8 +28,8 @@
       </v-icon>
 
       <v-progress-circular 
-        :size="30" 
-        :width="2" 
+        :size="36" 
+        :width="4" 
         :rotate="-90" 
         :value="currentElapsed" 
         color="#1DB954" 
@@ -47,6 +47,15 @@
         aria-label="skip to next track"
       >
         mdi-skip-next
+      </v-icon>
+
+      <v-icon 
+        v-if="currentlyPlayingItem.uri" 
+        class="clickable pl-5 like-toggle" 
+        @click.stop="toggleTrackLike()" 
+        :aria-label="`${itemLiked ? 'remove track from' : 'add track to'} liked songs`"
+      >
+        mdi-heart{{itemLiked ? '' : '-outline'}}
       </v-icon>
     </div>
 
@@ -93,7 +102,7 @@
           </v-img>
         </v-card>
 
-        <ThreeDotIcon :item="nextTrack" :item-in-queue="true" iconClass="up-next-three-dot next-track-three-dot mt-10" icon-color="white"/>
+        <ThreeDotMenu :item="nextTrack" :item-in-queue="true" iconClass="up-next-three-dot next-track-three-dot mt-10" icon-color="white"/>
       </div>
 
       <div class="track-info">
@@ -149,7 +158,7 @@
       >
         <button @click.stop="nextTrackPressed(track, thenTracks)" :aria-label="`play ${track.primaryLabel} by ${track.secondaryLabel}`" class="track-title">{{track.primaryLabel}}</button>
         <span class="track-artists">{{track.secondaryLabel}}</span>
-        <ThreeDotIcon :item="track" :item-in-queue="true" icon-class="up-next-three-dot" icon-color="white"/>
+        <ThreeDotMenu :item="track" :item-in-queue="true" icon-class="up-next-three-dot" icon-color="white"/>
       </div>
 
       <span v-show="restOfQueueLength" class="plus-more">AND MORE... </span>
@@ -184,6 +193,12 @@
 
     @Prop()
     toggleNextTrack;
+
+    @Prop()
+    toggleTrackLike;
+
+    @Prop()
+    itemLiked;
 
     @Getter('nextTrack', {namespace: PLAYBACK_QUEUE})
     nextTrack;
@@ -356,6 +371,7 @@
         flex-wrap: wrap;
         margin-top: 12px;
         max-width: 600px;
+        font-size: 16px;
 
         .info-item {
           display: flex;
@@ -369,7 +385,7 @@
         }
      
         .info-value {
-          transform: scaleY(1.3);
+          transform: scaleY(1.19);
           padding: 1px 1px;
         }
       }
@@ -381,7 +397,7 @@
       align-items: center;
       font-weight: bold;
       width: 70vw;
-      margin-top: 40px;
+      margin-top: 58px;
       padding-bottom: 120px;
 
       @media(max-width: $max-inner-width){ 
@@ -389,9 +405,9 @@
       }
 
       .then-label {
-        text-decoration: underline;
-        font-size: 18px;
+        font-size: 22px;
         color: $cream;
+        font-weight: 800;
       }
 
       .then-track-container {
@@ -426,6 +442,10 @@
           display: flex;
           align-items: center;
           padding: $track-item-padding 0px;
+        }
+
+        &:hover {
+          background-color: rgb(252, 252, 224, 0.2);
         }
       }
     }
@@ -480,7 +500,7 @@
 
     button {
       color: $cream !important;
-      font-size: 20px !important;
+      font-size: 24px !important;
 
       &:hover {
         transform: scale(1.1);

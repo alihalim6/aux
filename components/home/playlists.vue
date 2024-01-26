@@ -52,7 +52,7 @@
                   </template>
                 </v-img>
 
-                <div class="playlist-info" :class="{'playlist-hovered': hover}">
+                <div class="playlist-info" :style="{'background-image': `url(${item.imgUrl.large})`}" :class="{'playlist-hovered': hover}">
                   <div class="d-flex flex-column align-start justify-space-between height-100 width-100">
                     <div class="d-flex flex-column">
                       <span class="playlist-title">{{item.primaryLabel}}</span>
@@ -148,7 +148,7 @@
   @import '~/styles/globals';
 
   .playlist-info {
-    background-color: $primary-theme-color;
+    background-color: rgba(0, 0, 0, 0.8);
     color: $secondary-theme-color;
     background-size: auto;
     background-position-y: center;

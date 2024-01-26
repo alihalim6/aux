@@ -91,7 +91,7 @@
             </div>
           </div>
 
-          <ThreeDotIcon v-if="!item.isPlaylist" :item="item" iconColor="white"/>
+          <ThreeDotMenu v-if="!item.isPlaylist" :item="item" iconColor="white"/>
         </div>
 
         <BackToTop v-if="searchResultsId" :elementId="searchResultsId" arrowColor="white"/>

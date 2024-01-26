@@ -1,7 +1,21 @@
 <template>
   <section>
-    <div class="sub-title-container">
-      <div>{{artist.secondaryLabel}}</div>
+    <div class="sub-title-container flex-column align-center mb-3">
+      <div class="align-self-start">{{artist.secondaryLabel}}</div>
+
+      <v-img 
+        class="clickable img" 
+        :src="artist.imgUrl.medium ?? artist.imgUrl.large" 
+        @click="toggleFullImage()"
+        @keydown.enter="toggleFullImage()"
+        tabindex="0"
+        :alt="`view larger photo for ${artist.primaryLabel}`"
+        :transition="false"
+      >
+        <template v-slot:placeholder>
+          <span class="content-placeholder">{{artist.primaryLabel.substring(0, 1)}}</span>
+        </template>
+      </v-img>
     </div>
 
     <MoreFromArtist :parentItem="artist" :artist="artist"/>
@@ -17,6 +31,9 @@
     @Prop({required: true})
     artist;
 
+    @Prop()
+    toggleFullImage;
+
     beforeMount(){
       const artistDetails = this.artist.details;
       setItemMetaData(artistDetails.artistAlbums);
@@ -25,3 +42,11 @@
     }
   }
   </script>
+
+  <style lang="scss">
+    .img {
+      width: 250px;
+      margin: 12px 0;
+      border-radius: 100%;
+    }
+  </style>

@@ -58,7 +58,7 @@
     </div>
 
     <div class="d-flex flex-column align-end margin-left-auto" :class="{'no-visibility': !activity.played}">
-      <ThreeDotIcon v-if="!activity.splash" :item="activity.track" icon-class="activity-item-three-dot"/>
+      <ThreeDotMenu v-if="!activity.splash" :item="activity.track" icon-class="activity-item-three-dot"/>
 
       <button class="clickable reaction-toggle-container" 
         @click.stop="toggleReactions()" 

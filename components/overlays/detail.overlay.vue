@@ -36,9 +36,9 @@
                     <v-icon class="close-button" large @click="closeOverlay()" aria-label="close overlay">mdi-close</v-icon>
                   </div>
 
-                  <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay">
+                  <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay && item.isTrack">
                     <div class="clickable full-item-image-cta-inner" @click="() => fullItemImage = item.imgUrl.large">
-                      {{item.isArtist ? 'PHOTO' : (item.albumType || 'TRACK') + ' ARTWORK'}}
+                      {{(item.albumType || 'TRACK') + ' ARTWORK'}}
                     </div>
                   </div>
 
@@ -70,12 +70,13 @@
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
-                    <span :class="{'logo-style album-title': item.isAlbum}">{{item.name}}</span>
+                    <div @click="() => fullItemImage = item.imgUrl.large" class="album-img" v-if="showArtworkInTitle(item)" :style="`background-image: url(${item.imgUrl.medium ?? item.imgUrl.large})`" aria-hidden="true"></div>
+                    <span :class="{'logo-style album-title': showArtworkInTitle(item)}">{{item.name}}</span>
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
                       <div class="d-flex justify-space-between align-start">
                         <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
-                        <ThreeDotIcon :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
+                        <ThreeDotMenu :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
                       </div>
                     </div>
                   </div>
@@ -84,7 +85,7 @@
                   <LazyNewReleases v-if="item.newReleases"/>
                   <LazyTrackDetails v-if="item.isTrack" :track="item"/>
                   <LazyAlbumDetails v-if="item.isAlbum" :album="item"/>
-                  <LazyArtistDetails v-if="item.isArtist" :artist="item"/>
+                  <LazyArtistDetails v-if="item.isArtist" :artist="item" :toggle-full-image="() => fullItemImage = item.imgUrl.large"/>
                   <LazyPlaylistDetails v-if="item.isPlaylist" :playlist="item"/>
                 </div>
               </div>
@@ -258,6 +259,11 @@
       this.$nuxt.$root.$emit('overlayScrolled', e);
     }
 
+    showArtworkInTitle(item) {
+      console.log(item)
+      return item.isCollection || (item.album && item.album.total_tracks === 1);
+    }
+
     beforeDestroy(){
       this.$nuxt.$root.$off('scrolledDown');
       this.$nuxt.$root.$off('displayDetailOverlay');
@@ -381,13 +387,27 @@
         .overlay-button:focus-visible {
           @extend .focused;
         }
-        
+
+        .album-img {
+          $size: 81.4px;
+
+          background-size: contain;
+          background-position: center;
+          max-width: $size;
+          min-width: $size;
+          height: $size;
+          object-fit: cover;
+          flex: 1;
+          margin-right: 28px;
+        }
+              
         .overlay-section-title {
           padding: 16px $base-padding 8px;
           font-size: 26px;
           display: flex;
           justify-content: space-between;
           font-weight: 600;
+          margin-bottom: 6px;
 
           .controls-container {
             $playback-size: 40px;
@@ -461,5 +481,13 @@
 
   .album-title {
     max-width: 320px;
+    flex: auto;
+    text-align: center;
+    height: fit-content;
+    transform: none !important;
+
+    @media (max-width: $device-size-threshold) {
+      font-size: 18px;
+    }
   }
 </style>

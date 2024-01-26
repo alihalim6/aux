@@ -53,7 +53,7 @@
   import {storageGet} from '~/utils/storage';
 
   @Component
-  export default class ThreeDotIcon extends Vue {
+  export default class ThreeDotMenu extends Vue {
     //using .type instead of is<Album, etc.> and .uri instead of .uuid because items with this component are not always Aux-ified yet
 
     hide = true;
@@ -157,7 +157,7 @@
             playNext: true
           },
           {
-            title: 'Add to End of Queue',
+            title: 'Add to Queue',
             fn: this.addToEndPressed,
             addToEnd: true,
             forQueue: true

@@ -132,10 +132,10 @@
         <div class="up-next-container">
           <v-icon class="clickable" id="upNextChevron" :class="{'no-next-track': !hasNextTrack}" color="black">mdi-chevron-up</v-icon>
 
-          <div class="d-inline-flex align-center" :tabindex="hasNextTrack ? 0 : -1">
+          <div class="clickable d-inline-flex align-center" :tabindex="hasNextTrack ? 0 : -1" @click.stop="viewUpNext()" aria-label="display next tracks in queue">
             <span class="clickable min-width-fit" :class="{'no-next-track': !hasNextTrack}">UP NEXT: </span>
 
-            <button v-if="hasNextTrack" class="clickable track-sneak-peek" @click.stop="viewUpNext()" aria-label="display next tracks in queue">
+            <button v-if="hasNextTrack" class="track-sneak-peek">
               <v-img class="track-img" :src="nextTrack.imgUrl.medium || currentlyPlayingItem.imgUrl.large"></v-img>
               <span class="ellipses-text">{{nextTrack.primaryLabel}} /<span class="track-artists"> {{nextTrack.secondaryLabel}}</span></span>
             </button>
@@ -151,6 +151,8 @@
       :toggle-current-playback="playbackToggled" 
       :toggle-previous-track="hasPreviousTrack ? previousTrackPressed : null"
       :toggle-next-track="nextTrackPressed"
+      :toggle-track-like="trackLikeToggled"
+      :item-liked="itemLiked"
     />
   </v-footer>
 </template>

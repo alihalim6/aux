@@ -31,7 +31,7 @@
                 <timeago v-if="item.timeAgo" class="time-ago" :converter="date => activityTimestamp(date, true)" :datetime="item.timeAgo"></timeago>
 
                 <div class="d-flex justify-space-between align-start">
-                  <ThreeDotIcon :item="item" icon-class="ml-1"/>
+                  <ThreeDotMenu :item="item" icon-class="ml-1"/>
                 </div>
               </div>
             </div>

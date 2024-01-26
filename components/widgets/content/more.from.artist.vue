@@ -89,7 +89,7 @@
 <style lang="scss">  
   .more-from-label {
     font-size: 20px;
-    padding: 20px $base-padding 0px;
+    padding: 34px $base-padding 0px;
   }
 
   .more-from-artist-container {

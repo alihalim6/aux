@@ -36,7 +36,7 @@
                     <v-icon class="close-button" large @click="closeOverlay()" aria-label="close overlay">mdi-close</v-icon>
                   </div>
 
-                  <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay && item.isTrack">
+                  <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay && !showArtworkInTitle(item)">
                     <div class="clickable full-item-image-cta-inner" @click="() => fullItemImage = item.imgUrl.large">
                       {{(item.albumType || 'TRACK') + ' ARTWORK'}}
                     </div>

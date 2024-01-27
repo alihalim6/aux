@@ -1,65 +1,67 @@
 <template>
   <section class="up-next-list-container" id="upNextListContainer" v-if="nextTrack && !pendingFirstPlay" :class="{'sm-browser-up-next-container': $vuetify.breakpoint.xs && !runningInPwa}">
-    <button 
-      class="clickable up-next-header" 
-      @click="$nuxt.$root.$emit('hideUpNext')" 
-      aria-label="hide next tracks in queue"
-    >
-      <v-icon class="align-self-start" large color="white">mdi-chevron-down</v-icon>
+    <div class="sticky-header">
+      <button 
+        class="clickable up-next-header" 
+        @click="$nuxt.$root.$emit('hideUpNext')" 
+        aria-label="hide next tracks in queue"
+      >
+        <v-icon class="align-self-start" large color="white">mdi-chevron-down</v-icon>
 
-      <div class="d-inline-flex align-center">
-        <span class="min-width-fit">PLAYING: </span>
+        <div class="d-inline-flex align-center">
+          <span class="min-width-fit">PLAYING: </span>
 
-        <div class="track-sneak-peek">
-          <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" alt=""></v-img>
-          <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
+          <div class="track-sneak-peek">
+            <v-img class="track-img" v-if="currentlyPlayingItem.imgUrl" :src="currentlyPlayingItem.imgUrl.small" alt=""></v-img>
+            <span class="ellipses-text">{{currentlyPlayingItem.primaryLabel}} /<span class="track-artists"> {{currentlyPlayingItem.secondaryLabel}}</span></span>
+          </div>
         </div>
+      </button>
+
+      <div class="current-track-control" :class="{'has-previous': togglePreviousTrack}" @click.stop>
+        <v-icon 
+          v-if="togglePreviousTrack"
+          class="clickable" 
+          @click.stop="togglePreviousTrack()"
+          aria-label="go to previous track"
+        >
+          mdi-skip-previous
+        </v-icon>
+
+        <v-progress-circular 
+          :size="36" 
+          :width="4" 
+          :rotate="-90" 
+          :value="currentElapsed" 
+          color="#1DB954" 
+          class="clickable mx-2" 
+          :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
+        >
+          <v-icon @click.stop="toggleCurrentPlayback()">
+            {{`mdi-${playbackIcon}`}}
+          </v-icon>   
+        </v-progress-circular>
+
+        <v-icon 
+          class="clickable" 
+          @click.stop="toggleNextTrack()"
+          aria-label="skip to next track"
+        >
+          mdi-skip-next
+        </v-icon>
+
+        <v-icon 
+          v-if="currentlyPlayingItem.uri" 
+          class="clickable pl-5 like-toggle" 
+          @click.stop="toggleTrackLike()" 
+          :aria-label="`${itemLiked ? 'remove track from' : 'add track to'} liked songs`"
+        >
+          mdi-heart{{itemLiked ? '' : '-outline'}}
+        </v-icon>
       </div>
-    </button>
-
-    <div class="current-track-control" :class="{'has-previous': togglePreviousTrack}" @click.stop>
-      <v-icon 
-        v-if="togglePreviousTrack"
-        class="clickable" 
-        @click.stop="togglePreviousTrack()"
-        aria-label="go to previous track"
-      >
-        mdi-skip-previous
-      </v-icon>
-
-      <v-progress-circular 
-        :size="36" 
-        :width="4" 
-        :rotate="-90" 
-        :value="currentElapsed" 
-        color="#1DB954" 
-        class="clickable mx-2" 
-        :aria-label="`${playbackIcon === 'play' ? 'resume' : 'pause'} track`"
-      >
-        <v-icon @click.stop="toggleCurrentPlayback()">
-          {{`mdi-${playbackIcon}`}}
-        </v-icon>   
-      </v-progress-circular>
-
-      <v-icon 
-        class="clickable" 
-        @click.stop="toggleNextTrack()"
-        aria-label="skip to next track"
-      >
-        mdi-skip-next
-      </v-icon>
-
-      <v-icon 
-        v-if="currentlyPlayingItem.uri" 
-        class="clickable pl-5 like-toggle" 
-        @click.stop="toggleTrackLike()" 
-        :aria-label="`${itemLiked ? 'remove track from' : 'add track to'} liked songs`"
-      >
-        mdi-heart{{itemLiked ? '' : '-outline'}}
-      </v-icon>
     </div>
 
-    <div class="d-flex flex-column align-center">
+    <div class="up-next-title-container">
       <div class="up-next-title">
         <span class="up">UP</span><span>NEXT</span>
       </div>
@@ -496,7 +498,7 @@
     margin-left: 30px;
     white-space: nowrap;
     align-self: flex-start;
-    margin-bottom: 32px;
+    margin-bottom: 14px;
 
     button {
       color: $cream !important;
@@ -510,5 +512,21 @@
     &.has-previous {
       margin-left: 34px;
     }
+  }
+
+  .sticky-header {
+    position: fixed;
+    top: 0;
+    width: -webkit-fill-available;
+    background-color: black;
+    z-index: 1;
+    padding: 4px;
+  }
+
+  .up-next-title-container {
+    margin-top: 104px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 </style>

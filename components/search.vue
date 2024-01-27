@@ -140,7 +140,7 @@
 
     @Watch('query')
     queryChanged(){
-      if(this.query && this.query.trim()){
+      if(this.query && this.query.trim().length > 2){
         this.loadingResults = true;
         this.callSearchApi();
       }

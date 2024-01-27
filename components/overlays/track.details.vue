@@ -33,9 +33,9 @@
 
             <div class="sub-padding-left no-wrap ml-auto">
               <span>{{new Date(track.album.release_date).getFullYear()}}</span>
-              <v-icon class="circle-separator">mdi-checkbox-blank-circle</v-icon>
+              <v-icon class="circle-separator white-color">mdi-checkbox-blank-circle</v-icon>
               <span v-if="track.album.numberOfTracks">{{track.album.numberOfTracks}}</span>
-              <v-icon v-if="track.album.numberOfTracks && albumDuration" class="circle-separator">mdi-checkbox-blank-circle</v-icon>
+              <v-icon v-if="track.album.numberOfTracks && albumDuration" class="circle-separator white-color">mdi-checkbox-blank-circle</v-icon>
               <span v-if="albumDuration">{{albumDuration}}</span>
             </div>
           </div>

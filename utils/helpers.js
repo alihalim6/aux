@@ -290,14 +290,16 @@ export function isSameTrack(trackA, trackB){
     const bothHaveName = trackAName && trackBName;
     const bothHaveUri = trackA.uri && trackB.uri;
 
-    //not even durations can be trusted among items with same uri smh so adding uri check;
-    //Dance Now by JID even seen with different uri AND duration_ms comparing our item to sdk's
-    if(bothHaveUri && trackA.uri == trackB.uri){
-      return true;
-    }
+    if (trackA.secondaryLabel === trackB.secondaryLabel) {
+      //not even durations can be trusted among items with same uri smh so adding uri check;
+      //Dance Now by JID even seen with different uri AND duration_ms comparing our item to sdk's
+      if(bothHaveUri && trackA.uri == trackB.uri){
+        return true;
+      }
 
-    if(bothHaveName && trackAName == trackBName){
-      return true;
+      if(bothHaveName && trackAName == trackBName){
+        return true;
+      }
     }
   }
 

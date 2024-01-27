@@ -3,13 +3,13 @@ import {shuffleArray} from '~/utils/helpers';
 import artist from './artist';
 
 const getRecommendedTracks = async (artists, tracks) => {
-  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=10');
+  let recentlyPlayed = await httpClient.get('/me/player/recently-played?limit=6');
   recentlyPlayed = recentlyPlayed.data.items.map(item => item.track).filter(item => item.id);
 
   const seeds = await getRecommendationSeeds(artists, [...tracks, ...recentlyPlayed]);
 
   return (seeds.artists.length || seeds.tracks.length || seeds.genres.length) ?
-    httpClient.get(`/recommendations?limit=23&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
+    httpClient.get(`/recommendations?limit=20&seed_artists=${seeds.artists}&seed_tracks=${seeds.tracks}&seed_genres=${seeds.genres}&market=US`) :
     Promise.resolve({data: {tracks: []}});
 };
 
@@ -45,10 +45,10 @@ async function newAndRecommended(userLikes){
       likedTracksOffset = randomInt(0, tracks.data.total);
     }
 
-    const likedAlbums = userLikes ? sliceLikes(userLikes.albums) : (await httpClient.get(`/me/albums?offset=${likedAlbumOffset}&limit=5`)).data.items;
+    const likedAlbums = userLikes ? sliceLikes(userLikes.albums) : (await httpClient.get(`/me/albums?offset=${likedAlbumOffset}&limit=3`)).data.items;
     const likedAlbumTracks = likedAlbums.map(item =>  item.album.tracks.items[randomInt(item.album.tracks.items.length - 1)]);
 
-    const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : (await httpClient.get(`/me/tracks?offset=${likedTracksOffset}&limit=10`)).data.items;
+    const likedTracks = userLikes ? sliceLikes(userLikes.tracks) : (await httpClient.get(`/me/tracks?offset=${likedTracksOffset}&limit=7`)).data.items;
 
     const seedTracks = [...likedAlbumTracks, ...topTracks.data.items, ...likedTracks.map(like => like.track)];
 

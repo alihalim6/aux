@@ -1,5 +1,5 @@
 <template>    
-  <section class="feed-item-container">
+  <section class="feed-item-container" :class="{'mb-3': activity.skipped}">
     <v-img 
       class="clickable track-img" 
       v-if="activity.track.imgUrl" 
@@ -13,7 +13,7 @@
     </v-img>
 
     <div class="feed-item fill-available">
-      <div class="item-info-container" :class="{'mb-6': skippedNotPlayed()}">
+      <div class="item-info-container" :class="{'mb-6': activity.played}">
         <div class="track-info" :class="{'skipped': skippedNotPlayed() && !isTrackPlaying(activity.track)}">
           <button class="d-flex align-center text-left"
             @click="itemInfoPressed(activity.track)"
@@ -154,7 +154,7 @@
   .feed-item-container {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 48px;
+    margin: 24px 0;
 
     .track-img {
       $track-img-size: 40px;

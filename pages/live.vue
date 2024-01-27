@@ -88,17 +88,16 @@
         this.trackToAddToPlaylist = trackToAdd;
       });
 
-      this.$nuxt.$root.$on('closeModal', () => {
-        this.trackToAddToPlaylist = null;
-        this.showBookmarks = false;
-      });
+      this.$nuxt.$root.$on('closeModal', this.handleModalClose);
 
       this.$nuxt.$root.$on('showBookmarks', () => {
+        history.pushState({}, '');
         this.showBookmarks = true;
       });
 
       window.addEventListener('scroll', this.activatePlayer);
       this.$nuxt.$on('activatePlayer', this.activatePlayer);
+      window.addEventListener('popstate', this.handleModalClose);
     }
 
     async activatePlayer(){
@@ -115,6 +114,11 @@
           this.$nuxt.$off('activatePlayer');
         }
       }
+    }
+
+    handleModalClose(){
+      this.trackToAddToPlaylist = null;
+      this.showBookmarks = false;
     }
 
     beforeDestroy(){

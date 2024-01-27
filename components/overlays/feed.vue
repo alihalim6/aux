@@ -232,7 +232,7 @@
       border-radius: 10px;
 
       .feed-title-container {
-        margin: 6px 0px 24px;
+        margin: 6px 0px;
         display: flex;
         align-items: center;
         justify-content: flex-end;

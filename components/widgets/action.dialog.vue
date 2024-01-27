@@ -40,7 +40,7 @@
         </div>
 
         <div class="my-2">1. Tap the three-dot icon in the browser bar.</div>
-        <div>2. Hit "Add to Home screen."</div>
+        <div>2. Hit "Install App."</div>
       </div>
 
       <span v-else class="dialog-text" id="actionDialogText">{{actionDialog.text}}</span>

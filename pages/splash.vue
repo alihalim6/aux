@@ -36,7 +36,6 @@
             color="#191414" 
             aria-label="close the tooltip" 
             tabindex="0" 
-            large
           >
             mdi-close
           </v-icon>
@@ -263,8 +262,7 @@
 
   .bullet-point {
     margin-bottom: 20px;
-    font-family: 'Archivo Black';
-    font-weight: 100;
+    font-family: 'Archivo';
     max-width: 90%;
   }
 
@@ -278,11 +276,12 @@
       -webkit-text-fill-color: $spotify-green;
       font-family: 'Archivo Black', sans-serif;
       margin-top: 16px;
+      font-weight: 900;
     }
   }
 
   .boldest {
-    font-weight: normal;
+    font-weight: bold;
     background-color: $primary-theme-color;
     color: white;
     padding: 8px 14px;

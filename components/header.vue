@@ -372,6 +372,7 @@
         margin-top: 4px;
         font-family: 'Archivo Black', sans-serif;
         border-radius: 2px;
+        font-weight: 900;
 
           @media(max-width: $max-inner-width){ 
             font-size: 22px;

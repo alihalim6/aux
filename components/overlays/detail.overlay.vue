@@ -70,7 +70,7 @@
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
-                    <div @click="() => fullItemImage = item.imgUrl.large" class="album-img" v-if="showArtworkInTitle(item)" :style="`background-image: url(${item.imgUrl.medium ?? item.imgUrl.large})`" aria-hidden="true"></div>
+                    <div @click="() => fullItemImage = item.imgUrl.large" class="clickable album-img" v-if="showArtworkInTitle(item)" :style="`background-image: url(${item.imgUrl.medium ?? item.imgUrl.large})`" aria-hidden="true"></div>
                     <span :class="{'logo-style album-title': showArtworkInTitle(item)}">{{item.name}}</span>
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
@@ -260,8 +260,7 @@
     }
 
     showArtworkInTitle(item) {
-      console.log(item)
-      return item.isCollection || (item.album && item.album.total_tracks === 1);
+      return item.isCollection || item.singleTrack;
     }
 
     beforeDestroy(){

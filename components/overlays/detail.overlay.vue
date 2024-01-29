@@ -73,11 +73,9 @@
                     <div @click="() => fullItemImage = item.imgUrl.large" class="clickable album-img" v-if="showArtworkInTitle(item)" :style="`background-image: url(${item.imgUrl.medium ?? item.imgUrl.large})`" aria-hidden="true"></div>
                     <span :class="{'logo-style album-title': showArtworkInTitle(item)}">{{item.name}}</span>
                     
-                    <div class="controls-container" :class="{'justify-end': item.isArtist}" v-if="!item.simpleOverlay">
-                      <div class="d-flex justify-space-between align-start">
-                        <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
-                        <ThreeDotMenu :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
-                      </div>
+                    <div class="controls-container" :class="{'justify-end': item.isArtist, 'mb-3': showArtworkInTitle(item)}" v-if="!item.simpleOverlay">
+                      <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
+                      <ThreeDotMenu :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
                     </div>
                   </div>
 
@@ -405,6 +403,7 @@
           font-size: 26px;
           display: flex;
           justify-content: space-between;
+          align-items: center;
           font-weight: 600;
           margin-bottom: 6px;
 
@@ -417,7 +416,6 @@
             justify-content: space-between;
             align-items: center;
             padding-left: 6px;
-            align-self: flex-start;
 
             .action-button {
               right: -$base-padding;

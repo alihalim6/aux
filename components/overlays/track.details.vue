@@ -13,10 +13,10 @@
     </div>
 
     <div class="from-album-container" v-if="multiTrackAlbum">
-      <div class="logo-style">FROM:</div>
+      <div class="logo-style ml-1">FROM:</div>
       
       <div class="d-flex align-start justify-space-between">
-        <div class="from-album-info" :id="`fromAlbumInfo${track.uuid}`">        
+        <div class="clickable from-album-info" :id="`fromAlbumInfo${track.uuid}`" @click="toggleFullImage()" @keydown.enter="toggleFullImage()">        
           <div class="d-flex justify-space-between mb-3">
             <span>{{track.album.name}}</span>
 
@@ -62,6 +62,9 @@
 
     @Prop({required: true})
     track;
+
+    @Prop()
+    toggleFullImage;
 
     beforeMount(){
       const trackDetails = this.track.details;
@@ -125,6 +128,7 @@
       background-size: cover;
       background-position-y: center;
       background-blend-mode: overlay;
+      border-radius: 4px;
 
       .action-icon {
         color: $secondary-theme-color !important;

@@ -36,12 +36,6 @@
                     <v-icon class="close-button" large @click="closeOverlay()" aria-label="close overlay">mdi-close</v-icon>
                   </div>
 
-                  <div class="inner-image-cta-container" v-if="item.imgUrl.large && !item.simpleOverlay && !showArtworkInTitle(item)">
-                    <div class="clickable full-item-image-cta-inner" @click="() => fullItemImage = item.imgUrl.large">
-                      {{(item.albumType || 'TRACK') + ' ARTWORK'}}
-                    </div>
-                  </div>
-
                   <div class="d-flex justify-space-between align-center py-2">
                     <v-icon 
                       :class="{'no-visibility': hideBackButton(index)}" 
@@ -70,8 +64,16 @@
                   </div>
 
                   <div class="section-title overlay-section-title" :class="{'simple-overlay-title': item.simpleOverlay}">
-                    <div @click="() => fullItemImage = item.imgUrl.large" class="clickable album-img" v-if="showArtworkInTitle(item)" :style="`background-image: url(${item.imgUrl.medium ?? item.imgUrl.large})`" aria-hidden="true"></div>
-                    <span :class="{'logo-style album-title': showArtworkInTitle(item)}">{{item.name}}</span>
+                    <div 
+                      @click="() => fullItemImage = item.imgUrl.large" 
+                      class="clickable album-img" 
+                      :style="`background-image: url(${item.imgUrl.large ?? item.imgUrl.medium})`"
+                      v-if="showArtworkInTitle(item)"
+                      :id="`titleArtwork${item.uuid}`" 
+                    >
+                      {{item.name}}
+                    </div>
+                    <span v-else>{{item.name}}</span>
                     
                     <div class="controls-container" :class="{'justify-end': item.isArtist, 'mb-3': showArtworkInTitle(item)}" v-if="!item.simpleOverlay">
                       <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
@@ -81,7 +83,7 @@
 
                   <LazyAllNewAndRecommended v-if="item.allNewAndRecommended" :data="item.data"/>
                   <LazyNewReleases v-if="item.newReleases"/>
-                  <LazyTrackDetails v-if="item.isTrack" :track="item"/>
+                  <LazyTrackDetails v-if="item.isTrack" :track="item" :toggle-full-image="() => fullItemImage = item.imgUrl.large"/>
                   <LazyAlbumDetails v-if="item.isAlbum" :album="item"/>
                   <LazyArtistDetails v-if="item.isArtist" :artist="item" :toggle-full-image="() => fullItemImage = item.imgUrl.large"/>
                   <LazyPlaylistDetails v-if="item.isPlaylist" :playlist="item"/>
@@ -257,7 +259,7 @@
       this.$nuxt.$root.$emit('overlayScrolled', e);
     }
 
-    showArtworkInTitle(item) {
+    showArtworkInTitle(item) {      
       return item.isCollection || item.singleTrack;
     }
 
@@ -334,36 +336,6 @@
           display: flex;
           justify-content: space-between;
         }
-        
-        .inner-image-cta-container {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          width: fit-content;
-          margin: 0 auto;
-
-          .full-item-image-cta-inner {
-            @extend .full-item-image-cta-outer;
-
-            position: unset;
-            display: none;
-            background-color: $primary-theme-color;
-            color: $secondary-theme-color;
-            padding: 8px;
-            border-radius: 3px;
-            right: 25px;
-            top: 12px;
-            font-weight: 600;
-            font-size: 12px;
-            width: max-content;
-            height: auto;
-            margin-bottom: 12px;
-            
-            @media (max-width: $full-image-cta-breakpoint) {
-              display: unset;
-            }
-          }
-        }
 
         @media (max-width: $full-image-cta-breakpoint) {
           padding-top: 8px;
@@ -386,16 +358,17 @@
         }
 
         .album-img {
-          $size: 81.4px;
-
-          background-size: contain;
-          background-position: center;
-          max-width: $size;
-          min-width: $size;
-          height: $size;
+          font-size: 22px;
+          background-size: cover;
+          background-position-y: center;
+          background-blend-mode: overlay;
+          background-color: rgba(0, 0, 0, 0.6);
+          padding: 16px 12px;
+          border-radius: 4px;
           object-fit: cover;
           flex: 1;
-          margin-right: 28px;
+          margin-right: 20px;
+          text-align: center;
         }
               
         .overlay-section-title {

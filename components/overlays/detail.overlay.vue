@@ -369,6 +369,7 @@
           flex: 1;
           margin-right: 20px;
           text-align: center;
+          color: white;
         }
               
         .overlay-section-title {

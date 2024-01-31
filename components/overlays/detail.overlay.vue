@@ -363,7 +363,7 @@
           background-position-y: center;
           background-blend-mode: overlay;
           background-color: rgba(0, 0, 0, 0.6);
-          padding: 16px 12px;
+          padding: 96px 16px 12px;
           border-radius: 4px;
           object-fit: cover;
           flex: 1;

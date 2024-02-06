@@ -71,13 +71,21 @@
                       v-if="showArtworkInTitle(item)"
                       :id="`titleArtwork${item.uuid}`" 
                     >
-                      {{item.name}}
+                      <span>{{item.name}}</span>
+
+                      <div class="controls-container" v-if="!item.simpleOverlay">
+                        <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
+                        <ThreeDotMenu :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
+                      </div>
                     </div>
-                    <span v-else>{{item.name}}</span>
-                    
-                    <div class="controls-container" :class="{'justify-end': item.isArtist, 'mb-3': showArtworkInTitle(item)}" v-if="!item.simpleOverlay">
-                      <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
-                      <ThreeDotMenu :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
+
+                    <div class="d-flex align-center justify-space-between fill-available" v-else>
+                      <span>{{item.name}}</span>
+                      
+                      <div class="controls-container" :class="{'justify-end': item.isArtist, 'mb-3': showArtworkInTitle(item)}" v-if="!item.simpleOverlay">
+                        <PlaybackIcon :item="item" icon-class="detail-overlay-playback-button"/>
+                        <ThreeDotMenu :item="item" icon-class="detail-overlay-dots-button" :detail-overlay="true" :disable-shuffle="disableShuffle"/>
+                      </div>
                     </div>
                   </div>
 
@@ -358,18 +366,25 @@
         }
 
         .album-img {
-          font-size: 22px;
+          font-size: 24px;
           background-size: cover;
           background-position-y: center;
           background-blend-mode: overlay;
           background-color: rgba(0, 0, 0, 0.6);
-          padding: 96px 16px 12px;
+          padding: 56px 16px 48px;
           border-radius: 4px;
           object-fit: cover;
           flex: 1;
-          margin-right: 20px;
           text-align: center;
           color: white;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+
+          .controls-container .v-icon {
+            color: white !important;
+          }
         }
               
         .overlay-section-title {
@@ -407,7 +422,7 @@
             .detail-overlay-dots-button {
               @extend .action-button;
               font-size: $dots-size !important;
-              padding-top: 6px;
+              padding-bottom: 4px;
               margin-left: 6px;
             }
 

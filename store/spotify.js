@@ -284,8 +284,8 @@ export const actions = {
 
         if(currentState){
           const spotifyCurrentTrack = currentState.track_window.current_track;
-          //console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.duration_ms} ${spotifyCurrentTrack.uri}`);          
-          //console.log(`our item: ${item.name} ${item.duration_ms} ${item.uri}`);
+          //console.log(`current Spotify track: ${spotifyCurrentTrack.name} ${spotifyCurrentTrack.secondaryLabel} ${spotifyCurrentTrack.uri}`);          
+          //console.log(`our item: ${item.name} ${item.secondaryLabel} ${item.uri}`);
 
           if(spotifyCurrentTrack && isSameTrack(spotifyCurrentTrack, item)){
             //console.log(`letting Spotify play the current track: ${item.name}`);
@@ -315,7 +315,7 @@ export const actions = {
         //send as many tracks as possible;
         //prevents Spotify from having no next tracks as often because when we allow them to play 2nd of the two we were sending originally,
         //they had no knowledge of what was after that in queue (as expected);
-        //doing it this way leads to spotify just continuing to play from their side more (what we want) instead of api call due to them having 
+        //doing it this way leads to spotify just continuing to play from their side more (what we want) instead of api call, due to them having 
         //correct next track more often; has to use passed-in queue instead of rootGetters due to getter timing not being reliable
 
         let nextTracksToSend = null;

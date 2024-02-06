@@ -1,6 +1,6 @@
 <template>
   <section class="track-details">
-    <div class="sub-title-container">
+    <div class="sub-title-container mr-2">
       <div class="secondary-label align-center">
         <ArtistList :artists="track.artists"/>
       </div>

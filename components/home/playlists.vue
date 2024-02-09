@@ -116,8 +116,8 @@
         const data = await playlists();
         
         this.content.forEach(playlistTab => {
-          const playlist = data[playlistTab.type].filter(playlist => playlist);//spotify can send null playlists
-          playlistTab.data = setItemMetaData(playlist);
+          const playlists = data[playlistTab.type].filter(playlist => playlist);//spotify can send null playlists
+          playlistTab.data = setItemMetaData(playlists);
         });
       }
       catch(error){

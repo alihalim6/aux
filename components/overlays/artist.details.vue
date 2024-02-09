@@ -5,7 +5,7 @@
 
       <v-img 
         class="clickable img" 
-        :src="artist.imgUrl.medium ?? artist.imgUrl.large" 
+        :src="artist.imgUrl.large ?? artist.imgUrl.medium" 
         @click="toggleFullImage()"
         @keydown.enter="toggleFullImage()"
         tabindex="0"

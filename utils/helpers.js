@@ -30,21 +30,16 @@ export const setItemMetaData = (items) => {
 
     try{
       item.imgUrl = {};
+      let images = item.images ?? item.album.images;
 
-      const {url} = item.images ? item.images[0] : item.album.images[0];
-      item.imgUrl.large = url;
+      if (images) {
+        images = images.sort((a, b) => b.height - a.height);
+        item.imgUrl.large = images[0].url;
 
-      function setMediumAndSmall(imageItem){
-        item.imgUrl.medium = imageItem.images[1].url;        
-        item.imgUrl.small = imageItem.images[2].url;
-      }
-
-      if(item.images && item.images.length > 1){
-        setMediumAndSmall(item);
-      }
-
-      if(item.album && item.album.images && item.album.images.length > 1){
-        setMediumAndSmall(item.album);
+        if(images.length > 1){
+          item.imgUrl.medium = images[1].url;        
+          item.imgUrl.small = images[2].url;
+        }
       }
     }
     //not all items have images/album, so just catch instead of messy conditionals

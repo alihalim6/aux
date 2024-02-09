@@ -13,6 +13,7 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
   let playlistTracks = [];
   let totalPlaylistTracks;
   let totalAlbumTracks;
+  let playlistImages = [];
   
   if(isAlbum || isTrack){
     const {data} = await httpClient.get(`/albums/${itemId}/tracks?limit=${collectionTrackLimit}`);
@@ -41,6 +42,9 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
     const {data} = await httpClient.get(`/playlists/${itemId}/tracks?limit=${collectionTrackLimit}`);
     playlistTracks = data.items;
     totalPlaylistTracks = data.total;
+
+    const images = await httpClient.get(`/playlists/${itemId}/images`);
+    playlistImages = images.data;
   }
 
   return {
@@ -51,7 +55,8 @@ async function details({isAlbum, isTrack, isArtist, isPlaylist, singleArtistId},
     totalAlbumTracks,
     playlistTracks,
     totalPlaylistTracks,
-    collectionTrackLimit
+    collectionTrackLimit,
+    playlistImages,
   };
 };
 

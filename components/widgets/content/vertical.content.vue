@@ -13,7 +13,7 @@
             <div class="left-item-container">
               <v-card elevation="7">
                 <v-img 
-                  :src="item.imgUrl.large" 
+                  :src="item.imgUrl.medium ?? item.imgUrl.large" 
                   class="clickable" 
                   @click="displayItemDetails(item)"
                   @keydown.enter="displayItemDetails(item)"

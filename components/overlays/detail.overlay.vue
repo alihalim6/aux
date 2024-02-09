@@ -189,6 +189,11 @@
         if(!itemDetails){
           const itemId = (item.isTrack && item.album ? item.album.id : item.id);
           detailsResponse = await details(item, itemId);
+
+          //only one img (medium) comes back from Spotify for playlists, so fetch the large
+          if(item.isPlaylist && detailsResponse.playlistImages.length > 0) {
+            item.imgUrl.large = detailsResponse.playlistImages[0].url;
+          }
         }
 
         this.items[this.items.length - 1].details = itemDetails || detailsResponse;

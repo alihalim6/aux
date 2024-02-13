@@ -371,24 +371,25 @@
         }
 
         .album-img {
-          font-size: 24px;
+          font-size: 28px;
           background-size: cover;
           background-position-y: center;
           background-blend-mode: overlay;
           background-color: rgba(0, 0, 0, 0.6);
-          padding: 56px 16px 48px;
+          padding: 48px 16px 40px;
           border-radius: 4px;
           object-fit: cover;
           flex: 1;
           text-align: center;
-          color: white;
+          color: $cream;
           display: flex;
           align-items: center;
           justify-content: space-between;
           margin-bottom: 8px;
+          font-weight: 900;
 
           .controls-container .v-icon {
-            color: white !important;
+            color: $cream !important;
           }
         }
               

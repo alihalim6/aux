@@ -143,7 +143,7 @@
   @import './styles';
 
   .track-list-container {
-    margin: 18px auto 0px;
+    margin: 24px auto 0px;
     padding: 0px 8px 56px;
     border-radius: 8px;
 

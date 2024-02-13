@@ -198,6 +198,9 @@ export const initSpotifyPlayer = async (transferPlayback, activationOnly) => {
         await spotify({url: '/me/player', method: 'PUT', body: {
           device_ids: [device_id]
         }});
+
+        // clear shuffle if set in Spotify
+        await spotify({url: `/me/player/shuffle?state=false&device_id=${device_id}`, method: 'PUT'});
       }
 
       resolve();

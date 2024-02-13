@@ -129,6 +129,7 @@
       background-position-y: center;
       background-blend-mode: overlay;
       border-radius: 4px;
+      font-weight: 900;
 
       .action-icon {
         color: $secondary-theme-color !important;

@@ -409,7 +409,7 @@
         const currentState = await this.player.getCurrentState();
         
         if(!currentState){
-          return
+          return;
         };
 
         const {paused, position} = currentState;

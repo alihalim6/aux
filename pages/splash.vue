@@ -246,7 +246,7 @@
     align-items: center;
     justify-content: center;
     padding-bottom: 16px;
-    margin-top: 100px;
+    margin-top: 32px;
   }
 
   .whats-p-icon, .p-tooltip, .aux-tooltip {
@@ -264,6 +264,7 @@
     margin-bottom: 20px;
     font-family: 'Archivo';
     max-width: 90%;
+    font-weight: bolder;
   }
 
   $stroke-size: 1px;
